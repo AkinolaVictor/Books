@@ -1,0 +1,25 @@
+<html><head><title>Extracting Substrings</title></head>
+<body bgcolor=lightgreen>
+<font face="arial">
+<big>
+	Extracting substrings
+</big>
+<small>
+   <script type="text/javascript">
+	var straddr = "DanielSavage@dadserver.org";
+	document.write("<br/>His name is<em> " +  
+				straddr.substr(0,6) + "</em>.<br />");
+	var namesarr = straddr.split("@" );
+		document.write( "The user name is<em> " +  namesarr[0] +
+ 		                "</em>.<br />");
+		document.write( "and the mail server is<em> " +  namesarr[1] + 
+		                "</em>.<br />");
+		document.write( "The first character in the string is <em>" +
+		                straddr.charAt(0)+ "</em>.<br />");
+		document.write( "and the last character in the string is <em>" 
+		                + straddr.charAt(straddr.length - 1)
+		                + "</em>.<br />");
+   </script>
+ </small>
+</body>
+</html> 

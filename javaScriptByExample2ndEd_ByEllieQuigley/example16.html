@@ -1,0 +1,49 @@
+
+<html><head><title>Delete Cookie</title><head>
+<script type = "text/javascript">
+	 var i = 0;
+	function delCookie (cookieName){
+		document.cookie = cookieName + "=" +"; expires=Thu, 01-Jan-1970 
+			00:00:01 GMT";
+		alert("Cookie was deleted!");
+		seeCookie();
+	}
+	function seeCookie(){
+		if(document.cookie == ""){
+			alert("No cookies");
+			return false;
+		}
+		else{
+			var myCookie = document.cookie.split("; ");
+			if ( i < myCookie.length ){
+			document.form1.cookietype.value =
+			   myCookie[i].split("=")[0];
+			   i++;  // Increase the index value to see the next cookie
+			}
+			else{alert("No more cookies");}
+		}
+	}
+	</script>
+</head>
+<body onLoad="seeCookie()" >
+	<div align="center">
+	<h2> Got milk?</h2>
+	<form name="form1">
+		Is this the cookie you want to delete?
+		<br>
+		<input type="text" name="cookietype" >
+		<p>
+		<input type="radio"
+			name="radio"
+			value="choice"
+			onClick="delCookie(document.form1.cookietype.value);">Yes
+
+		<input type="radio"
+			name="radio"
+			value="choice"
+			onClick="seeCookie();">No
+		<p>
+</form>
+</div>
+</body>
+</html>

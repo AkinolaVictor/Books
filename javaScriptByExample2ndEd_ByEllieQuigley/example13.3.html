@@ -1,0 +1,28 @@
+<html><head><title>An HTML Form and the onSubmit Event Handler</title>
+<script type="text/javascript">
+	function checkForm(yourinfo){
+	     if(yourinfo.namestring.value == "" || yourinfo.namestring.value == null){
+			      // Check for an empty string or null value
+		        alert("Please type in your name");
+		        return(false);
+	     }
+	     else{
+		        return(true);
+	     }
+	}
+</script>
+</head>
+<body>
+<b>
+  <form name="info" action="http://localhost/cgi-bin/bookstuff/form1.cgi"
+		method="post"
+		onSubmit="return checkForm(document.info)"><p>
+     <font size="+1"><p>
+	Type your name here:
+      <input type="text" name="namestring" size="50" >
+	<p>
+	<input type="submit" value="Submit" />
+	<input type="reset" value="Clear" />
+   </form>
+</body>
+</html>

@@ -1,0 +1,501 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 1, Chapter 7</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 7.1</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 7.1:</h3>
+<p>An example in <a href="../c7/s2.html#arrays.2.4">Subsection&nbsp;7.2.4</a>
+tried to answer the question, How many random people
+do you have to select before you find a duplicate birthday? The source code for
+that program can be found in the file
+<span class="sourceref"><a href="../source/BirthdayProblemDemo.java">BirthdayProblemDemo.java</a></span>. Here are
+some related questions:</p>
+
+<ul>
+
+<li>How many random people do you have to select before you find <b>three</b>
+people who share the same birthday? (That is, all three people were born on the
+same day in the same month, but not necessarily in the same year.)</li>
+
+<li>Suppose you choose 365 people at random. How many different birthdays will
+they have? (The number could theoretically be anywhere from 1 to 365).</li>
+
+<li>How many different people do you have to check before you've found at least
+one person with a birthday on each of the 365 days of the year?</li>
+
+</ul>
+
+<p>Write <b>three</b> programs to answer these questions. Each of your programs should simulate
+choosing people at random and checking their birthdays. (In each case, ignore
+the possibility of leap years.)</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>The original program has a subroutine, <span class="code">birthdayProblem()</span>, that does
+the simulation once. The <span class="code">main()</span> routine calls this subroutine over and
+over, as long as the user wants to continue. The three programs can all use the
+same <span class="code">main()</span> routine, along with a modified <span class="code">birthdayProblem()</span>
+routine. The changes from the original program are not huge, but you need a
+clear understanding of arrays in order to get them right. Let's look at each of
+the problems in turn. I'll just look at the <span class="code">birthdayProblem()</span>
+subroutines. The complete programs are given below.</p>
+
+
+<hr class="break">
+
+
+<p>The first question asks how many people you have to choose at random before
+finding three who share the same birthday. This is similar to the original
+program, but instead of just checking whether or not a given birthday has
+already been found, we need to keep track of how many people have been found
+with each birthday. Where the original program used an array of
+<span class="code">booleans</span>, here we need an array of <span class="code">ints</span>. We still want to
+count the number of people we check and output that count at the end. An
+algorithm for the simulation is:</p>
+
+
+<pre>Let count = 0
+Repeat:
+   Select a birthday at random
+   Add one to count
+   If this is the third time that birthday has occurred:
+       break out of the loop
+   Add one to the number of times that birthday has been found
+Output the count</pre>
+
+
+<p>To do the counting, we need an array "<span class="code">int[] numFound</span>", where
+<span class="code">numFound[i]</span> will be the number of times the <span class="code">i</span>-th day of the
+year has occurred as a birthday. Since <span class="code">numFound[i]</span> can be used in any
+way that any <span class="ptype">int</span> variable can be used, we can add one to the number
+stored in <span class="code">numFound[i]</span> by saying "<span class="code">numFound[i]++</span>". When we
+create the array with the command "<span class="code">numFound&nbsp;=&nbsp;new&nbsp;int[365]</span>", all the
+elements of the array are automatically initialized to zero. This is the
+initial value that we want. (This is an important thing to remember! In some
+programming languages, arrays are not automatically filled with zeros, so it
+would be necessary to use a <span class="code">for</span> loop to store a zero into each place
+in the array. Even in Java, if you wrote this program differently and reused
+the same array rather than creating a new one for each simulation, you would
+have to remember to set each element of the array to zero at the beginning of
+the simulation.)</p>
+
+
+<p>Given all this, we can translate the algorithm into Java as follows:</p>
+
+
+<pre>
+<span class="newcode">int[] numFound;  // numFound[i] will be the number of people
+                 // who have been found who have a birthday
+                 // on the i-th day of the year</span>
+
+int count;       // The number of people who have been checked.
+
+<span class="newcode">numFound = new int[365];  // Initially, all entries are 0.</span>
+
+count = 0;
+
+while (true) {
+       // Select a birthday at random, from 0 to 364.
+       // If the same birthday was already seen twice
+       // before, then quit.  Otherwise, add one to
+       // the corresponding entry in the numFound array
+       // to record that a person with that birthday
+       // has been found.
+   int birthday;  // The selected birthday.
+   birthday = (int)(Math.random()*365);
+   count++;
+   <span class="newcode">if ( numFound[birthday] == 2 )
+       break;  // It's the third time we've found this birthday.
+   numFound[birthday]++;</span>
+}
+
+TextIO.putln("It took " + count + 
+        " tries to find three people with the same birthday.");</pre>
+
+
+<p>The lines shown in red are the ones that differ significantly from the
+original program. This becomes the body of the <span class="code">birthdayProblem()</span>
+subroutine in the first program.</p>
+
+
+
+<hr class="break">
+
+
+<p>For the second program, we know exactly how many people we want to check:
+365. This calls for using a for loop. The information we need for each birthday
+is whether or not that birthday has occurred. For that, we can use an array of
+<span class="ptype">booleans</span>. The value stored in position <span class="code">i</span> of the array is
+<span class="code">true</span> if the <span class="code">i</span>-th day of the year has occurred as a birthday
+and is <span class="code">false</span> if not. After checking 365 people, we have to go through
+the array and count the number of entries in the array that are <span class="code">true</span>.
+This is the number of different birthdays that have been found. The algorithm
+can be expressed as:</p>
+
+
+<pre>Let used = new boolean[365]
+Repeat 365 times:
+   Select a birthday at random
+   Store true into the corresponding location in the array, used
+Let count = 0
+for day = 0 to 364:
+   If used[day] is true:
+      Add 1 to count
+Output the value of count</pre>
+
+
+<p>This translates easily into Java code:</p>
+
+
+<pre>boolean used[];  // used[i] will be true if a person is found
+                 // whose birthday is the i-th day of the year.
+
+used = new boolean[365];  // <b>Initially, all entries are false!</b>
+
+for (int i = 0; i &lt; 365; i++) {
+      // Select a random birthday and record it.
+   int birthday;  // The selected birthday.
+   birthday = (int)(Math.random()*365);
+   used[birthday] = true;
+}
+
+int count = 0;
+
+for (int day = 0; day &lt; 365; day++) {
+       // If this day occurred as a birthday, count it.
+   if (used[day] == true)
+      count++;
+}
+
+TextIO.putln("Among 365 people, there were " + count
+                                + " different birthdays.");</pre>
+
+
+<p>It might be worth noting that the test "<span class="code">if&nbsp;(used[day]&nbsp;==&nbsp;true)</span>" can
+be written more simply as "<span class="code">if&nbsp;(used[day])</span>". Also, the three lines in
+the first <span class="code">for</span> loop could be reduced to the single command
+"<span class="code">used[(int)(Math.random()*365)]&nbsp;=&nbsp;true;</span>". Of course, this one-line
+version is harder to understand.</p>
+
+
+<hr class="break">
+
+
+<p>The third program is just a little bit trickier. We have to continue
+selecting people at random until we have found 365 different birthdays. We can
+use a counter to keep track of how many different birthdays we have found. We
+have to continue until this counter reaches 365. We need a second counter to
+keep track of how many different people we have checked. It's the second
+counter whose value we want to output at the end. Now, we have to be able to
+recognize whether a birthday we've just found is new, or whether we've
+encountered it previously. For this, we can again use an array of
+<span class="ptype">booleans</span>. An algorithm for the simulation is:</p>
+
+
+<pre>Let used = new boolean[365]
+Let count = 0   // The number of people checked
+Let birthdaysFound = 0   // The number of different birthdays found
+while birthdaysFound &lt; 365:
+   Add one to count
+   Select a birthday at random
+   if used[birthday] is false:
+       Add one to birthdaysFound  // since this is a new birthday
+   Let used[birthday] = true   // so we don't count it again
+Output the value of count</pre>
+
+
+<p>In Java, this algorithm becomes:</p>
+
+
+<pre>boolean[] used;  // For recording the possible birthdays
+                 //   that have been seen so far.
+int count;       // The number of people who have been checked.
+int birthdaysFound;   // The number of different birthdays that
+                      // have been found.
+
+used = new boolean[365];  // Initially, all entries are false.
+count = 0;
+birthdaysFound = 0;
+
+while (birthdaysFound &lt; 365) {
+       // Select a birthday at random, from 0 to 364.
+       // If the birthday has not already been used,
+       // add 1 to birthdaysFound.
+   int birthday;  // The selected birthday.
+   birthday = (int)(Math.random()*365);
+   count++;
+   if ( used[birthday] == false )
+      birthdaysFound++;
+   used[birthday] = true;
+}
+
+TextIO.putln( count + " people were checked." );</pre>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<p>
+<b>Finding three people with the same birthday:</b>
+
+</p>
+
+
+<pre class="exercisecode">/**
+ *  How many random people do you have to select before you find
+ *  THREE with the same birthday (that is, three people who were born 
+ *  on the same day of the same month, but not necessarily in the 
+ *  same year).  This program simulates the process.  (It ignores the
+ *  possibility of people born on leap day.)
+ */
+
+public class BirthdayProblem2 {
+
+   public static void main(String[] args) {
+   
+       TextIO.putln("This program simulates taking people at random");
+       TextIO.putln("until three have been found who were born on the");
+       TextIO.putln("same day of the year.\n");
+       
+       do {
+          birthdayProblem();
+          TextIO.put("\nAgain? ");
+       } while ( TextIO.getlnBoolean() );
+       
+       TextIO.putln("\n\nOK.  Goodbye.");
+       
+   } // end main()
+   
+
+   /**
+    * Simulate choosing people at random and checking the
+    * day of the year they were born on.  If the person is
+    * the third who was born on that day of the year, stop,
+    * and output the number of people who were checked.
+    */
+   static void birthdayProblem() {
+
+      int[] numFound;  // numFound[i] will be the number of people
+                       // who have been found who have a birthday
+                       // on the i-th day of the year
+      
+      int count;       // The number of people who have been checked.
+
+      numFound = new int[365];  // Initially, all entries are 0.
+      
+      count = 0;
+
+      while (true) {
+             // Select a birthday at random, from 0 to 364.
+             // If the same birthday was already seen twice
+             // before, then quit.  Otherwise, add one to
+             // the corresponding entry in the numFound array 
+             // to record that a person with that birthday
+             // has been found.
+         int birthday;  // The selected birthday.
+         birthday = (int)(Math.random()*365);
+         count++;
+         if ( numFound[birthday] == 2 )
+            break;
+         numFound[birthday]++;
+      }
+
+      TextIO.putln("It took " + count + 
+               " tries to find three people with the same birthday.");
+
+   } // end birthdayProblem()
+ 
+   
+} // end class BirthdayProblem2
+   
+</pre>
+
+
+<p>
+<b>How many different birthdays do 365 people have?</b>
+
+</p>
+
+
+<pre class="exercisecode">/**
+ * This program simulates selecting 365 people at random and finding
+ * how many different birthdays they have among them.
+ */
+
+public class BirthdayProblem3 {
+
+   public static void main(String[] args) {
+   
+       TextIO.putln("This program simulates taking 365 people at random");
+       TextIO.putln("and finding out how many different birthdays they");
+       TextIO.putln("have among them.\n");
+       
+       do {
+          birthdayProblem();
+          TextIO.put("\nAgain? ");
+       } while ( TextIO.getlnBoolean() );
+       
+       TextIO.putln("\n\nOK.  Goodbye.");
+       
+   } // end main()
+   
+   
+   /**
+    * Simulate choosing people at random and checking the
+    * day of the year they were born on.  The number of
+    * different days found among 365 people is counted
+    * and output.
+    */
+   static void birthdayProblem() {
+   
+      boolean used[];  // used[i] will be true if a person is found
+                       // whose birthday is on the i-th day of the year.
+      
+      used = new boolean[365];  // Initially, all entries are false.
+      
+      /* Choose 365 days at random, and mark each day by
+         setting the corresponding entry in the array, used,
+         to true.  (If the value is already true, it doesn't 
+         matter.  We are only interested in whether or not
+         the birthday occurs, not how many times it occurs.)
+      */
+      
+      for (int i = 0; i &lt; 365; i++) {
+         int birthday;  // The selected birthday.
+         birthday = (int)(Math.random()*365);
+         used[birthday] = true;
+      }
+      
+      /* Now, count how many entries in the used array are true.
+         This is how many different birthdays were found.
+      */
+      
+      int count = 0;
+      
+      for (int day = 0; day &lt; 365; day++) {
+             // If this day occurred as a birthday, count it.
+         if (used[day] == true)
+            count++;
+      }
+
+      TextIO.putln("Among 365 people, there were " + count
+                                      + " different birthdays.");
+
+   } // end birthdayProblem()
+ 
+   
+} // end class BirthdayProblem3
+
+
+</pre>
+
+
+<p>
+<b>Finding 365 different birthdays:</b>
+
+</p>
+
+
+<pre class="exercisecode">/**
+ * How many random people do you have to select before you 
+ *  have found someone with every possible birthday (ignoring
+ *  leap years)?  This program simulates the process.
+ */
+ 
+public class BirthdayProblem4 {
+ 
+    public static void main(String[] args) {
+    
+        TextIO.putln("This program simulates taking people at random");
+        TextIO.putln("until someone has been found with a birthday");
+        TextIO.putln("on every day of the year.\n");
+        
+        do {
+           birthdayProblem();
+           TextIO.put("\nAgain? ");
+        } while ( TextIO.getlnBoolean() );
+        
+        TextIO.putln("\n\nOK.  Goodbye.");
+        
+    } // end main()
+    
+
+    /*       
+     * Simulate choosing people at random and checking the
+     * day of the year they were born on.  People are chosen
+     * until all 365 possible birthdays (ignoring leap years)
+     * have been found.  Then the number of people surveyed
+     * is output.
+     */
+    static void birthdayProblem() {
+ 
+       boolean[] used;  // For recording the possible birthdays
+                        //   that have been seen so far.  A value
+                        //   of true in used[i] means that a person
+                        //   whose birthday is the i-th day of the
+                        //   year has been found.
+ 
+       int count;       // The number of people who have been checked.
+       
+       int birthdaysFound;   // The number of different birthdays that
+                             // have been found.
+ 
+       used = new boolean[365];  // Initially, all entries are false.
+       
+       count = 0;
+       
+       birthdaysFound = 0;
+ 
+       while (birthdaysFound &lt; 365) {
+              // Select a birthday at random, from 0 to 364.
+              // If the birthday has not already been used,
+              // add 1 to birthdaysFound.
+          int birthday;  // The selected birthday.
+          birthday = (int)(Math.random()*365);
+          count++;
+          if ( used[birthday] == false )
+             birthdaysFound++;
+          used[birthday] = true;
+       }
+ 
+       TextIO.putln( count + " people were checked." );
+ 
+    } // end birthdayProblem()
+  
+    
+} // end class BirthdayProblem4
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

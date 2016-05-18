@@ -1,0 +1,757 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 11.5 -- A Brief Introduction to XML</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s4.html">Previous Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#IO.5.1">Basic XML Syntax</a>
+<br>
+<a href="#IO.5.2">XMLEncoder and XMLDecoder</a>
+<br>
+<a href="#IO.5.3">Working With the DOM</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 11.5</h3>
+<h2 class="section_title">A Brief Introduction to XML</h2>
+<hr class="break">
+   
+
+<p>
+<span class="start"><big>W</big>hen data is saved</span> to a file or transmitted over
+a network, it must be represented in some way that will allow the same data
+to be rebuilt later, when the file is read or the transmission is received.
+We have seen that there are good reasons to prefer textual, character-based
+representations in many cases, but there are many ways to represent a given
+collection of data as text.  In this section, we'll take a brief look at
+one type of character-based data representation that has become increasingly
+common.</p>
+   
+
+<p>
+<span class="newword">XML</span> (eXtensible Markup Language) is a syntax for creating
+data representation languages.  There are two aspects or levels of XML.
+On the first level, XML specifies a strict but relatively simple syntax.
+Any sequence of characters that follows that syntax is a
+<span class="newword">well-formed</span> XML document.  On the second level, XML
+provides a way of placing further restrictions on what can appear in
+a document.  This is done by associating a <span class="newword">DTD</span> (Document 
+Type Definition) with an XML document.  A DTD is
+essentially a list of things that are allowed to appear in the
+XML document.  A well-formed XML document that has an associated DTD and that follows
+the rules of the DTD is said to be a <span class="newword">valid</span> XML
+document.  The idea is that XML is a general format for data representation,
+and a DTD specifies how to use XML to represent a particular kind of data.
+(There is also an alternative to DTDs, known as <span class="newword">XML schemas</span>,
+for defining valid XLM documents, but let's ignore them here.)</p>
+   
+
+<p>There is nothing magical about XML.  It's certainly not perfect.  It's a
+very verbose language, and some people think it's ugly.  On the other hand
+it's very flexible; it can be used to represent almost any type of data.
+It was built from the start to support all languages and alphabets.  Most
+important, it has become an accepted standard.  There is support in just
+about any programming language for processing XML documents.  There are
+standard DTDs for describing many different kinds of data.  There are many
+ways to design a data representation language, but XML is the one that has happened to
+come into widespread use.  In fact, it has found its way into almost every
+corner of information technology.  For example:  There are XML languages for representing
+mathematical expressions (MathML), musical notation (MusicXML), molecules and
+chemical reactions (CML), vector graphics (SVG), and many other kinds of information.  XML is
+used by OpenOffice and recent versions of Microsoft Office
+in the document format for office applications such as word processing,
+spreadsheets, and presentations.  XML site syndication languages (RSS, ATOM)
+make it possible for web sites, newspapers, and blogs to make a list of
+recent headlines available in a standard format that can be used by other
+web sites and by web browsers; the same format is used to publish podcasts.
+And XML is a common format for the electronic exchange of business information.
+</p>
+   
+
+<p>My purpose here is not to tell you everything there is to know about XML.
+I will just explain a few ways in which it can be used in your own programs.
+In particular, I will not say anything further about DTDs and
+valid XML.  For many purposes, it is sufficient to use well-formed XML
+documents with no associated DTDs.</p>
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="IO.5.1">11.5.1&nbsp;&nbsp;Basic XML Syntax</a>
+</h3>
+   
+
+<p>An XML document looks a lot like an HTML document (see <a href="../c6/s2.html#GUI1.2.3">Subsection&nbsp;6.2.3</a>).
+HTML is not itself an XML language, since it does not follow all the strict XML syntax
+rules, but the basic ideas are similar.  Here is a short, well-formed XML document:</p>
+   
+
+<pre>&lt;?xml version="1.0"?&gt;
+&lt;simplepaint version="1.0"&gt;
+   &lt;background red='255' green='153' blue='51'/&gt;
+   &lt;curve&gt;
+      &lt;color red='0' green='0' blue='255'/&gt;
+      &lt;symmetric&gt;false&lt;/symmetric&gt;
+      &lt;point x='83' y='96'/&gt;
+      &lt;point x='116' y='149'/&gt;
+      &lt;point x='159' y='215'/&gt;
+      &lt;point x='216' y='294'/&gt;
+      &lt;point x='264' y='359'/&gt;
+      &lt;point x='309' y='418'/&gt;
+      &lt;point x='371' y='499'/&gt;
+      &lt;point x='400' y='543'/&gt;
+   &lt;/curve&gt;
+   &lt;curve&gt;
+      &lt;color red='255' green='255' blue='255'/&gt;
+      &lt;symmetric&gt;true&lt;/symmetric&gt;
+      &lt;point x='54' y='305'/&gt;
+      &lt;point x='79' y='289'/&gt;
+      &lt;point x='128' y='262'/&gt;
+      &lt;point x='190' y='236'/&gt;
+      &lt;point x='253' y='209'/&gt;
+      &lt;point x='341' y='158'/&gt;
+   &lt;/curve&gt;
+&lt;/simplepaint&gt;</pre>
+   
+
+<p>The first line, which is optional, merely identifies this as an XML document.
+This line can also specify other information, such as the character encoding that
+was used to encode the characters in the document into binary form.  If this
+document had an associated DTD, it would be specified in a "DOCTYPE" directive
+on the next line of the file.</p>
+
+
+<p>Aside from the first line, the document is made up of <span class="newword">elements</span>,
+<span class="newword">attributes</span>, and textual content.  An element starts with a 
+<span class="newword">tag</span>, such as <span class="code">&lt;curve&gt;</span> and ends with a
+matching <span class="newword">end-tag</span> such as <span class="code">&lt;/curve&gt;</span>.
+Between the tag and end-tag is the <span class="newword">content</span> of the
+element, which can consist of text and nested elements.  (In the example, the
+only textual content is the <span class="code">true</span> or <span class="code">false</span> in
+the <span class="code">&lt;symmetric&gt;</span> elements.)  If an element has
+no content, then the opening tag and end-tag can be combined into a single
+<span class="newword">empty tag</span>, such as <span class="code">&lt;point&nbsp;x='83'&nbsp;y='96'/&gt;</span>,
+with a "<span class="code">/</span>" before the final&nbsp;"<span class="code">&gt;</span>".
+This is an abbreviation for <span class="code">&lt;point&nbsp;x='83' y='96'&gt;&lt;/point&gt;</span>.
+A tag can include attributes such as the <span class="code">x</span> and <span class="code">y</span>
+in <span class="code">&lt;point&nbsp;x='83'&nbsp;y='96'/&gt;</span> or the
+<span class="code">version</span> in <span class="code">&lt;simplepaint version="1.0"&gt;</span>.
+A document can also include a few other things, such as comments, that I
+will not discuss here.</p>
+     
+
+<p>The basic structure should look familiar to someone familiar with HTML.
+The most striking difference is that in XML, <b>you get to choose the tags</b>.
+Whereas HTML comes with a fixed, finite set of tags, with XML you can
+make up meaningful tag names that are appropriate to your application and
+that describe the data that is being represented.  (For an XML document
+that uses a DTD, it's the author of the DTD who gets to choose the tag names.)</p>
+   
+
+<p>Every well-formed XML document follows a strict syntax.  Here are some
+of the most important syntax rules:
+Tag names and attribute names in XML are case sensitive.  A name must begin with
+a letter and can contain letters, digits and certain other characters.
+Spaces and ends-of-line
+are significant only in textual content.  Every tag must
+either be an empty tag or have a matching end-tag.  By "matching" here,
+I mean that elements must be properly nested; if a tag is inside some element,
+then the matching end-tag must also be inside that element.  A document
+must have a <span class="newword">root element</span>, which contains all the other
+elements.  The root element in the above example has tag name <span class="code">simplepaint</span>.
+Every attribute must have a value, and that value must be enclosed in quotation
+marks; either single quotes or double quotes can be used for this.  The
+special characters <span class="code">&lt;</span> and <span class="code">&amp;</span>, if they appear
+in attribute values or textual content, must be written as <span class="code">&amp;lt;</span>
+and <span class="code">&amp;amp;</span>.  "<span class="code">&amp;lt;</span>"&nbsp;and "<span class="code">&amp;amp;</span>"
+are examples of <span class="newword">entities</span>.  The entities <span class="code">&amp;gt;</span>,
+<span class="code">&amp;quot;</span>, and <span class="code">&amp;apos;</span> are also defined, representing
+<span class="code">&gt;</span>, double quote, and single quote.  (Additional entities can
+be defined in a DTD.)</p>
+   
+
+<p>While this description will not enable you to understand everything that you
+might encounter in XML documents, it should allow you to design well-formed
+XML documents to represent data structures used in Java programs.</p>
+   
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="IO.5.2">11.5.2&nbsp;&nbsp;XMLEncoder and XMLDecoder</a>
+</h3>
+   
+
+<p>We will look at two approaches to representing data from Java programs
+in XML format.  One approach is to design a custom XML language for the
+specific data structures that you want to represent.  We will consider
+this approach in the next subsection.  First, we'll look at an easy
+way to store data in XML files and to read those files back into a
+program.  The technique uses the classes <span class="classname">XMLEncoder</span>
+and <span class="classname">XMLDecoder</span>.  These classes are defined in
+the package <span class="code">java.beans</span>.  An <span class="classname">XMLEncoder</span>
+can be used to write objects to an <span class="classname">OutputStream</span>
+in XML form.  An <span class="classname">XMLDecoder</span> can be used to
+read the output of an <span class="classname">XMLEncoder</span> and
+reconstruct the objects that were written by it.  <span class="classname">XMLEncoder</span>
+and <span class="classname">XMLDecoder</span> have much the same functionality
+as <span class="classname">ObjectOutputStream</span> and <span class="classname">ObjectInputStream</span>
+and are used in much the same way.  In fact, you don't even have to know anything
+about XML to use them.  However, you do need to know a little about
+<span class="newword">Java beans</span>.</p>
+
+
+<p>A Java bean is just an object that has certain characteristics.  The class
+that defines a Java bean must be a <span class="code">public</span> class.  It must have
+a constructor that takes no parameters.  It should have a "get" method and
+a "set" method for each of its important instance variables.  
+(See <a href="../c5/s1.html#OOP.1.3">Subsection&nbsp;5.1.3</a>.) The last rule
+is a little vague.  The idea is that it should be possible to inspect all aspects of the
+object's state by calling "get" methods, and it should be possible to set
+all aspects of the state by calling "set" methods.  A bean is not required
+to implement any particular <span class="code">interface</span>; it is recognized as a bean just
+by having the right characteristics.  Usually, Java beans
+are passive data structures that are acted upon by other objects but don't
+do much themselves.</p>
+   
+
+<p>
+<span class="classname">XMLEncoder</span> and <span class="classname">XMLDecoder</span> can't
+be used with arbitrary objects; they can only be used with beans.  When an
+<span class="classname">XMLEncoder</span> writes an object, it uses the "get"
+methods of that object to find out what information needs to be saved.
+When an <span class="classname">XMLDecoder</span> reconstructs an object, it creates
+the object using the constructor with no parameters and it uses "set"
+methods to restore the object's state to the values that were saved by
+the <span class="classname">XMLEncoder</span>.  (Some standard Java classes are
+processed using additional techniques.  For example, a different constructor
+might be used, and other methods might be used to inspect and restore the
+state.)</p>
+   
+
+<p>For an example, we return to the same <span class="code">SimplePaint</span> example
+that was used in <a href="../c11/s3.html#IO.3.4">Subsection&nbsp;11.3.4</a>.  Suppose that we want to use
+<span class="classname">XMLEncoder</span> and <span class="classname">XMLDecoder</span> to
+create and read files in that program.  Part of the data for a <span class="code">SimplePaint</span>
+sketch is stored in objects of type <span class="classname">CurveData</span>,
+defined as:</p>
+   
+
+<pre>private static class CurveData {
+   Color color;  // The color of the curve.
+   boolean symmetric;  // Are reflections also drawn?
+   ArrayList&lt;Point&gt; points;  // The points on the curve.
+}</pre>
+
+
+<p>To use such objects with <span class="classname">XMLEncoder</span> and
+<span class="classname">XMLDecoder</span>, we have to modify this class so that
+it follows the Java bean pattern.  The class has to be public, and we
+need get and set methods for each instance variable.  This gives:</p>
+
+
+<pre>public static class CurveData {
+   private Color color;  // The color of the curve.
+   private boolean symmetric;  // Are reflections also drawn?
+   private ArrayList&lt;Point&gt; points;  // The points on the curve.
+   public Color getColor() {
+      return color;
+   }
+   public void setColor(Color color) {
+      this.color = color;
+   }
+   public ArrayList&lt;Point&gt; getPoints() {
+      return points;
+   }
+   public void setPoints(ArrayList&lt;Point&gt; points) {
+      this.points = points;
+   }
+   public boolean isSymmetric() {
+      return symmetric;
+   }
+   public void setSymmetric(boolean symmetric) {
+      this.symmetric = symmetric;
+   }
+}</pre>
+   
+
+<p>I didn't really need to make the instance variables <span class="code">private</span>, but
+bean properties are usually <span class="code">private</span> and are accessed only through
+their get and set methods.</p>
+
+
+<p>At this point, we might define another bean class, <span class="classname">SketchData</span>,
+to hold all the necessary data for representing the user's picture.  If we did that,
+we could write the data to a file with a single output statement.  In my program,
+however, I decided to write the data in several pieces.</p>
+   
+
+<p>An <span class="classname">XMLEncoder</span> can be constructed to write to any
+output stream.  The output stream is specified in the encoder's constructor.
+For example, to create an encoder for writing to a file:</p>
+   
+
+<pre>XMLEncoder encoder; 
+try {
+   FileOutputStream stream = new FileOutputStream(selectedFile); 
+   encoder = new XMLEncoder( stream );
+     .
+     .</pre>
+
+
+<p>Once an encoder has been created, its <span class="code">writeObject()</span> method
+is used to write objects, coded into XML form, to the stream.  In the
+<span class="code">SimplePaint</span> program, I save the background color, the
+number of curves in the picture, and the data for each curve.  The
+curve data are stored in a list of type <span class="classname">ArrayList&lt;CurveData&gt;</span>
+named <span class="code">curves</span>.
+So, a complete representation of the user's picture can be created with:</p>
+   
+
+<pre>   encoder.writeObject(getBackground());
+   encoder.writeObject(new Integer(curves.size()));
+   for (CurveData c : curves)
+      encoder.writeObject(c);
+   encoder.close();</pre>   
+
+
+<p>When reading the data back into the program, an <span class="classname">XMLDecoder</span> is
+created to read from an input file stream.  The objects are then read, using the
+decoder's <span class="code">readObject()</span> method, in the same order in which they
+were written.  Since the return type of <span class="code">readObject()</span> is <span class="classname">Object</span>,
+the returned values must be type-cast to their correct type:</p>
+   
+
+<pre>   Color bgColor = (Color)decoder.readObject();
+   Integer curveCt = (Integer)decoder.readObject();
+   ArrayList&lt;CurveData&gt; newCurves = new ArrayList&lt;CurveData&gt;();
+   for (int i = 0; i &lt; curveCt; i++) {
+      CurveData c = (CurveData)decoder.readObject();
+      newCurves.add(c);
+   }
+   decoder.close();
+   curves = newCurves; // Replace the program's data with data from the file.
+   setBackground(bgColor);
+   repaint();</pre>
+   
+
+<p>You can look at the sample program <span class="sourceref"><a href="../source/SimplePaintWithXMLEncoder.java">SimplePaintWithXMLEncoder.java</a></span>
+to see this code in the context of a complete program.  Files are created by the
+method <span class="code">doSaveAsXML()</span> and are read by <span class="code">doOpenAsXML()</span>.</p>
+   
+
+<p>The XML format used by <span class="classname">XMLEncoder</span> and
+<span class="classname">XMLDecoder</span> is more robust than the binary format
+used for object streams and is more appropriate for long-term storage of
+objects in files.</p>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="IO.5.3">11.5.3&nbsp;&nbsp;Working With the DOM</a>
+</h3>
+  
+
+<p>The output produced by an <span class="classname">XMLEncoder</span> tends to
+be long and not very easy for a human reader to understand.  It would be
+nice to represent data in a more compact XML format that uses meaningful tag
+names to describe the data and makes more sense to human readers.
+We'll look at yet another version of <span class="code">SimplePaint</span> that
+does just that.  See <span class="sourceref"><a href="../source/SimplePaintWithXML.java">SimplePaintWithXML.java</a></span>
+for the source code.  The sample XML document shown earlier in this section
+was produced by this program.  I designed the format of that document
+to represent all the data needed to reconstruct a picture in
+<span class="code">SimplePaint</span>.  The document encodes the background color
+of the picture and a list of curves.  Each <span class="code">&lt;curve&gt;</span>
+element contains the data from one object of type <span class="classname">CurveData</span>.</p>
+   
+
+<p>It is easy enough to write data in a customized XML format, although we
+have to be very careful to follow all the syntax rules.  Here is how I
+write the data for a <span class="code">SimplePaint</span> picture to a
+<span class="classname">PrintWriter</span>, <span class="code">out</span>:</p>
+   
+
+<pre>out.println("&lt;?xml version=\"1.0\"?&gt;");
+out.println("&lt;simplepaint version=\"1.0\"&gt;");
+Color bgColor = getBackground();
+out.println("   &lt;background red='" + bgColor.getRed() + "' green='" +
+      bgColor.getGreen() + "' blue='" + bgColor.getBlue() + "'/&gt;");
+for (CurveData c : curves) {
+   out.println("   &lt;curve&gt;");
+   out.println("      &lt;color red='" + c.color.getRed() + "' green='" +
+         c.color.getGreen() + "' blue='" + c.color.getBlue() + "'/&gt;");
+   out.println("      &lt;symmetric&gt;" + c.symmetric + "&lt;/symmetric&gt;");
+   for (Point pt : c.points)
+      out.println("      &lt;point x='" + pt.x + "' y='" + pt.y + "'/&gt;");
+   out.println("   &lt;/curve&gt;");
+}
+out.println("&lt;/simplepaint&gt;");</pre>
+   
+
+<p>Reading the data back into the program is another matter.  To reconstruct
+the data structure represented by the XML Document, it is necessary to
+parse the document and extract the data from it. This could be difficult to do by
+hand. Fortunately, Java has
+a standard API for parsing and processing XML Documents.  (Actually, it
+has two, but we will only look at one of them.)</p>
+   
+
+<p>A well-formed XML document has a certain structure, consisting of elements
+containing attributes, nested elements, and textual content.  It's possible to
+build a data structure in the computer's memory that corresponds to the structure
+and content of the document.  Of course, there are many ways to do this, but there
+is one common standard representation known as the <span class="newword">Document Object Model</span>,
+or DOM.  The DOM specifies how to build data structures to represent XML documents,
+and it specifies some standard methods for accessing the data in that structure.
+The data structure is a kind of tree whose structure mirrors the structure of
+the document.  The tree is constructed from <span class="newword">nodes</span> of various
+types.  There are nodes to represent elements, attributes, and text. (The tree
+can also contain several other types of node, representing aspects of XML that
+we can ignore here.)  Attributes and text can be processed without directly
+manipulating the corresponding nodes, so we will be concerned almost entirely
+with element nodes.</p>
+   
+
+<p>The sample program <span class="sourceref"><a href="../source/XMLDemo.java">XMLDemo.java</a></span> lets you experiment with
+XML and the DOM.  It has a text area where you can enter an XML document.
+Initially, the input area contains the sample XML document from this section.
+When you click a button named "Parse XML Input", the program will attempt
+to read the XML from the input box and build a DOM representation of that
+document.  If the input is not legal XML, an error message is displayed.
+If it is legal, the program will traverse the DOM representation and
+display a list of elements, attributes, and textual content that it
+encounters.  (The program uses a few techniques that I won't discuss here.)
+Here is an applet version of the program for you to try:</p>
+
+
+<p align="center">
+<applet code="XMLDemo$XMLDemoApplet.class" width="550" height="450" archive="XMLDemo.jar" alt="XMLDemo applet should appear here"></applet></p>
+   
+
+<p>In Java, the DOM representation of an XML document file can be created
+with just two statements.  If <span class="code">selectedFile</span> is a variable of
+type <span class="classname">File</span> that represents the XML file, then</p>
+   
+
+<pre>DocumentBuilder docReader 
+                 = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+xmldoc = docReader.parse(selectedFile);</pre>
+   
+
+<p>will open the file, read its contents, and build the DOM representation.
+The classes <span class="classname">DocumentBuilder</span> and <span class="classname">DocumentBuilderFactory</span>
+are both defined in the package <span class="code">javax.xml.parsers</span>.
+The method <span class="code">docReader.parse()</span> does the actual work.  It
+will throw an exception if it can't read the file or if the file does
+not contain a legal XML document.  If it succeeds, then the value returned
+by <span class="code">docReader.parse()</span> is an object that represents the entire
+XML document.  (This is a very complex task!  It has been coded once and
+for all into a method that can be used very easily in any Java program.  We see
+the benefit of using a standardized syntax.)</p>
+   
+
+<p>The structure of the DOM data structure is defined in the package
+<span class="code">org.w3c.dom</span>, which contains several data types that represent
+an XML document as a whole and the individual nodes in a document.
+The "org.w3c" in the name refers to the World Wide Web Consortium, 
+<a href="http://www.w3c.org">W3C</a>, which is the standards organization for the Web.
+DOM, like XML, is a general standard, not just a Java standard.
+The data types that we need here are <span class="classname">Document</span>,
+<span class="classname">Node</span>, <span class="classname">Element</span>, and <span class="classname">NodeList</span>.
+(They are defined as <span class="code">interfaces</span> rather than <span class="code">classes</span>,
+but that fact is not relevant here.)   We can use methods that are defined
+in these data types to access the data in the DOM representation of
+an XML document.</p>
+
+
+<p>An object of type <span class="classname">Document</span> represents an entire
+XML document.  The return value of <span class="code">docReader.parse()</span> -- <span class="code">xmldoc</span>
+in the above example -- is of type <span class="classname">Document</span>.
+We will only need one method from this class:  If <span class="code">xmldoc</span>
+is of type <span class="classname">Document</span>, then</p>
+  
+
+<pre>xmldoc.getDocumentElement()</pre>
+   
+
+<p>returns a value of type <span class="classname">Element</span> that represents the
+root element of the document.  (Recall that this is the top-level element
+that contains all the other elements.)  In the sample XML document from earlier
+in this section, the root element consists of the tag
+<span class="code">&lt;simplepaint version="1.0"&gt;</span>, the end-tag
+<span class="code">&lt;/simplepaint&gt;</span>, and everything in between.
+The elements that are nested inside
+the root element are represented by their own nodes, which are said to
+be <span class="newword">children</span> of the root node.
+An object of type <span class="classname">Element</span>
+contains several useful methods.  If <span class="code">element</span> is of type
+<span class="classname">Element</span>, then we have:</p>
+          
+
+<ul>
+
+<li>
+<span class="codedef">element.getTagName()</span>  --  returns a <span class="classname">String</span>
+containing the name that is used in the element's tag.  For example, the name
+of a <span class="code">&lt;curve&gt;</span> element is the string "curve".</li>
+
+<li>
+<span class="codedef">element.getAttribute(attrName)</span>  --  if <span class="code">attrName</span>
+is the name of an attribute in the element, then this method returns the value
+of that attribute.  For the element, <span class="code">&lt;point&nbsp;x="83"&nbsp;y="42"/&gt;</span>,
+<span class="code">element.getAttribute("x")</span> would return the string "83".  Note that the
+return value is always a <span class="classname">String</span>, even if the attribute
+is supposed to represent a numerical value.  If the element has no attribute with
+the specified name, then the return value is an empty string.</li>
+
+<li>
+<span class="codedef">element.getTextContent()</span>  --  returns a <span class="classname">String</span>
+containing all the textual content that is contained in the element.  Note that this
+includes text that is contained inside other elements that are nested inside the element.</li>
+
+<li>
+<span class="codedef">element.getChildNodes()</span>  --  returns a value of type
+<span class="classname">NodeList</span> that contains all the <span class="classname">Nodes</span> that
+are children of the element.  The list includes nodes representing other elements and
+textual content that are directly nested in the element (as well as some other
+types of node that I don't care about here).  The <span class="code">getChildNodes()</span>
+method makes it possible to traverse the entire DOM data structure by starting
+with the root element, looking at children of the root element, children of
+the children, and so on.  (There is a similar method that returns the
+attributes of the element, but I won't be using it here.)</li>
+
+<li>
+<span class="codedef">element.getElementsByTagName(tagName)</span>  --  returns
+a <span class="classname">NodeList</span> that contains all the nodes representing
+all elements that are nested inside <span class="code">element</span> and which have the
+given tag name.  Note that this includes elements that are nested to any level,
+not just elements that are directly contained inside <span class="code">element</span>.
+The <span class="code">getElementsByTagName()</span> method allows you to reach into the
+document and pull out specific data that you are interested in.
+</li>
+
+</ul>
+   
+
+<p>An object of type <span class="classname">NodeList</span> represents a list of
+<span class="classname">Nodes</span>.  Unfortunately, it does not use the API defined for lists
+in the Java Collection Framework.  Instead, a value, <span class="code">nodeList</span>,
+of type <span class="classname">NodeList</span> has two methods:
+<span class="code">nodeList.getLength()</span> returns the number of nodes in the
+list, and <span class="code">nodeList.item(i)</span> returns the node at position
+<span class="code">i</span>, where the positions are numbered <span class="code">0</span>, <span class="code">1</span>, ...,
+<span class="code">nodeList.getLength()&nbsp;-&nbsp;1</span>.  Note that the
+return value of <span class="code">nodeList.get()</span> is of type <span class="classname">Node</span>,
+and it might have to be type-cast to a more specific node type before it is used.</p>
+   
+
+<p>Knowing just this much, you can do the most common types of processing of
+DOM representations.  Let's look at a few code fragments.  Suppose that
+in the course of processing a document you come across an <span class="classname">Element</span>
+node that represents the element</p>
+   
+
+<pre>&lt;background red='255' green='153' blue='51'/&gt;</pre>
+   
+
+<p>This element might be encountered either while traversing the
+document with <span class="code">getChildNodes()</span> or in the result of
+a call to <span class="code">getElementsByTagName("background")</span>.
+Our goal is to reconstruct the data structure represented by the document, and
+this element represents part of that data.  In this
+case, the element represents a color, and the red, green, and blue components
+are given by the attributes of the element.  If <span class="code">element</span> is a variable
+that refers to the node, the color can be obtained by saying:</p>
+   
+
+<pre>int r = Integer.parseInt( element.getAttribute("red") );
+int g = Integer.parseInt( element.getAttribute("green") );
+int b = Integer.parseInt( element.getAttribute("blue") );
+Color bgColor = new Color(r,g,b);</pre>
+   
+
+<p>Suppose now that <span class="code">element</span> refers to the node that represents
+the element</p>
+
+
+<pre>&lt;symmetric&gt;true&lt;/symmetric&gt;</pre>
+   
+
+<p>In this case, the element represents the value of a <span class="ptype">boolean</span>
+variable, and the value is encoded in the textual content of the element.
+We can recover the value from the element with:</p>
+   
+
+<pre>String bool = element.getTextContent();
+boolean symmetric;
+if (bool.equals("true"))
+   symmetric = true;
+else
+   symmetric = false;</pre>
+   
+
+<p>Next, consider an example that uses a <span class="classname">NodeList</span>.
+Suppose we encounter an element that represents a list of <span class="classname">Points</span>:
+</p>
+   
+
+<pre>&lt;pointlist&gt;
+   &lt;point x='17' y='42'/&gt;   
+   &lt;point x='23' y='8'/&gt;   
+   &lt;point x='109' y='342'/&gt;   
+   &lt;point x='18' y='270'/&gt;   
+&lt;/pointlist&gt;</pre>
+   
+
+<p>Suppose that <span class="code">element</span> refers to the node that represents
+the <span class="code">&lt;pointlist&gt;</span> element.  Our goal is to build the list
+of type <span class="code">ArrayList&lt;Point&gt;</span> that is represented by the
+element.  We can do this by traversing the <span class="classname">NodeList</span>
+that contains the child nodes of <span class="code">element</span>:</p>
+   
+
+<pre>ArrayList&lt;Point&gt; points = new ArrayList&lt;Point&gt;();
+NodeList children = element.getChildNodes();
+for (int i = 0; i &lt; children.getLength(); i++) {
+   Node child = children.item(i);   // One of the child nodes of element.
+   if ( child instanceof Element ) {
+      Element pointElement = (Element)child;  // One of the &lt;point&gt; elements.
+      int x = Integer.parseInt( pointElement.getAttribute("x") );
+      int y = Integer.parseInt( pointElement.getAttribute("y") );
+      Point pt = new Point(x,y); // Create the Point represented by pointElement.
+      points.add(pt);            // Add the point to the list of points.
+   }
+}</pre>
+   
+
+<p>All the nested <span class="code">&lt;point&gt;</span> elements are children of
+the <span class="code">&lt;pointlist&gt;</span> element.  The <span class="code">if</span> statement
+in this code fragment is necessary because an element can have other
+children in addition to its nested elements.  In this example, we only
+want to process the children that are elements.</p>
+   
+
+<p>All these techniques can be employed to write the file input method for the
+sample program <span class="sourceref"><a href="../source/SimplePaintWithXML.java">SimplePaintWithXML.java</a></span>.  When building
+the data structure represented by an XML file, my approach is to start
+with a default data structure and then to modify and add to it as I
+traverse the DOM representation of the file.  It's not a trivial process,
+but I hope that you can follow it:</p>
+
+
+<pre>Color newBackground = Color.WHITE;
+ArrayList&lt;CurveData&gt; newCurves = new ArrayList&lt;CurveData&gt;();
+
+Element rootElement = xmldoc.getDocumentElement();
+   
+if ( ! rootElement.getNodeName().equals("simplepaint") )
+   throw new Exception("File is not a SimplePaint file.");
+String version = rootElement.getAttribute("version");
+try {
+   double versionNumber = Double.parseDouble(version);
+   if (versionNumber &gt; 1.0)
+      throw new Exception("File requires a newer version of SimplePaint.");
+}
+catch (NumberFormatException e) {
+}
+
+NodeList nodes = rootElement.getChildNodes();
+   
+for (int i = 0; i &lt; nodes.getLength(); i++) {
+   if (nodes.item(i) instanceof Element) {
+      Element element = (Element)nodes.item(i);
+      if (element.getTagName().equals("background")) { // Read background color.
+         int r = Integer.parseInt(element.getAttribute("red"));
+         int g = Integer.parseInt(element.getAttribute("green"));
+         int b = Integer.parseInt(element.getAttribute("blue"));
+         newBackground = new Color(r,g,b);
+      }
+      else if (element.getTagName().equals("curve")) { // Read data for a curve.
+         CurveData curve = new CurveData();
+         curve.color = Color.BLACK;
+         curve.points = new ArrayList&lt;Point&gt;();
+         newCurves.add(curve);  // Add this curve to the new list of curves.
+         NodeList curveNodes = element.getChildNodes();
+         for (int j = 0; j &lt; curveNodes.getLength(); j++) {
+            if (curveNodes.item(j) instanceof Element) {
+               Element curveElement = (Element)curveNodes.item(j);
+               if (curveElement.getTagName().equals("color")) { 
+                  int r = Integer.parseInt(curveElement.getAttribute("red"));
+                  int g = Integer.parseInt(curveElement.getAttribute("green"));
+                  int b = Integer.parseInt(curveElement.getAttribute("blue"));
+                  curve.color = new Color(r,g,b);
+               }
+               else if (curveElement.getTagName().equals("point")) {
+                  int x = Integer.parseInt(curveElement.getAttribute("x"));
+                  int y = Integer.parseInt(curveElement.getAttribute("y"));
+                  curve.points.add(new Point(x,y));
+               }
+               else if (curveElement.getTagName().equals("symmetric")) {
+                  String content = curveElement.getTextContent();
+                  if (content.equals("true"))
+                     curve.symmetric = true;
+               }
+            }
+         }
+      }
+   }
+}
+curves = newCurves;  // Change picture in window to show the data from file.
+setBackground(newBackground);
+repaint();</pre>
+   
+
+<hr class="break">
+   
+
+<p>XML has developed into an extremely important technology, and some applications
+of it are very complex.  But there is a core of simple ideas that can be easily
+applied in Java.  Knowing just the basics, you can make good use of XML in
+your own Java programs.</p>
+   
+
+   
+
+<hr>
+<div align="center">
+<b><small>End of Chapter 11</small></b>
+</div>
+<hr>
+<p align="center">
+<applet code="Maze.class" width="250" height="170" alt=""><param name="rows" value="17"><param name="columns" value="25"><param name="visitedColor" value="180 180 255"></applet></p>
+      
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s4.html">Previous Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

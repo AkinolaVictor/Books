@@ -1,0 +1,42 @@
+<html><head><title>The Nodes</title>
+   <style>
+      p{font-size: x-large; color:darkblue;
+	  font-style:bold;
+    }
+   </style>
+</head>
+<body>
+   <h1>Walking with Nodes</h1>
+   <p>Who knows what node?</p>
+   <p>
+   <script type="text/javascript">
+
+   var Parent=document.childNodes[0];  // First childnode is HTML
+   var Child=Parent.childNodes[0];// Parent’s first child is HEAD
+
+   document.write("The parent node is: ");
+   document.write(Parent.nodeName+"<br />"); //Get the name parent node
+   document.write("The first child of the parent node is: ");
+   document.write(Child.nodeName+"<br />");
+   document.write("The node below the child is: ");
+   document.write(Child.childNodes[0].nodeName+"<br />");
+   document.write("The text node below title is: ");
+   document.write(Child.childNodes[0].childNodes[0].nodeName +"<br />");
+   document.write("The value of the text node is: ")
+   document.write(Child.childNodes[0].childNodes[0].nodeValue+"<br/>");
+   document.write("The first child of the parent is: ");
+   document.write(Parent.firstChild.nodeName+"<br />");
+   document.write("The last child of the parent is: ");
+   document.write(Parent.lastChild.nodeName+"<br />");
+   document.write("The node below the body is: ");
+   document.write(Parent.lastChild.childNodes[0].nodeName+"<br />");
+   document.write("The next sibling of the h1 element is: ");
+   document.write(Parent.lastChild.childNodes[0].nextSibling.nodeName+"<br/>");
+   document.write("It's value is " +
+       Parent.lastChild.childNodes[0].nextSibling.nodeValue);
+   document.write("<br>The last child's type is: ");
+   document.write(Parent.lastChild.nodeType);
+</script>
+</p>
+</body>
+</html>

@@ -1,0 +1,47 @@
+
+	<html><head><title>An HTML Form</title></head>
+	<body>
+     <big>
+	 <form action="http://localhost/formtest.php" method="get">
+
+ 	 <p><fieldset><legend> All About You</legend></p>
+
+	Type your name here:
+	<input type="text" name="your_name" size="50" />
+	<p>
+	Talk about yourself here:<br />
+	<textarea name="comments" align="left" rows="5" cols="50">I was born...
+	</textarea>
+	</p>
+	<p>
+	Choose your food:<b>
+
+	<input type="radio" name="choice" id="choice1" value="burger"/>Hamburger
+	<input type="radio" name="choice" id="choice2" value="fish"/>Fish
+	<input type="radio" name="choice" id="choice3" value="steak"/>Steak
+	<input type="radio" name="choice" id="choice4" value="yogurt"/>Yogurt
+	</p>
+	<p>
+	<b>Choose a work place:</b><br />
+	<input type="checkbox" name="place" id="place1" value="LA"/>Los Angeles
+	<br />
+	<input type="checkbox" name="place" id="place2" value="SJ"/>San Jose
+	<br />
+	<input type="checkbox" name="place" id="place3" value="SF" checked />San Francisco
+	</p>
+	<p>
+	<b>Choose a vacation spot:</b><br />
+	<select multiple name="location" id="location">
+		<option selected value="hawaii"> Hawaii </option>
+		<option value="bali">Bali </option>
+		<option value="maine">Maine </option>
+		<option value="paris">Paris </option>
+	</select>
+	</p>
+	<p></fieldset></p>
+	<input type="submit" value="Submit"/>
+	<input type="reset" value="Clear"/>
+	</form>
+	</big>
+	</body>
+	</html>

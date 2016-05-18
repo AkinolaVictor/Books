@@ -1,0 +1,227 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 5, Chapter 4</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 4.5</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 4.5:</h3>
+<p>The sample program
+<span class="sourceref"><a href="../source/RandomMosaicWalk.java">RandomMosaicWalk.java</a></span> from
+<a href="../c4/s6.html">Section&nbsp;4.6</a> shows a "disturbance" that wanders around a
+grid of colored squares. When the disturbance visits a square, the color of
+that square is changed. The applet at the bottom of 
+<a href="../c4/s7.html">Section&nbsp;4.7</a> 
+shows a variation on this idea. In this applet, all the squares start
+out with the default color, black. Every time the disturbance visits a square,
+a small amount is added to the green component of the color of that square. Write
+a subroutine that will add 25 to the green component of one of the squares in the
+mosaic. The row and column numbers of the square should be given as parameters
+to the subroutine. Recall that you can discover the current green component of
+the square in row <span class="code">r</span> and column <span class="code">c</span> with the function call
+<span class="code">Mosaic.getGreen(r,c)</span>. Use your subroutine as a substitute for the
+<span class="code">changeToRandomColor()</span> subroutine in the program <span class="sourceref"><a href="../source/RandomMosaicWalk2.java">RandomMosaicWalk2.java</a></span>.
+(This is the improved version of the program from <a href="../c4/s7.html">Section&nbsp;4.7</a> that uses named constants for
+the number of rows, number of columns, and square size.) Set the number of rows
+and the number of columns to 80. Set the square size to 5.</p>
+
+<p>Don't forget that you will need <span class="sourceref"><a href="../source/Mosaic.java">Mosaic.java</a></span> and <span class="sourceref"><a href="../source/MosaicCanvas.java">MosaicCanvas.java</a></span>
+to compile and run your program, since they define non-standard classes that are required by the program.
+</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>This is an exercise in making a rather small modification to a relatively
+complicated existing program.</p>
+
+
+<p>The only real problem is to write a new subroutine, which I will call
+<span class="code">brightenSquare</span>. Much of the program comes directly from
+<span class="sourceref"><a href="../source/RandomMosaicWalk2.java">RandomMosaicWalk2.java</a></span>. The
+<span class="code">randomMove()</span> routine is unchanged. The only change in the
+<span class="code">main()</span> routine is to substitute a call to <span class="code">brightenSquare</span> for
+the call to <span class="code">changeToRandomColor</span>. The subroutines
+<span class="code">fillWithRandomColors</span> and <span class="code">changeToRandomColor</span> in the
+<span class="code">RandomMosaicWalk2</span> program are not needed in the new program and should be removed. In the
+three lines that define the constants, the values are changed according the
+instructions in the exercise:</p>
+
+
+<pre>final static int ROWS = 80;        // Number of rows in the mosaic.
+final static int COLUMNS = 80;     // Number of columns in the mosaic.
+final static int SQUARE_SIZE = 5;  // Size of each square in the mosaic.</pre>
+
+
+<p>With these values, the program is interesting to watch for a while.  In the end,
+I did make one other small change to the <span class="code">main()</span> routine to make
+the program run better:  I change the delay in the call to <span class="code">Mosaic.delay(20)</span>
+from 20 to 5 to make the animation run faster.  You
+might want to try using shades of red, blue, or gray, instead of green.  Or even
+use three disturbances, one incrementing the red component of the color, one incrementing
+the green component, and one incrementing the blue.</p>
+
+
+<p>An outline for the <span class="code">brightenSquare</span> routine is clear:</p>
+
+
+<pre>Let g be the current green component of the square
+Add 25 to g
+Set the color components of the square to  0, g, 0</pre>
+
+
+<p>The red and blue components of the color will always be zero. However,
+they must be specified in the <span class="code">Mosaic.setColor()</span> routine. Written in
+Java, the body of the routine is just three lines long:</p>
+
+
+<pre>static void brightenSquare(int row, int col) {
+    int g = Mosaic.getGreen(row,col);
+    g += 25;
+    Mosaic.setColor(row,col,0,g,0);
+}</pre>
+
+
+<p>In fact, you could even write the body of the routine using just one
+line:</p>
+
+
+<pre>Mosaic.setColor(row, col, Mosaic.getColor(row,col) + 25, 0, 0);</pre>
+
+
+<p>One thing here might bother you: It looks like the value of the red
+component of a given square might get bigger than 255 if the disturbance visits
+it often enough. But the largest legal value for a color component is 255. What
+I haven't told you is that when a value greater than 255 is used for a color
+component, <span class="code">Mosaic.setColor</span> will silently change the value to 255. If
+this were not the case, it would be necessary to rewrite
+<span class="code">brightenSquare</span> to avoid illegal values of <span class="code">g</span>:</p>
+
+
+<pre>static void brightenSquare(int row, int col) {
+    int g = Mosaic.getRed(row,col);
+    g += 25;
+    if ( g &gt; 255 )
+        g = 255;
+    Mosaic.setColor(row,col,g,0,0);
+}</pre>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+<pre class="exercisecode">/**
+ * This program opens a Mosaic window that is initially filled with black.
+ * A "disturbance" moves randomly around in the window.  Each time it visits
+ * a square, the green component of the color of that square is increased
+ * until, after about ten visits, it has reached the maximum possible level.
+ * The animation continues until the user closes the window.
+ */
+
+public class Brighten {
+   
+   final static int ROWS = 80;        // Number of rows in the mosaic.
+   final static int COLUMNS = 80;     // Number of columns in the mosaic.
+   final static int SQUARE_SIZE = 5;  // Size of each square in the mosaic.
+   
+   static int currentRow;    // Row currently containing the disturbance.
+   static int currentColumn; // Column currently containing disturbance.
+   
+   /**
+    * The main program creates the window, fills it with random colors,
+    * and then moves the disturbance in a random walk around the window
+    * as long as the window is open.
+    */
+   public static void main(String[] args) {
+      Mosaic.open( ROWS, COLUMNS, SQUARE_SIZE, SQUARE_SIZE );
+      currentRow = ROWS / 2;   // start at center of window
+      currentColumn = COLUMNS / 2;
+      while (Mosaic.isOpen()) {
+         brightenSquare(currentRow, currentColumn);
+         randomMove();
+         Mosaic.delay(5);
+      }
+   }  // end main
+   
+   /**
+    * Add a bit of green to the rectangle in a given row and column.
+    * Precondition:   The specified rowNum and colNum are in the valid range
+    *                 of row and column numbers.
+    * Postcondition:  The green component of the color of the square has
+    *                 been increased by 25, except that it does not go
+    *                 over its maximum possible value, 255.
+    */
+   static void brightenSquare(int row, int col) {
+      int g = Mosaic.getGreen(row,col);
+      g += 25;
+      Mosaic.setColor(row,col,0,g,0);
+   }
+   
+   /**
+    * Move the disturbance.
+    * Precondition:   The global variables currentRow and currentColumn
+    *                 are within the legal range of row and column numbers.
+    * Postcondition:  currentRow or currentColumn is changed to one of the
+    *                 neighboring positions in the grid -- up, down, left, or
+    *                 right from the current position.  If this moves the
+    *                 position outside of the grid, then it is moved to the
+    *                 opposite edge of the grid.
+    */
+   static void randomMove() {
+      int directionNum; // Randomly set to 0, 1, 2, or 3 to choose direction.
+      directionNum = (int)(4*Math.random());
+      switch (directionNum) {
+      case 0:  // move up 
+         currentRow--;
+         if (currentRow &lt; 0)
+            currentRow = ROWS - 1;
+         break;
+      case 1:  // move right
+         currentColumn++;
+         if (currentColumn &gt;= COLUMNS)
+            currentColumn = 0;
+         break; 
+      case 2:  // move down
+         currentRow ++;
+         if (currentRow &gt;= ROWS)
+            currentRow = 0;
+         break;
+      case 3:  // move left  
+         currentColumn--;
+         if (currentColumn &lt; 0)
+            currentColumn = COLUMNS - 1;
+         break; 
+      }
+   }  // end randomMove
+   
+} // end class Brighten</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

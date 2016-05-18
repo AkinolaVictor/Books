@@ -1,0 +1,273 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Answers for Quiz on Chapter 13</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2 class="quiz_title">Answers for Quiz on Chapter 13</h2>
+<p>
+<span class="start"><big>T</big>his page contains</span> sample answers to the quiz on Chapter 13 of
+           <a href="../index.html"><i>Introduction to Programming Using Java</i></a>.
+           Note that generally, there are lots of correct answers to a given question.</p>
+<table border="1" align="center" cellpadding="8" width="95%">
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;1:</span></td><td>
+<p>Describe the object that is created by the following statement, and give
+an example of how it might be used in a program:</p>
+
+<pre>BufferedImage OSC = new BufferedImage(32,32,BufferedImage.TYPE_INT_RGB);</pre>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>A <span class="classname">BufferedImage</span> is a region in memory that can
+be used as a drawing surface.  In this statement, the image that is created is
+32 pixels wide and 32 pixels high, and the color of each pixel is an
+RGB color that has red, green, and blue components in the range 0 to 255.
+The picture in a <span class="classname">BufferedImage</span> can easily be
+copied into a graphics context <span class="code">g</span> by calling one of the
+<span class="code">g.drawImage</span> methods.  However, since the image is so small
+in this case, it seems more likely that is going to be used to define
+an <span class="classname">ImageIcon</span> or perhaps a <span class="classname">Cursor</span>.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;2:</span></td><td>
+<p>Many programs depend on <i>resource files</i>.  What is meant by a resource in
+this sense?  Give an example.</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>In addition to the program code itself, programs often use other types of
+data such as images and sounds.  These are said to be resources for the program.
+In order to run, the program must be able to locate and load the resources.
+An example of a resource is a small image file that will be used by the program
+to define a custom cursor.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;3:</span></td><td>
+<p>What is the <span class="classname">FontMetrics</span> class used for?</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>An object that belongs to the
+class <span class="classname">FontMetrics</span> can be used to obtain information about the sizes of
+characters and strings that are drawn in a specific font. The font is specified
+when the <span class="classname">FontMetrics</span> object is created. If <span class="code">fm</span> is a variable
+of type <span class="classname">FontMetrics</span>, then, for example, <span class="code">fm.stringWidth(str)</span>
+gives the width of the string <span class="code">str</span> and <span class="code">fm.getHeight()</span> is the
+usual amount of vertical space allowed for one line of text. This information
+could be used, for example, for positioning the string in a component.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;4:</span></td><td>
+<p>If a <span class="classname">Color</span>, <span class="code">c</span>, is created as
+<span class="code">c&nbsp;=&nbsp;new&nbsp;Color(0,0,255,125)</span>, what is the effect of drawing
+with this color?</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>When a color is constructed from four integers, the fourth parameter
+is the alpha component of the color.  When drawing, the alpha component is
+interpreted as the degree of opaqueness of the color.  If the alpha
+component is less than its maximum possible value, 255, then the color
+is partially transparent.  In this case, <span class="code">c</span> represents a blue
+color that is about 50% transparent.  When a pixel is colored with
+<span class="code">c</span>, the pixel does not become entirely blue.  Instead, the
+new color of the pixel is obtained by blending <span class="code">c</span>
+with the previous color of the pixel.  The effect is like adding
+a blue tint to the pixel, or like looking at the previous color of
+the pixel through blue-colored glass.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;5:</span></td><td>
+<p>What is <i>antialiasing</i>?</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>Antialiasing is used to make shapes that are drawn look less "jagged."
+The jaggedness is called "aliasing," and it arises because shapes have to
+be drawn by coloring individual pixels.  If antialiasing is off, then the
+only decision is either to color a pixel or not to color it.  As a result,
+a boundary that should be a smooth curve will look like a jagged staircase.
+When antialiasing is on, the amount of color that is applied to a pixel
+depends on how much of that pixel is covered by the ideal geometric shape.
+For pixels along the boundary of the shape, the color of the shape will be
+blended with the previous color of the pixel.
+Although antialiasing does not produce a perfect result, it does tend
+to make pictures look better.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;6:</span></td><td>
+<p>How is the <span class="classname">ButtonGroup</span> class used?</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>A <span class="classname">ButtonGroup</span> object is used with a
+set of radio buttons (or radio button menu items), to make sure that
+at most one of the radio buttons in the group can be selected at
+any given time.  To use the <span class="classname">ButtonGroup</span> class,
+you have to create a <span class="classname">ButtonGroup</span> object,
+<span class="code">grp</span>.  Then each radio button, <span class="code">rb</span>, that is supposed to
+be part of the group is added to the group by calling <span class="code">grp.add(rb)</span>.
+Nothing further needs to be done with the <span class="classname">ButtonGroup</span>
+object.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;7:</span></td><td>
+<p>What does the acronym <i>MVC</i> stand for, and how does it apply to the
+<span class="classname">JTable</span> class?</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>MVC stands for "Model-View-Controller."  In a <span class="classname">JTable</span>,
+the <i>view</i> is the actual visible component on the screen.  The <i>model</i>
+is the collection of data that specifies, among other things, what appears in each
+cell of the table and in the column headings.
+The model is represented by a separate object from the object
+that represents the view.  The <i>controller</i> is responsible for interaction
+with the user.  It consists mostly of a bunch of listener objects that listen
+for events generated when the user interacts with the table.  The listeners
+respond by making changes in the model, which will in turn cause a change in the
+view.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;8:</span></td><td>
+<p>Describe the picture that is produced by the following
+<span class="code">paintComponent()</span> method:</p>
+
+<pre>
+public void paintComponent(Graphics g) {
+   super.paintComponent(g);
+   Graphics2D g2 = (Graphics2D)g;
+   g2.translate( getWidth()/2, getHeight()/2 );
+   g2.rotate( 30 * Math.PI / 180 );
+   g2.fillRect(0,0,100,100);
+}</pre>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>This shows a filled black square that is 100-by-100 pixels in size.
+The corner of the square is at the center of the component that is being painted,
+and the top side of the square descends at a 30 degree angle from that point.
+(The <span class="code">translate</span> command moves the origin, <span class="code">(0,0)</span> to the
+point <span class="code">(getWidth()/2,getHeight()/2)</span>, so that when the <span class="code">fillRect</span>
+command places the corner of the square at <span class="code">(0,0)</span>, the corner actually
+appears at the center of the component.  Furthermore, the <span class="code">rotate</span>
+command rotates the picture by 30 degrees in a clockwise direction about
+the origin.  This means that the top of the square is rotated from the
+horizontal position onto a line that is 30 degrees clockwise of the horizontal.
+That line descends at a 30 degree angle.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;9:</span></td><td>
+<p>What is meant by <i>Internationalization</i> of a program?</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>Internationalization refers to writing the program in a way that
+will make it easy to adapt the program for use in a variety of "locales."
+For example, it should be easy to translate all the strings that are used
+in the program into other languages.  To make this possible the strings
+should not be hard coded into the program itself.  Instead, they are
+placed in a separate resource file, so that the program can be translated
+into another language simply by writing a resource file for that language.
+Internationalization also applies to the format that is used for dates
+and numbers.)</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;10:</span></td><td>
+<p>Suppose that the class that you are writing has an instance method
+<span class="code">doOpen()</span> (with no parameters) that is meant to be used to open
+a file selected by the user.  Write a code segment that creates an
+<span class="classname">Action</span> that represents the action of opening
+a file.  Then show how to create a button and a menu item from that 
+action.</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>Here is the code for the three parts of the problem:</p>
+   
+
+<pre>Action openAction = new AbstractAction( "Open..." ) {
+   public void actionPerformed( ActionEvent e ) {
+      doOpen();
+   }
+};
+
+JButton openButton = new JButton( openAction );
+   
+JMenuItem openCommand = new JMenuItem( openAction );</pre>
+   
+
+<p>(Since <span class="classname">Action</span> is only an interface,
+the class <span class="classname">AbstractAction</span> has to be used to
+create the action object.  The most natural way to write the code
+is to create an anonymous inner class that is a subclass of
+<span class="classname">AbstractAction</span>.  This subclass must define
+the <span class="code">actionPerformed()</span> method -- which in this case
+only has to call the <span class="code">doOpen()</span> method.  As an alternative
+to creating the <span class="classname">JMenuItem</span>, the action could
+have simply been added directly to a <span class="classname">JMenu.</span> By the way,
+the "..." in the name of the action is there, by convention, to
+tell the user that selecting this command will cause a dialog
+box to pop up.)</p>
+
+</td>
+</tr>
+</table>
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

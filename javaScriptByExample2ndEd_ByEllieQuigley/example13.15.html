@@ -1,0 +1,28 @@
+<html><head><title>Using the onFocus Event Handler</title>
+   <script type="text/javascript">
+	function handler(message){
+		window.status = message;   // Watch the status bar
+	}
+   </script>
+</head>
+<body bgcolor="magenta"><b>The onFocus Event Handler
+    <i>(When you click in one of the boxes, focus goes to the status bar)</i>
+    <form name="form1">
+	<p>Type your name:
+	<input type="text"
+	       name="namestring"
+	       size="50"
+	       onFocus="handler('Don\'t forget to enter your name')">
+	       <p>Talk about yourself here:<br />
+ 	<textarea name="comments"
+		  align="left"
+		  onFocus="handler('Did you add comments?')"
+	          rows="5" cols="50">I was born...
+	</textarea><p>
+	<input type="button" 
+	       value="submit" />
+	<input type="reset" 
+	       value="clear" />
+    </form>
+</body>
+</html>

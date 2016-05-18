@@ -1,0 +1,1057 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 6, Chapter 12</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 12.6</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 12.6:</h3>
+<p>The chat room example from <a href="../c12/s5.html#threads.5.2">Subsection&nbsp;12.5.2</a>
+can be improved in several ways.  First, it would be nice if the participants
+in the chat room could be identified by name instead of by number.
+Second, it would be nice if one person could send a private message to
+another person that would be seen just by that person rather than by
+everyone.   Make these two changes.  You can start with a copy of the
+package <span class="sourceref"><a href="../source/netgame/chat/">netgame.chat</a></span>.
+You will also need the package <span class="sourceref"><a href="../source/netgame/common/">netgame.common</a></span>,
+which defines the netgame framework.</p>
+
+
+<p>To make the first change, you will have to implement a subclass of <span class="classname">Hub</span>
+that can keep track of client names as well as numbers.  To get the name of a client to
+the hub, you can override the <span class="code">extraHandshake()</span> method both in
+the <span class="classname">Hub</span> subclass and in the <span class="classname">Client</span> subclass.
+The <span class="code">extraHandshake()</span> method is called as part of setting up the connection
+between the client and the hub.  It is called after the client has been assigned
+an ID number but before the connection is considered to be fully connected.  It should
+throw an <span class="classname">IOException</span> if some error occurs during the setup process.
+Note that messages that are sent by the hub should be read by the client and vice versa.
+The <span class="code">extraHandshake()</span> method in the Client is defined as:
+</p>
+
+
+<pre>protected void extraHandshake(ObjectInputStream in, ObjectOutputStream out) 
+                                                    throws IOException</pre>
+                                                             
+
+<p>while in the Hub, there is an extra parameter that tells the ID number of
+the client whose connection is being set up:</p>
+
+
+<pre>protected void extraHandshake(in playerID, ObjectInputStream in, 
+                              ObjectOutputStream out) throws IOException</pre>
+
+
+
+<p>In the <span class="sourceref"><a href="../source/netgame/chat/ChatRoomWindow.java">ChatRoomWindow</a></span> class,
+the <span class="code">main()</span> routine asks the user for the name of the computer where the
+server is running.  You can add some code there to ask the user their name.  You will
+have to decide what to do if two users want to use the same name.  You might consider
+having a list of users who are allowed to join the chat room.  You might even assign
+them passwords.</p>
+
+
+<p>For the second improvement, personal messages, I suggest
+defining a <span class="classname">PrivateMessage</span> class.  A <span class="classname">PrivateMessage</span>
+object would include both the string that represents the message and the
+ID numbers of the player to whom the message is being sent and the player who sent the
+message.  The hub will have to be programmed to know how to deal with such messages.
+A <span class="classname">PrivateMessage</span> should only be sent to the client who is
+listed as the recipient of the message.  You need to decide how the user will
+input a private message and how the user will select the recipient of the
+message.</p>
+
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+
+<p>My solution defines a subclass, <span class="classname">NewChatRoomHub</span>, of
+<span class="classname">Hub</span> to make it possible to manage user names.  In
+the <span class="classname">Hub</span> class, users are identified by ID numbers.
+In some ways, it would have been easier to modify <span class="classname">Hub</span>,
+instead of creating a subclass.  However, I wanted to build on the
+package <span class="sourceref"><a href="../source/netgame/common/">netgame.common</a></span>,
+without modifying the existing classes.  The <span class="classname">NewChatRoomHub</span>
+class has an instance variable</p>
+
+
+<pre>private TreeMap&lt;Integer,String&gt; nameMap = new TreeMap&lt;Integer,String&gt;();</pre>
+
+
+<p>to keep track of client names by associating each client's name to that
+client's ID number.  That is, <span class="code">nameMap.get(id)</span> is the name of
+the client whose ID number is <span class="code">id</span>.  There has to be a way to
+add a user name to <span class="code">nameMap</span> when a new client connects,
+and there has to be a way to remove a client from <span class="code">nameMap</span>
+when that client disconnects.  There also has to be a way for a client
+to get a name in the first place.</p>
+
+
+<p>It might have been nice to have a list of authorized users, and give
+each authorized user a name and a password.  The hub would then require a
+name and a password before it would let a client connect.  The list of
+names and passwords could be stored in a file or, if there are a lot of
+them, in a database. That wouldn't have been difficult -- assuming
+I used  file.  However, I decided to simply let clients choose their names
+when they connect.  The client's selected name is sent to the hub
+as part of the <span class="code">extraHandshake()</span> method.  To avoid having
+duplicate names, the hub will modify the client's name if there is
+already someone in the chat room using that name.  For example, if the
+client wants to be "Fred" and there is already a Fred, then the 
+hub will assign the name "Fred#2" to the client.  Since the hub can
+modify the name, it sends the client's name back to the client, possibly
+with some modification.  The client reads the returned name as part
+of the handshake.  So, the <span class="code">extraHandshake()</span> method in
+the client simply sends the client's requested name to the hub by
+writing the name to the connection's output stream.  It then reads
+the possibly modified name from the connection's input stream:</p>
+
+
+<pre>protected void extraHandshake(ObjectInputStream in, ObjectOutputStream out) throws IOException {
+    try {
+        out.writeObject(myName);  // Send user's name request to the server. 
+        myName = (String)in.readObject();  // Get the actual, possibly modified, name from the server.
+    }
+    catch (Exception e) {
+        throw new IOException("Error while setting up connection: " + e);
+    }
+}</pre>
+
+
+<p>(This code is from the <span class="classname">ChatClient</span> class, which is a nested
+subclass of <span class="classname">NewChatRoomWindow</span>.)</p>
+
+
+<p>The corresponding <span class="code">extraHandshake()</span> method in the <span class="classname">NewChatRoomHub</span>
+class has to read the name that was sent by the client, possibly modify the name, and write the
+name back to the client.  It also adds the client to <span class="code">nameMap</span>, which contains the
+names of all connected clients.  My code is very careful to produce a name that is non-null,
+non-empty, and unique:</p>
+
+
+<pre>protected void extraHandshake(int playerID, 
+                  ObjectInputStream in, ObjectOutputStream out) throws IOException {
+    try {
+        String name = (String)in.readObject(); // Read requested name from client.
+        if (name == null)
+            name = "noname";
+        if (name.length() &gt; 15)
+            name = name.substring(0,15).trim();
+        if (name.equals(""))
+            name = "noname";
+        synchronized(nameMap) {
+               // Synchronized to be absolutely sure that there will be
+               // no duplicate names.
+            if (nameMap.containsValue(name)) {
+                String approvedName = name;
+                int num = 2;
+                while (nameMap.containsValue(approvedName)) {
+                    approvedName = name + "#" + num;
+                    num++;
+                }
+                name = approvedName;
+            }
+        }
+        out.writeObject(name);      // Send actual name to client.
+        nameMap.put(playerID,name); // Add client's name to nameMap.
+    }
+    catch (Exception e) {
+        throw new IOException("Error while setting up connection: " + e);
+    }
+}</pre>
+
+
+<hr class="break">
+
+
+<p>In order to get private messages from one player to another, I defined a
+<span class="classname">PrivateMessage</span> class, as suggested in the exercise.
+An object <span class="code">pm</span> of type <span class="classname">PrivateMessage</span>
+has public instance variables <span class="code">pm.senderID</span> and <span class="code">pm.recipientID</span>
+to hold the ID numbers of the sender and the recipient, and it has
+<span class="code">pm.message</span> to hold the message itself.  The hub has to know what
+to do with such a message.  Messages are processed in the hub by the
+<span class="code">messageReceived()</span> method.  I overrode this method in
+<span class="classname">NewChatRoomHub</span> to handle <span class="classname">PrivateMessage</span>
+and to pass messages of other types on to the superclass.  One interesting
+point is that the hub sets the <span class="code">senderID</span> in the message to be
+the ID number of the client that actually sent the message.  This is done
+to prevent clients from sending forged messages that appear to be from
+someone else.  Here is the <span class="code">messageReceived()</span> methog from
+<span class="classname">NewChatRoomHub</span>:
+</p>
+
+
+<pre>/**
+ * This method is overridden to provide support for PrivateMessages.
+ * If a PrivateMessage is received from some client, this method
+ * will set the senderID field in the message to be the ID number
+ * of the client who sent the message.  It will then send the
+ * message on to the specified recipient.  If some other type
+ * of message is received, it is handled by the messageReceived()
+ * method in the superclass (which will wrap it in a ForwardedMessage
+ * and send it to all connected clients).
+ */
+protected void messageReceived(int playerID, Object message) {
+    if (message instanceof PrivateMessage) {
+        PrivateMessage pm = (PrivateMessage)message;
+        pm.senderID = playerID;
+        sendToOne(pm.recipientID, pm);
+    }
+    else
+        super.messageReceived(playerID, message);
+}</pre>
+
+
+<p>It is easy enough to add some extra inputs to the original window
+from <span class="classname">ChatRoomWindow</span> to make it possible
+for the user to send private messages.  Just add a text input
+box for the message, a button to send the message, and
+a <span class="classname">JComboBox</span> that contains a list of
+possible recipients.  The user enters a message, selects
+the recipient from the list, and clicks the button to send.
+The program constructs a <span class="classname">PrivateMessage</span>
+containing the message and the ID number of the recipient,
+and it sends the <span class="classname">PrivateMessage</span> to
+the hub, which forwards it on to the intended recipient.
+This code can be found in <span class="classname">NewChatRoomWindow.</span>
+</p>
+
+
+<p>At least, it <b>would</b> be easy if not for the fact that
+I want users of the chat room to be identified by name,
+not ID number.  The whole point of using names is that they
+provide a more meaningful way to refer to users.  Each client
+already gets a list of ID numbers of all connected clients,
+but I want each client to have a list of <b>names</b> of
+connected clients.  The hub has that information.  I just
+needed a way to get that information to the clients.  Since
+the client list changes every time a client connects or
+disconnects, the hub will have to send new information
+to the clients every time that happens.  I was able to
+program this behavior by overriding the <span class="code">playerConnected()</span>
+and <span class="code">playerDisconnected()</span> methods from
+the <span class="classname">Hub</span> class.  My <span class="classname">NewChatRoomHub</span>
+class includes the following definitions for those methods (which
+do nothing in class <span class="classname">Hub</span>):
+</p>
+
+
+<pre>/**
+ *  This method is called when a new client connects.  It is called
+ *  after the extraHandshake() method has been called, so that the
+ *  client's name has already been added to nameMap.  This method
+ *  creates a ClientConnectedMessage and sends it to all connected
+ *  clients to announce the new participant in the chat room.
+ */
+protected void playerConnected(int playerID) {
+    resetOutput(); // Reset the output stream before resending nameMap.
+    sendToAll(new ClientConnectedMessage(playerID,nameMap));
+}
+
+/**
+ * This method is called when a client has been disconnected from
+ * this hub.  It removes the client from the nameMap and sends
+ * a ClientDisconnectMessage to all connected players to
+ * announce the fact that the client has left the chat room. 
+ */
+protected void playerDisconnected(int playerID) {
+    String name = nameMap.get(playerID); // Get the departing player's name.
+    nameMap.remove(playerID);  // Remove the player from nameMap.
+    resetOutput(); // Reset the output stream before resending nameMap.
+    sendToAll(new ClientDisconnectedMessage(playerID, name, nameMap));
+}</pre>
+
+
+<p>It actually took me quite a while to get this right.  To simplify the
+processing, I ended up defining new message types,
+<span class="classname">ClientConnectedMessage</span> and
+<span class="classname">ClientDisconnectedMessage</span>, to
+hold the information that I wanted to send to the clients.  A
+<span class="classname">ClientConnectedMessage</span> includes the
+ID number of the client who has just connected, as well as the
+<span class="code">nameMap</span> that contains the ID numbers and names
+of all connected clients.  When a client receives this message,
+it can inform the user that someone has entered the chat
+room, and it can use the <span class="code">nameMap</span> to construct
+the list of names of possible recipients of private messages.
+<span class="classname">ClientDisconnectedMessages</span> are similar.</p>
+
+
+<p>Not for the first time, I introduced a bug by forgetting that an
+<span class="classname">ObjectOuputStream</span> has to be reset if it is used to send
+the same object twice, with modifications between the two transmissions.
+This is necessary in this example because the same object, <span class="code">nameMap</span>,
+is transmitted as part of every <span class="classname">ClientConnectedMessage</span> and
+every <span class="classname">ClientDisconnectedMessage</span>.  When I didn't
+reset the output, the changes that I made to that object was not seen
+by the clients that received those messages.  In my code, the
+method <span class="code">resetOuput()</span> will cause the output stream leading
+to every client to be reset.
+</p>
+
+
+<hr class="break">
+
+
+<p>Back in the <span class="classname">NewChatRoomWindow</span> class, the chat room
+client has to be prepared to receive <span class="classname">PrivateMessages</span>,
+<span class="classname">ClientConnectedMessages</span>, and <span class="classname">ClientDisconnectedMessages</span>.
+It can also receive <span class="classname">ForwardedMessages</span> which are used, as in the
+original chat room application, to broadcast a message from one client to all
+connected clients.  In each case, the client will add an appropriate message to the
+transcript.  It uses <span class="code">clientNameMap</span> -- the local copy of <span class="code">nameMap</span> -- to
+translate ID numbers from the messages into the names of the corresponding chat room users:
+</p>
+
+
+
+<pre>protected void messageReceived(Object message) {
+    if (message instanceof ForwardedMessage) {
+        ForwardedMessage fm = (ForwardedMessage)message;
+        String senderName = clientNameMap.get(fm.senderID);
+        addToTranscript(senderName + " SAYS:  " + fm.message);
+    }
+    else if (message instanceof PrivateMessage) {
+        PrivateMessage pm = (PrivateMessage)message;
+        String senderName = clientNameMap.get(pm.senderID);
+        addToTranscript("PRIVATE MESSAGE FROM " + senderName + ":  " + pm.message);
+    }
+    else if (message instanceof ClientConnectedMessage) {
+        ClientConnectedMessage cm = (ClientConnectedMessage)message;
+        addToTranscript('"' + cm.nameMap.get(cm.newClientID) + "\" HAS JOINED THE CHAT ROOM.");
+        newNameMap(cm.nameMap);
+    }
+    else if (message instanceof ClientDisconnectedMessage) {
+        ClientDisconnectedMessage dm = (ClientDisconnectedMessage)message;
+        addToTranscript('"' + clientNameMap.get(dm.departingClientID) + "\" HAS LEFT THE CHAT ROOM.");
+        newNameMap(dm.nameMap);
+    }
+}</pre>
+
+
+<p>The <span class="code">newNameMap()</span> method, which is called twice in the above code,
+will assign the <span class="code">nameMap</span> from the message to <span class="code">clientNameMap</span>.
+It also updates the <span class="classname">JComboBox</span>, <span class="code"></span>, which stores
+the list of names of connected users (leaving out the name of the user who is using
+the program, since he won't want to send a private message to himself):</p>
+
+
+<pre>private void newNameMap(final TreeMap&lt;Integer,String&gt; nameMap) {
+    SwingUtilities.invokeLater(new Runnable() {
+        public void run() {
+            clientNameMap = nameMap;
+            clientList.removeAllItems();
+            boolean someoneIsThere = false;
+            for (String str: nameMap.values()) {
+                if (!str.equals(myName)) {
+                    clientList.addItem(str);
+                    someoneIsThere = true;
+                }
+            }
+            privateMessageInput.setEditable(someoneIsThere);
+            privateMessageInput.setEnabled(someoneIsThere);
+            sendPrivateButton.setEnabled(someoneIsThere);
+            if (!someoneIsThere)
+                clientList.addItem("(no one available)");
+        }
+    });
+}</pre>
+
+
+<p>The complete source code for the new chat room application is shown below.  It consists
+of six classes, which I defined in a package named <span class="code">netgame.newchat</span>.  These
+classes depend on the classes from the <span class="sourceref"><a href="../source/netgame/common/">netgame.common</a></span>
+package.</p>
+
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+
+<p>
+<b><span class="code">NewChatRoomServer</span> is a short class with a main routine that simply creates a 
+hub that acts as the server for the application:</b>
+</p>
+
+
+<pre class="exercisecode">package netgame.newchat;
+
+import java.io.IOException;
+
+/**
+ * This class contains just a small main class that creates a NewChatRoomHub
+ * and starts it listening on port 37830.  This port is used
+ * by the NewChatRoomWindow application.  This program should be run
+ * on the computer that "hosts" the chat room.  See the NewChatRoomWindow
+ * class for more details.  Once the server starts listening, it
+ * will listens for connection requests from clients until the
+ * NewChatRoomServer program is terminated (for example by a 
+ * Control-C).
+ */
+public class NewChatRoomServer {
+
+    private final static int PORT = 37830;
+    
+    public static void main(String[] args) {
+        try {
+            new NewChatRoomHub(PORT);
+        }
+        catch (IOException e) {
+            System.out.println("Can't create listening socket.  Shutting down.");
+        }
+    }
+    
+}
+
+
+
+</pre>
+
+
+
+<p>
+<b>There are three short classes that define various types of messages which are used
+in the application:</b>
+</p>
+
+
+<pre class="exercisecode">package netgame.newchat;
+
+import java.io.Serializable;
+
+/**
+ * Represents a string sent as a message from one client
+ * to another client.  Note:  The ChatRoomHub will set the
+ * senderID of a PrivateMessage to be the ID number of the
+ * client who actually sent the message, in order to avoid
+ * the possibility of rogue clients that try to forge 
+ * messages that appear to come from other clients.
+ */
+public class PrivateMessage implements Serializable {
+    
+    public int senderID;    // The ID number of the sender.
+    public int recipientID; // The ID number of the recipient.
+    public String message;  // The message.
+
+    /**
+     *  Create a private message from one user to another.
+     *  The senderID of the message will be set by the hub.
+     */
+    public PrivateMessage(int recipientID, String message) {
+        this.recipientID = recipientID;
+        this.message = message;
+    }
+
+}
+
+ 
+
+package netgame.newchat;
+
+import java.io.Serializable;
+import java.util.TreeMap;
+
+/**
+ * A message of this type will be sent by the hub to all
+ * connected clients when a new client joins the chat room
+ */
+public class ClientConnectedMessage implements Serializable {
+    
+    public int newClientID;  // The ID number of the client who has connected.
+    public TreeMap&lt;Integer,String&gt; nameMap;  // Map of all connected client IDs to their names.
+    
+    public ClientConnectedMessage(int newClientID, TreeMap&lt;Integer,String&gt; nameMap) {
+        this.newClientID = newClientID;
+        this.nameMap = nameMap;
+    }
+
+}
+
+
+
+package netgame.newchat;
+
+import java.io.Serializable;
+import java.util.TreeMap;
+
+/**
+ * A message of this type will be sent by the hub to all
+ * remaining connected clients when a client leaves the
+ * chat room.
+ */
+public class ClientDisconnectedMessage implements Serializable {
+    
+    public int departingClientID;  // The ID number of the client who has left the chat room.
+    public String departingClientName;  // The name of the departing client
+    public TreeMap&lt;Integer,String&gt; nameMap;  // Map of all connected client IDs to their names.
+                                             //  (Note that the departing client is not included.)
+
+    public ClientDisconnectedMessage(int departingClientID,
+            String departingClientName, TreeMap&lt;Integer,String&gt; nameMap) {
+        this.departingClientID = departingClientID;
+        this.departingClientName = departingClientName;
+        this.nameMap = nameMap;
+    }
+    
+
+}
+
+
+</pre>
+
+
+
+<p>
+<b>The subclass of <span class="classname">Hub</span> that defines the server for the application:</b>
+</p>
+
+
+<pre class="exercisecode">package netgame.newchat;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.TreeMap;
+
+import netgame.common.*;
+
+/**
+ *  This class defines the "hub" that acts as a server for the
+ *  chat room application.  It extends the basic Hub class in
+ *  order to support names for clients, as well as ID numbers.
+ */
+public class NewChatRoomHub extends Hub {
+    
+    /**
+     * This map keeps track of the names of all connected clients.
+     * It maps client ID numbers to client names.
+     */
+    private TreeMap&lt;Integer,String&gt; nameMap = new TreeMap&lt;Integer,String&gt;();
+
+    /**
+     * Create a NewChatRoomHub, which will listen for connections on
+     * a specified port.
+     * @param port the port on which to listen for connections
+     * @throws IOException if it is not possible to create a listening socket
+     */
+    public NewChatRoomHub(int port) throws IOException {
+        super(port);
+    }
+
+    /**
+     * This method is called as part of the connection setup between this hub
+     * and a client that has requested a connection.  It is overridden in this
+     * class so that a name can be assigned to the client as part of the setup
+     * process.  This method works in cooperation with the extraHandshake()
+     * method in the client class (which is defined as a nested class inside
+     * NewChatRoomWindow).  In this method, the Hub reads a string from the
+     * user that contains the name that the client wants to use.  The name
+     * can be modified to make sure that it is non-null, 15 characters or less.
+     * The resulting name is further modified by adding a suffix such as
+     * "#2" or "#3" if the name is already in use by another client.  Finally,
+     * the possibly modified name is sent back to the client, which will use
+     * the returned value as the name that identifies the client in the chat
+     * room.
+     */
+    protected void extraHandshake(int playerID, 
+                      ObjectInputStream in, ObjectOutputStream out) throws IOException {
+        try {
+            String name = (String)in.readObject();
+            if (name == null)
+                name = "noname";
+            if (name.length() &gt; 15)
+                name = name.substring(0,15).trim();
+            if (name.equals(""))
+                name = "noname";
+            synchronized(nameMap) {
+                if (nameMap.containsValue(name)) {
+                    String approvedName = name;
+                    int num = 2;
+                    while (nameMap.containsValue(approvedName)) {
+                        approvedName = name + "#" + num;
+                        num++;
+                    }
+                    name = approvedName;
+                }
+            }
+            out.writeObject(name);
+            nameMap.put(playerID,name);
+        }
+        catch (Exception e) {
+            throw new IOException("Error while setting up connection: " + e);
+        }
+    }
+
+    /**
+     * This method is overridden to provide support for PrivateMessages.
+     * If a PrivateMessage is received from some client, this method
+     * will set the senderID field in the message to be the ID number
+     * of the client who sent the message.  It will then send the
+     * message on to the specified recipient.  If some other type
+     * of message is received, it is handled by the messageReceived()
+     * method in the superclass (which will wrap it in a ForwardedMessage
+     * and send it to all connected clients).
+     */
+    protected void messageReceived(int playerID, Object message) {
+        if (message instanceof PrivateMessage) {
+            PrivateMessage pm = (PrivateMessage)message;
+            pm.senderID = playerID;
+            sendToOne(pm.recipientID, pm);
+        }
+        else
+            super.messageReceived(playerID, message);
+    }
+
+    /**
+     *  This method is called when a new client connects.  It is called
+     *  after the extraHandshake() method has been called, so that the
+     *  client's name has already been added to nameMap.  This method
+     *  creates a ClientConnectedMessage and sends it to all connected
+     *  clients to announce the new participant in the chat room.
+     */
+    protected void playerConnected(int playerID) {
+        resetOutput(); // Reset the output stream before resending nameMap.
+        sendToAll(new ClientConnectedMessage(playerID,nameMap));
+    }
+
+    /**
+     * This method is called when a client has been disconnected from
+     * this hub.  It removes the client from the nameMap and sends
+     * a ClientDisconnectMessage to all connected players to
+     * announce the fact that the client has left the chat room. 
+     */
+    protected void playerDisconnected(int playerID) {
+        String name = nameMap.get(playerID); // Get the departing player's name.
+        nameMap.remove(playerID);  // Remove the player from nameMap.
+        resetOutput(); // Reset the output stream before resending nameMap.
+        sendToAll(new ClientDisconnectedMessage(playerID, name, nameMap));
+    }
+    
+}
+
+
+
+</pre>
+
+
+
+<p>
+<b>And finally, the class that defines the clients, <span class="classname">NewChatRoomWindow</span>.  
+This class is a modified version of <span class="sourceref"><a href="../source/netgame/chat/ChatRoomWindow.java">ChatRoomWindow</a></span>
+from the original chat room application.  Significant changes from the original are shown in red.</b>
+</p>
+
+
+<pre class="exercisecode">package netgame.newchat;
+
+import java.awt.*;
+import java.awt.event.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+<span class="newcode">import java.util.TreeMap;</span>
+
+import javax.swing.*;
+import netgame.common.*;
+
+/**
+ * This class represents a client for a "chat room" application.  The chat
+ * room is hosted by a server running on some computer.  The user of this
+ * program must know the host name (or IP address) of the computer that
+ * hosts the chat room.  When this program is run, it asks for that
+ * information <span class="newcode">and for the name that the user wants to use in the chat
+ * room</span>.  Then, it opens a window that has an input box where the
+ * user can enter messages to be sent to the chat room.  The message is 
+ * sent when the user presses return in the input box or when the
+ * user clicks a Send button.  There is also a text area that shows 
+ * a transcript of all messages from participants in the chat room.
+ * <span class="newcode">&lt;p&gt;The user can also send private messages to individual users.
+ * The user selects the recipient's name from a pop-up list of
+ * connected users.</span>
+ * &lt;p&gt;Participants in the chat room are represented by ID numbers
+ * that are assigned to them by the server when they connect. <span class="newcode">They
+ * also have names which they select.</span>
+ */
+public class NewChatRoomWindow extends JFrame {
+    
+    private final static int PORT = 37830; // The ChatRoom port number; can't be 
+                                           // changed here unless the ChatRoomServer
+                                           // program is also changed.
+
+    /**
+     * Gets the host name (or IP address) of the chat room server from the
+     * user, gets the user's name, and opens a NewChatRoomWindow.  The program ends 
+     * when the user closes the window.
+     */
+    public static void main(String[] args) {
+        String host = JOptionPane.showInputDialog(
+                       "Enter the host name of the\ncomputer that hosts the chat room:");
+        if (host == null || host.trim().length() == 0)
+            return;
+        <span class="newcode">String name = JOptionPane.showInputDialog(
+                       "Enter that name that you want\nto use in the chat room.");
+        if (name == null || name.trim().length() == 0)
+            return;</span>
+        NewChatRoomWindow window = new NewChatRoomWindow(host,<span class="newcode">name.trim()</span>);
+        window.setLocation(200,100);
+        window.setVisible(true);
+        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+    
+    
+    /**
+     * A ChatClient connects to the Hub and is used to send messages to
+     * and receive messages from a Hub.  Four types of message are
+     * received from the Hub.  A ForwardedMessage represents a message
+     * that was entered by some user and sent to all users of the
+     * chat room.  <span class="newcode">A PrivateMessage represents a message that was
+     * sent by another user only to this user.  A ClientConnectedMessage
+     * is sent when a new user enters the room.  A ClientDisconnectedMessage
+     * is sent when a user leaves the room.</span>
+     */
+    private class ChatClient extends Client {
+        
+        /**
+         * Opens a connection the chat room server on a specified computer.
+         */
+        ChatClient(String host) throws IOException {
+            super(host, PORT);
+        }
+        
+        /**
+         * Responds when a message is received from the server.
+         */
+        protected void messageReceived(Object message) {
+            if (message instanceof ForwardedMessage) {
+                ForwardedMessage fm = (ForwardedMessage)message;
+                <span class="newcode">String senderName = clientNameMap.get(fm.senderID);</span>
+                addToTranscript(<span class="newcode">senderName</span> + " SAYS:  " + fm.message);
+            }
+            <span class="newcode">else if (message instanceof PrivateMessage) {
+                PrivateMessage pm = (PrivateMessage)message;
+                String senderName = clientNameMap.get(pm.senderID);
+                addToTranscript("PRIVATE MESSAGE FROM " + senderName + ":  " + pm.message);
+            }
+            else if (message instanceof ClientConnectedMessage) {
+                ClientConnectedMessage cm = (ClientConnectedMessage)message;
+                addToTranscript('"' + cm.nameMap.get(cm.newClientID) + "\" HAS JOINED THE CHAT ROOM.");
+                newNameMap(cm.nameMap);
+            }
+            else if (message instanceof ClientDisconnectedMessage) {
+                ClientDisconnectedMessage dm = (ClientDisconnectedMessage)message;
+                addToTranscript('"' + clientNameMap.get(dm.departingClientID) + "\" HAS LEFT THE CHAT ROOM.");
+                newNameMap(dm.nameMap);
+            }</span>
+        }
+        
+        <span class="newcode">/**
+         * This method is part of the connection set up.  It sends the user's selected
+         * name to the hub by writing that name to the output stream.  The hub will
+         * respond by sending the name back to this client, possibly modified if someone
+         * is the chat room is already using the selected name.
+         */
+        protected void extraHandshake(ObjectInputStream in, ObjectOutputStream out) throws IOException {
+            try {
+                out.writeObject(myName);  // Send user's name request to the server. 
+                myName = (String)in.readObject();  // Get the actual, possibly modified, name from the server.
+            }
+            catch (Exception e) {
+                throw new IOException("Error while setting up connection: " + e);
+            }
+        }</span>
+
+        /**
+         * Called when the connection to the client is shut down because of some
+         * error message.  (This will happen if the server program is terminated.)
+         */
+        protected void connectionClosedByError(String message) {
+            addToTranscript("Sorry, communication has shut down due to an error:\n     " + message);
+            sendButton.setEnabled(false);
+            messageInput.setEnabled(false);
+            messageInput.setEditable(false);
+            messageInput.setText("");
+            <span class="newcode">sendPrivateButton.setEnabled(false);
+            privateMessageInput.setEnabled(false);
+            privateMessageInput.setEditable(false);</span>
+            connected = false;
+            connection = null;
+        }
+        
+        <span class="newcode">// Note:  the methods playerConnected() and playerDisconnected(), which where present here
+        // in ChatRoomWindow, were removed, since their functionality (to announce arrivals
+        // and departures) has been taken over by ClientConnectedMessage and ClientDisconnectedMessage.</span>
+
+    } // end nested class ChatClient
+    
+
+    <span class="newcode">private volatile String myName;   // The name that this client uses in the chat room.
+                                      // Originally selected by the user, but might be modified
+                                      // if there is already a client of the same name connected
+                                      // to the Hub.
+    
+    private volatile TreeMap&lt;Integer,String&gt; clientNameMap = new TreeMap&lt;Integer, String&gt;();
+                 // The clientNameMap maps client ID numbers to the names that they are
+                 // using in the chat room.  Every time a client connects or disconnects,
+                 // the Hub sends a new, modified name map to each connected client.  When
+                 // that message is received, the clientNameMap is replaced with the new value,
+                 // and the content of the clientList is replaced with info from the nameMap.
+    
+    private JComboBox clientList;      // List of connected client names, where the user can select
+                                       //   the client who is to receive the private message.</span>
+
+    private JTextField messageInput;   // For entering messages to be sent to the chat room
+    private JButton sendButton;        // Sends the contents of the messageInput.
+    private JButton quitButton;        // Leaves the chat room cleanly, by sending a DisconnectMessage
+    
+    <span class="newcode">private JTextField privateMessageInput;  // For entering messages to be set to individual clients.
+    private JButton sendPrivateButton; // Sends the contents of privateMesssageInput to the user selected
+                                       //   in the clientList.</span>
+
+    private JTextArea transcript;      // Contains all messages sent by chat room participant, as well
+                                       // as a few additional status messages, such as when a new user arrives.
+    
+    private ChatClient connection;      // Represents the connection to the Hub; used to send messages;
+                                        // also receives and processes messages from the Hub.
+    
+    private volatile boolean connected; // This is true while the client is connected to the hub.
+    
+    
+    /**
+     * Constructor creates the window and starts the process of connecting
+     * to the hub; the actual connection is done in a separate thread.
+     * @param host  The IP address or host name of the computer where the server is running.
+     */
+    private NewChatRoomWindow(final String host, <span class="newcode">String clientName</span>) {
+        super("Chat Room");
+        <span class="newcode">myName = clientName;</span>
+        setBackground(Color.BLACK);
+        setLayout(new BorderLayout(2,2));
+        transcript = new JTextArea(30,60);
+        transcript.setLineWrap(true);
+        transcript.setWrapStyleWord(true);
+        transcript.setMargin(new Insets(5,5,5,5));
+        transcript.setEditable(false);
+        add(new JScrollPane(transcript), BorderLayout.CENTER);
+        sendButton = new JButton("send to all");
+        quitButton = new JButton("quit");
+        <span class="newcode">sendPrivateButton = new JButton("send to one");</span>
+        messageInput = new JTextField(40);
+        messageInput.setMargin(new Insets(3,3,3,3));
+        <span class="newcode">privateMessageInput = new JTextField(40);
+        privateMessageInput.setMargin(new Insets(3,3,3,3));
+        clientList = new JComboBox();
+        clientList.addItem("(No one available)");</span>
+        ActionHandler ah = new ActionHandler();
+        sendButton.addActionListener(ah);
+        quitButton.addActionListener(ah);
+        sendPrivateButton.addActionListener(ah);
+        messageInput.addActionListener(ah);
+        <span class="newcode">privateMessageInput.addActionListener(ah);
+        sendButton.setEnabled(false);
+        sendPrivateButton.setEnabled(false);</span>
+        messageInput.setEditable(false);
+        messageInput.setEnabled(false);
+        <span class="newcode">privateMessageInput.setEditable(false);
+        privateMessageInput.setEnabled(false);</span>
+        JPanel bottom = new JPanel();
+        bottom.setBackground(Color.LIGHT_GRAY);
+        bottom.add(new JLabel("You say:"));
+        bottom.add(messageInput);
+        bottom.add(sendButton);
+        bottom.add(Box.createHorizontalStrut(30));
+        bottom.add(quitButton);
+        <span class="newcode">JPanel bottom2 = new JPanel();
+        bottom2.setBackground(Color.LIGHT_GRAY);
+        bottom2.add(new JLabel("Say:"));
+        bottom2.add(privateMessageInput);
+        bottom2.add(new JLabel(" to: "));
+        bottom2.add(clientList);
+        bottom2.add(sendPrivateButton);
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(2,1,5,5));
+        panel.add(bottom);
+        panel.add(bottom2);</span>
+        add(panel,BorderLayout.SOUTH);
+        pack();
+        addWindowListener( new WindowAdapter() { // calls doQuit if user closes window
+            public void windowClosing(WindowEvent e) {
+                doQuit();
+            }
+        });
+        new Thread() {
+                // This is a thread that opens the connection to the server.  Since
+                // that operation can block, it's not done directly in the constructor.
+                // Once the connection is established, the user interface elements are
+                // enabled so the user can send messages.  The Thread dies after
+                // the connection is established or after an error occurs.
+            public void run() {
+                try {
+                    addToTranscript("Connecting to " + host + " ...");
+                    connection = new ChatClient(host);
+                    connected = true;
+                    messageInput.setEditable(true);
+                    messageInput.setEnabled(true);
+                    sendButton.setEnabled(true);
+                    messageInput.requestFocus();
+                    <span class="newcode">setTitle("Chat Room: Connected as " + myName);</span>
+                }
+                catch (IOException e) {
+                    addToTranscript("Connection attempt failed.");
+                    addToTranscript("Error: " + e);
+                }
+            }
+        }.start();
+    }
+    
+    
+    /**
+     * Adds a string to the transcript area, followed by a blank line.
+     */
+    private void addToTranscript(String message) {
+        transcript.append(message);
+        transcript.append("\n\n");
+            // The following line is a nasty kludge that was the only way I could find to force
+            // the transcript to scroll so that the text that was just added is visible in
+            // the window.  Without this, text can be added below the bottom of the visible area
+            // of the transcript.
+        transcript.setCaretPosition(transcript.getDocument().getLength());
+    }
+    
+    
+    /**
+     * Called when the user clicks the Quit button or closes
+     * the window by clicking its close box.
+     */
+    private void doQuit() {
+        if (connected)
+            connection.disconnect();  // Sends a DisconnectMessage to the server.
+        dispose();
+        try {
+            Thread.sleep(1000); // Time for DisconnectMessage to actually be sent.
+        }
+        catch (InterruptedException e) {
+        }
+        System.exit(0);
+    }
+
+    <span class="newcode">/**
+     * This method is called when a ClientConnectedMessage or ClientDisconnectedMessage
+     * is received from the hub.  Its job is to save the nameMap that is part of the
+     * message and use it to rebuild the contents of the JComboBox, clientList, where
+     * the user selects the recipient of a private message.  It also enables or
+     * disables the private message input box and send button, depending on whether
+     * there are any possible message recipients.
+     * @param nameMap the new nameMap, which will replace the value of clientNameMap.
+     */
+    private void newNameMap(final TreeMap&lt;Integer,String&gt; nameMap) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                clientNameMap = nameMap;
+                clientList.removeAllItems();
+                boolean someoneIsThere = false;
+                for (String str: nameMap.values()) {
+                    if (!str.equals(myName)) {
+                        clientList.addItem(str);
+                        someoneIsThere = true;
+                    }
+                }
+                privateMessageInput.setEditable(someoneIsThere);
+                privateMessageInput.setEnabled(someoneIsThere);
+                sendPrivateButton.setEnabled(someoneIsThere);
+                if (!someoneIsThere)
+                    clientList.addItem("(no one available)");
+            }
+        });
+    }</span>
+    
+    /**
+     * Defines the object that handles all ActionEvents for the program.
+     */
+    private class ActionHandler implements ActionListener {
+        public void actionPerformed(ActionEvent evt) {
+            Object src = evt.getSource();
+            if (src == quitButton) {  // Disconnect from the server and end the program.
+                doQuit();
+            }
+            else if (src == sendButton || src == messageInput) {
+                   // Send the string entered by the user as a message
+                   // to the Hub, using the ChatClient that handles communication
+                   // for this ChatRoomWindow.  Note that the string is not added
+                   // to the transcript here.  It will get added after the Hub
+                   // receives the message and broadcasts it to all clients,
+                   // including this one.
+                String message = messageInput.getText();
+                if (message.trim().length() == 0)
+                    return;
+                connection.send(message);
+                messageInput.selectAll();
+                messageInput.requestFocus();
+            }
+            <span class="newcode">else if (src == sendPrivateButton || src == privateMessageInput) {
+                    // Send a private message to a specified recipient.
+                    // If the private message inputbox is empty, nothing is done.
+                String message = privateMessageInput.getText();
+                if (message.trim().length() == 0)
+                    return;
+                String recipient = (String)clientList.getSelectedItem(); // name of recipient.
+                int recipientID = -1;  // The ID number of the recipient
+                for (int id : clientNameMap.keySet()) {
+                        // Search the clientNameMap to find the ID number
+                        // corresponding to the specified recipient name.
+                    if (recipient.equals(clientNameMap.get(id))) {
+                        recipientID = id;
+                        break;
+                    }
+                }
+                if (recipientID == -1) {
+                    JOptionPane.showMessageDialog(NewChatRoomWindow.this,
+                            "Funny... The selected recipient\ndoesn't seem to exit???");
+                    return;
+                }
+                connection.send(new PrivateMessage(recipientID,message));
+                addToTranscript("Sent to " + recipient + ":  " + message);
+            }</span>
+        }
+    }
+    
+
+}
+</pre>
+
+
+
+
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

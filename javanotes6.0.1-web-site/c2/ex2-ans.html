@@ -1,0 +1,152 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 2, Chapter 2</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 2.2</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 2.2:</h3>
+<p> Write a program that
+simulates rolling a pair of dice. You can simulate rolling one die by choosing
+one of the integers 1, 2, 3, 4, 5, or 6 at random. The number you pick
+represents the number on the die after it is rolled. As pointed out in <a href="../c2/s5.html">Section&nbsp;2.5</a>, The expression</p>
+
+
+<pre>(int)(Math.random()*6) + 1</pre>
+
+
+<p>does the computation you need to select a random integer between 1 and 6.
+You can assign this value to a variable to represent one of the dice that are
+being rolled. Do this twice and add the results together to get the total roll.
+Your program should report the number showing on each die as well as the total
+roll. For example:</p>
+
+
+<pre>The first die comes up 3
+The second die comes up 5
+Your total roll is 8</pre>
+   
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+
+<p>When designing a program, one of the first things you should ask yourself
+is, "What values do I need to represent?" The answer helps you decide what
+variables to declare in the program. This program will need some variables to
+represent the numbers showing on each die and the total of the two dice. Since
+these numbers are all integers, we can use three variables of type
+<span class="ptype">int</span>. I'll call the variables <span class="code">die1</span>, <span class="code">die2</span>, and
+<span class="code">roll</span>. The program begins by declaring the variables:</p>
+
+
+<pre>int die1;
+int die2;
+int roll;</pre>
+
+
+<p>In the actual program, of course, I've added a comment to explain the
+purpose of each variable. The values of <span class="code">die1</span> and <span class="code">die2</span> can be
+computed using the expression given in the exercise:</p>
+
+
+<pre>die1 = (int)(Math.random()*6) + 1;
+die2 = (int)(Math.random()*6) + 1;</pre>
+
+
+<p>Note that even though the expressions on the right-hand sides of these
+assignment statements are the same, the values can be different because the
+function <span class="code">Math.random()</span> can return different values when it is called
+twice.</p>
+
+
+<p>We can then compute <span class="code">roll = die1 + die2</span> and use three
+<span class="code">System.out.println</span> statements to display the three lines of
+output:</p>
+
+
+<pre>System.out.println("The first die comes up " + die1);
+System.out.println("The second die comes up " + die2);
+System.out.println("Your total roll is " + roll);</pre>
+
+
+<p>Note that I've chosen to use the concatenation operator, <span class="code">+</span>, to
+append the value of <span class="code">die1</span> onto the string "The first die comes up".
+Alternatively, I could use two output statements:</p>
+
+
+<pre>System.out.print("The first die comes up ");
+System.out.println(die);</pre>
+
+
+<p>I'll also note that I could get away without the variable <span class="code">roll</span>,
+since I could output the value of the expression <span class="code">die1 + die2</span>
+directly:</p>
+
+
+<pre>System.out.println("Your total roll is " + (die1 + die2));</pre>
+
+
+<p>However, it's generally better style to have a meaningful name for a
+quantity. By the way, the parentheses around <span class="code">(die1 + die2)</span> are
+essential because of the precedence rules for the <span class="code">+</span> operator. You
+might try to experiment with leaving them out and see what happens.</p>
+   
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">public class RollTheDice {
+   
+    /*  This program simulates rolling a pair of dice.
+        The number that comes up on each die is output,
+        followed by the total of the two dice.
+    */
+ 
+    public static void main(String[] args) {
+    
+        int die1;   // The number on the first die.
+        int die2;   // The number on the second die.
+        int roll;   // The total roll (sum of the two dice).
+        
+        die1 = (int)(Math.random()*6) + 1;
+        die2 = (int)(Math.random()*6) + 1;
+        roll = die1 + die2;
+        
+        System.out.println("The first die comes up " + die1);
+        System.out.println("The second die comes up " + die2);
+        System.out.println("Your total roll is " + roll);
+
+    }  // end main()
+ 
+}  // end class</pre>
+   
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

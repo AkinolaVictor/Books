@@ -1,0 +1,14 @@
+<html><head><title>Forcing the Frame</title>
+<script type = "text/javascript">
+	if (window != top) {     // True if window is not the top
+		                 // window in the hierarchy
+		top.location.href = location.href;  
+		// Put this window on top
+		}
+	</script>
+<body bgcolor="lightblue">
+<h1>
+The important page that we're talking about
+</h1>
+</body>
+</html>

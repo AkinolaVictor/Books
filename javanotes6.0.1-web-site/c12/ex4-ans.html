@@ -1,0 +1,367 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 4, Chapter 12</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 12.4</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 12.4:</h3>
+<p>In <a href="../c11/ex3-ans.html">Exercise&nbsp;11.3</a>, you wrote a network server program
+that can send text files from a specified directory to clients.  That program used
+a single thread, which handled all the communication with each client.  Modify the
+program to turn it into a multithreaded server.  Use a thread pool of
+connection-handling threads and use an <span class="classname">ArrayBlockingQueue</span>
+to get connected sockets from the <span class="code">main()</span> routine to the threads.
+The sample program <span class="sourceref"><a href="../source/DateServerWithThreads.java">DateServerWithThreads.java</a></span> from <a href="../c12/s4.html#threads.4.3">Subsection&nbsp;12.4.3</a>
+is an example of a multithreaded server that works in this way.
+Your server program will work with the same client program as the
+original server.  You wrote the client program as the solution to 
+<a href="../c11/ex4-ans.html">Exercise&nbsp;11.4</a>.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>This is not a difficult exercise, given the model in 
+<span class="code">DateServerWithThreads.java</span>.   My solution to
+<a href="../c11/ex3-ans.html">Exercise&nbsp;11.3</a>, <span class="code">FileServer,java</span>, already has a method</p>
+
+<pre>private static void handleConnection(File directory, Socket connection)</pre>
+
+<p>to handle a connection with one client.  
+The connection in this method is represented by a <span class="classname">Socket</span>.
+The <span class="classname">File</span> in this method represents the directory that 
+contains the file server's files; it is set at the beginning of the program
+and does not change after that.  So, the only thing that we have to send
+in the queue from the main program to the connection-handling threads is
+the socket that represnets a given connection.  So, the queue can be a 
+queue of <span class="classname">Sockets</span>:</p>
+
+<pre>private static ArrayBlockingQueue&lt;Socket&gt; connectionQueue;</pre>
+
+<p>A connection-handling thread runs in an infinite loop in which it 
+takes a socket from this queue and uses it to communicate with the client.
+I could have moved the code from the <span class="code">handleConnection()</span>
+method into the run method of the thread, but I decided it would be 
+easier to have the <span class="code">run()</span> method call the method that
+already exists.  I also need to pass the directory to the 
+<span class="code">handleConnection()</span> method, so the thread needs some
+way of knowing the directory.  I pass the directory to the thread
+in the thread's constructor.  (An alternative would have been to
+make it a global variable, as I did for the queue.)  Here is
+the class that defines the connection-handling threads:</p>
+
+<pre>private static class ConnectionHandler extends Thread {
+    File directory;  // The directory that contains the files
+                     // that are made available on this server.
+    ConnectionHandler(File directory) {
+        this.directory = directory;
+        setDaemon(true);
+    }
+    public void run() {
+        while (true) {
+            try {
+                Socket connection = connectionQueue.take();
+                handleConnection(directory,connection);
+            }
+            catch (Exception e) {
+            }
+        }
+    }
+}</pre>
+
+<p>The main program creates and starts several threads belonging to this
+class, before it starts listening for connection requests.  Other changes
+are straightforward.  You can see the details in the complete solution,
+given below.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<p>
+<b>Changes from the solution of <a href="../c11/ex3-ans.html">Exercise&nbsp;11.3</a> are shown in red:</b>
+</p>
+
+<pre class="exercisecode">import java.net.*;
+import java.io.*;
+import java.util.Scanner;
+import java.util.concurrent.ArrayBlockingQueue;
+
+/**
+ * This program is a very simple network file server.  The 
+ * server has a list of available text files that can be
+ * downloaded by the client.  The client can also download
+ * the list of files.  When the connection is opened, the
+ * client sends one of two possible commands to the server:
+ * "index" or "get &lt;file-name&gt;".  The server replies to
+ * the first command by sending the list of available files.
+ * It responds to the second with a one-line message,
+ * either "ok" or "error".  If the message is "ok", it is
+ * followed by the contents of the file with the specified
+ * name.  The "error" message indicates that the specified
+ * file does not exist on the server. (The server can also
+ * respond with the message "unknown command" if the command
+ * it reads is not one of the two possible legal commands.)
+ * 
+ * The server program requires a command-line parameter
+ * that specifies the directory that contains the files
+ * that the server can serve.  The files should all be
+ * text files, but this is not checked.  Also, the server
+ * must have permission to read all the files.
+ * 
+ <span class="newcode">* This version of the program defines a multithreaded
+ * server that uses a thread pool.  The threads handle
+ * all communication with the clients.  The main program
+ * simply accepts connections and puts them into a queue.
+ * The connection-handling threads in the thread pool remove
+ * connections from the queue as they become available.</span>
+ */
+public class ThreadedFileServer {
+
+    static final int LISTENING_PORT = 3210;
+    
+    <span class="newcode">/**
+     * The number of threads in the thread pool.
+     */
+    private static final int THREAD_POOL_SIZE = 10;
+    
+    /**
+     * The length of the ArrayBlockingQueue of connections.
+     * This should not be too big, since connections in the
+     * queue are waiting for service and hopefully won't 
+     * spend too long in the queue.
+     */
+    private static final int CONNECTION_QUEUE_SIZE = 5;
+    
+    /**
+     * The queue that is used to send connections from the
+     * main program to the connection-handling threads.
+     * A connection is represented by a connected Socket.
+     */
+    private static ArrayBlockingQueue&lt;Socket&gt; connectionQueue;</span>
+    
+    
+    /**
+     * Main program <span class="newcode">creates the thread pool</span>, then opens a
+     * server socket to listen for connection requests.
+     */
+    public static void main(String[] args) {
+
+        File directory;        // The directory from which the server
+        //    gets the files that it serves.
+
+        ServerSocket listener; // Listens for connection requests.
+
+        Socket connection;     // A socket for communicating with a client.
+
+
+        /* Check that there is a command-line argument.
+         If not, print a usage message and end. */
+
+        if (args.length == 0) {
+            System.out.println("Usage:  java FileServer &lt;directory&gt;");
+            return;
+        }
+
+        /* Get the directory name from the command line, and make
+         it into a file object.  Check that the file exists and
+         is in fact a directory. */
+
+        directory = new File(args[0]);
+        if ( ! directory.exists() ) {
+            System.out.println("Specified directory does not exist.");
+            return;
+        }
+        if (! directory.isDirectory() ) {
+            System.out.println("The specified file is not a directory.");
+            return;
+        }
+        
+        <span class="newcode">/* Create the connection queue.  We want to do this before 
+         * creating the threads, which need to use the queue. */
+        
+        connectionQueue = new ArrayBlockingQueue&lt;Socket&gt;(CONNECTION_QUEUE_SIZE);
+        
+        /* Create the thread pool and start the threads.  The directory
+         * that contains the files is passed to each thread as a
+         * parameter to its constructor.  Note that there is no
+         * need to keep references to the threads, since we don't have
+         * to do anything with them in this program after they have
+         * been started.*/
+        
+        for (int i = 0; i &lt; THREAD_POOL_SIZE; i++) {
+            ConnectionHandler worker = new ConnectionHandler(directory);
+            worker.start();
+        }</span>
+
+        /* Listen for connection requests from clients.  For each 
+         * connection, add the connected socket to the connection
+         * queue.  The server runs until the program is terminated, 
+         * for example by a CONTROL-C. */
+
+        try {
+            listener = new ServerSocket(LISTENING_PORT);
+            System.out.println("Listening on port " + LISTENING_PORT);
+            while (true) {
+                connection = listener.accept();
+                <span class="newcode">connectionQueue.add(connection);</span>
+            }
+        }
+        catch (Exception e) {
+            System.out.println("Server shut down unexpectedly.");
+            System.out.println("Error:  " + e);
+            return;
+        }
+
+    } // end main()
+
+
+    <span class="newcode">/**
+     * The class that defines the connection-handling threads in the
+     * thread pool.  The thread runs in an infinite loop in which
+     * it removes a connected socket from the connection queue and
+     * calls the handleConnection() method for that socket.
+     */
+    private static class ConnectionHandler extends Thread {
+        File directory;  // The directory that contains the files
+                         // that are made available on this server.
+        ConnectionHandler(File directory) {
+            this.directory = directory;
+            setDaemon(true);
+        }
+        public void run() {
+            while (true) {
+                try {
+                    Socket connection = connectionQueue.take();
+                    handleConnection(directory,connection);
+                }
+                catch (Exception e) {
+                }
+            }
+        }
+    }</span>
+    
+    
+    /**
+     * This method processes process the connection with one client.
+     * It creates streams for communicating with the client,
+     * reads a command from the client, and carries out that
+     * command.  The connection is also logged to standard output.
+     * An output beginning with ERROR indicates that a network
+     * error occurred.  A line beginning with OK means that
+     * there was no network error, but does not imply that the
+     * command from the client was a legal command.
+     */
+    private static void handleConnection(File directory, Socket connection) {
+        Scanner incoming;       // For reading data from the client.
+        PrintWriter outgoing;   // For transmitting data to the client.
+        String command = "Command not read";
+        try {
+            incoming = new Scanner( connection.getInputStream() );
+            outgoing = new PrintWriter( connection.getOutputStream() );
+            command = incoming.nextLine();
+            if (command.equals("index")) {
+                sendIndex(directory, outgoing);
+            }
+            else if (command.startsWith("get")){
+                String fileName = command.substring(3).trim();
+                sendFile(fileName, directory, outgoing);
+            }
+            else {
+                outgoing.println("unsupported command");
+                outgoing.flush();
+            }
+            System.out.println("OK    " + connection.getInetAddress()
+                    + " " + command);
+        }
+        catch (Exception e) {
+            System.out.println("ERROR " + connection.getInetAddress()
+                    + " " + command + " " + e);
+        }
+        finally {
+            try {
+                connection.close();
+            }
+            catch (IOException e) {
+            }
+        }
+    }
+
+    /**
+     * This is called by the run() method in response to an "index" command
+     * from the client.  Send the list of files in the server's directory.
+     */
+    private static void sendIndex(File directory, PrintWriter outgoing) throws Exception {
+        String[] fileList = directory.list();
+        for (int i = 0; i &lt; fileList.length; i++)
+            outgoing.println(fileList[i]);
+        outgoing.flush();
+        outgoing.close();
+        if (outgoing.checkError())
+            throw new Exception("Error while transmitting data.");
+    }
+
+    /**
+     * This is called by the run() command in response to "get &lt;fileName&gt;" 
+     * command from the client.  If the file doesn't exist, send the message "error".
+     * Otherwise, send the message "ok" followed by the contents of the file.
+     */
+    private static void sendFile(String fileName, File directory, PrintWriter outgoing) throws Exception {
+        File file = new File(directory,fileName);
+        if ( (! file.exists()) || file.isDirectory() ) {
+            // (Note:  Don't try to send a directory, which
+            // shouldn't be there anyway.)
+            outgoing.println("error");
+        }
+        else {
+            outgoing.println("ok");
+            BufferedReader fileIn = new BufferedReader( new FileReader(file) );
+            while (true) {
+                // Read and send lines from the file until
+                // an end-of-file is encountered.
+                String line = fileIn.readLine();
+                if (line == null)
+                    break;
+                outgoing.println(line);
+            }
+        }
+        outgoing.flush(); 
+        outgoing.close();
+        if (outgoing.checkError())
+            throw new Exception("Error while transmitting data.");
+    }
+
+
+} //end class FileServer
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

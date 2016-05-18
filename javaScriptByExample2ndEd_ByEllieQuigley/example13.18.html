@@ -1,0 +1,46 @@
+<html><title>Check it Out!</title><head>
+  <script type="text/javascript">
+   // Script modified from original found at
+   // http://javascript.internet.com
+	function okForm(form){
+		if (form.accept.checked == true){
+			  return true;
+		}
+		else{
+			  alert("Please check the box!");
+			  form.accept.focus();
+			  return false;
+		}
+	}
+   </script>
+</head>
+<body bgcolor="#CCCCFF">
+  <font face="arial,helvetica" size=2>
+  <form action="http://localhost/phpexamples/processform.php"
+		  method="post"
+		  onSubmit="return okForm(this)">
+		 <b>Your name:</b><br />
+	<input type="text" name="yourname">
+	     	<p>
+	     	<b>What will you purchase today?</b><br />
+	     	</p>
+        <input 	type="radio" name="choice" 
+               	value="burger">Burger, fries and coke
+	      	<br />
+	<input 	type="radio" name="choice" 
+               	value="veggie">Veggies and Vitamin water
+	    	<p>
+	  	 <b>Thank you for your order. 
+        	Check the box and then "Go to Checkout".</b></p>
+	<input 	type="checkbox"
+		name="accept"
+		value="0"  >
+	<input 	type="submit"
+		value="Go to checkout" >
+		      <p>
+	<input 	type="button"
+	       	value="Go back to Home Page"
+		       onClick="window.location.replace('http://localhost';)" >
+   </form>
+</body>
+</html>		 

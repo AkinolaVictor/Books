@@ -1,0 +1,273 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 1, Chapter 12</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 12.1</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 12.1:</h3>
+<p>
+<a href="../c12/s1.html#threads.1.3">Subsection&nbsp;12.1.3</a> discusses the need for synchronization
+in multithreaded programs, and it defines a <span class="classname">ThreadSafeCounter</span> class with
+the necessary synchronization.  Is this really important?  Can you really get errors
+by using an unsynchronized counter with multiple threads?  Write a program to find out.
+Use the following unsynchronized counter class, which you can include as a nested class in
+your program:</p>
+
+<pre>static class Counter {
+    int count;
+    void inc() {
+        count = count+1;
+    }
+    int getCount() {
+        return count;
+    }
+}</pre>
+
+<p>Write a thread class that will call the <span class="code">inc()</span> method in this class a
+specified number of times.  Create several threads, start them all, and wait for all
+the threads to terminate.  Print the final value of the counter, and see whether it
+is correct.</p>
+
+<p>Let the user enter the number of threads and the number of times that each thread
+will increment the counter.  You might need a fairly large number of increments to
+see an error.  And of course there can never be any error if you use just one
+thread.  Your program can use <span class="code">join()</span> to wait for a thread to
+terminate (see <a href="../c12/s1.html#threads.1.2">Subsection&nbsp;12.1.2</a>).</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>The necessary thread class is very simple to write.  In my
+program, it's a static nested class that uses two global variables, which
+represent the counter and the number of times that the thread is to increment
+the counter:</p>
+
+<pre>static Counter counter;          // The counter that will be incremented.
+static int numberOfIncrements;   // Number of times each thread will increment it.
+
+static class IncrementerThread extends Thread {
+    public void run() {
+        for (int i = 0; i &lt; numberOfIncrements; i++) {
+            counter.inc();
+        }
+    }
+}</pre>
+
+<p>In the <span class="code">main()</span> routine, after getting the number of threads and
+the number of increments from the user, we need to create the threads, start them,
+and wait for them to terminate.  We have to do the part about starting all the
+threads before we get to the part about waiting for threads to terminate, so
+we need an array to hold the threads:</p>
+
+<pre>IncrementerThread[] workers = new IncrementerThread[numberOfThreads];
+counter = new Counter();
+for (int i = 0; i &lt; numberOfThreads; i++)
+    workers[i] = new IncrementerThread();
+for (int i = 0; i &lt; numberOfThreads; i++)
+    workers[i].start();
+
+/* Wait for all threads to terminate. */
+
+for (int i = 0; i &lt; numberOfThreads; i++) {
+    try {
+        workers[i].join();
+    }
+    catch (InterruptedException e) {
+    }
+}</pre>
+
+<p>(I hope that it's clear that you can't start a thread, wait for it to finish,
+start another thread, wait for it to finish, and so on.  If you did that, you'd only
+have one thread running at any given time, and you would certainly not see any
+errors in the counter!)</p>
+
+<p>My program actually runs in a loop, so the user can run several experiments
+without restarting the program every time.</p>
+
+<p>In my own experiments, I saw a lot of errors when the number of increments per
+thread was one million, even with just two threads.  For small numbers of increments, less than about 1000, I never
+saw any errors. (This might be because the threads didn't run long enough to actually
+get more than one running at a time.)  I saw a few errors when I used a large number
+of threads with 1000 increments per thread.</p>
+
+<p>Making <span class="code">inc()</span> into a synchronized method completely solves the problem.
+If you try that, you should find that the program takes noticeably longer to run, because
+of the extra overhead associated with the synchronization.  Simply declaring the
+variable <span class="code">count</span> to be <span class="code">volatile</span> does <b>not</b> fix the
+problem, since the race condition still exists. (In fact, curiously, I found that the
+number of errors increased when I made <span class="code">count</span> <span class="code">volatile</span>, possibly because
+accessing the volatile variable can cause a thread to block briefly and give another 
+thread the chance to jump in.)</p>
+
+<p>This exercise shows that synchronization errors can happen.  In many programs,
+they would be very rare, but serious when they occur.  Unfortunately, when trying to
+track down a bug that is due to a synchronization error, it might be very difficult
+to reproduce the error, since such errors depend on accidents of timing between
+two threads that are running independently.  This makes it all the more important to
+analyze your program carefully and get it right when you are writing it in the first place, 
+rather than count on your ability to debug it later.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">import java.util.Scanner;
+
+/**
+ * A demo program to see how hard it is to get an
+ * error while using an unsynchronized counter with
+ * several threads.  The program runs one or more
+ * threads.  Each thread increments the counter a
+ * specified number of times.  After all the threads
+ * have completed, the value of the counter is 
+ * printed out so it can be compared to the correct
+ * value.  The user specifies the number of threads
+ * and the number of times each thread increments the
+ * counter.  (To see an error, the number of increments
+ * probably has to be pretty large.  Try 1000000.)
+ */
+public class UnsynchronizedCounterTest {
+    
+    /**
+     * A class representing a counter with a method for
+     * incrementing the counter.  No synchronization is
+     * used, so this counter is not "thread-safe".
+     */
+    static class Counter {
+        int count;
+        void inc() {
+            count = count+1;
+        }
+        int getCount() {
+            return count;
+        }
+    }
+    
+
+    static Counter counter;          // The counter that will be incremented.
+    static int numberOfIncrements;   // Number of times each thread will increment it.
+    
+    
+    /**
+     * The class that defines one of the threads.  The thread
+     * simply increments counter numberOfIncrements times, in
+     * a for loop.
+     */
+    static class IncrementerThread extends Thread {
+        public void run() {
+            for (int i = 0; i &lt; numberOfIncrements; i++) {
+                counter.inc();
+            }
+        }
+    }
+    
+    
+    /**
+     * The main program runs in a loop until the user wants to exit.
+     * Each time through the loop, it runs one experiment.  It gets
+     * the number of threads and the number of increments per thread
+     * from the user.  It creates and starts the threads, and then
+     * waits for them all to finish.  It prints the final value of
+     * the counter, as well as the expected value.  The program ends
+     * when the user enters a number less than or equal to zero as
+     * the number of threads.
+     */
+    public static void main(String[] args) {
+
+        Scanner in = new Scanner(System.in);  // For reading the user's inputs.
+        
+        while (true) {
+            
+            /* Get number of threads and number of increments per thread
+             * from the user.  Exit if number of threads is &lt;= 0. */
+            
+            System.out.println();
+            System.out.print("How many threads do you want to run (Enter 0 to end)? ");
+            int numberOfThreads = in.nextInt();
+            if (numberOfThreads &lt;= 0) 
+                break;
+            
+            do {
+                System.out.println();
+                System.out.println("How many times should each thread increment the counter? ");
+                numberOfIncrements = in.nextInt();
+                if (numberOfIncrements &lt; 1) {
+                    System.out.println("Number of increments must be positive.");
+                    numberOfIncrements = 1;
+                }
+            } while (numberOfIncrements &lt;= 0);
+            
+            System.out.println();
+            System.out.println("Using " + numberOfThreads + " threads.");
+            System.out.println("Each thread increments the counter " 
+                                             + numberOfIncrements + " times.");
+            
+            /* Create the threads and start them. */
+            
+            System.out.println();
+            System.out.println("Working...");
+            System.out.println();
+            IncrementerThread[] workers = new IncrementerThread[numberOfThreads];
+            counter = new Counter();
+            for (int i = 0; i &lt; numberOfThreads; i++)
+                workers[i] = new IncrementerThread();
+            for (int i = 0; i &lt; numberOfThreads; i++)
+                workers[i].start();
+            
+            /* Wait for all threads to terminate. */
+            
+            for (int i = 0; i &lt; numberOfThreads; i++) {
+                try {
+                    workers[i].join();
+                }
+                catch (InterruptedException e) {
+                }
+            }
+            
+            /* Display the results. */
+            
+            System.out.println("The final value of the counter should be "
+                                                     + (numberOfIncrements*numberOfThreads));
+            System.out.println("Actual final value of counter is: " + counter.getCount());
+            System.out.println();
+            System.out.println();
+            
+        } // end while
+        
+    } // end main()
+    
+
+} // end class UnsynchronizedCounterTest
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

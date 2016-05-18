@@ -1,0 +1,19 @@
+<html><head><title>Preloading Images</title>
+<h2>This Is Baby William</h2>
+<script type="text/javascript">
+	function preLoadImages(){
+        	baby = new Array();  // global variable
+ 	 	baby[0]=new Image();
+             	baby[0].src="baby1.jpg";
+        	baby[1]=new Image();     // Preload an image
+          	baby[1].src="baby2.jpg";
+	}
+</script>
+</head>
+<body bgcolor="cornflowerblue" onLoad="preLoadImages();">
+	<a href="#" onMouseOver="document.willy.src=baby[1].src;"
+ 		    onMouseOut="document.willy.src=baby[0].src;">
+         <img name="willy"  src="baby1.jpg" width=190 height=200>
+ 	</a>
+</body>
+</html>

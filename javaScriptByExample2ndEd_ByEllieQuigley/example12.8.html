@@ -1,0 +1,36 @@
+
+ <html><head><title>Using Links </title>
+
+ <map name="my_image_map">
+   <area shape="rect" href="file:///C:/wamp/www/spring5.jpg"onclick=
+      "this.href='javascript:void(0)';this.disable=true">
+    <area shape="rect" href="file:///C:/wamp/www/spring2.jpg"onclick=
+      "this.href='javascript:void(0)';this.disable=true">
+    <area shape="rect" href="file:///C:/wamp/www/spring3.jpg"onclick=
+      "this.href='javascript:void(0)';this.disable=true">
+    <area shape="rect" href="file:///C:/wamp/www/spring4.jpg"onclick=
+      "this.href='javascript:void(0)';this.disable=true">
+    <area shape="rect" href="file:///C:/wamp/www/spring5.jpg" onclick=
+       "this.href='javascript:void(0)';this.disable=true">
+    <area shape="rect" href="file:///C:/wamp/www/spring6.JPG" onclick=
+       "this.href='javascript:void(0)';this.disable=true">
+    <area shape="default" href="file:///C:/wamp/www/spring1.JPG">
+  </map>
+  </head>
+  <body>
+  <div align="center">
+  <h2>Spring in San Francisco</h2>
+  <img src="file:///C:/wamp/www/spring1.jpg" height=257 width=343 usemap="#my_image_map">
+	<script type="text/javascript">
+		var lstr = "<ul>";  // tag to create a bulleted list
+        var len = document.links.length - 1;
+		for ( var i = 1; i < len; i++ ){  // Create links
+			lstr += "<li><a href=" + document.links[i].href;
+			lstr += ">spring" + i +" </a>\n";
+		}
+		lstr += "</ul>";
+		document.write(lstr);
+	</script>
+	</div>
+	</body>
+	</html>

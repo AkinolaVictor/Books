@@ -1,0 +1,41 @@
+ <html><title>Object object</title>
+  <head>
+     <script type="text/javascript">
+      function Book(title, author){
+	   this.title =title;
+	   this.author=author;
+     }
+    </script>
+   </head>
+   <body bgColor="#EOFFFF">
+   <big>
+   <script>
+      Book.prototype.publisher="Oxford Press";
+      Object.prototype.category="Fiction";
+      var tale = new Book("Kidnapped","R.L.Stevenson");
+      document.write("The value of Object's category property is "+
+             Object.prototype.category +"<br />");
+      if(tale.constructor == Book){
+          document.write("tale is a Book object<br />");
+         document.write("The Book's constructor is defined as: "+
+             tale.constructor + "<br />");
+     }
+     if(tale.hasOwnProperty("author")){
+            document.write("The object has an author property.</br>");
+     }
+
+     if(Book.prototype.isPrototypeOf(tale)){
+         document.write("Book is a prototype of object tale.<br />");
+     }
+
+     if(tale instanceof Book){
+         document.write("tale is an instance of Book.<br />");
+     }
+     if(tale instanceof Object){
+         document.write("tale is an instance of Object.<br />");
+     }
+
+  </script>
+  </big>
+ </body>
+</html>

@@ -1,0 +1,29 @@
+<html>
+<head><title>Changing Background Color Dynamically</title>
+  <script type="text/javascript">
+	function bodyColor(){
+		var i = document.form1.body.selectedIndex;
+ 		bodycolor = document.form1.body.options[i].value;
+ 		document.getElementById("bdy").style.backgroundColor=bodycolor;
+	}
+  </script>
+</head>
+<body id="bdy">
+   <p>
+		Pick a background color for this page.
+   </p>
+   <form name="form1">
+   <b> Color </b>
+      <select name="body" onChange="bodyColor();" >
+		<option value="pink">pink</option>
+		<option value="lightblue">blue</option>
+		<option value="yellow">yellow</option>
+		<option value="lightgreen">green</option>
+      </select>
+   <br />
+   </form>
+   <p>
+		This is a test.
+   </p>
+</body>
+</html> 

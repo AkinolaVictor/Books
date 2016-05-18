@@ -1,0 +1,21 @@
+<html><head><title>The Character Class</title>
+</head>
+<body>
+<script type="text/javascript">
+// Character class
+	var reg_expression = /[A-Za-z0-9_]/;   // A single alphanumeric
+		                                       // word character
+	var textString=prompt("Type a string of text","");
+	var result=reg_expression.test(textString);  // Returns true
+		                                             // or false
+	document.write(result+"<br/>");
+	if (result){
+ 		document.write("<b>The reg_ex /[A-Za-z0-9_]/ matched the string\""+
+ 		textString +"\".<br>");
+	}
+	else{
+		alert("No Match!");
+		}
+</script>
+</body>
+</html>

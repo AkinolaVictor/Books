@@ -1,0 +1,416 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 8.1 -- Introduction to Correctness and Robustness</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s2.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#robustness.1.1">Horror Stories</a>
+<br>
+<a href="#robustness.1.2">Java to the Rescue</a>
+<br>
+<a href="#robustness.1.3">Problems Remain in Java</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 8.1</h3>
+<h2 class="section_title">Introduction to Correctness and Robustness</h2>
+<hr class="break">
+
+
+<p>
+<span class="start"><big>A</big> program</span> is <span class="newword">correct</span>
+if it accomplishes the task that it was designed to perform. 
+It is <span class="newword">robust</span> if it can handle illegal inputs and other unexpected
+situations in a reasonable way. For example, consider a program that is
+designed to read some numbers from the user and then print the same numbers in
+sorted order. The program is correct if it works for any set of input numbers.
+It is robust if it can also deal with non-numeric input by, for example,
+printing an error message and ignoring the bad input. A non-robust program
+might crash or give nonsensical output in the same circumstance.</p>
+
+
+<p>Every program should be correct. (A sorting program that doesn't sort
+correctly is pretty useless.) It's not the case that every program needs to be
+completely robust. It depends on who will use it and how it will be used. For
+example, a small utility program that you write for your own use doesn't have
+to be particularly robust.</p>
+
+
+<p>The question of correctness is actually more subtle than it might appear. A
+programmer works from a specification of what the program is supposed to do.
+The programmer's work is correct if the program meets its specification. But
+does that mean that the program itself is correct? What if the specification is
+incorrect or incomplete? A correct program should be a correct implementation
+of a complete and correct specification. The question is whether the
+specification correctly expresses the intention and desires of the people for
+whom the program is being written. This is a question that lies largely outside
+the domain of computer science.</p>
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="robustness.1.1">8.1.1&nbsp;&nbsp;Horror Stories</a>
+</h3>
+
+
+<p>Most computer users have personal experience with programs that don't work
+or that crash. In many cases, such problems are just annoyances, but even on a
+personal computer there can be more serious consequences, such as lost work or
+lost money. When computers are given more important tasks, the consequences of
+failure can be proportionately more serious.</p>
+
+
+<p>Just about a decade ago, the failure of two multi-million dollar space missions to
+Mars was prominent in the news. Both failures were probably due to software
+problems, but in both cases the problem was not with an incorrect program as
+such. In September 1999, the Mars Climate Orbiter burned up in the Martian
+atmosphere because data that was expressed in English units of measurement
+(such as feet and pounds) was entered into a computer program that was designed
+to use metric units (such as centimeters and grams). A few months later, the
+Mars Polar Lander probably crashed because its software turned off its landing
+engines too soon. The program was supposed to detect the bump when the
+spacecraft landed and turn off the engines then. It has been determined that
+deployment of the landing gear might have jarred the spacecraft enough to
+activate the program, causing it to turn off the engines when the spacecraft
+was still in the air. The unpowered spacecraft would then have fallen to the
+Martian surface. A more robust system would have checked the altitude before
+turning off the engines!</p>
+
+
+<p>There are many equally dramatic stories of problems caused by incorrect or
+poorly written software. Let's look at a few incidents recounted in the book
+<i>Computer Ethics</i> by Tom Forester and Perry Morrison. (This book
+covers various ethical issues in computing. It, or something like it, is
+essential reading for any student of computer science.)</p>
+
+
+<ul>
+
+<li>In 1985 and 1986, one person was killed and several were injured by excess
+radiation, while undergoing radiation treatments by a mis-programmed
+computerized radiation machine. In another case, over a ten-year period ending
+in 1992, almost 1,000 cancer patients received radiation dosages that were 30%
+less than prescribed because of a programming error.</li>
+
+<li>In 1985, a computer at the Bank of New York started destroying records of
+on-going security transactions because of an error in a program. It took less
+than 24 hours to fix the program, but by that time, the bank was out $5,000,000
+in overnight interest payments on funds that it had to borrow to cover the
+problem.</li>
+
+<li>The programming of the inertial guidance system of the F-16 fighter plane
+would have turned the plane upside-down when it crossed the equator, if the
+problem had not been discovered in simulation. The Mariner 18 space probe was
+lost because of an error in one line of a program. The Gemini V space capsule
+missed its scheduled landing target by a hundred miles, because a programmer
+forgot to take into account the rotation of the Earth.</li>
+
+<li>In 1990, AT&amp;T's long-distance telephone service was disrupted throughout
+the United States when a newly loaded computer program proved to contain a
+bug.</li>
+
+</ul>
+
+
+<p>Of course, there have been more recent problems.  For example, 
+computer software error contributed to the 
+<a href="http://en.wikipedia.org/wiki/Northeast_Blackout_of_2003">Northeast&nbsp;Blackout</a>
+of 2003, one of the largest power outages in history. 
+In 2006, the Airbus A380 was <a href="http://www.cadalyst.com/cad/product-design/what-grounded-airbus-a380-10903">delayed</a>
+by software incompatibility problems, at a cost of perhaps billions of dollars.
+In 2007, a 
+<a href="http://www.cbsnews.com/stories/2007/06/20/travel/main2955199.shtml">software&nbsp;</a> grounded
+thousands of planes at the Los Angeles International Airport.
+On May 6, 2010,
+a flaw in an automatic trading program apparently 
+<a href="http://www.computerworld.com/s/article/9189179/Regulators_blame_computer_algorithm_for_stock_market_flash_crash_">resulted&nbsp;in</a> a 1000-point drop
+in the Dow Jones Industrial Average.</p>
+
+
+<p>These are just a few examples. Software problems are all too common. As
+programmers, we need to understand why that is true and what can be done about
+it.</p>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="robustness.1.2">8.1.2&nbsp;&nbsp;Java to the Rescue</a>
+</h3>
+
+
+<p>Part of the problem, according to the inventors of Java, can be traced to
+programming languages themselves. Java was designed to provide some protection
+against certain types of errors. How can a language feature help prevent
+errors? Let's look at a few examples.</p>
+
+
+<p>Early programming languages did not require variables to be declared. In
+such languages, when a variable name is used in a program, the variable is
+created automatically. You might consider this more convenient than having to
+declare every variable explicitly, but there is an unfortunate consequence: An
+inadvertent spelling error might introduce an extra variable that you had no
+intention of creating. This type of error was responsible, according to one
+famous story, for yet another lost spacecraft. In the <span class="code">FORTRAN</span>
+programming language, the command "<span class="code">DO 20 I = 1,5</span>" is the first
+statement of a counting loop. Now, spaces are insignificant in <span class="code">FORTRAN</span>, so this
+is equivalent to "<span class="code">DO20I=1,5</span>". On the other hand, the command
+"<span class="code">DO20I=1.5</span>", with a period instead of a comma, is an assignment
+statement that assigns the value <span class="code">1.5</span> to the variable <span class="code">DO20I</span>.
+Supposedly, the inadvertent substitution of a period for a comma in a statement
+of this type caused a rocket to blow up on take-off. Because <span class="code">FORTRAN</span>
+doesn't require variables to be declared, the compiler would be happy to accept
+the statement "<span class="code">DO20I=1.5</span>." It would just create a new variable named
+<span class="code">DO20I</span>. If <span class="code">FORTRAN</span> required variables to be declared, the
+compiler would have complained that the variable <span class="code">DO20I</span> was
+undeclared.</p>
+
+
+<p>While most programming languages today do require variables to be declared,
+there are other features in common programming languages that can cause
+problems. Java has eliminated some of these features. Some people complain that
+this makes Java less efficient and less powerful. While there is some justice
+in this criticism, the increase in security and robustness is probably worth
+the cost in most circumstances. The best defense against some types of errors
+is to design a programming language in which the errors are impossible. In
+other cases, where the error can't be completely eliminated, the language can
+be designed so that when the error does occur, it will automatically be
+detected. This will at least prevent the error from causing further harm, and
+it will alert the programmer that there is a bug that needs fixing. Let's look
+at a few cases where the designers of Java have taken these approaches.</p>
+
+
+<p>An array is created with a certain number of locations, numbered from zero
+up to some specified maximum index. It is an error to try to use an array
+location that is outside of the specified range. In Java, any attempt to do so
+is detected automatically by the system. In some other languages, such as C and
+C++, it's up to the programmer to make sure that the index is within the legal
+range. Suppose that an array, <span class="code">A</span>, has three locations, <span class="code">A[0]</span>,
+<span class="code">A[1]</span>, and <span class="code">A[2]</span>. Then <span class="code">A[3]</span>, <span class="code">A[4]</span>, and so on
+refer to memory locations beyond the end of the array. In Java, an attempt to
+store data in <span class="code">A[3]</span> will be detected. The program will be terminated
+(unless the error is "caught", as discussed in <a href="../c3/s7.html">Section&nbsp;3.7</a>). 
+In C or C++, the computer will just go ahead and store the data in
+memory that is not part of the array. Since there is no telling what that
+memory location is being used for, the result will be unpredictable. The
+consequences could be much more serious than a terminated program. (See, for
+example, the discussion of buffer overflow errors later in this section.)</p>
+
+
+<p>Pointers are a notorious source of programming errors. In Java, a variable
+of object type holds either a pointer to an object or the special value
+<span class="code">null</span>. Any attempt to use a <span class="code">null</span> value as if it were a pointer
+to an actual object will be detected by the system. In some other languages,
+again, it's up to the programmer to avoid such null pointer errors. In my old
+Macintosh computer, a <span class="code">null</span> pointer was actually implemented as if it
+were a pointer to memory location zero. A program could use a null pointer to
+change values stored in memory near location zero. Unfortunately, the Macintosh
+stored important system data in those locations. Changing that data could cause
+the whole system to crash, a consequence more severe than a single failed
+program.</p>
+
+
+<p>Another type of pointer error occurs when a pointer value is pointing to an
+object of the wrong type or to a segment of memory that does not even hold a
+valid object at all. These types of errors are impossible in Java, which does
+not allow programmers to manipulate pointers directly. In other languages, it
+is possible to set a pointer to point, essentially, to any location in memory.
+If this is done incorrectly, then using the pointer can have unpredictable
+results.</p>
+
+
+<p>Another type of error that cannot occur in Java is a memory leak. In Java,
+once there are no longer any pointers that refer to an object, that object is
+"garbage collected" so that the memory that it occupied can be reused. In other
+languages, it is the programmer's responsibility to return unused memory to the
+system. If the programmer fails to do this, unused memory can build up, leaving
+less memory for programs and data. There is a story that many common programs
+for older Windows computers had so many memory leaks that the computer would run out
+of memory after a few days of use and would have to be restarted.</p>
+
+
+<p>Many programs have been found to suffer from <span class="newword">buffer overflow errors</span>. 
+Buffer overflow errors often make the news because they
+are responsible for many network security problems. When one computer receives
+data from another computer over a network, that data is stored in a buffer. The
+buffer is just a segment of memory that has been allocated by a program to hold
+data that it expects to receive. A buffer overflow occurs when more data is
+received than will fit in the buffer. The question is, what happens then? If
+the error is detected by the program or by the networking software, then the
+only thing that has happened is a failed network data transmission. The real
+problem occurs when the software does not properly detect buffer overflows. In
+that case, the software continues to store data in memory even after the buffer
+is filled, and the extra data goes into some part of memory that was not
+allocated by the program as part of the buffer. That memory might be in use for
+some other purpose. It might contain important data. It might even contain part
+of the program itself. This is where the real security issues come in. Suppose
+that a buffer overflow causes part of a program to be replaced with extra data
+received over a network. When the computer goes to execute the part of the
+program that was replaced, it's actually executing data that was received from
+another computer. That data could be anything. It could be a program that
+crashes the computer or takes it over. A malicious programmer who finds a
+convenient buffer overflow error in networking software can try to exploit that
+error to trick other computers into executing his programs.</p>
+
+
+<p>For software written completely in Java, buffer overflow errors are
+impossible. The language simply does not provide any way to store data into
+memory that has not been properly allocated. To do that, you would need a
+pointer that points to unallocated memory or you would have to refer to an
+array location that lies outside the range allocated for the array. As
+explained above, neither of these is possible in Java. (However, there could
+conceivably still be errors in Java's standard classes, since some of the
+methods in these classes are actually written in the C programming language
+rather than in Java.)</p>
+
+
+<p>It's clear that language design can help prevent errors or detect them when
+they occur. Doing so involves restricting what a programmer is allowed to do.
+Or it requires tests, such as checking whether a pointer is <span class="code">null</span>, that
+take some extra processing time. Some programmers feel that the sacrifice of
+power and efficiency is too high a price to pay for the extra security. In some
+applications, this is true. However, there are many situations where safety and
+security are primary considerations. Java is designed for such situations.</p>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="robustness.1.3">8.1.3&nbsp;&nbsp;Problems Remain in Java</a>
+</h3>
+
+
+<p>There is one area where the designers of Java chose not to detect errors
+automatically: numerical computations. In Java, a value of type <span class="ptype">int</span> is
+represented as a 32-bit binary number. With 32 bits, it's possible to represent
+a little over four billion different values. The values of type <span class="ptype">int</span>
+range from -2147483648 to 2147483647. What happens when the result of a
+computation lies outside this range? For example, what is
+<span class="code">2147483647&nbsp;+&nbsp;1</span>? And what is <span class="code">2000000000&nbsp;*&nbsp;2</span>? The
+mathematically correct result in each case cannot be represented as a value of
+type <span class="ptype">int</span>. These are examples of <span class="newword">integer overflow</span>. 
+In most cases, integer overflow should be considered an error.
+However, Java does not automatically detect such errors. For example, it will
+compute the value of <span class="code">2147483647&nbsp;+&nbsp;1</span> to be the negative number,
+<span class="code">-2147483648</span>. (What happens is that any extra bits beyond the 32-nd bit in the
+correct answer are discarded. Values greater than 2147483647 will "wrap around"
+to negative values. Mathematically speaking, the result is always "correct
+modulo 2<sup>32</sup>.")</p>
+
+
+<p>For example, consider the 3N+1 program, which was discussed in
+<a href="../c3/s2.html#control.2.2">Subsection&nbsp;3.2.2</a>. Starting from a positive integer
+<span class="code">N</span>, the program computes a certain sequence of integers:</p>
+
+
+<pre>while ( N != 1 ) {
+   if ( N % 2 == 0 )  // If N is even...
+      N = N / 2;
+   else
+      N = 3 * N + 1;
+   System.out.println(N);
+}</pre>
+
+
+<p>But there is a problem here: If <span class="code">N</span> is too large, then the value of
+<span class="code">3*N+1</span> will not be mathematically correct because of integer overflow.
+The problem arises whenever <span class="code">3*N+1 &gt; 2147483647</span>, that is when <span class="code">N
+&gt; 2147483646/3</span>. For a completely correct program, we should check for
+this possibility <b>before</b> computing <span class="code">3*N+1</span>:</p>
+
+
+<pre>while ( N != 1 ) {
+   if ( N % 2 == 0 )  // If N is even...
+      N = N / 2;
+   else {
+      if (N &gt; 2147483646/3) {
+         System.out.println("Sorry, but the value of N has become");
+         System.out.println("too large for your computer!");
+         break;
+      }
+      N = 3 * N + 1;
+   }
+   System.out.println(N);
+}</pre>
+
+
+<p>The problem here is not that the original algorithm for computing
+<span class="code">3N+1</span> sequences was wrong. The problem is that it just can't be
+correctly implemented using 32-bit integers. Many programs ignore this type of
+problem. But integer overflow errors have been responsible for their share of
+serious computer failures, and a completely robust program should take the
+possibility of integer overflow into account. (The infamous "Y2K" bug was, in
+fact, just this sort of error.)</p>
+
+
+<p>For numbers of type <span class="ptype">double</span>, there are even more problems. There are
+still overflow errors, which occur when the result of a computation is outside
+the range of values that can be represented as a value of type <span class="ptype">double</span>.
+This range extends up to about 1.7 times 10 to the power 308. Numbers beyond
+this range do not "wrap around" to negative values. Instead, they are
+represented by special values that have no real numerical equivalent. The special values
+<span class="code">Double.POSITIVE_INFINITY</span> and <span class="code">Double.NEGATIVE_INFINITY</span>
+represent numbers outside the range of legal values. For example, <span class="code">20&nbsp;*&nbsp;1e308</span> is
+computed to be <span class="code">Double.POSITIVE_INFINITY</span>. Another special value of type
+<span class="ptype">double</span>, <span class="code">Double.NaN</span>, represents an illegal or undefined
+result. ("NaN" stands for "Not a Number".) For example, the result of dividing zero
+by zero or taking the square root of a negative number is <span class="code">Double.NaN</span>.
+You can test whether a number <span class="code">x</span> is this special non-a-number value by
+calling the <span class="ptype">boolean</span>-valued function <span class="code">Double.isNaN(x)</span>.</p>
+
+
+<p>For real numbers, there is the added complication that most real numbers can
+only be represented approximately on a computer. A real number can have an
+infinite number of digits after the decimal point. A value of type
+<span class="ptype">double</span> is only accurate to about 15 digits. The real number 1/3, for
+example, is the repeating decimal <span class="code">0.333333333333...</span>, and there is no way to
+represent it exactly using a finite number of digits. Computations with real
+numbers generally involve a loss of accuracy. In fact, if care is not
+exercised, the result of a large number of such computations might be
+completely wrong! There is a whole field of computer science, known as
+<span class="newword">numerical analysis</span>, which is devoted to studying
+algorithms that manipulate real numbers.</p>
+
+
+
+<p>So you see that not all possible errors are avoided or detected automatically in Java. 
+Furthermore, even when an error is detected automatically, the system's default response is
+to report the error and terminate the program. This is hardly robust behavior!
+So, a Java programmer still needs to learn techniques for avoiding and dealing with
+errors. These are the main topics of the next three sections.</p>
+
+
+      
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s2.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

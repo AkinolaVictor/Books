@@ -1,0 +1,29 @@
+<html><head><title>Validating Phone Numbers</title>
+  <script type="text/javascript">
+	function ok_Phone(phform){
+		var regex = /^\(?\d{3}\)?-?\s*\d{3}\s*-?\d{4}$/;
+		if(regex.test(phform.user_phone.value)){
+			return true;
+		}
+		else{
+			alert("Enter a valid phone number");
+			return false;
+		}
+	}
+  </script>
+</head>
+ <body><hr>
+   <h2> 
+	Checking for a Valid Phone Number </h2>
+	<form name="formtest" 
+		action="http://localhost/cgi-bin/environ.pl" method="post"
+		onSubmit="return ok_Phone(this);">
+	<p>
+		Please enter your phone: <BR>
+		<input type="text" size=40 name="user_phone">
+	<p>
+		<input type=submit value="Submit">
+		<input type=reset value="Clear">
+	</form>
+ </body>
+</html>

@@ -1,0 +1,22 @@
+<html>
+<head><title>Inserting Before</title>
+    <style type="text/css">
+           p { font-style:arial;
+               color:darkblue;
+               font-size:18;
+             }
+    </style>
+    <script type="text/javascript">
+            function insertMessage() {
+                var newPara = document.createElement("p");
+                var newText = document.createTextNode("I am inserting myself above you!");  //If you copy this, don’t break the lines.
+                newPara.appendChild(newText);
+                var firstPara = document.getElementById("firstp");
+                document.body.insertBefore(newPara, firstPara);
+            }
+   </script>
+</head>
+    <body onload="insertMessage()">
+        <p id="firstp">I was supposed to be first.</p>
+    </body>
+</html>

@@ -1,0 +1,40 @@
+<html><head><title>The onload() method</title>
+
+<script type="text/javascript">
+window.onload=setBorder;
+function setBorder(){
+     document.getElementById("bdy").style.border="2px solid blue";
+    }
+/* window.onload=function(){
+  document.getElementById("bdy").style.backgroundColor="lightgreen";
+}
+*/
+function getToday(){
+   var d=new Date();
+   var weekday=new Array(7);
+   weekday[0]="Sunday";
+   weekday[1]="Monday";
+   weekday[2]="Tuesday";
+   weekday[3]="Wednesday";
+   weekday[4]="Thursday";
+   weekday[5]="Friday";
+   weekday[6]="Saturday";
+
+   return (weekday[d.getDay()]);
+}
+
+</script>
+
+</script>
+</head>
+<body id="bdy">
+<div align="center">
+<script type="text/javascript">
+
+document.write("<h1>Today it is " + getToday() +"!</h1>");
+
+</script>
+
+</div>
+</body>
+</html>

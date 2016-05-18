@@ -1,0 +1,315 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Answers for Quiz on Chapter 9</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2 class="quiz_title">Answers for Quiz on Chapter 9</h2>
+<p>
+<span class="start"><big>T</big>his page contains</span> sample answers to the quiz on Chapter 9 of
+           <a href="../index.html"><i>Introduction to Programming Using Java</i></a>.
+           Note that generally, there are lots of correct answers to a given question.</p>
+<table border="1" align="center" cellpadding="8" width="95%">
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;1:</span></td><td>
+<p>Explain what is meant by a <i>recursive</i> subroutine.</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>A recursive subroutine is simply
+one that calls itself either directly or through a chain of calls involving
+other subroutines.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;2:</span></td><td>
+<p>Consider the following subroutine:</p>
+
+<pre>static void printStuff(int level) {
+    if (level == 0) {
+       System.out.print("*");
+    }
+    else {
+       System.out.print("[");
+       printStuff(level - 1);
+       System.out.print(",");
+       printStuff(level - 1);
+       System.out.println("]");
+    }
+}</pre>
+
+<p>Show the output that would be produced by the subroutine calls
+<span class="code">printStuff(0)</span>, <span class="code">printStuff(1)</span>, <span class="code">printStuff(2)</span>, and
+<span class="code">printStuff(3)</span>.</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>The outputs are:</p>
+
+<pre>printStuff(0) outputs:   *
+printStuff(1) outputs:   [*,*]
+printStuff(2) outputs:   [[*,*],[*,*]]
+printStuff(3) outputs:   [[[*,*],[*,*]],[[*,*],[*,*]]]</pre>
+
+<p>(Explanation: For <span class="code">printStuff(0)</span>, the value of the parameter is 0,
+so the first clause of the <span class="code">if</span> is executed, and the output is just *.
+For <span class="code">printStuff(1)</span>, the else clause is executed. This else clause
+contains two recursive calls to <span class="code">printStuff(level-1)</span>. Since
+<span class="code">level</span> is 1, <span class="code">level-1</span> is 0, so each call to <span class="code">printStuff</span>
+outputs a *. The overall output from <span class="code">printStuff(1)</span> is [*,*]. In a
+similar way, <span class="code">printStuff(2)</span> includes two recursive calls to
+<span class="code">printStuff(1)</span>. Each call to <span class="code">printStuff(1)</span> outputs [*,*]. And
+<span class="code">printStuff(2)</span> just takes two copies of this and puts them between [
+and ] separated by a comma: [[*,*],[*,*]]. Finally, the output from
+<span class="code">printStuff(3)</span> outputs two copies of [[*,*],[*,*]] separated by a comma
+and enclosed between brackets. Once you recognize the pattern, you can do
+<span class="code">printStuff(N)</span> for any <span class="code">N</span> without trying to follow the
+execution of the subroutine in detail.)</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;3:</span></td><td>
+<p>Suppose that a linked list
+is formed from objects that belong to the class</p>
+
+<pre>class ListNode {
+   int item;       // An item in the list.
+   ListNode next;  // Pointer to next item in the list.
+}</pre>
+
+<p>Write a subroutine that will count the number of zeros that occur in a given
+linked list of <span class="ptype">ints</span>. The subroutine should have a parameter of type <span class="code">ListNode</span>
+and should return a value of type <span class="ptype">int</span>.</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>I'll give both a non-recursive
+solution and a recursive solution. For a linked list, the recursion is not
+really necessary, but it does nicely reflect the recursive definition of
+<span class="code">ListNode</span>
+</p>
+
+<pre>
+static int countZeros( ListNode head ) {
+   int count;        // The number of zeros in the list.
+   ListNode runner;  // For running along the list.
+   count = 0;
+   runner = head;    // Start at the beginning of the list.
+   while (runner != null) {
+      if ( runner.item == 0)
+         count++;  // Count the zero found in the current node.
+      runner = runner.next;  // Advance to the next node.
+   }
+   return count;
+}
+
+static int countZerosRecursively( ListNode head ) {
+   if ( head == null) {
+          // An empty list does not contain any zeros.
+       return 0;
+   }
+   else {
+       int count = countZerosRecursively( head.next );  // Count zeros in tail.
+       if ( head.item == 0 )
+           count++;  // Add 1 to account for the zero in the head node.
+       return count;
+   }
+}</pre>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;4:</span></td><td>
+<p>What are the three operations on a <i>stack?</i>
+</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>The three stack operations are
+<i>push</i>, <i>pop,</i> and <i>isEmpty.</i> The definitions of these operations are:
+<span class="code">push(item)</span> adds the specified item to the top of the stack;
+<span class="code">pop()</span> removes the top item of the stack and returns it; and
+<span class="code">isEmpty()</span> is a boolean-valued function that returns true if there are
+no items on the stack.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;5:</span></td><td>
+<p>What is the basic difference
+between a stack and a queue?</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>In a stack, items are added to
+the stack and removed from the stack on the same end (called the "top" of the
+stack). In a queue, items are added at one end (the "back") and removed at the
+other end (the "front"). Because of this difference, a queue is a FIFO
+structure (items are removed in the same order in which they were added), and a
+stack is a LIFO structure (the item that is popped from a stack is the one that
+was added most recently).</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;6:</span></td><td>
+<p>What is an <i>activation
+record</i>? What role does a stack of activation records play in a
+computer?</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>When a subroutine is called, an
+activation record is created to hold the information that is needed for the
+execution of the subroutine, such as the values of the parameters and local
+variables. This activation record is stored on a stack of activation records. A
+stack is used since one subroutine can call another, which can then call a
+third, and so on. Because of this, many activation records can be in use at the
+same time. The data structure is a stack because an activation record has to
+continue to exist while all the subroutines that are called by the subroutine
+are executed. While they are being executed, the stack of activation records
+can grow and shrink as subroutines are called and return.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;7:</span></td><td>
+<p>Suppose that a binary tree of integers
+is formed from objects belonging to the class</p>
+
+<pre>class TreeNode {
+   int item;       // One item in the tree.
+   TreeNode left;  // Pointer to the left subtree.
+   TreeNode right; // Pointer to the right subtree.
+}</pre>
+
+<p>Write a recursive subroutine that will find the sum of all the nodes in the
+tree. Your subroutine should have a parameter of type <span class="code">TreeNode</span>, and it
+should return a value of type <span class="ptype">int</span>.</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+
+<pre>static int treeSum( TreeNode root ) {
+       // Find the sum of all the nodes in the tree to which root points.
+    if ( root == null ) {
+          // The sum of the nodes in an empty tree is zero.
+       return 0;
+    }
+    else {
+          // Add the item in the root to the sum of the
+          // items in the left subtree and the sum of the
+          // items in the right subtree.
+       int total = root.item;
+       total += treeSum( root.left );
+       total += treeSum( root.right );
+       return total;
+    }
+ }</pre>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;8:</span></td><td>
+<p>What is a <i>postorder traversal</i> of a binary tree?</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>In a traversal of a binary tree,
+all the nodes are processed in some way. (For example, they might be printed.)
+In a postorder traversal, the order of processing is defined by the rule: For
+each node, the nodes in the left subtree of that node are processed first. Then
+the nodes in the right subtree are processed. Finally, the node itself is
+processed.  This rule is applied at all levels of the tree.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;9:</span></td><td>
+<p>Suppose that a <span class="code">&lt;multilist&gt;</span> is defined by the BNF rule</p>
+
+<pre>&lt;multilist&gt;  ::=  &lt;word&gt;  |  "(" [ &lt;multilist&gt; ]... ")"</pre>
+
+<p>where a <span class="code">&lt;word&gt;</span> can be any sequence of letters. Give five
+different <span class="code">&lt;multilist&gt;'s</span> that can be generated by this rule.
+(This rule, by the way, is almost the entire syntax of the programming language
+<span class="code">LISP</span>! <span class="code">LISP</span> is known for its simple syntax and its elegant and
+powerful semantics.)</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>Here are five possibilities (out
+of an infinite number of possibilities), with some explanation:</p>
+
+<pre>fred  --  A &lt;multilist&gt; can just be a word, such as "fred".
+          
+( )   --  The [ ]... around &lt;multilist&gt; means that there can be
+          any number of nested &lt;multilist&gt;'s, including zero.  If
+          there are zero, then all that's left is the empty
+          parentheses.
+          
+( fred mary chicago ) -- A &lt;multilist&gt; consisting of three
+                         &lt;multilist&gt;'s -- "fred", "mary", and
+                         "chicago" -- inside parentheses
+                         
+( ( able ) ( baker charlie ) ) -- A &lt;multilist&gt; containing two
+                                  &lt;multilist&gt;'s.
+                                  
+( ( a ( b ) ) ( c ( d e ) g ) )  -- Even more nesting.</pre>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;10:</span></td><td>
+<p>Explain what is meant by <i>parsing</i> a computer program.</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>To parse a computer program
+means to determine its syntactic structure, that is, to figure out how it can
+be constructed using the rules of a grammar (such as a BNF grammar).</p>
+
+</td>
+</tr>
+</table>
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

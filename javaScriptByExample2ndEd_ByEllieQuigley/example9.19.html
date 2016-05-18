@@ -1,0 +1,32 @@
+
+<html><head><title>The Prototype Property</title>
+	<script type = "text/javascript">
+	// Customize the Date
+	 function weekDay(){
+		var now = this.getDay();
+		var names = new Array(7);
+		names[0]="Sunday";
+		names[1]="Monday";
+		names[2]="Tuesday";
+		names[3]="Wednesday";
+		names[4]="Thursday";
+		names[5]="Friday";
+		names[6]="Saturday";
+		return(names[now]);
+	}
+		Date.prototype.DayOfWeek=weekDay;
+   </script>
+</head>
+<body bgcolor="pink">
+	<font face="arial">
+    <big>
+	<div align="center">
+	<script type="text/javascript">
+		var today=new Date();
+		document.write("Today is " + today.DayOfWeek() + ".<br />");
+	</script>
+    </div>
+    </big>
+	</body>
+ </html>
+

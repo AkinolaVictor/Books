@@ -1,0 +1,513 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 4.5 -- APIs, Packages, and Javadoc</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s4.html">Previous Section</a> |
+           <a href="s6.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#subroutines.5.1">Toolboxes</a>
+<br>
+<a href="#subroutines.5.2">Java's Standard Packages</a>
+<br>
+<a href="#subroutines.5.3">Using Classes from Packages</a>
+<br>
+<a href="#subroutines.5.4">Javadoc</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 4.5</h3>
+<h2 class="section_title">APIs, Packages, and Javadoc</h2>
+<hr class="break">
+
+
+<p>
+<span class="start"><big>A</big>s computers and their user interfaces</span> have become
+easier to use, they have also become more complex for programmers to deal with.
+You can write programs for a simple console-style user interface using just a
+few subroutines that write output to the console and read the user's typed
+replies. A modern graphical user interface, with windows, buttons, scroll bars,
+menus, text-input boxes, and so on, might make things easier for the user, but
+it forces the programmer to cope with a hugely expanded array of possibilities.
+The programmer sees this increased complexity in the form of great numbers of
+subroutines that are provided for managing the user interface, as well as for
+other purposes.</p>
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="subroutines.5.1">4.5.1&nbsp;&nbsp;Toolboxes</a>
+</h3>
+
+
+<p>Someone who wanted to program for Macintosh computers -- and to produce
+programs that look and behave the way users expect them to -- had to deal with
+the Macintosh Toolbox, a collection of well over a thousand different
+subroutines. There are routines for opening and closing windows, for drawing
+geometric figures and text to windows, for adding buttons to windows, and for
+responding to mouse clicks on the window. There are other routines for creating
+menus and for reacting to user selections from menus. Aside from the user
+interface, there are routines for opening files and reading data from them, for
+communicating over a network, for sending output to a printer, for handling
+communication between programs, and in general for doing all the standard
+things that a computer has to do.  Microsoft Windows provides its own
+set of subroutines for programmers to use, and they are quite a bit different
+from the subroutines used on the Mac.  Linux has several different GUI toolboxes
+for the programmer to choose from.</p>
+
+
+<p>The analogy of a "toolbox" is a good one to keep in mind. Every programming
+project involves a mixture of innovation and reuse of existing tools. A
+programmer is given a set of tools to work with, starting with the set of basic
+tools that are built into the language: things like variables, assignment
+statements, if statements, and loops. To these, the programmer can add existing
+toolboxes full of routines that have already been written for performing
+certain tasks. These tools, if they are well-designed, can be used as true
+black boxes: They can be called to perform their assigned tasks without
+worrying about the particular steps they go through to accomplish those tasks.
+The innovative part of programming is to take all these tools and apply them to
+some particular project or problem (word-processing, keeping track of bank
+accounts, processing image data from a space probe, Web browsing, computer
+games,&nbsp;...). This is called <span class="newword">applications programming</span>.</p>
+
+
+<p>A software toolbox is a kind of black box, and it presents a certain
+interface to the programmer. This interface is a specification of what routines
+are in the toolbox, what parameters they use, and what tasks they perform. This
+information constitutes the <span class="newword">API</span>, or <span class="newword">Applications Programming Interface</span>, 
+associated with the toolbox. The Macintosh API is
+a specification of all the routines available in the Macintosh Toolbox. A
+company that makes some hardware device -- say a card for connecting a computer
+to a network -- might publish an API for that device consisting of a list of
+routines that programmers can call in order to communicate with and control the
+device. Scientists who write a set of routines for doing some kind of complex
+computation -- such as solving "differential equations," say -- would provide
+an API to allow others to use those routines without understanding the details
+of the computations they perform.</p>
+
+
+<hr class="break">
+
+
+<p>The Java programming language is supplemented by a large, standard API.
+You've seen part of this API already, in the form of mathematical subroutines
+such as <span class="code">Math.sqrt()</span>, the <span class="classname">String</span> data type and its associated
+routines, and the <span class="code">System.out.print()</span> routines. The standard Java API
+includes routines for working with graphical user interfaces, for network
+communication, for reading and writing files, and more. It's tempting to think
+of these routines as being built into the Java language, but they are
+technically subroutines that have been written and made available for use in
+Java programs.</p>
+
+
+<p>Java is platform-independent. That is, the same program can run on platforms
+as diverse as Mac&nbsp;OS, Windows, Linux, and others. The same Java API must work
+on all these platforms. But notice that it is the <b>interface</b>
+that is platform-independent; the <b>implementation</b> varies from
+one platform to another. A Java system on a particular computer includes
+implementations of all the standard API routines. A Java program includes only
+<b>calls</b> to those routines. When the Java interpreter executes a
+program and encounters a call to one of the standard routines, it will pull up
+and execute the implementation of that routine which is appropriate for the
+particular platform on which it is running. This is a very powerful idea. It
+means that you only need to learn one API to program for a wide variety of
+platforms.</p>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="subroutines.5.2">4.5.2&nbsp;&nbsp;Java's Standard Packages</a>
+</h3>
+
+
+<p>Like all subroutines in Java, the routines in the standard API are grouped
+into classes. To provide larger-scale organization, classes in Java can be
+grouped into <span class="newword">packages</span>, which were introduced briefly in
+<a href="../c2/s6.html#basics.6.4">Subsection&nbsp;2.6.4</a>.  You can have even higher
+levels of grouping, since packages can also contain other packages. In fact,
+the entire standard Java API is implemented in several packages. One of these,
+which is named "<span class="code">java</span>", contains several non-GUI packages as well as the
+original AWT graphics user interface classes. Another package,
+"<span class="code">javax</span>", was added in Java version 1.2 and contains the classes used
+by the Swing graphical user interface and other additions to the API.</p>
+
+
+<p>A package can contain both classes and other packages. A package that is
+contained in another package is sometimes called a "sub-package." Both the
+<span class="code">java</span> package and the <span class="code">javax</span> package contain sub-packages. One
+of the sub-packages of <span class="code">java</span>, for example, is called "<span class="code">awt</span>".
+Since <span class="code">awt</span> is contained within <span class="code">java</span>, its full name is actually
+<span class="code">java.awt</span>.  This package contains classes that represent GUI components
+such as buttons and menus in the AWT.  AWT is the older of the two Java GUI toolboxes and
+is no longer widely used.  However, <span class="code">java.awt</span> also contains a number
+of classes that form the foundation for all GUI programming, such as the <span class="code">Graphics</span>
+class which provides routines for drawing on the screen, the <span class="code">Color</span> class
+which represents colors, and the <span class="code">Font</span> class which represents the fonts that
+are used to display characters on the screen.
+Since these classes are contained in the package <span class="code">java.awt</span>, their full names are actually
+<span class="code">java.awt.Graphics</span>, <span class="code">java.awt.Color</span>, and <span class="code">java.awt.Font</span>.
+(I hope that by now you've gotten the hang of how this naming thing works in Java.) Similarly,
+<span class="code">javax</span> contains a sub-package named <span class="code">javax.swing,</span> which
+includes such GUI classes as <span class="code">javax.swing.JButton</span>, <span class="code">javax.swing.JMenu</span>, and
+<span class="code">javax.swing.JFrame</span>.  The GUI classes in <span class="code">javax.swing</span>, together with the
+foundational classes in <span class="code">java.awt</span>, are all part of the API that makes it possible
+to program graphical user interfaces in Java.</p>
+
+
+<p>The <span class="code">java</span> package includes several other sub-packages, such as
+<span class="code">java.io</span>, which provides facilities for input/output,
+<span class="code">java.net</span>, which deals with network communication, and
+<span class="code">java.util</span>, which provides a variety of "utility" classes. The
+most basic package is called <span class="code">java.lang</span>. This package contains
+fundamental classes such as <span class="classname">String</span>, <span class="classname">Math</span>,
+<span class="classname">Integer</span>, and <span class="classname">Double</span>.</p>
+
+
+<p>It might be helpful to look at a graphical representation of the levels of
+nesting in the <span class="code">java</span> package, its sub-packages, the classes in those
+sub-packages, and the subroutines in those classes. This is not a complete
+picture, since it shows only a very few of the many items in each element:</p>
+
+
+
+<p align="center">
+<img src="nesting.png" width="419" height="295" alt="(Diagram of subroutine/class/package nesting)"></p>
+   
+
+<p>The official documentation for the standard Java&nbsp;6 API
+lists 203 different packages, including sub-packages, and
+it lists 3793 classes in these packages.  Many of these are rather obscure or
+very specialized, but you might want to browse through the documentation to see
+what is available.  As I write this, the
+documentation for the complete API can be found at</p>
+
+<pre>
+<a href="http://download.oracle.com/javase/6/docs/api/">http://download.oracle.com/javase/6/docs/api/</a>
+</pre>
+
+<p>Even an expert programmer won't be familiar with the entire API,
+or even a majority of it.  In this book, you'll only encounter
+several dozen classes, and those will be sufficient for writing a 
+wide variety of programs.</p>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="subroutines.5.3">4.5.3&nbsp;&nbsp;Using Classes from Packages</a>
+</h3>
+
+
+<p>Let's say that you want to use the class <span class="code">java.awt.Color</span> in a
+program that you are writing.  Like any class, <span class="code">java.awt.Color</span> is
+a type, which means that you can use it to declare variables and parameters and
+to specify the return type of a function. One way to do this is to use the
+full name of the class as the name of the type. For example, suppose that you
+want to declare a variable named <span class="code">rectColor</span> of type <span class="code">java.awt.Color</span>.
+You could say:</p>
+
+
+<pre>java.awt.Color  rectColor;</pre>
+
+
+<p>This is just an ordinary variable declaration of the form
+"<span class="bnf">type-name</span>&nbsp;<span class="bnf">variable-name</span>;".
+Of course, using the full name of every class can get tiresome, so Java makes it
+possible to avoid using the full name of a class by <span class="newword">importing</span>
+the class. If you put</p>
+
+
+<pre>import java.awt.Color;</pre>
+
+
+<p>at the beginning of a Java source code file, then, in the rest of the file,
+you can abbreviate the full name <span class="code">java.awt.Color</span> to just the simple name of
+the class, <span class="code">Color</span>.  Note that the <span class="code">import</span> line comes at the start of 
+a file and is not inside any class.  Although it is sometimes referred to
+as a statement, it is more properly called an <span class="newword">import&nbsp;directive</span>
+since it is not a statement in the usual sense.  The <span class="code">import</span>
+directive "<span class="code">import&nbsp;java.awt.Color</span>" would allow you to say</p>
+
+
+<pre>Color  rectColor;</pre>
+
+
+<p>to declare the variable.  Note that the only effect of the
+<span class="code">import</span> directive is to allow you to use simple class names instead of
+full "package.class" names. You aren't really importing anything substantial;
+if you leave out the <span class="code">import</span> directive, you can still access the class -- you 
+just have to use its full name.  There is a shortcut for importing all
+the classes from a given package. You can import all the classes from
+<span class="code">java.awt</span> by saying</p>
+
+
+<pre>import java.awt.*;</pre>
+
+
+<p>The "<span class="code">*</span>" is a <span class="newword">wildcard</span> that matches every class in the package.
+(However, it does not match sub-packages; you <b>cannot</b> import the entire
+contents of all the sub-packages of the <span class="code">java</span> package by saying
+<span class="code">import&nbsp;java.*</span>.)</p>
+   
+
+<p>Some programmers think that using a wildcard in an <span class="code">import</span> statement
+is bad style, since it can make a large number of class names available that you are
+not going to use and might not even know about.  They think it is better to explicitly
+import each individual class that you want to use.  In my own programming, I often
+use wildcards to import all the classes from the most relevant packages, and use
+individual imports when I am using just one or two classes from a given package.</p>
+
+
+<p>In fact, any Java program that uses a graphical user interface is likely to
+use many classes from the <span class="code">java.awt</span> and <span class="code">javax.swing</span> packages
+as well as from another package named <span class="code">java.awt.event</span>, 
+and I often begin such programs with</p>
+   
+
+<pre>import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;</pre>
+   
+
+<p>A program that works with networking might include the line
+"<span class="code">import java.net.*;</span>", while one that reads or writes files might
+use "<span class="code">import java.io.*;</span>".  (But when you start importing lots
+of packages in this way, you have to be careful about one thing: It's possible
+for two classes that are in different packages to have the same name. For
+example, both the <span class="code">java.awt</span> package and the <span class="code">java.util</span> package
+contain classes named <span class="code">List</span>. If you import both <span class="code">java.awt.*</span> and
+<span class="code">java.util.*</span>, the simple name <span class="code">List</span> will be ambiguous. If you
+try to declare a variable of type <span class="code">List</span>, you will get a compiler error
+message about an ambiguous class name. The solution is simple: Use the full
+name of the class, either <span class="code">java.awt.List</span> or <span class="code">java.util.List</span>.
+Another solution, of course, is to use <span class="code">import</span> to import the individual classes you
+need, instead of importing entire packages.)</p>
+
+
+<p>Because the package <span class="code">java.lang</span> is so fundamental, all the classes in
+<span class="code">java.lang</span> are <b>automatically</b> imported into every
+program. It's as if every program began with the statement "<span class="code">import
+java.lang.*;</span>". This is why we have been able to use the class name
+<span class="classname">String</span> instead of <span class="code">java.lang.String</span>, and <span class="code">Math.sqrt()</span>
+instead of <span class="code">java.lang.Math.sqrt()</span>. It would still, however, be
+perfectly legal to use the longer forms of the names.</p>
+
+
+<p>Programmers can create new packages. Suppose that you want some classes that
+you are writing to be in a package named <span class="code">utilities</span>. Then the source
+code file that defines those classes must begin with the line</p>
+
+
+<pre>package utilities;</pre>
+
+
+<p>This would come even before any <span class="code">import</span> directive in that file.
+Furthermore, as mentioned in <a href="../c2/s6.html#basics.6.4">Subsection&nbsp;2.6.4</a>, the source code file
+would be placed in a folder with the same name as the package.  A class that is
+in a package automatically has access to other classes in the same package; that is,
+a class doesn't have to import the package in which it is defined.</p>
+   
+
+<p>In projects that define large numbers of classes, it makes sense to organize
+those classes into packages. It also makes sense for programmers to
+create new packages as toolboxes that provide functionality and APIs for
+dealing with areas not covered in the standard Java API. (And in fact such
+"toolmaking" programmers often have more prestige than the applications
+programmers who use their tools.)</p>
+
+
+<p>However, with just a couple of exceptions, 
+I will not be creating packages in this textbook. For the purposes of this
+book, you need to know about packages mainly so that you will be able to import the standard
+packages. These packages are always available to the programs that you write.
+You might wonder where the standard classes are actually located.  Again, that can
+depend to some extent on the version of Java that you are using, but in recent standard
+versions, they are stored in <span class="newword">jar files</span> in a subdirectory named <span class="code">lib</span>
+inside the Java Runtime Environment installation
+directory.  A jar (or "Java archive") file is a single file that can contain many classes.
+Most of the standard classes can be found in a jar file named <span class="code">rt.jar</span>.
+In fact, Java programs are generally distributed in the form of jar files, instead of as
+individual class files.</p>
+
+
+<p>Although we won't be creating packages explicitly, <b>every</b>
+class is actually part of a package. If a class is not specifically placed in a
+package, then it is put in something called the <span class="newword">default package</span>, 
+which has no name.  Almost all the examples that you see in this book
+are in the default package.</p>
+   
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="subroutines.5.4">4.5.4&nbsp;&nbsp;Javadoc</a>
+</h3>
+   
+
+<p>To use an API effectively, you need good documentation for it.  The documentation for
+most Java APIs is prepared using a system called <span class="newword">Javadoc</span>.  For example,
+this system is used to prepare the documentation for Java's standard packages.  And almost
+everyone who creates a toolbox in Java publishes Javadoc documentation for it.</p>
+   
+
+<p>Javadoc documentation is prepared from special comments that are placed in the Java
+source code file.  Recall that one type of Java comment begins with <span class="code">/*</span> and ends with&nbsp;<span class="code">*/</span>.
+A Javadoc comment takes the same form, but it begins with <span class="code">/**</span> rather than simply&nbsp;<span class="code">/*</span>.
+You have already seen comments of this form in some of the examples in this book, such as
+this subroutine from <a href="../c4/s3.html">Section&nbsp;4.3</a>:</p>
+   
+
+<pre>/**
+ * This subroutine prints a 3N+1 sequence to standard output, using
+ * startingValue as the initial value of N.  It also prints the number 
+ * of terms in the sequence. The value of the parameter, startingValue, 
+ * must  be a positive integer.
+ */
+
+static void print3NSequence(int startingValue) { ...</pre>
+   
+
+<p>Note that the Javadoc comment must be placed just <b>before</b> the subroutine that
+it is commenting on.  This rule is always followed.  You can have Javadoc
+comments for subroutines, for member variables, and for classes.  The Javadoc
+comment always immediately <b>precedes</b> the thing it is commenting on.</p>
+
+
+<p>Like any comment, a Javadoc comment is ignored by the computer when the file is compiled.
+But there is a tool called <span class="code">javadoc</span> that reads Java source code files, extracts
+any Javadoc comments that it finds, and creates a set of Web pages containing the comments
+in a nicely formatted, interlinked form.  By default, <span class="code">javadoc</span> will only collect
+information about <span class="code">public</span> classes, subroutines, and member variables, but
+it allows the option of creating documentation for non-public things as well.  If
+<span class="code">javadoc</span> doesn't find any Javadoc comment for something, it will construct
+one, but the comment will contain only basic information such as the name and type
+of a member variable or the name, return type, and parameter list of a subroutine.
+This is <b>syntactic</b> information.  To add information about semantics and pragmatics,
+you have to write a Javadoc comment.</p>
+   
+
+<p>As an example, you can look at the documentation Web page for <span class="classname">TextIO</span> by
+following this link: <a href="../TextIO_Javadoc/TextIO.html">TextIO&nbsp;Javadoc&nbsp;documentation</a>.
+The documentation page was created by applying the <span class="code">javadoc</span> tool
+to the source code file, <span class="sourceref"><a href="../source/TextIO.java">TextIO.java</a></span>.  If you have downloaded the on-line
+version of this book, the documentation can be found in the <span class="code">TextIO_Javadoc</span>
+directory.</p>
+
+
+<p>In a Javadoc comment, the <span class="code">*</span>'s at the start of each line are optional.
+The <span class="code">javadoc</span> tool will remove them.  In addition to normal text, the comment
+can contain certain special codes.  For one thing, the comment can contain
+<span class="newword">HTML mark-up</span> commands.  HTML is the language that is used to
+create web pages, and Javadoc comments are meant to be shown on web pages.  The
+<span class="code">javadoc</span> tool will copy any HTML commands in the comments to the web
+pages that it creates.  You'll learn some basic HTML in <a href="../c6/s2.html">Section&nbsp;6.2</a>,
+but as an example, you can add <span class="code">&lt;p&gt;</span> to indicate the start of
+a new paragraph.  (Generally, in the absence of HTML commands, blank lines and
+extra spaces in the comment are ignored.  Furthermore, the characters &amp; and
+&lt; have special meaning in HTML and should not be used in Javadoc comments except
+with those meanings; they can be written as <span class="code">&amp;amp;</span> and&nbsp;<span class="code">&amp;lt;</span>.)</p>
+   
+
+<p>In addition to HTML commands, Javadoc comments can include <span class="newword">doc tags</span>,
+which are processed as commands by the <span class="code">javadoc</span> tool.  A doc tag has a
+name that begins with the character&nbsp;<span class="code">@</span>.  I will only discuss three
+tags:  <span class="code">@param</span>, <span class="code">@return</span>, and <span class="code">@throws</span>.
+These tags are used in Javadoc comments for subroutines to provide information about its
+parameters, its return value, and the <a href="../c4/s3.html#subroutines.3.5">exceptions</a>
+that it might throw. These tags
+<b>must</b> be placed at the end of the comment, after any description of the subroutine
+itself.  The syntax for using them is:
+</p>
+
+
+<pre>@param  <span class="bnf">parameter-name</span>   <span class="bnf">description-of-parameter</span>
+   
+@return  <span class="bnf">description-of-return-value</span>
+   
+@throws  <span class="bnf">exception-class-name</span>   <span class="bnf">description-of-exception</span>
+</pre>
+   
+
+<p>The <span class="bnf">descriptions</span> can extend over several lines.  The description ends at
+the next doc tag or at the end of the comment.  You can include a <span class="code">@param</span> tag for
+every parameter of the subroutine and a <span class="code">@throws</span> for as many types of exception
+as you want to document.  You should have a <span class="code">@return</span> tag only for a
+non-void subroutine.  These tags do not have to be given in any particular order.</p>
+
+
+<p>Here is an example that doesn't do anything
+exciting but that does use all three types of doc tag:</p>
+   
+
+<pre>/**
+ * This subroutine computes the area of a rectangle, given its width
+ * and its height.  The length and the width should be positive numbers.
+ * @param width the length of one side of the rectangle
+ * @param height the length the second side of the rectangle
+ * @return the area of the rectangle
+ * @throws IllegalArgumentException if either the width or the height
+ *    is a negative number.
+ */
+public static double areaOfRectangle( double length, double width ) {
+    if ( width &lt; 0  ||  height &lt; 0 )
+       throw new IllegalArgumentException("Sides must have positive length.");
+    double area;
+    area = width * height;
+    return area; 
+}</pre>
+   
+
+<p>I will use Javadoc comments for many of my examples.  I encourage you to use
+them in your own code, even if you don't plan to generate Web page documentation
+of your work, since it's a standard format that other Java programmers will be
+familiar with.</p>
+
+
+<p>If you do want to create Web-page documentation, you need to run the
+<span class="code">javadoc</span> tool.  This tool is available as a command in the Java Development
+Kit that was discussed in <a href="../c2/s6.html">Section&nbsp;2.6</a>.  You can use <span class="code">javadoc</span>
+in a command line interface similarly to the way that the <span class="code">javac</span> and
+<span class="code">java</span> commands are used.  Javadoc can also be applied in the
+Eclipse integrated development environment that was also discussed in 
+<a href="../c2/s6.html">Section&nbsp;2.6</a>:  Just right-click the class, package, or entire project that you
+want to document in the Package Explorer, select "Export," and select "Javadoc"
+in the window that pops up.  I won't go into any of the details here; see the
+documentation.</p>
+   
+
+
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s4.html">Previous Section</a> |
+           <a href="s6.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

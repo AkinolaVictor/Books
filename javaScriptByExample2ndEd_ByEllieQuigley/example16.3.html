@@ -1,0 +1,35 @@
+<html><head><title>See my Cookies</title>
+</head>
+   <script type="text/javascript">
+	   function seeCookie(){
+	     if(document.cookie == ""){
+		    document.write("No cookies");
+	     }
+         else{
+            var cookiestr="";
+           var myCookie = document.cookie.split("; ");
+            for(var i=0;i<myCookie.length; i++){
+              /*document.write("<b>Cookie: " +
+                myCookie[i].split("=")[1] +"<br>"); */
+               cookiestr+=myCookie[i] + " ";
+               var cookieData=myCookie[i].split("=");
+              if (cookieData[0] == "color"){
+                   document.bgColor=cookieData[1];  
+                       //Visitor preference to change color
+                }
+             }
+         }
+      alert(cookiestr);
+      }
+   </script>
+  <body onLoad="document.form1.reset()" >
+   <div align="center"><h2> Got milk?</h2>
+     <form name="form1">
+ 	   Click to see document.cookie property
+	   <p>
+	   <input type="button" value="See Cookie" onClick="seeCookie();">
+	   <p>
+    </form>
+  </div>
+  </body>
+  </html>

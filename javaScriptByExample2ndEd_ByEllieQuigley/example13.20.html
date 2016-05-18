@@ -1,0 +1,22 @@
+<html><head><title>Wake up call</title>
+<script type="text/javascript">
+	function wakeupCall(){    // Function is defined here
+		timeout=setTimeout('alert("Time to get up!")',2000);
+	}
+</script>
+</head>
+<body bgcolor="white">
+   <div align="center">
+   <form>
+<!-- change image source to invalid address to see error -->
+	<p>
+	<image src="java_steam.aspx"
+		onError="alert('Image is having trouble loading!')">
+	<p>
+	<input type="button"
+		value="Wake me"
+		onClick="wakeupCall()">
+    </form>
+    </div>
+</body>
+</html>

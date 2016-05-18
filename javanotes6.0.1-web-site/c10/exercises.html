@@ -1,0 +1,318 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Excercises for Chapter 10</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Programming Exercises for Chapter 10</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> several exercises for Chapter 10
+        in <a href="../index.html">Introduction to Programming Using Java</a>.  For each exercise, a link to
+        a possible solution is provided.   Each solution includes a discussion of how a programmer might approach the
+        problem and interesting points raised by the problem or its solution, as well as complete source
+        code of the solution.</p>
+<hr>
+<h3 class="exercise">Exercise 10.1:</h3>
+<p>Rewrite the <span class="classname">PhoneDirectory</span> class
+from <a href="../c7/s4.html#arrays.4.2">Subsection&nbsp;7.4.2</a> so that it uses a <span class="classname">TreeMap</span>
+to store directory entries, instead of an array.  (Doing this was suggested
+in <a href="../c10/s3.html#generics.3.1">Subsection&nbsp;10.3.1</a>.)</p>
+
+<p align="right">
+<a href="ex1-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 10.2:</h3>
+<p>In mathematics, several
+operations are defined on sets. The <span class="newword">union</span> of two
+sets A and B is a set that contains all the elements that are in A together
+with all the elements that are in B. The <span class="newword">intersection</span> 
+of A and B is the set that contains elements that
+are in both A and B. The <span class="newword">difference</span> of A and B is
+the set that contains all the elements of A <b>except</b> for those elements
+that are also in&nbsp;B.</p>
+
+
+<p>Suppose that <span class="code">A</span> and <span class="code">B</span> are variables of type <span class="code">set</span> in
+Java. The mathematical operations on <span class="code">A</span> and <span class="code">B</span> can be computed
+using methods from the <span class="classname">Set</span> interface. In particular: 
+<span class="code">A.addAll(B)</span> computes the <i>union</i> of <span class="code">A</span> and <span class="code">B</span>;
+<span class="code">A.retainAll(B)</span> computes the <i>intersection</i> of <span class="code">A</span> and
+<span class="code">B</span>; and <span class="code">A.removeAll(B)</span> computes the <i>difference</i> of <span class="code">A</span>
+and <span class="code">B</span>. (These operations change the contents of the set <span class="code">A</span>,
+while the mathematical operations create a new set without changing <span class="code">A</span>,
+but that difference is not relevant to this exercise.)</p>
+
+
+<p>For this exercise, you should write a program that can be used as a "set
+calculator" for simple operations on sets of non-negative integers. (Negative
+integers are not allowed.) A set of such integers will be represented as a list
+of integers, separated by commas and, optionally, spaces and enclosed in square
+brackets. For example: <span class="code">[1,2,3]</span> or
+<span class="code">[17,&nbsp;42,&nbsp;9,&nbsp;53,&nbsp;108]</span>. The characters <span class="code">+</span>,
+<span class="code">*</span>, and <span class="code">-</span> will be used for the union, intersection, and
+difference operations. The user of the program will type in lines of input
+containing two sets, separated by an operator. The program should perform the
+operation and print the resulting set. Here are some examples:</p>
+
+
+<pre>          Input                                 Output
+         -------------------------           -------------------
+          [1, 2, 3] + [3,  5,  7]             [1, 2, 3, 5, 7]
+          [10,9,8,7] * [2,4,6,8]              [8]
+          [ 5, 10, 15, 20 ] - [ 0, 10, 20 ]   [5, 15]</pre>
+
+
+<p>To represent sets of non-negative integers, use 
+sets of type <span class="classname">TreeSet&lt;Integer&gt;</span>. Read the user's input,
+create two <span class="classname">TreeSets</span>, and use the appropriate <span class="classname">TreeSet</span> method
+to perform the requested operation on the two sets. Your program should be able
+to read and process any number of lines of input. If a line contains a syntax
+error, your program should not crash. It should report the error and move on to
+the next line of input. (Note: To print out a <span class="classname">Set</span>, <span class="code">A</span>, of
+<span class="classname">Integers</span>, you can just say <span class="code">System.out.println(A)</span>. I've chosen
+the syntax for sets to be the same as that used by the system for outputting a
+set.)</p>
+
+<p align="right">
+<a href="ex2-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 10.3:</h3>
+<p>The fact that Java has a
+<span class="classname">HashMap</span> class means that no Java programmer has to write an
+implementation of hash tables from scratch -- unless, of course, that programmer is a
+computer science student.</p>
+
+<p>For this exercise, you should write a hash table in which both the keys and the values are of
+type <span class="classname">String</span>.  (This is not an exercise in generic programming;
+do not try to write a generic class.)
+Write an implementation of hash tables from scratch. Define the following
+methods: <span class="code">get(key)</span>, <span class="code">put(key,value)</span>, <span class="code">remove(key)</span>,
+<span class="code">containsKey(key)</span>, and <span class="code">size()</span>. 
+Remember that every object, <span class="code">obj</span>, has a method <span class="code">obj.hashCode()</span>
+that can be used for computing a hash code for the object,
+so at least you don't have to define your own hash function. 
+Do not use <b>any</b> of Java's built-in generic types; create your own linked
+lists using nodes as covered in <a href="../c9/s2.html#recursion.2.2">Subsection&nbsp;9.2.2</a>.  However,
+you do <b>not</b> have to worry about increasing the size of the table when
+it becomes too full.</p>
+
+<p>You should also write a short program to test your solution.</p>
+
+<p align="right">
+<a href="ex3-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 10.4:</h3>
+<p>A <span class="newword">predicate</span> is a boolean-valued function with one parameter.
+Some languages use predicates in generic programming. Java doesn't, but this
+exercise looks at how predicates might work in Java.</p>
+
+
+<p>In Java, we could implement "predicate objects" by defining a generic interface:</p>
+
+
+<pre>public interface Predicate&lt;T&gt; {
+    public boolean test( T obj );
+}</pre>
+
+
+<p>The idea is that an object that implements this interface knows how to
+"test" objects of type <span class="classname">T</span>
+in some way.   Define a class that contains 
+the following generic static methods for working with predicate objects.
+The name of the class should be <span class="classname">Predicates</span>, in analogy
+with the standard class <span class="classname">Collections</span> that provides various
+<span class="code">static</span> methods for working with collections.</p>
+
+
+<pre>public static &lt;T&gt; void remove(Collection&lt;T&gt; coll, Predicate&lt;T&gt; pred)
+   // Remove every object, obj, from coll for which
+   // pred.test(obj) is true.
+   
+public static &lt;T&gt; void retain(Collection&lt;T&gt; coll, Predicate&lt;T&gt; pred)
+   // Remove every object, obj, from coll for which
+   // pred.test(obj) is false.  (That is, retain the
+   // objects for which the predicate is true.)
+   
+public static &lt;T&gt; List&lt;T&gt; collect(Collection&lt;T&gt; coll, Predicate&lt;T&gt; pred)
+   // Return a List that contains all the objects, obj,
+   // from the collection, coll, such that pred.test(obj)
+   // is true.
+   
+public static &lt;T&gt; int find(ArrayList&lt;T&gt; list, Predicate&lt;T&gt; pred)
+   // Return the index of the first item in list
+   // for which the predicate is true, if any.
+   // If there is no such item, return -1.</pre>
+   
+
+<p>(In C++, methods similar to these are included as a standard part of the
+generic programming framework.)</p>
+
+<p align="right">
+<a href="ex4-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 10.5:</h3>
+<p>An example in
+<a href="../c10/s4.html#generics.4.2">Subsection&nbsp;10.4.2</a> concerns the problem of making an index for
+a book. A related problem is making a <span class="newword">concordance</span>
+for a document. A concordance lists every word that occurs in the document, and
+for each word it gives the line number of every line in the document where the
+word occurs. All the subroutines for creating an index that were presented in
+<a href="../c10/s4.html#generics.4.2">Subsection&nbsp;10.4.2</a> can also be used to create a concordance. The only real
+difference is that the integers in a concordance are line numbers rather than
+page numbers.</p>
+
+
+<p>Write a program that can create a concordance. The document should be read
+from an input file, and the concordance data should be written to an output
+file. You can use the indexing
+subroutines from <a href="../c10/s4.html#generics.4.2">Subsection&nbsp;10.4.2</a>, modified to write the data to <span class="code">TextIO</span>
+instead of to <span class="code">System.out</span>. (You will need to make these subroutines
+<span class="code">static</span>.) The input and output files should be selected by the user when
+the program is run.  The sample program <span class="sourceref"><a href="../source/WordCount.java">WordCount.java</a></span>,
+from <a href="../c10/s4.html#generics.4.4">Subsection&nbsp;10.4.4</a>, can be used as a model of how to use files.
+That program also has a useful subroutine that reads one word from input.</p>
+
+
+<p>As you read the file, you want to take each word that you encounter and add
+it to the concordance along with the current line number.  Keeping track of
+the line numbers is one of the trickiest parts of the problem. In an input file,
+the end of each line in the file is
+marked by the newline character,&nbsp;'\n'. Every time you encounter this
+character, you have to add one to the line number.  WordCount.java
+ignores ends of lines.  Because you need to
+find and count the end-of-line characters, your program cannot
+process the input file in exactly the same way as does WordCount.java.
+Also, you will need to detect the end of the file.  The function
+<span class="code">TextIO.peek()</span>, which is used to look ahead at the next character
+in the input, returns the value <span class="code">TextIO.EOF</span> at end-of-file,
+after all the characters in the file have been read.</p>
+
+
+<p>Because it is so common, don't include the word "the" in your concordance.
+Also, do not include words that have length less than&nbsp;3.</p>
+
+<p align="right">
+<a href="ex5-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 10.6:</h3>
+<p>The sample program
+<span class="sourceref"><a href="../source/SimpleInterpreter.java">SimpleInterpreter.java</a></span> from <a href="../c10/s4.html#generics.4.1">Subsection&nbsp;10.4.1</a>
+can carry out  commands of the form "let variable = expression" or "print expression".
+That program can handle expressions that contain variables,
+numbers, operators, and parentheses. Extend the program so that it can also
+handle the standard mathematical functions <span class="code">sin</span>, <span class="code">cos</span>,
+<span class="code">tan</span>, <span class="code">abs</span>, <span class="code">sqrt</span>, and <span class="code">log</span>. For example, the
+program should be able to evaluate an expression such as
+<span class="code">sin(3*x-7)+log(sqrt(y))</span>, assuming that the variables <span class="code">x</span> and
+<span class="code">y</span> have been given values.  Note that the name of a function
+must be followed by an expression that is enclosed in parentheses.</p>
+
+
+<p>In the original program, a symbol table holds a value for each variable that
+has been defined. In your program, you should add another type of symbol to the
+table to represent standard functions.   You can use the following nested
+enumerated type and class for this purpose:</p>
+
+
+<pre>private enum Functions { SIN, COS, TAN, ABS, SQRT, LOG }
+
+/**
+ * An object of this class represents one of the standard functions.
+ */
+private static class StandardFunction {
+
+   /**
+    * Tells which function this is.
+    */
+   Functions functionCode; 
+
+   /**
+    * Constructor creates an object to represent one of 
+    * the standard functions
+    * @param code which function is represented.
+    */
+   StandardFunction(Functions code) {
+      functionCode = code;
+   }
+
+   /**
+    * Finds the value of this function for the specified 
+    * parameter value, x.
+    */
+   double evaluate(double x) {
+      switch(functionCode) {
+      case SIN:
+         return Math.sin(x);
+      case COS:
+         return Math.cos(x);
+      case TAN:
+         return Math.tan(x);
+      case ABS:
+         return Math.abs(x);
+      case SQRT:
+         return Math.sqrt(x);
+      default:
+         return Math.log(x);
+      }
+   }
+
+} // end class StandardFunction</pre>
+   
+
+<p>Add a symbol to the symbol table to represent each function. The key is the
+name of the function and the value is an object of type
+<span class="classname">StandardFunction</span> that represents the function. For example:</p>
+
+
+<pre>symbolTable.put("sin", new StandardFunction(StandardFunction.SIN));</pre>
+
+
+<p>In SimpleInterpreter.java, the symbol table is a map of type
+<span class="classname">HashMap&lt;String,Double&gt;</span>.  It's not legal to
+use a <span class="classname">StandardFunction</span> as the value in such a map,
+so you will have to change the type of the map.  The map has to hold two
+different types of objects.  The easy way to make this possible is to create
+a map of type <span class="classname">HashMap&lt;String,Object&gt;</span>.
+(A better way is to create a general type to represent objects that
+can be values in the symbol table, and to define two subclasses of that
+class, one to represent variables and one to represent standard functions,
+but for this exercise, you should do it the easy way.)</p>
+
+
+<p>In your parser, when you encounter a word, you have to be able to tell
+whether it's a variable or a standard function. Look up the word in the symbol
+table. If the associated object is non-null and is of type <span class="classname">Double</span>, then
+the word is a variable. If it is of type <span class="classname">StandardFunction</span>, then the
+word is a function. Remember that you can test the type of an object using the
+<span class="code">instanceof</span> operator. For example: <span class="code">if (obj instanceof
+Double)</span>
+</p>
+
+<p align="right">
+<a href="ex6-ans.html">See the Solution</a>
+</p>
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

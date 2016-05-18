@@ -1,0 +1,360 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 5, Chapter 10</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 10.5</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 10.5:</h3>
+<p>An example in
+<a href="../c10/s4.html#generics.4.2">Subsection&nbsp;10.4.2</a> concerns the problem of making an index for
+a book. A related problem is making a <span class="newword">concordance</span>
+for a document. A concordance lists every word that occurs in the document, and
+for each word it gives the line number of every line in the document where the
+word occurs. All the subroutines for creating an index that were presented in
+<a href="../c10/s4.html#generics.4.2">Subsection&nbsp;10.4.2</a> can also be used to create a concordance. The only real
+difference is that the integers in a concordance are line numbers rather than
+page numbers.</p>
+
+
+<p>Write a program that can create a concordance. The document should be read
+from an input file, and the concordance data should be written to an output
+file. You can use the indexing
+subroutines from <a href="../c10/s4.html#generics.4.2">Subsection&nbsp;10.4.2</a>, modified to write the data to <span class="code">TextIO</span>
+instead of to <span class="code">System.out</span>. (You will need to make these subroutines
+<span class="code">static</span>.) The input and output files should be selected by the user when
+the program is run.  The sample program <span class="sourceref"><a href="../source/WordCount.java">WordCount.java</a></span>,
+from <a href="../c10/s4.html#generics.4.4">Subsection&nbsp;10.4.4</a>, can be used as a model of how to use files.
+That program also has a useful subroutine that reads one word from input.</p>
+
+
+<p>As you read the file, you want to take each word that you encounter and add
+it to the concordance along with the current line number.  Keeping track of
+the line numbers is one of the trickiest parts of the problem. In an input file,
+the end of each line in the file is
+marked by the newline character,&nbsp;'\n'. Every time you encounter this
+character, you have to add one to the line number.  WordCount.java
+ignores ends of lines.  Because you need to
+find and count the end-of-line characters, your program cannot
+process the input file in exactly the same way as does WordCount.java.
+Also, you will need to detect the end of the file.  The function
+<span class="code">TextIO.peek()</span>, which is used to look ahead at the next character
+in the input, returns the value <span class="code">TextIO.EOF</span> at end-of-file,
+after all the characters in the file have been read.</p>
+
+
+<p>Because it is so common, don't include the word "the" in your concordance.
+Also, do not include words that have length less than&nbsp;3.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>Solving this exercise, for the most part, means collecting subroutines that
+were presented in <a href="../c10/s4.html#generics.4.2">Subsection&nbsp;10.4.2</a> into a complete program. 
+I copied the method <span class="code">addReference()</span> directly, just making it <span class="code">static</span>
+and changing the names of the parameters to names that are more appropriate for
+a concordance. I copied <span class="code">printIntegers()</span>, changed its name
+to <span class="code">printConcordance</span>, made it static, and changed
+"System.out.print" to "TextIO.put" so that it would send its output to the file
+selected by the user.</p>
+   
+
+<p>In <a href="../c10/s4.html#generics.4.3">Subsection&nbsp;10.4.3</a>, I discussed the problem that arises when
+comparing strings that differ only in their use of upper an lower case.  In that
+subsection, I used a <span class="classname">Comparator</span> to solve the problem.
+In my solution to this exercise, however, I used the simpler solution of
+converting all words to lower case immediately after reading them from the
+file.  For lower case words, the default ordering is alphabetical order,
+so I don't need a <span class="classname">Comparator</span>.</p>
+
+
+<p>It remains to write the <span class="code">main()</span> routine, which is similar in outline
+to the <span class="code">main()</span> routine in <span class="code">WordCount.java</span>. One difference is
+that we have to keep track of line numbers. We can do this by looking for
+new-line characters as we skip over the characters between words. 
+While we do this, we have to be on the alert for the special character
+<span class="code">TextIO.EOF</span> that is returned by <span class="code">TextIO.peek()</span>
+when the end of the file is reached.  A pseudocode
+algorithm can be given as:</p>
+
+
+<pre>Open the input files.
+
+Let lineNum = 1.
+
+Repeat:
+   
+      // Skip over any non-letters in the input, stopping when a
+      // letter (marking the beginning of a word) or EOF is found.
+      
+      while the next character is not end-of-file or a letter:
+         Read the next character.
+         If it is a new line character:
+            Count the line by adding 1 to lineNum
+      
+      // After the while loop, we are looking at either the end of file
+      //    or at a letter that is the beginning of the next word.
+      
+      If at end-of-file:
+         Exit from the loop.
+      
+      Get the next word from the input file.
+      Convert the word to lower case.
+      if the word is not "the" and has length &gt; 2:
+         Add the word and lineNum to the concordance.
+
+Open the output file.
+
+Print the concordance.</pre>
+
+
+
+<p>This can be translated directly (using some code from <span class="sourceref"><a href="../source/WordCount.java">WordCount.java</a></span>)
+to give the <span class="code">main()</span> routine.   For reading individual words from
+input, the method <span class="code">readNextWord()</span> can be copied directly from
+WordCount.java.  (In my program, I used a slightly simpler method named
+<span class="code">readWord()</span> which uses the fact that when <span class="code">readWord()</span>
+is called by the <span class="code">main()</span> routine, the next character in input
+is already known to be a letter.)</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">import java.util.Map;
+import java.util.TreeMap;
+import java.util.TreeSet;
+
+/**
+ * This program makes a concordance for a file.  A concordance
+ * lists all the words that occur in the file, along with all
+ * the line numbers on which each word occurs.  (Words of
+ * length less than 3 are omitted, and "the" is omitted.)  The
+ * concordance is written to an output file.  The user selects
+ * the input and output files using file dialog boxes.  This
+ * program uses the non-standard class, TextIO.
+ */
+public class Concordance {
+
+
+
+/**
+ * This TreeMap holds the concordance.  Words from the file
+ * are used as keys in the map.  The value associated with
+ * each word is a set that contains the line numbers on which
+ * the word occurs in the file.  The set contains values
+ * belonging to the wrapper class, Integer.
+ */
+private static TreeMap&lt;String, TreeSet&lt;Integer&gt;&gt;  concordance;
+
+
+
+public static void main(String[] args) {
+
+   System.out.println("\n\n   This program will ask you to select an input file");
+   System.out.println("It make a list of all the words that occur in the file");
+   System.out.println("along with the line number of each line that contained");
+   System.out.println("that word.  This is called a \"concordance\" for the file.");
+   System.out.println("   After reading the input file, the program asks you to");
+   System.out.println("select an output file.  If you select a file, the list of");
+   System.out.println("words will be written to that file; if you cancel, the list");
+   System.out.println("be written to standard output.  All words are converted to");
+   System.out.println("lower case.\n\n");
+   System.out.print("Press return to begin.");
+   
+   TextIO.getln();  // Wait for user to press return.
+   
+   try {
+      
+      // Let user select the input file.  If the user cancels,
+      // the program ends immediately.
+  
+      if (TextIO.readUserSelectedFile() == false) {
+         System.out.println("No input file selected.  Exiting.");
+         System.exit(0);
+      }
+         
+      // Create the data structure that will hold the concordance.
+ 
+      concordance = new TreeMap&lt;String, TreeSet&lt;integer&gt;&gt;();
+  
+      int lineNum = 1;  // The number of the line in the input
+                        // file that is currently begin processed.
+      
+      // Read words from the file until end of file is reached,
+      // and add each word to the data.
+
+      while (true) {
+         char ch = TextIO.peek(); // Look ahead at next character
+         while ( ch != TextIO.EOF &amp;&amp; ! Character.isLetter(ch) ) {
+                   // Skip over non-letter characters, stopping when 
+                   // end-of-file (TextIO.EOF) or a letter is seen.  If the
+                   // character is an end-of-line character, add 1
+                   // to lineNum to reflect that fact that we are moving
+                   // on to the next line in the file.
+            TextIO.getAnyChar();  // Reads the next character, which is junk.
+            if (ch == '\n') {
+               lineNum++;  // Start of a new line.
+            }
+            ch = TextIO.peek();  // Look at the next character.
+         }
+         if (ch == TextIO.EOF) {
+                 // The end-of-file has been reached, so exit from the loop.
+            break;
+         }
+         String word = readWord();  // The next word from the file.
+         word = word.toLowerCase();
+         if (word.length() &gt; 2  &amp;&amp; !word.equalsIgnoreCase("the")) {
+                 // Add the reference to word to the concordance, unless
+                 // the word is "the" or the word has length &lt;= 2.
+            addReference(word,lineNum);
+         }
+      }
+      
+      // Write the data to a user-selected file, or to standard
+      // output if the user does not select an output file.
+
+      System.out.println(concordance.size() + " distinct words were found in the file.\n");
+      System.out.println();
+      if (concordance.size() == 0) {
+         System.out.println("No words found in file.");
+         System.out.println("Exiting without saving data.");
+         System.exit(0);
+      }
+
+      TextIO.writeUserSelectedFile(); // If user cancels, output automatically
+                                      // goes to standard output.
+  
+      printConcordance();  // Print the data to the output file.
+ 
+   }
+   catch (IllegalArgumentException e) {
+      System.out.println( "Sorry, some error occurred:  " + e.getMessage() );
+   }
+
+} // end main()
+
+
+/**
+ * Writes the data in the concordance to TextIO.  (The output will go
+ * to the output file, if one has been selected; otherwise, it will go
+ * to standard output.)  Each line of output contains one word from the
+ * file and a list of lines on which that word occurred.  The words
+ * are in alphabetical order.
+ */
+private static void printConcordance() {
+   
+   for ( Map.Entry&lt;String, TreeSet&lt;Integer&gt;&gt;  entry :  concordance.entrySet() ) {
+    
+      String term = entry.getKey();
+      TreeSet&lt;Integer&gt; pageSet = entry.getValue();
+
+      TextIO.put( term + " " );
+      for ( int page : pageSet ) {
+         TextIO.put( page + " " );
+      }
+      TextIO.putln();
+   
+    }
+}
+
+
+/**
+ * Add a word reference to the concordance.
+ */
+private static void addReference(String word, int lineNum) {
+   TreeSet&lt;Integer&gt; references; // The set of lines where we have
+                                //    previously found the word.
+   references = concordance.get(word);
+   if (references == null){
+          // This is the first reference that we have
+          // found for the word.  Make a new set containing
+          // the line number and add it to the concordance, with
+          // the word as the key.
+       TreeSet&lt;Integer&gt; firstRef = new TreeSet&lt;Integer&gt;();
+       firstRef.add( lineNum );  // lineNum is "autoboxed" to give an Integer!
+       concordance.put(word,firstRef);
+   }
+   else {
+         // The variable references is the set of line references
+         // that we have found previously for the word.
+         // Add the new line number to that set.  This
+         // set is already associated to word in the concordance.
+      references.add( lineNum ); // pageNum is "autoboxed" to give an Integer!
+   }
+}
+
+
+/**
+ * Read the next word from TextIO.  It is assumed that the next character
+ * in input is a letter.
+ *    A word is defined as a sequence of letters.  Also, a word can include
+ * an apostrophe if the apostrophe is surrounded by letters on each side.
+ * @return the next word from TextIO, or null if an end-of-file is encountered
+ */
+private static String readWord() {
+   char ch = TextIO.peek(); // Look at next character in input.
+   assert Character.isLetter(ch);
+   String word = "";  // This will be the word that is read.
+   while (true) {
+      word += TextIO.getAnyChar();  // Append the letter onto word.
+      ch = TextIO.peek();  // Look at next character.
+      if ( ch == '\'' ) {
+             // The next character is an apostrophe.  Read it, and
+             // if the following character is a letter, add both the
+             // apostrophe and the letter onto the word and continue
+             // reading the word.  If the character after the apostrophe
+             // is not a letter, the word is done, so break out of the loop.
+         TextIO.getAnyChar();   // Read the apostrophe.
+         ch = TextIO.peek();    // Look at char that follows apostrophe.
+         if (Character.isLetter(ch)) {
+            word += "\'" + TextIO.getAnyChar();
+            ch = TextIO.peek();  // Look at next char.
+         }
+         else
+            break;
+      }
+      if ( ! Character.isLetter(ch) ) {
+             // If the next character is not a letter, the word is
+             // finished, so break out of the loop.
+         break;
+      }
+      // If we haven't broken out of the loop, next char is a letter.
+   }
+   return word;  // Return the word that has been read.
+}
+
+
+} // end class Concordance
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

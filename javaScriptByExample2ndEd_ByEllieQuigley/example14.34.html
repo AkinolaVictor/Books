@@ -1,0 +1,45 @@
+<html><head><title>Drop-Down Menu</title>
+<link rel="stylesheet" href="dropdown.css"type="text/css"/>
+<script type="text/javascript">
+	function showMenu(id){
+		var ref = document.getElementById(id);
+		ref.style.visibility = "visible";  // Make the drop-down
+		                                   // menu visible
+	}
+	function hideMenu(id){
+	    var ref = document.getElementById(id);
+	    ref.style.visibility = "hidden";   // Hide the drop-down menu
+	}
+</script>
+</head>
+   <body bgColor="lightblue">
+	<table width="350" border="2" bgcolor="lightgreen" cellspacing="1"
+		cellpadding="2">
+	<tr>
+	<td width="100">
+	<div id="menu" onClick="hideMenu('menu');">
+          <a class="menu" href="#">US</a><br>
+	      <a class="menu" href="#">World</a><br>
+	      <a class="menu" href="#">Local </a><br>
+	   </div>
+	   <a href="#" onMouseOver="showMenu('menu');">News</a>
+	</td>
+	<td width="100">
+	   <div id="menu2" onClick="hideMenu('menu2');">
+	      <a class="menu" href="#">Basketball</a><br>
+	      <a class="menu" href="#">Football</a><br>
+	      <a class="menu" href="#>">Soccer</a><br>
+	   </div>
+	   <a href="#" onMouseOver="showMenu('menu2');">Sports</a>
+	</td>
+	<td width="100">
+	   <div id="menu3" onClick="hideMenu('menu3');">
+	     <a class="menu" href="http://www.imdb.com/">Movies</a><br>
+	     <a class="menu" href="#">Plays</a><br>
+	     <a class="menu" href="#>">DVD's</a><br>
+	   </div>
+	    <a href="#" onMouseOver="showMenu('menu3');">Entertainment</a>
+	</td>
+	</tr></table>
+   </body>
+</html>

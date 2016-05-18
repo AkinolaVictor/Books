@@ -1,0 +1,398 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 5.6 -- this and super</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s5.html">Previous Section</a> |
+           <a href="s7.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#OOP.6.1">The Special Variable this</a>
+<br>
+<a href="#OOP.6.2">The Special Variable super</a>
+<br>
+<a href="#OOP.6.3">Constructors in Subclasses</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 5.6</h3>
+<h2 class="section_title">this and super</h2>
+<hr class="break">
+   
+
+<p>
+<span class="start"><big>A</big>lthough the basic ideas</span> of object-oriented
+programming are reasonably simple and clear, they are subtle, and they take
+time to get used to. And unfortunately, beyond the basic ideas there are a lot
+of details. This section and the <a href="../c5/s7.html">next</a> cover more of those
+annoying details. You should not necessarily master everything in these two
+sections the first time through, but you should read it to be aware of what is
+possible. For the most part, when I need to use this material later in the
+text, I will explain it again briefly, or I will refer you back to it. In this
+section, we'll look at two variables, <span class="code">this</span> and <span class="code">super</span>, that are
+automatically defined in any instance method.</p>
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="OOP.6.1">5.6.1&nbsp;&nbsp;The Special Variable this</a>
+</h3>
+
+
+<p>What does it mean when you use a simple identifier such as <span class="code">amount</span>
+or <span class="code">process()</span> to refer to a variable or method?  The answer depends
+on scope rules that tell where and how each declared variable and method can
+be accessed in a program.  Inside the definition of a method, a simple variable name might
+refer to a local variable or parameter, if there is one "in scope," that is, one
+whose declaration is in effect at the point in the source code where the reference
+occurs.  If not, it must refer to a member variable of the class in which the
+reference occurs.  Similarly, a simple method name must refer to a method in 
+the same class.
+</p>
+
+
+<p>A <b>static</b> member of a class has a simple name that can only be used inside
+the class definition; for use outside the class, it has a full name of the form
+<span class="bnf">class-name</span>.<span class="bnf">simple-name</span>. For example, "<span class="code">Math.PI</span>" is a static
+member variable with simple name "<span class="code">PI</span>" in the class "<span class="classname">Math</span>".
+It's always legal to use the full name of a static member, even within the
+class where it's defined. Sometimes it's even necessary, as when the simple
+name of a static member variable is hidden by a local variable or parameter of the same
+name.</p>
+
+
+<p>Instance variables and instance methods also have simple names. The simple
+name of such an instance member can be used in instance methods in the class
+where the instance member is defined (but not in static methods).
+Instance members also have full names -- but remember that instance variables 
+and methods are actually contained in
+objects, not classes.  The full name of an instance member starts with a
+reference to the object that contains the instance member.  For example,
+if <span class="code">std</span> is a variable that refers to an object of type <span class="classname">Student</span>,
+then <span class="code">std.test1</span> could be the full name of an instance variable named
+<span class="code">test1</span> that is contained in that object.  Inside the <span class="classname">Student</span>
+class, the same variable could be referred to simply as <span class="code">test1</span>.
+But when just the simple name is used, where is the object that contains the variable?
+As an instance variable, <span class="code">test1</span> is not a part of the <span class="classname">Student</span>
+class itself; any actual <span class="code">test1</span> variable has to be contained in some
+object of type student.</p>
+
+
+<p>The solution to this riddle is simple: Suppose that the reference to "<span class="code">test1</span>"
+occurs in the definition of some instance method.  As with instance variables,
+only the definition of the instance method is in the class; the actual method that
+gets executed has to be thought of as belonging to some particular object of
+type <span class="classname">Student</span>.   When that method gets executed, the
+occurrence of the name "<span class="code">test1</span>" refers to the <span class="code">test1</span> variable
+<b>in that same object</b>.  (This is why simple names of instance members cannot
+be used in static methods -- when a static method is executed, there is no object around
+and hence no actual instance members to refer to!)</p>
+
+
+<p>This leaves open the question of full names for instance members inside the
+same class where they are defined.  We need a way to refer to "the object that
+contains this method."  Java defines a special variable named <span class="newword">this</span>
+for just this purpose, which is used in the source
+code of an instance method to refer to the object that contains the method.
+This intent of the name, "<span class="code">this</span>," is to refer to "this object," the one
+right here that this very method is in.  If <span class="code">var</span> is an instance variable
+in the same object as the method, then "<span class="code">this.var</span>" is a full name for that
+variable. If <span class="code">otherMethod()</span> is an instance method in the same object,
+then <span class="code">this.otherMethod()</span> could be used to call that method. Whenever
+the computer executes an instance method, it automatically sets the variable
+<span class="code">this</span> to refer to the object that contains the method.</p>
+
+
+<p>One common use of <span class="code">this</span> is in constructors. For example:</p>
+
+
+<pre>public class Student {
+
+    private String name;  // Name of the student.
+    
+    public Student(String name) {
+         // Constructor.  Create a student with specified name.
+       this.name = name;
+    }
+      .
+      .   // More variables and methods.
+      .
+}</pre>
+
+
+<p>In the constructor, the instance variable called <span class="code">name</span> is hidden by
+a formal parameter. However, the instance variable can still be referred to by
+its full name, <span class="code">this.name</span>. In the assignment statement 
+"<span class="code">this.name&nbsp;=&nbsp;name</span>", the value of
+the formal parameter, <span class="code">name</span>, is assigned to the instance variable,
+<span class="code">this.name</span>. This is considered to be acceptable style: There is no need
+to dream up cute new names for formal parameters that are just used to
+initialize instance variables. You can use the same name for the parameter as
+for the instance variable.</p>
+
+
+<p>There are other uses for <span class="code">this</span>. Sometimes, when you are writing an
+instance method, you need to pass the object that contains the method to a
+subroutine, as an actual parameter. In that case, you can use <span class="code">this</span> as
+the actual parameter. For example, if you wanted to print out a string
+representation of the object, you could say
+"<span class="code">System.out.println(this);</span>".  If you want to add it to an <span class="classname">ArrayList</span>
+<span class="code">lst</span>, you could say <span class="code">lst.add(this)</span>.
+Or you could assign the value of
+<span class="code">this</span> to another variable in an assignment statement. In fact, you can
+do anything with <span class="code">this</span> that you could do with any other variable,
+except change its value.</p>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="OOP.6.2">5.6.2&nbsp;&nbsp;The Special Variable super</a>
+</h3>
+
+
+<p>Java also defines another special variable, named "<span class="code">super</span>", for use
+in the definitions of instance methods. The variable <span class="code">super</span> is for use
+in a subclass. Like <span class="code">this</span>, <span class="code">super</span> refers to the object that
+contains the method. But it's forgetful. It forgets that the object belongs to
+the class you are writing, and it remembers only that it belongs to the
+superclass of that class. The point is that the class can contain additions and
+modifications to the superclass. <span class="code">super</span> doesn't know about any of those
+additions and modifications; it can only be used to refer to methods and
+variables in the superclass.</p>
+
+
+<p>Let's say that the class that you are writing contains an instance method
+named <span class="code">doSomething()</span>. Consider the subroutine call statement
+<span class="code">super.doSomething()</span>. Now, <span class="code">super</span> doesn't know anything about
+the <span class="code">doSomething()</span> method in the subclass. It only knows about things
+in the superclass, so it tries to execute a method named <span class="code">doSomething()</span>
+from the superclass. If there is none -- if the <span class="code">doSomething()</span> method
+was an addition rather than a modification -- you'll get a syntax error.</p>
+
+
+<p>The reason <span class="code">super</span> exists is so you can get access to things in the
+superclass that are <b>hidden</b> by things in the subclass. For example,
+<span class="code">super.var</span> always refers to an instance variable named <span class="code">var</span> in the
+superclass. This can be useful for the following reason: If a class contains an
+instance variable with the same name as an instance variable in its superclass,
+then an object of that class will actually contain two variables with the same
+name: one defined as part of the class itself and one defined as part of the
+superclass. The variable in the subclass does not <b>replace</b> the
+variable of the same name in the superclass; it merely <span class="newword">hides</span>
+it. The variable from the superclass can still be accessed, using
+<span class="code">super</span>.</p>
+
+
+<p>When you write a method in a subclass that has the same signature as a
+method in its superclass, the method from the superclass is hidden in the same
+way. We say that the method in the subclass <span class="newword">overrides</span> 
+the method from the superclass. Again, however,
+<span class="code">super</span> can be used to access the method from the superclass.</p>
+
+
+<p>The major use of <span class="code">super</span> is to override a method with a new method
+that <b>extends</b> the behavior of the inherited method, instead of
+<b>replacing</b> that behavior entirely. The new method can use
+<span class="code">super</span> to call the method from the superclass, and then it can add
+additional code to provide additional behavior. As an example, suppose you have
+a <span class="classname">PairOfDice</span> class that includes a <span class="code">roll()</span> method. Suppose
+that you want a subclass, <span class="classname">GraphicalDice</span>, to represent a pair of dice
+drawn on the computer screen. The <span class="code">roll()</span> method in the
+<span class="classname">GraphicalDice</span> class should do everything that the <span class="code">roll()</span>
+method in the <span class="classname">PairOfDice</span> class does. We can express this with a call
+to <span class="code">super.roll()</span>, which calls the method in the superclass. 
+But in addition to that, the <span class="code">roll()</span> method
+for a <span class="classname">GraphicalDice</span> object has to redraw the dice to show the new
+values. The <span class="classname">GraphicalDice</span> class might look something like this:</p>
+
+
+<pre>public class GraphicalDice extends PairOfDice {
+
+    public void roll() {
+            // Roll the dice, and redraw them.
+         super.roll();  // Call the roll method from PairOfDice.
+         redraw();      // Call a method to draw the dice.
+    }
+       .
+       .  // More stuff, including definition of redraw().
+       .
+}</pre>
+
+
+<p>Note that this allows you to extend the behavior of the <span class="code">roll()</span>
+method even if you don't know how the method is implemented in the
+superclass!</p>
+
+
+<p>Here is a more complete example. The applet at the end of 
+<a href="../c4/s7.html">Section&nbsp;4.7</a>
+ shows a disturbance that moves around in a
+mosaic of little squares. As it moves, each square that it visits becomes a brighter
+shade of green. The result looks interesting, but I think it would be prettier if the
+pattern were symmetric. A symmetric version of the applet is shown at the
+bottom of <a href="../c5/s7.html">Section&nbsp;5.7</a>. The symmetric applet can be
+programmed as an easy extension of the original applet.</p>
+
+
+<p>In the
+symmetric version, each time a square is brightened, the squares that can be
+obtained from that one by horizontal and vertical reflection through the center
+of the mosaic are also brightened.  This picture might make the symmetry
+idea clearer:</p>
+
+
+<p align="center">
+<img src="symmetricPixels.gif" width="200" height="140" alt=""></p>
+
+
+<p>The four red squares in the picture, for
+example, form a set of such symmetrically placed squares, as do the purple
+squares and the green squares. (The blue square is at the center of the mosaic,
+so reflecting it doesn't produce any other squares; it's its own
+reflection.)</p>
+
+
+<p>The original applet is defined by the class <span class="classname">RandomBrighten</span>.
+In that class, the actual task of brightening a square is done by a method called
+<span class="code">brighten()</span>. If <span class="code">row</span> and <span class="code">col</span> are the row and column
+numbers of a square, then "<span class="code">brighten(row,col);</span>" increases the
+brightness of that square. All we need is a subclass of <span class="classname">RandomBrighten</span>
+with a modified <span class="code">brighten()</span> routine. Instead of just brightening one
+square, the modified routine will also brighten the horizontal and vertical
+reflections of that square. But how will it brighten each of the four
+individual squares? By calling the <span class="code">brighten()</span> method from the original
+class! It can do this by calling <span class="code">super.brighten()</span>.</p>
+
+
+<p>There is still the problem of computing the row and column numbers of the
+horizontal and vertical reflections. To do this, you need to know the number of
+rows and the number of columns. The <span class="classname">RandomBrighten</span> class has instance
+variables named <span class="code">ROWS</span> and <span class="code">COLUMNS</span> to represent these
+quantities. Using these variables, it's possible to come up with formulas for
+the reflections, as shown in the definition of the <span class="code">brighten()</span> method
+below.</p>
+
+
+<p>Here's the complete definition of the new class:</p>
+
+
+<pre>public class SymmetricBrighten extends RandomBrighten {
+
+   /**
+    * Brighten the specified square, at position (row,col) and its
+    * horizontal and vertical reflections.  This overrides the
+    * brighten() method from the RandomBrighten class, which just 
+    * brightens one square.
+    */
+   void brighten(int row, int col) {
+      super.brighten(row, col);
+      super.brighten(ROWS - 1 - row, col);
+      super.brighten(row, COLUMNS - 1 - col);
+      super.brighten(ROWS - 1 - row, COLUMNS - 1 - col);
+   }
+
+} // end class SymmetricBrighten</pre>
+
+
+<p>This is the entire source code for the applet!</p>
+   
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="OOP.6.3">5.6.3&nbsp;&nbsp;Constructors in Subclasses</a>
+</h3>
+
+
+<p>Constructors are not inherited. That is, if you extend an existing class to
+make a subclass, the constructors in the superclass do <span class="code">not</span> become part
+of the subclass. If you want constructors in the subclass, you have to define
+new ones from scratch. If you don't define any constructors in the subclass,
+then the computer will make up a default constructor, with no parameters, for
+you.</p>
+
+
+<p>This could be a problem, if there is a constructor in the superclass that
+does a lot of necessary work. It looks like you might have to repeat all that
+work in the subclass! This could be a <b>real</b> problem if you
+don't have the source code to the superclass, and don't know how it works.  It might
+look like an impossible problem, if the constructor in the superclass uses <span class="code">private</span> member
+variables that you don't even have access to in the subclass!</p>
+
+
+<p>Obviously, there has to be some fix for this, and there is. It involves the
+special variable, <span class="code">super</span>. As the very first statement in a constructor,
+you can use <span class="code">super</span> to call a constructor from the superclass. The
+notation for this is a bit ugly and misleading, and it can only be used in this
+one particular circumstance: It looks like you are calling <span class="code">super</span> as a
+subroutine (even though <span class="code">super</span> is not a subroutine and you can't call
+constructors the same way you call other subroutines anyway). As an example,
+assume that the <span class="classname">PairOfDice</span> class has a constructor that takes two
+integers as parameters. Consider a subclass:</p>
+
+
+<pre>public class GraphicalDice extends PairOfDice {
+
+     public GraphicalDice() {  // Constructor for this class.
+     
+         super(3,4);  // Call the constructor from the
+                      //   PairOfDice class, with parameters 3, 4.
+                      
+         initializeGraphics();  // Do some initialization specific
+                                //   to the GraphicalDice class.
+     }
+        .
+        .  // More constructors, methods, variables...
+        .
+}</pre>
+
+
+<p>The statement "<span class="code">super(3,4);</span>" calls the constructor from
+the superclass.  This call must be the first line of the constructor in the
+subclass.  Note that if you don't explicitly call a constructor from the
+superclass in this way, then the default constructor from the superclass, the one with
+no parameters, will be called automatically.  (And if no such constructor exists
+in the superclass, the compiler will consider it to be a syntax error.)</p>
+   
+
+<p>This might seem rather technical, but unfortunately it is sometimes
+necessary. By the way, you can use the special variable <span class="code">this</span> in
+exactly the same way to call another constructor in the same class. This can be
+useful since it can save you from repeating the same code in several
+different constructors.</p>
+   
+
+
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s5.html">Previous Section</a> |
+           <a href="s7.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

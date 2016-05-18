@@ -1,0 +1,33 @@
+
+	
+<html> <!--The main menu page-->
+<head><title>Menu Bar</title>
+	<meta http-equiv="Content-Type" content="text/html;
+		charset=iso-8859-1">
+  <script type="text/javascript">
+	var myUrl;
+	function openSite(url){
+		parent.main.location = url;
+		myUrl=url;
+	}
+	function collapse(){
+		if ( ! myUrl){
+		    parent.location = "tocmain.html";}
+		else{
+		    parent.location=myUrl;   // Force this page into the
+			                            // parent location
+		}
+	}
+   </script>
+</head>
+<body bgcolor="#FFFFFF">
+	<p><a href="javascript:openSite('tocmain.html')">Home</a><p>
+	<p><a href="javascript:openSite('http://ellieq.com');">
+		Page 1</a></p>
+	<p><a href="javascript:openSite('http://prenticehall.com');">
+		Page 2</a></p>
+	<p><a href="javascript:openSite('http://google.com');">
+		Page 3</a></p>
+	<p><a href="javascript:collapse();">Hide Menu</a><p>
+</body>
+</html>  

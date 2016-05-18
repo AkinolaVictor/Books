@@ -1,0 +1,40 @@
+  <html><head><title>Catch me if you Can!</title></head>
+  <body>
+  <script type="text/javascript">
+
+  var age=eval(prompt("Enter your age:",""));
+  try{
+    if(age>120 || age < 0){
+        throw "Error1";
+    }
+    else if(age == ""){
+       throw "Error2";
+    }
+     else if(isNaN(age)){
+        throw "Error3";
+     }
+   }
+  catch(err){
+    if(err=="Error1"){
+       alert("Error! The value is out of range");
+    }
+    if(err=="Error2"){
+       alert("Error! You didn't enter your age");
+    }
+    if(err=="Error3"){
+       alert("Error! The value is not a number");
+     }
+    exit;
+  }
+
+  if (age < 13){
+        alert("You pay child's fare!");
+  }
+   else if(age < 55){
+       alert("You pay adult fare.");
+}
+else { alert("You pay senior fare.");
+}
+</script>
+</body>
+</html>

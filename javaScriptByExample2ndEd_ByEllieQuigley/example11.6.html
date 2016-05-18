@@ -1,0 +1,39 @@
+<html>
+  <head><title>Naming Forms object</title></head>
+  <body>
+	<form name="form1" id="form1" action="">
+		 Enter your name:
+		<input type="text"
+               name="namefield"
+			   id="namefield"/>
+	</form>
+
+	<form name="form2" id="form2">
+		<input type="button" name="mybutton"
+		       id="mybutton"
+		       value="Press here" />
+
+	</form>
+
+	<script type="text/javascript">
+		// How do we reference the form in JavaScriptby its name?
+		// Go down the document tree: window/document/form.property
+		// The window object can be left off, since it is at the top
+        document.write( "The first form is named: "+ window.document.forms["form1"].name);
+        document.write( "<br />The first form is name is: "+ document.form1.name);
+        document.write( "<br />The second form is named: "+ document.forms["form2"].name);
+        document.write( "<br />The name of the text field is " + document.form1.namefield.name);
+        document.write(document["form1"]["namefield"].name + "<br />");
+        document.write( "<br />The value in the button is " + document.form2.mybutton.value +"<br />");
+
+
+        // Using the id to extract property values
+        var text_field = document.getElementById("namefield");
+        var button = document.getElementById("mybutton");
+        document.write("<br />Using it's id the form1 input type is "+ text_field.type);
+        document.write("<br />Using it's id the form2 value is "+ button.value);
+        document.write("<br />ss"+document.form1.namefield.value+"<br/>");
+
+	</script>
+	</body>
+	</html>

@@ -1,0 +1,37 @@
+
+<html><head><title>The onReset Event</title>
+<script type="text/javascript">
+    function resetAll(){
+	if(confirm("Do you want to reset the form to its default "+
+              " values? ")){
+	    return true;
+	}
+	else{
+	     return false;
+	}
+    }
+</script>
+</head>
+<body>
+  <form action="http://cgi-bin/testform.cgi"
+		method="post"
+		/>
+	Enter your user id:
+	<input type="text"
+                name="textbox"
+	            value="Name? "
+                id="textbox" />
+		        value="Name? " />
+
+	<p>Type your password:
+	<input type="password"
+		name="secret"
+        id="secret" />
+	</p><p>
+	<input type="submit"/>
+	<input type="reset"
+		value="Reset Form" onClick="resetAll();"/>
+    </p>
+ </form>
+</body>
+</html>

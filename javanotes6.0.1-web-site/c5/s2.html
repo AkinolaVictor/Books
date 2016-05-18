@@ -1,0 +1,538 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 5.2 -- Constructors and Object Initialization</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s1.html">Previous Section</a> |
+           <a href="s3.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#OOP.2.1">Initializing Instance Variables</a>
+<br>
+<a href="#OOP.2.2">Constructors</a>
+<br>
+<a href="#OOP.2.3">Garbage Collection</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 5.2</h3>
+<h2 class="section_title">Constructors and Object Initialization</h2>
+<hr class="break">
+
+
+<p>
+<span class="start"><big>O</big>bject types in Java</span> are very different from the
+primitive types. Simply declaring a variable whose type is given as a class
+does not automatically create an object of that class. Objects must be
+explicitly <span class="newword">constructed</span>. For the computer, the
+process of constructing an object means, first, finding some unused memory in
+the heap that can be used to hold the object and, second, filling in the
+object's instance variables. As a programmer, you don't care where in memory
+the object is stored, but you will usually want to exercise some control over
+what initial values are stored in a new object's instance variables. In many
+cases, you will also want to do more complicated initialization or bookkeeping
+every time an object is created.</p>
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="OOP.2.1">5.2.1&nbsp;&nbsp;Initializing Instance Variables</a>
+</h3>
+
+
+<p>An instance variable can be assigned an initial value in its declaration,
+just like any other variable. For example, consider a class named
+<span class="classname">PairOfDice</span>. An object of this class will represent a pair of dice. It
+will contain two instance variables to represent the numbers showing on the
+dice and an instance method for rolling the dice:</p>
+
+
+<pre>public class PairOfDice {
+
+    public int die1 = 3;   // Number showing on the first die.
+    public int die2 = 4;   // Number showing on the second die.
+
+    public void roll() {
+            // Roll the dice by setting each of the dice to be
+            // a random number between 1 and 6.
+         die1 = (int)(Math.random()*6) + 1;
+         die2 = (int)(Math.random()*6) + 1;
+    }
+    
+} // end class PairOfDice</pre>
+
+
+<p>The instance variables <span class="code">die1</span> and <span class="code">die2</span> are initialized to
+the values 3 and 4 respectively. These initializations are executed whenever a
+<span class="classname">PairOfDice</span> object is constructed. It's important to understand when
+and how this happens. There can be many <span class="classname">PairOfDice</span> objects. Each time
+one is created, it gets its own instance variables, and the assignments
+"<span class="code">die1&nbsp;=&nbsp;3</span>" and "<span class="code">die2&nbsp;=&nbsp;4</span>" are executed to fill in the values
+of those variables. To make this clearer, consider a variation of the
+<span class="classname">PairOfDice</span> class:</p>
+
+
+<pre>public class PairOfDice {
+
+    public int die1 = (int)(Math.random()*6) + 1;
+    public int die2 = (int)(Math.random()*6) + 1;
+ 
+    public void roll() {
+         die1 = (int)(Math.random()*6) + 1;
+         die2 = (int)(Math.random()*6) + 1;
+    }
+    
+} // end class PairOfDice</pre>
+
+
+<p>Here, the dice are initialized to random values, as if a new pair of dice
+were being thrown onto the gaming table. Since the initialization is executed
+for each new object, a set of random initial values will be computed for each
+new pair of dice. Different pairs of dice can have different initial values.
+For initialization of <b>static</b> member variables, of course, the situation
+is quite different. There is only one copy of a <span class="code">static</span> variable, and
+initialization of that variable is executed just once, when the class is first
+loaded.</p>
+   
+
+<p>If you don't provide any initial value for an instance variable, a default
+initial value is provided automatically. Instance variables of numerical type
+(<span class="ptype">int</span>, <span class="ptype">double</span>, etc.) are automatically initialized to zero if
+you provide no other values; <span class="ptype">boolean</span> variables are initialized to
+<span class="code">false</span>; and <span class="ptype">char</span> variables, to the Unicode character with code
+number zero. An instance variable can also be a variable of object type. For
+such variables, the default initial value is <span class="code">null</span>. (In particular,
+since <span class="code">Strings</span> are objects, the default initial value for
+<span class="classname">String</span> variables is <span class="code">null</span>.)</p>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="OOP.2.2">5.2.2&nbsp;&nbsp;Constructors</a>
+</h3>
+
+
+<p>Objects are created with the operator, <span class="code">new</span>. For example, a program
+that wants to use a <span class="classname">PairOfDice</span> object could say:</p>
+
+
+<pre>PairOfDice dice;   // Declare a variable of type PairOfDice.
+
+dice = new PairOfDice();  // Construct a new object and store a
+                          //   reference to it in the variable.</pre>
+
+
+<p>In this example, "<span class="code">new PairOfDice()</span>" is an expression that allocates
+memory for the object, initializes the object's instance variables, and then
+returns a reference to the object. This reference is the value of the
+expression, and that value is stored by the assignment statement in the
+variable, <span class="code">dice</span>, so that after the assignment statement is
+executed, <span class="code">dice</span> refers to the newly created object.
+Part of this expression, "<span class="code">PairOfDice()</span>",
+looks like a subroutine call, and that is no accident. It is, in fact, a call
+to a special type of subroutine called a <span class="newword">constructor</span>. 
+This might puzzle you, since there is no such
+subroutine in the class definition. However, every class has at least one
+constructor. If the programmer doesn't write a constructor definition in a 
+class, then the system will provide a 
+<span class="newword">default constructor</span> for that class. 
+This default constructor does nothing
+beyond the basics: allocate memory and initialize instance variables. If you
+want more than that to happen when an object is created, you can include one or
+more constructors in the class definition.</p>
+
+
+<p>The definition of a constructor looks much like the definition of any other
+subroutine, with three exceptions. A constructor does not have any return type
+(not even <span class="code">void</span>). The name of the constructor must be the same as the
+name of the class in which it is defined. And the only modifiers that can be used
+on a constructor definition are the access modifiers <span class="code">public</span>,
+<span class="code">private</span>, and <span class="code">protected</span>. (In particular, a constructor can't
+be declared <span class="code">static</span>.)</p>
+
+
+<p>However, a constructor does have a subroutine body of the usual form, a
+block of statements. There are no restrictions on what statements can be used.
+And it can have a list of formal parameters. In fact, the ability to include
+parameters is one of the main reasons for using constructors. The parameters
+can provide data to be used in the construction of the object. For example, a
+constructor for the <span class="classname">PairOfDice</span> class could provide the values that are
+initially showing on the dice. Here is what the class would look like in that
+case:</p>
+
+
+<pre>public class PairOfDice {
+
+    public int die1;   // Number showing on the first die.
+    public int die2;   // Number showing on the second die.
+    
+    public PairOfDice(int val1, int val2) {
+            // Constructor.  Creates a pair of dice that
+            // are initially showing the values val1 and val2.
+         die1 = val1;  // Assign specified values 
+         die2 = val2;  //           to the instance variables.
+    }
+
+    public void roll() {
+            // Roll the dice by setting each of the dice to be
+            // a random number between 1 and 6.
+         die1 = (int)(Math.random()*6) + 1;
+         die2 = (int)(Math.random()*6) + 1;
+    }
+    
+} // end class PairOfDice</pre>
+
+
+<p>The constructor is declared as "<span class="code">public PairOfDice(int val1, int
+val2)&nbsp;...</span>", with no return type and with the same name as the name of the
+class. This is how the Java compiler recognizes a constructor. The constructor
+has two parameters, and values for these parameters must be provided when the
+constructor is called. For example, the expression "<span class="code">new&nbsp;PairOfDice(3,4)</span>"
+would create a <span class="classname">PairOfDice</span> object in which the
+values of the instance variables <span class="code">die1</span> and <span class="code">die2</span> are initially
+3 and&nbsp;4. Of course, in a program, the value returned by the constructor should
+be used in some way, as in</p>
+
+
+<pre>PairOfDice dice;            // Declare a variable of type PairOfDice.
+
+dice = new PairOfDice(1,1); // Let dice refer to a new PairOfDice
+                            //   object that initially shows 1, 1.</pre>
+
+
+<p>Now that we've added a constructor to the <span class="classname">PairOfDice</span> class, we can
+no longer create an object by saying "<span class="code">new PairOfDice()</span>"! The system
+provides a default constructor for a class <b>only</b> if the class
+definition does not already include a constructor, so there is only one
+constructor in the class, and it requires two actual parameters.
+However, this is not a big
+problem, since we can add a second constructor to the class, one that has no
+parameters. In fact, you can have as many different constructors as you want,
+as long as their signatures are different, that is, as long as they have
+different numbers or types of formal parameters. In the <span class="classname">PairOfDice</span>
+class, we might have a constructor with no parameters which produces a pair of
+dice showing random numbers:</p>
+
+
+<pre>public class PairOfDice {
+
+    public int die1;   // Number showing on the first die.
+    public int die2;   // Number showing on the second die.
+    
+    public PairOfDice() {
+            // Constructor.  Rolls the dice, so that they initially
+            // show some random values.
+        roll();  // Call the roll() method to roll the dice.
+    }
+    
+    public PairOfDice(int val1, int val2) {
+            // Constructor.  Creates a pair of dice that
+            // are initially showing the values val1 and val2.
+        die1 = val1;  // Assign specified values 
+        die2 = val2;  //            to the instance variables.
+    }
+
+    public void roll() {
+            // Roll the dice by setting each of the dice to be
+            // a random number between 1 and 6.
+        die1 = (int)(Math.random()*6) + 1;
+        die2 = (int)(Math.random()*6) + 1;
+    }
+
+} // end class PairOfDice</pre>
+
+
+<p>Now we have the option of constructing a <span class="classname">PairOfDice</span> object either
+with "<span class="code">new PairOfDice()</span>" or with "<span class="code">new PairOfDice(x,y)</span>", where
+<span class="code">x</span> and <span class="code">y</span> are <span class="ptype">int</span>-valued expressions.</p>
+
+
+<p>This class, once it is written, can be used in any program that needs to
+work with one or more pairs of dice. None of those programs will ever have to
+use the obscure incantation "<span class="code">(int)(Math.random()*6)+1</span>", because it's
+done inside the <span class="classname">PairOfDice</span> class. And the programmer, having once
+gotten the dice-rolling thing straight will never have to worry about it again.
+Here, for example, is a main program that uses the <span class="classname">PairOfDice</span> class to
+count how many times two pairs of dice are rolled before the two pairs come up
+showing the same value.  This illustrates once again that you can create several
+instances of the same class:</p>
+
+
+<pre>public class RollTwoPairs {
+
+    public static void main(String[] args) {
+                 
+        PairOfDice firstDice;  // Refers to the first pair of dice.
+        firstDice = new PairOfDice();
+        
+        PairOfDice secondDice; // Refers to the second pair of dice.
+        secondDice = new PairOfDice();
+        
+        int countRolls;  // Counts how many times the two pairs of
+                         //    dice have been rolled.
+        
+        int total1;      // Total showing on first pair of dice.
+        int total2;      // Total showing on second pair of dice.
+        
+        countRolls = 0;
+        
+        do {  // Roll the two pairs of dice until totals are the same.
+        
+            firstDice.roll();    // Roll the first pair of dice.
+            total1 = firstDice.die1 + firstDice.die2;   // Get total.
+            System.out.println("First pair comes up  " + total1);
+            
+            secondDice.roll();    // Roll the second pair of dice.
+            total2 = secondDice.die1 + secondDice.die2;   // Get total.
+            System.out.println("Second pair comes up " + total2);
+            
+            countRolls++;   // Count this roll.
+            
+            System.out.println();  // Blank line.
+            
+        } while (total1 != total2);
+        
+        System.out.println("It took " + countRolls 
+                          + " rolls until the totals were the same.");
+        
+    } // end main()
+
+} // end class RollTwoPairs</pre>
+
+
+
+<p>This applet simulates this program:</p>
+
+
+<p align="center">
+<applet code="RollTwoPairsConsole.class" width="550" height="260" archive="RollTwoPairsApplet.jar" alt="(Applet 'RollTwoPairsConsole' should be displayed here.)"></applet></p>
+   
+
+   
+
+<hr class="break">
+   
+
+<p>Constructors are subroutines, but they are subroutines of a special type.
+They are certainly not instance methods, since they don't belong to objects.
+Since they are responsible for creating objects, they exist before any objects
+have been created. They are more like <span class="code">static</span> member subroutines, but
+they are not and cannot be declared to be <span class="code">static</span>. In fact, according
+to the Java language specification, they are technically not members of the
+class at all!  In particular, constructors are <b>not</b> referred to as
+"methods."</p>
+
+
+<p>Unlike other subroutines, a constructor can only be called using the
+<span class="code">new</span> operator, in an expression that has the form</p>
+
+
+<pre>new <span class="bnf">class-name</span> ( <span class="bnf">parameter-list</span> )</pre>
+
+
+<p>where the <span class="bnf">parameter-list</span> is possibly empty.
+I call this an expression because it computes and returns a value, namely a
+reference to the object that is constructed. Most often, you will store the
+returned reference in a variable, but it is also legal to use a constructor
+call in other ways, for example as a parameter in a subroutine call or as part
+of a more complex expression. Of course, if you don't save the reference in a
+variable, you won't have any way of referring to the object that was just
+created.</p>
+
+
+<p>A constructor call is more complicated than an ordinary subroutine or
+function call. It is helpful to understand the exact steps that the computer
+goes through to execute a constructor call:</p>
+
+
+<ol>
+
+<li>First, the computer gets a block of unused memory in the heap, large enough
+to hold an object of the specified type.</li>
+
+<li>It initializes the instance variables of the object. If the declaration of
+an instance variable specifies an initial value, then that value is computed
+and stored in the instance variable. Otherwise, the default initial value is
+used.</li>
+
+<li>The actual parameters in the constructor, if any, are evaluated, and the
+values are assigned to the formal parameters of the constructor.</li>
+
+<li>The statements in the body of the constructor, if any, are executed.</li>
+
+<li>A reference to the object is returned as the value of the constructor
+call.</li>
+
+</ol>
+
+
+<p>The end result of this is that you have a reference to a newly constructed
+object. You can use this reference to get at the instance variables in that
+object or to call its instance methods.</p>
+
+
+<hr class="break">
+
+
+<p>For another example, let's rewrite the <span class="code">Student</span> class that was used
+in <a href="s1.html">Section 1</a>. I'll add a constructor, and I'll also take
+the opportunity to make the instance variable, <span class="code">name</span>, private.</p>
+
+
+<pre>public class Student {
+
+   private String name;                 // Student's name.
+   public double test1, test2, test3;   // Grades on three tests.
+   
+   Student(String theName) {
+        // Constructor for Student objects;
+        // provides a name for the Student.
+      name = theName;
+   }
+   
+   public String getName() {
+        // Getter method for reading the value of the private
+        // instance variable, name.
+      return name;
+   }
+   
+   public double getAverage() { 
+        // Compute average test grade.
+      return (test1 + test2 + test3) / 3;
+   }
+
+}  // end of class Student</pre>
+
+
+<p>An object of type <span class="code">Student</span> contains information about some
+particular student. The constructor in this class has a parameter of type
+<span class="classname">String</span>, which specifies the name of that student. Objects of type
+<span class="code">Student</span> can be created with statements such as:</p>
+
+
+<pre>std = new Student("John Smith");
+std1 = new Student("Mary Jones");</pre>
+
+
+<p>In the original version of this class, the value of <span class="code">name</span> had to be
+assigned by a program after it created the object of type <span class="code">Student</span>.
+There was no guarantee that the programmer would always remember to set the
+<span class="code">name</span> properly. In the new version of the class, there is no way to
+create a <span class="code">Student</span> object except by calling the constructor, and that
+constructor automatically sets the <span class="code">name</span>. The programmer's life is made
+easier, and whole hordes of frustrating bugs are squashed before they even have
+a chance to be born.</p>
+
+
+<p>Another type of guarantee is provided by the <span class="code">private</span> modifier.
+Since the instance variable, <span class="code">name</span>, is <span class="code">private</span>, there is no
+way for any part of the program outside the <span class="code">Student</span> class to get at
+the <span class="code">name</span> directly. The program sets the value of <span class="code">name</span>,
+indirectly, when it calls the constructor. I've provided a getter function,
+<span class="code">getName()</span>, that can be used from outside the class to find out the
+<span class="code">name</span> of the student. But I haven't provided any setter method or other way to change the
+name. Once a student object is created, it keeps the same name as long as it
+exists.  (It would be legal to declare the variable <span class="code">name</span> to be
+"<span class="code">final</span>" in this class.  An instance variable can be <span class="code">final</span>
+provided it is either assigned a value in its declaration or is assigned a value
+in every constructor in the class.  It is illegal to assign a value to a <span class="code">final</span>
+instance variable, except inside a constructor.)</p>
+
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="OOP.2.3">5.2.3&nbsp;&nbsp;Garbage Collection</a>
+</h3>
+
+
+<p>So far, this section has been about creating objects. What about destroying
+them? In Java, the destruction of objects takes place automatically.</p>
+
+
+<p>An object exists in the heap, and it can be accessed only through variables
+that hold references to the object. What should be done with an object if there
+are no variables that refer to it? Such things can happen. Consider the
+following two statements (though in reality, you'd never do anything like
+this in consecutive statements):</p>
+
+
+<pre>Student std = new Student("John Smith");
+std = null;</pre>
+
+
+<p>In the first line, a reference to a newly created <span class="code">Student</span> object is
+stored in the variable <span class="code">std</span>. But in the next line, the value of
+<span class="code">std</span> is changed, and the reference to the <span class="code">Student</span> object is
+gone. In fact, there are now no references whatsoever to that object, in
+any variable. So there is no way for the program ever to use the object again!
+It might as well not exist. In fact, the memory occupied by the object should
+be reclaimed to be used for another purpose.</p>
+
+
+<p>Java uses a procedure called <span class="newword">garbage collection</span>
+to reclaim memory occupied by objects that are no longer accessible to a
+program. It is the responsibility of the system, not the programmer, to keep
+track of which objects are "garbage." In the above example, it was very easy to
+see that the <span class="code">Student</span> object had become garbage. Usually, it's much
+harder. If an object has been used for a while, there might be several
+references to the object stored in several variables. The object doesn't become
+garbage until all those references have been dropped.</p>
+
+
+<p>In many other programming languages, it's the programmer's responsibility to
+delete the garbage. Unfortunately, keeping track of memory usage is very
+error-prone, and many serious program bugs are caused by such errors. A
+programmer might accidently delete an object even though there are still
+references to that object. This is called a <span class="newword">dangling pointer error</span>, 
+and it leads to problems when the program tries to access
+an object that is no longer there. Another type of error is a <span class="newword">memory leak</span>, 
+where a programmer neglects to delete objects
+that are no longer in use. This can lead to filling memory with objects that
+are completely inaccessible, and the program might run out of memory even
+though, in fact, large amounts of memory are being wasted.</p>
+
+
+<p>Because Java uses garbage collection, such errors are simply impossible.
+Garbage collection is an old idea and has been used in some programming
+languages since the 1960s. You might wonder why all languages don't use garbage
+collection. In the past, it was considered too slow and wasteful. However,
+research into garbage collection techniques combined with the incredible speed
+of modern computers have combined to make garbage collection feasible.
+Programmers should rejoice.</p>
+   
+
+
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s1.html">Previous Section</a> |
+           <a href="s3.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

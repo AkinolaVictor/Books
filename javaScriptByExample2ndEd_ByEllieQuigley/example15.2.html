@@ -1,0 +1,30 @@
+<html><head><title>The Dom and Id's</title></head>
+   <body id="body1">
+      <h1 id="head1">Shortening the DOM Walk</h1>
+	    <p id="para1">This is the paragraph!<p/>
+       <p><big>
+	   <script name="text/javascript">
+		 var h1tag=document.getElementById("head1");
+		 var bodytag=document.getElementById("body1");
+		 var paratag = document.getElementById("para1");
+		 h1tag.style.fontFamily="verdana";
+		 h1tag.style.fontSize="32";
+		 h1tag.style.color="darkgreen";
+		 paratag.style.fontSize="125%";
+		 paratag.style.color="blue";
+	  	 bodytag.style.backgroundColor="silver";
+
+		 document.write(h1tag +"<br />");
+		 document.write(paratag+"<br />");
+		 document.write(bodytag+"<br /><br />");
+
+		//Let's get the text between the tags
+		 document.write("<h2>This is the text within the tags:</h2>");
+		 document.write(h1tag.childNodes[0].nodeValue+"<br />");
+		 document.write(paratag.childNodes[0].nodeValue+"<br />");
+
+	</script>
+  </big>
+  </p>
+  </body >
+</html>

@@ -1,0 +1,24 @@
+<html><head><title>Two-dimensional array</title>
+<body>
+   <table border="2" bordercolor="blue">
+   <caption>Grade Sheet</caption>
+   <tr>
+   <script type="text/javascript">
+      var grades= [ [77,88,99,75] ,
+                     [50,60,99,89 ],
+                     [99,88,78,92]
+                   ];
+
+    // alert(grades.length);   Output is 3
+    // alert(grades);    Output is 77,88,99,75,50,60,99,89,99,88,78,92
+       for (var i=0; i < grades.length; i++) {
+           for (var j=0; j < grades[i].length; j++) {
+                document.write(
+                   "<td bgcolor='#fff00'>"+grades[i][j] + "</td>");
+           }
+        document.write("</tr>");
+       }
+  </script>
+</table>
+</body>
+</html>

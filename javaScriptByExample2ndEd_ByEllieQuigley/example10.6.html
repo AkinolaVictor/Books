@@ -1,0 +1,24 @@
+
+<html><head><title>Mime Detection</title>
+</head>
+<body bgcolor="lightgreen">
+   <h3><u>Mime Types--Firefox</u></h3>
+   <b>
+   <script type="text/javascript">
+	for ( var i=0;i < navigator.mimeTypes.length; i++){
+		if(navigator.mimeTypes[i].enabledPlugin != null){
+		   document.write ("<br></em><font size='+1'>"+
+			   navigator.mimeTypes[i].type + "<br />");
+		   document.write("<font size='-1'>"+
+			        "Enabled Plugin Name: <em>");
+           document.write("<font size='-1'>"+
+			   navigator.mimeTypes[i].enabledPlugin.name+"<br />");
+		   document.write("</em>Description: "+ "<em>"+
+			   navigator.mimeTypes[i].description+
+			   "<br /></em>Suffixes: "+ "<em>"+
+			   navigator.mimeTypes[i].suffixes+"<br />");
+	     }
+   }
+  </script>
+  </body>
+  </html>

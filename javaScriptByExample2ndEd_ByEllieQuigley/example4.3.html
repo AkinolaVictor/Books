@@ -1,0 +1,18 @@
+<html>
+<head><title>Using the JavaScript prompt box</title>
+</head>
+ <body>
+    <script type="text/javascript">
+	var name=prompt("What is your name?", "");
+	alert("Welcome to my world! " + name);
+	var age=prompt("Tell me your age.", "Your age: ");
+	if ( age == null){    // If user presses the cancel button
+		alert("Not sharing your age with me");
+	}
+	else{
+		alert(age + " is young");
+	}
+	alert(prompt("Where do you live? ", ""));
+    </script>
+</body>
+</html>

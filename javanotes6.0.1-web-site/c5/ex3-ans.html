@@ -1,0 +1,281 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 3, Chapter 5</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 5.3</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 5.3:</h3>
+<p>This problem uses the
+<span class="classname">PairOfDice</span> class from <a href="../c5/ex1-ans.html">Exercise&nbsp;5.1</a>
+and the <span class="classname">StatCalc</span> class from <a href="../c5/ex2-ans.html">Exercise&nbsp;5.2</a>.</p>
+
+
+<p>The program in <a href="../c4/ex4-ans.html">Exercise&nbsp;4.4</a> performs
+the experiment of counting how many times a pair of dice is rolled before a
+given total comes up. It repeats this experiment 10000 times and then reports
+the average number of rolls. It does this whole process for each possible total
+(2, 3, ..., 12).</p>
+
+
+<p>Redo that exercise. But instead of just reporting the average number of
+rolls, you should also report the standard deviation and the maximum number of
+rolls. Use a <span class="classname">PairOfDice</span> object to represent the dice. Use a
+<span class="classname">StatCalc</span> object to compute the statistics. (You'll need a new
+<span class="classname">StatCalc</span> object for each possible total, 2, 3, ..., 12. You can use a
+new pair of dice if you want, but it's not necessary.)</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+
+<p>The program from <a href="../c4/ex4-ans.html">Exercise&nbsp;4.4</a> defines
+a function, <span class="code">rollFor(N)</span>, that performs the basic experiment once. It
+rolls the dice until the total on the dice is <span class="code">N</span>, and it returns the
+number of rolls. Using a <span class="classname">PairOfDice</span> object, <span class="code">dice</span>, the body of
+this subroutine becomes</p>
+
+
+<pre>int rollCt = 0;  // Number of rolls made.
+do {
+   dice.roll();
+   rollCt++;
+} while ( dice.getTotal() != N );
+return rollCt;</pre>
+
+
+<p>This is significantly simpler than the original version. But where does the
+dice object come from? One possibility is to create a new <span class="classname">PairOfDice</span>
+object at the beginning of the function. This will work, but then a new object
+is created each time the function is called. In the program we are writing, the
+function is called 110,000 times. It seems a waste to manufacture 110,000 pairs
+of dice when one would do! To avoid this, I create the dice as a static member
+variable:</p>
+
+
+<pre>private static PairOfDice dice = new PairOfDice();</pre>
+
+
+<p>The variable must be <span class="code">static</span> since it is used in the <span class="code">static</span>
+function, <span class="code">rollFor</span>. Since <span class="code">dice</span> is a static member variable, it
+is created and initialized when the class is first loaded and it exists as long
+as the program is running. The <span class="code">rollFor()</span> method always uses this one
+pair of dice. (Some people might prefer to create the dice as a local variable
+in the <span class="code">main()</span> routine. The dice could be passed as a parameter to the
+<span class="code">rollFor()</span> method. Then, <span class="code">rollFor(N,dice)</span> would mean "roll for
+a total of <span class="code">N</span> using this pair of dice." But in my opinion, the dice are not
+logically a part of the interface of this subroutine, and I prefer to use the
+member variable.)</p>
+
+
+<p>The original program also had a method called <span class="code">getAverageRollCount()</span>
+to find the average number of rolls, when the basic experiment is repeated
+10000 times. We could rename this to <span class="code">getRollCountStats</span> and use it to
+compute all the statistics, not just the average. The actual computation is to
+be done by a <span class="classname">StatCalc</span> object. Let <span class="code">stats</span> be a variable that
+refers to that object. The results of each experiment will be fed into this
+object, something like this:</p>
+
+
+<pre>for ( int i = 0;  i &lt; 10000;  i++ ) {
+      // Assume "total" is the number we are rolling for.
+    rollCountThisExperiment = rollFor( total );  // Do one experiment.
+    stats.enter( rollCountThisExperiment );      // Enter the data.
+}</pre>
+
+
+<p>At the end of this process, <span class="code">stats</span> is ready to report the
+statistics. All you have to do is call its functions, such as
+<span class="code">stats.getMean()</span>.</p>
+
+
+<p>In my program, I use the named constant <span class="code">NUMBER_OF_EXPERIMENTS</span>
+instead of the literal number, 10000. I abbreviate the for loop to</p>
+
+
+<pre>for ( int i = 0;  i &lt; NUMBER_OF_EXPERIMENTS;  i++ ) 
+    stats.enter( rollFor(total) );</pre>
+
+
+<p>and, since it has become so short, I deleted the subroutine and moved the
+<span class="code">for</span> loop into the <span class="code">main()</span> routine. The <span class="code">main()</span> routine
+prints the output in neat columns, using formatted output. For example,
+"<span class="code">TextIO.putf("%6d",total);</span>" prints the value of <span class="code">total</span> in a column
+of width 6. (The hardest part was figuring out how wide to make the columns!).
+After printing out some headings for the columns, the <span class="code">main()</span> routine
+says</p>
+
+
+<pre>for ( int total = 2;  total &lt;= 12;  total++ ) {
+   StatCalc stats;  // An object that will compute the statistics.
+   stats = new StatCalc();
+   for ( int i = 0; i &lt; NUMBER_OF_EXPERIMENTS; i++ ) {
+         // Do the experiment of counting the number of rolls
+         // required to roll the desired total, and enter the
+         // number of rolls into stats' dataset.
+      stats.enter( rollFor(total) );
+   }
+   TextIO.putf("%6d", total);
+   TextIO.putf("%18.3f", stats.getMean());
+   TextIO.putf("%19.3f", stats.getStandardDeviation());
+   TextIO.putf("%14.3f", stats.getMax());
+   TextIO.putln();
+}</pre>
+
+
+
+<p>The body of the <span class="code">for</span> loop processes one of the possible totals on a
+pair of dice, and it produces one line of output with the statistics for that
+total. A new <span class="classname">StatCalc</span> object is created for each execution of the
+<span class="code">for</span> loop. This is necessary because we want separate statistics for
+each total. A single <span class="classname">StatCalc</span> object would just accumulate all the
+data for all the possible values of total into a single dataset. It might be worth
+noting that the five output statements in this method could be written as
+a single statement:</p>
+
+
+<pre>TextIO.putf( "%6d%18.3f%19.3f%14.3f\n", total, stats.getMean(), 
+        stats.getStandardDeveialtion(), stats.getMax() );</pre>
+
+
+<hr class="break">
+
+
+<p>By the way, you might wonder what would happen if I had not eliminated the
+<span class="code">getRollCountStats()</span> subroutine? In that case, the statistics data is
+generated in the subroutine and is used in the <span class="code">main()</span> routine. So, the
+same <span class="classname">StatCalc</span> object has to be used in both routines. There are
+several ways to handle this. The variable, <span class="code">stats</span>, could be a static
+member variable. Then it could simply be used in both routines. Alternatively,
+the <span class="classname">StatCalc</span> object could be passed as a parameter to the subroutine.
+Or, as a final and best alternative, the object could be created in the subroutine and
+sent back to the <span class="code">main()</span> routine as a return value. Let's look at this
+last possibility. The subroutine would be:</p>
+
+
+<pre>static StatCalc getRollCountStats( int total ) {
+    StatCalc calc;         // An object to compute the statistics.
+    calc = new StatCalc();
+    for ( int i = 0; i &lt; NUMBER_OF_EXPERIMENTS; i++ )
+        calc.enter( rollFor(total) );
+    return calc;  // Send back the object, with the statistics.
+}</pre>
+
+
+<p>In the main program, this would be used as follows:</p>
+
+
+<pre>for ( int total = 2; total &lt;= 12; total++ ) {
+   StatCalc stats;  // The stats for this total
+   stats = getRollCountStats( total ); // Get stats from subroutine.
+   TextIO.putf("%6d", total);
+   TextIO.putf("%18.3f", stats.getMean());
+   TextIO.putf("%19.3f", stats.getStandardDeviation());
+   TextIO.putf("%14.3f", stats.getMax());
+   TextIO.putln();
+}</pre>
+
+
+<p>Note in particular that not every object variable needs to be initialized
+with a new object. In the case of the variable <span class="code">calc</span> in the
+<span class="code">main()</span> routine, an object is computed elsewhere. The variable,
+<span class="code">calc</span>, is set to refer to that existing object.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">
+/**
+ * This program performs the following type of experiment:
+ * Given a desired total roll, such as 7, roll a pair of
+ * dice until the given total comes up, and count how many
+ * rolls are necessary.  Now do the experiment over and over,
+ * and find the average number of rolls.  The number of times
+ * the experiment is repeated is given by the constant,
+ * NUMBER_OF_EXPERIMENTS.  Several statistics are computed and
+ * printed out for each possible roll = 2, 3, ..., 12:
+ * the average number of rolls, the standard deviation,
+ * and the maximum number of rolls.
+ */
+
+public class DiceRollStats2 {
+
+   static final int NUMBER_OF_EXPERIMENTS = 10000;
+   
+   private static PairOfDice dice = new PairOfDice();
+            // A single pair of dice, which will be used for all
+            // the experiments.
+
+   
+   public static void main(String[] args) {
+   
+       TextIO.putln("Dice Total   Avg # of Rolls   Stand. Deviation   Max # of Rolls");
+       TextIO.putln("----------   --------------   ----------------   --------------");
+
+       for ( int total = 2;  total &lt;= 12;  total++ ) {
+          StatCalc stats;  // An object that will compute the statistics.
+          stats = new StatCalc();
+          for ( int i = 0; i &lt; NUMBER_OF_EXPERIMENTS; i++ ) {
+                // Do the experiment of counting the number of rolls
+                // required to roll the desired total, and enter the
+                // number of rolls into stats' dataset.
+             stats.enter( rollFor(total) );
+          }
+          TextIO.putf("%6d", total);
+          TextIO.putf("%18.3f", stats.getMean());
+          TextIO.putf("%19.3f", stats.getStandardDeviation());
+          TextIO.putf("%14.3f", stats.getMax());
+          TextIO.putln();
+       }
+       
+   } // end main
+   
+   /**
+    * Roll the dice repeatedly until the total on the
+    * two dice comes up to be N.  N MUST be one of the numbers
+    * 2, 3, ..., 12.  (If not, this routine will go into an
+    * infinite loop!).  The number of rolls is returned.
+    */
+   static int rollFor( int N ) {
+       int rollCt = 0;  // Number of rolls made.
+       do {
+          dice.roll();
+          rollCt++;
+       } while ( dice.getTotal() != N );
+       return rollCt;
+   }
+
+   
+}  // end class DiceRollStats2</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

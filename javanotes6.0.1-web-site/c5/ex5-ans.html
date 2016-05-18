@@ -1,0 +1,490 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 5, Chapter 5</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 5.5</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 5.5:</h3>
+<p>Write a program that lets
+the user play Blackjack. The game will be a simplified version of Blackjack as
+it is played in a casino. The computer will act as the dealer. As in the
+previous exercise, your program will need the classes defined in 
+<span class="sourceref"><a href="../source/Card.java">Card.java</a></span>, <span class="sourceref"><a href="../source/Deck.java">Deck.java</a></span>, 
+<span class="sourceref"><a href="../source/Hand.java">Hand.java</a></span>, and <span class="sourceref"><a href="../source/BlackjackHand.java">BlackjackHand.java</a></span>.
+(This is the longest and
+most complex program that has come up so far in the exercises.)</p>
+
+
+<p>You should first write a subroutine in which the user plays one game. The
+subroutine should return a <span class="ptype">boolean</span> value to indicate whether the user
+wins the game or not. Return <span class="code">true</span> if the user wins, <span class="code">false</span> if
+the dealer wins. The program needs an object of class <span class="classname">Deck</span> and two
+objects of type <span class="classname">BlackjackHand</span>, one for the dealer and one for the
+user. The general object in Blackjack is to get a hand of cards whose value is
+as close to 21 as possible, without going over. The game goes like this.</p>
+
+
+<ul>
+
+<li>First, two cards are dealt into each player's hand. If the dealer's hand has
+a value of 21 at this point, then the dealer wins. Otherwise, if the user has
+21, then the user wins. (This is called a "Blackjack".) Note that the dealer
+wins on a tie, so if both players have Blackjack, then the dealer wins.</li>
+
+
+<li>Now, if the game has not ended, the user gets a chance to add some cards to
+her hand. In this phase, the user sees her own cards and sees
+<b>one</b> of the dealer's two cards. (In a casino, the dealer deals
+himself one card face up and one card face down. All the user's cards are dealt
+face up.) The user makes a decision whether to "Hit", which means to add
+another card to her hand, or to "Stand", which means to stop taking cards.</li>
+
+
+<li>If the user Hits, there is a possibility that the user will go over 21. In
+that case, the game is over and the user loses. If not, then the process
+continues. The user gets to decide again whether to Hit or Stand.</li>
+
+
+<li>If the user Stands, the game will end, but first the dealer gets a chance to
+draw cards. The dealer only follows rules, without any choice. The rule is that
+as long as the value of the dealer's hand is less than or equal to 16, the
+dealer Hits (that is, takes another card). The user should see all the dealer's
+cards at this point. Now, the winner can be determined: If the dealer has gone
+over 21, the user wins. Otherwise, if the dealer's total is greater than or
+equal to the user's total, then the dealer wins. Otherwise, the user wins.</li>
+
+</ul>
+
+
+
+<p>Two notes on programming: At any point in the subroutine, as soon as you
+know who the winner is, you can say "<span class="code">return true</span>;" or "<span class="code">return
+false</span>;" to end the subroutine and return to the main program. To avoid
+having an overabundance of variables in your subroutine, remember that a
+function call such as <span class="code">userHand.getBlackjackValue()</span> can be used
+anywhere that a number could be used, including in an output statement or in
+the condition of an <span class="code">if</span> statement.</p>
+
+
+<p>Write a main program that lets the user play several games of Blackjack. To
+make things interesting, give the user 100 dollars, and let the user make bets
+on the game. If the user loses, subtract the bet from the user's money. If the
+user wins, add an amount equal to the bet to the user's money. End the program
+when the user wants to quit or when she runs out of money.</p>
+
+
+
+<p>Here is an applet that simulates the program you are supposed to write. It
+would probably be worthwhile to play it for a while to see how it works.</p>
+
+
+<p align="center">
+<applet code="BlackjackConsole.class" width="600" height="350" archive="BlackjackConsoleApplet.jar" alt=""></applet></p>
+   
+
+
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+
+<p>Let's start by designing the main program. We want to give the user $100 for
+betting on the games. Then, the user plays Blackjack games until the user runs
+out of money or until the user wants to quit. We could ask the user after each
+game whether she wants to continue. But instead of this, I just tell the user
+to enter a bet amount of 0 if she wants to quit. We need variables to represent
+the amount of money that the user has and the amount that the user bets on a
+given game. Let <span class="code">money</span> and <span class="code">bet</span> be variables of type
+<span class="ptype">int</span> to represent these quantities. Then, we can write an algorithm for
+the main program:</p>
+
+
+<pre>Let money = 100
+while (true):
+    Input the user's bet
+    if the bet is 0:
+        Break out of the loop
+    User plays a game of Blackjack
+    if the user won the game
+        Pay off the user's bet (money = money + bet)
+    else
+        Collect the user's bet (money = money - bet)
+    If the user is out of money:
+        Break out of the loop.</pre>
+
+
+<p>Since the Blackjack game will take place in a subroutine, we need some way
+for the <span class="code">main()</span> routine to find out whether the user won. The exercise
+says that the subroutine should be a function that returns a boolean value with
+this information. We should record the return value and test it to see whether
+the user won. The other point that needs some refinement is inputting the
+user's bet. We better make sure that the user's bet is a reasonable amount,
+that is, something between 0 and the amount of money the user has. So, the
+algorithm can be refined as:</p>
+
+
+<pre>Let money = 100
+while (true):
+    do {
+        Ask the user to enter a bet
+        Let bet = the user's response
+    } while bet is &lt; 0 or &gt; money
+    if  bet is 0:
+        Break out of the loop
+    Let userWins = playBlackjack()
+    if userWins:
+        Pay off the user's bet (money = money + bet)
+    else
+        Collect the user's bet (money = money - bet)
+    If money == 0:
+        Break out of the loop.</pre>
+
+
+<p>This algorithm can be translated into the <span class="code">main()</span> routine in the
+program given below.</p>
+
+
+<hr class="break">
+
+
+<p>Of course, the major part of the problem is to write the
+<span class="code">playBlackjack()</span> routine. Fortunately, the exercise gives what amounts
+to a fairly detailed outline of the algorithm. Things are a little complicated
+because the game can end at various points along the way. When this happens,
+the subroutine ends immediately, and any remaining steps in the algorithm are
+skipped. In outline, the game goes like this:</p>
+
+
+<pre>Create and shuffle a deck of cards
+Create two BlackjackHands, userHand and dealerHand
+Deal two cards into each hand
+Check if dealer has blackjack (if so, game ends)
+Check if user has blackjack (if so, game ends)
+User draws cards (if user goes over 21, game ends)
+Dealer draws cards (if dealer goes over 21, games ends)
+Check for winner</pre>
+
+
+<p>The last three steps need to be expanded, again using the information stated
+in the exercise. The user can draw several cards, so we need a loop. The loop
+ends when the user wants to "stand". In the loop, if the value of
+<span class="code">userHand</span> goes over 21, then the whole subroutine ends. The dealer
+simply draws cards in a loop as long as the value of <span class="code">dealerHand</span> is 16
+or less. Again, if the value goes over 21, the whole subroutine ends. In the
+last step, we determine the winner by comparing the values of the two hands.
+With these refinements, the algorithm becomes</p>
+
+
+<pre>Create and shuffle a deck of cards
+Create two BlackjackHands, userHand and dealerHand
+
+Deal two cards into each hand
+if dealer has blackjack
+    User loses and the game ends now
+If user has blackjack
+    User wins and the game ends now
+
+Repeat:
+    Ask whether user wants to hit or stand
+    if user stands:
+        break out of loop
+    if user hits:
+        Give user a card
+        if userHand.getBlackjackValue() &gt; 21:
+            User loses and the game ends now
+
+while  dealerHand.getBlackjackValue() &lt;= 16 :
+    Give dealer a card
+    if dealerHand.getBlackjackValue() &gt; 21:
+        User wins and game ends now
+
+if dealerHand.getBlackjackValue() &gt;= userHand.getBlackjackValue()
+    User loses
+else
+    User wins</pre>
+
+
+<p>This is ready to be translated into Java. One point of coding is the
+question of how to deal a card to the user or to the dealer. If <span class="code">deck</span>
+refers to the object of type <span class="classname">Deck</span>, then the function call
+<span class="code">deck.dealCard()</span> returns the card we want. We can add the card to a
+hand with the <span class="code">addCard()</span> instance method from the <span class="classname">Hand</span> class.
+We can do this in one step, if we want. For example, to deal two cards into
+each hand, we just have to say</p>
+
+
+<pre>dealerHand.addCard( deck.dealCard() );
+dealerHand.addCard( deck.dealCard() );
+userHand.addCard( deck.dealCard() );
+userHand.addCard( deck.dealCard() );</pre>
+
+
+<p>Of course, a lot of output statements have to be added to the algorithm to
+keep the user informed about what is going on. For example, I expanded the step
+where it says "Ask whether user wants to hit or stand" to</p>
+
+
+<pre>Display all the cards in the user's hand
+Display the user's total
+Display the dealers face-up card, i.e. dealerHand.getCard(0)
+Ask if user wants to hit or stand
+Get user's response, and make sure it's legal</pre>
+
+
+<p>The last step listed here expands to a loop that ends when the user inputs a
+valid response, 'H' or 'S'. The first step uses a <span class="code">for</span> loop</p>
+
+
+<pre>for ( int i = 0;  i &lt; userHand.getCardCount();  i++ )
+     TextIO.putln("   " + userHand.getCard(i));</pre>
+
+
+<p>to display the cards in the user's hand. The function call
+<span class="code">userHand.getCardCount()</span> gives the number of cards in the hand. The
+cards are numbered from 0 to <span class="code">userHand.getCardCount() - 1</span>, and
+<span class="code">userHand.getCard(i)</span> is the card in the <span class="code">i</span>-position. Of course,
+to produce code like this, you have to make sure that you are familiar with the
+methods in the classes that you are using.</p>
+
+
+<p>Although there are many other details to get right, it's mostly routine from
+here on. I encourage you to read the entire program below and make sure that
+you understand it.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">/**
+ * This program lets the user play Blackjack.  The computer
+ * acts as the dealer.  The user has a stake of $100, and
+ * makes a bet on each game.  The user can leave at any time,
+ * or will be kicked out when he loses all the money.
+ * House rules:  The dealer hits on a total of 16 or less
+ * and stands on a total of 17 or more.  Dealer wins ties.
+ * A new deck of cards is used for each game.
+ */
+
+public class Blackjack {
+
+   public static void main(String[] args) {
+   
+      int money;          // Amount of money the user has.
+      int bet;            // Amount user bets on a game.
+      boolean userWins;   // Did the user win the game?
+      
+      TextIO.putln("Welcome to the game of blackjack.");
+      TextIO.putln();
+      
+      money = 100;  // User starts with $100.
+   
+      while (true) {
+          TextIO.putln("You have " + money + " dollars.");
+          do {
+             TextIO.putln("How many dollars do you want to bet?  (Enter 0 to end.)");
+             TextIO.put("? ");
+             bet = TextIO.getlnInt();
+             if (bet &lt; 0 || bet &gt; money)
+                 TextIO.putln("Your answer must be between 0 and " + money + '.');
+          } while (bet &lt; 0 || bet &gt; money);
+          if (bet == 0)
+             break;
+          userWins = playBlackjack();
+          if (userWins)
+             money = money + bet;
+          else
+             money = money - bet;
+          TextIO.putln();
+          if (money == 0) {
+             TextIO.putln("Looks like you've run out of money!");
+             break;
+          }
+      }
+      
+      TextIO.putln();
+      TextIO.putln("You leave with $" + money + '.');
+   
+   } // end main()
+   
+ 
+   /**
+    * Let the user play one game of Blackjack, with the computer as dealer.
+    * @return true if the user wins the game, false if the user loses.
+    */  
+   static boolean playBlackjack() {
+
+      Deck deck;                  // A deck of cards.  A new deck for each game.
+      BlackjackHand dealerHand;   // The dealer's hand.
+      BlackjackHand userHand;     // The user's hand.
+      
+      deck = new Deck();
+      dealerHand = new BlackjackHand();
+      userHand = new BlackjackHand();
+
+      /*  Shuffle the deck, then deal two cards to each player. */
+      
+      deck.shuffle();
+      dealerHand.addCard( deck.dealCard() );
+      dealerHand.addCard( deck.dealCard() );
+      userHand.addCard( deck.dealCard() );
+      userHand.addCard( deck.dealCard() );
+      
+      TextIO.putln();
+      TextIO.putln();
+      
+      /* Check if one of the players has Blackjack (two cards totaling to 21).
+         The player with Blackjack wins the game.  Dealer wins ties.
+      */
+      
+      if (dealerHand.getBlackjackValue() == 21) {
+           TextIO.putln("Dealer has the " + dealerHand.getCard(0)
+                                   + " and the " + dealerHand.getCard(1) + ".");
+           TextIO.putln("User has the " + userHand.getCard(0)
+                                     + " and the " + userHand.getCard(1) + ".");
+           TextIO.putln();
+           TextIO.putln("Dealer has Blackjack.  Dealer wins.");
+           return false;
+      }
+      
+      if (userHand.getBlackjackValue() == 21) {
+           TextIO.putln("Dealer has the " + dealerHand.getCard(0)
+                                   + " and the " + dealerHand.getCard(1) + ".");
+           TextIO.putln("User has the " + userHand.getCard(0)
+                                     + " and the " + userHand.getCard(1) + ".");
+           TextIO.putln();
+           TextIO.putln("You have Blackjack.  You win.");
+           return true;
+      }
+      
+      /*  If neither player has Blackjack, play the game.  First the user 
+          gets a chance to draw cards (i.e., to "Hit").  The while loop ends 
+          when the user chooses to "Stand".  If the user goes over 21,
+          the user loses immediately.
+      */
+      
+      while (true) {
+          
+           /* Display user's cards, and let user decide to Hit or Stand. */
+
+           TextIO.putln();
+           TextIO.putln();
+           TextIO.putln("Your cards are:");
+           for ( int i = 0; i &lt; userHand.getCardCount(); i++ )
+              TextIO.putln("    " + userHand.getCard(i));
+           TextIO.putln("Your total is " + userHand.getBlackjackValue());
+           TextIO.putln();
+           TextIO.putln("Dealer is showing the " + dealerHand.getCard(0));
+           TextIO.putln();
+           TextIO.put("Hit (H) or Stand (S)? ");
+           char userAction;  // User's response, 'H' or 'S'.
+           do {
+              userAction = Character.toUpperCase( TextIO.getlnChar() );
+              if (userAction != 'H' &amp;&amp; userAction != 'S')
+                 TextIO.put("Please respond H or S:  ");
+           } while (userAction != 'H' &amp;&amp; userAction != 'S');
+
+           /* If the user Hits, the user gets a card.  If the user Stands,
+              the loop ends (and it's the dealer's turn to draw cards).
+           */
+
+           if ( userAction == 'S' ) {
+                   // Loop ends; user is done taking cards.
+               break;
+           }
+           else {  // userAction is 'H'.  Give the user a card.  
+                   // If the user goes over 21, the user loses.
+               Card newCard = deck.dealCard();
+               userHand.addCard(newCard);
+               TextIO.putln();
+               TextIO.putln("User hits.");
+               TextIO.putln("Your card is the " + newCard);
+               TextIO.putln("Your total is now " + userHand.getBlackjackValue());
+               if (userHand.getBlackjackValue() &gt; 21) {
+                   TextIO.putln();
+                   TextIO.putln("You busted by going over 21.  You lose.");
+                   TextIO.putln("Dealer's other card was the " 
+                                                      + dealerHand.getCard(1));
+                   return false;  
+               }
+           }
+           
+      } // end while loop
+      
+      /* If we get to this point, the user has Stood with 21 or less.  Now, it's
+         the dealer's chance to draw.  Dealer draws cards until the dealer's
+         total is &gt; 16.  If dealer goes over 21, the dealer loses.
+      */
+
+      TextIO.putln();
+      TextIO.putln("User stands.");
+      TextIO.putln("Dealer's cards are");
+      TextIO.putln("    " + dealerHand.getCard(0));
+      TextIO.putln("    " + dealerHand.getCard(1));
+      while (dealerHand.getBlackjackValue() &lt;= 16) {
+         Card newCard = deck.dealCard();
+         TextIO.putln("Dealer hits and gets the " + newCard);
+         dealerHand.addCard(newCard);
+         if (dealerHand.getBlackjackValue() &gt; 21) {
+            TextIO.putln();
+            TextIO.putln("Dealer busted by going over 21.  You win.");
+            return true;
+         }
+      }
+      TextIO.putln("Dealer's total is " + dealerHand.getBlackjackValue());
+      
+      /* If we get to this point, both players have 21 or less.  We
+         can determine the winner by comparing the values of their hands. */
+      
+      TextIO.putln();
+      if (dealerHand.getBlackjackValue() == userHand.getBlackjackValue()) {
+         TextIO.putln("Dealer wins on a tie.  You lose.");
+         return false;
+      }
+      else if (dealerHand.getBlackjackValue() &gt; userHand.getBlackjackValue()) {
+         TextIO.putln("Dealer wins, " + dealerHand.getBlackjackValue() 
+                          + " points to " + userHand.getBlackjackValue() + ".");
+         return false;
+      }
+      else {
+         TextIO.putln("You win, " + userHand.getBlackjackValue() 
+                          + " points to " + dealerHand.getBlackjackValue() + ".");
+         return true;
+      }
+
+   }  // end playBlackjack()
+
+
+} // end class Blackjack
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

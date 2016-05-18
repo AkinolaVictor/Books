@@ -1,0 +1,27 @@
+<html><head><title>onSubmit Event Handler and Forms</title>
+<script type="test/javascript">
+	function readySubmit(){
+		if(confirm("Are you ready to submit your form? ")){
+			   return true;}
+		else{
+			   return false;}
+		}
+</script>
+</head>
+<body>
+<form action="cgi-bin/testform.cgi"
+		method="post"
+		onSubmit="return(readySubmit());" >
+	Enter your user id:
+     <input type="text"
+		name="textbox"
+		value="" />
+	<br />
+	Type your password: 
+      <input type="password"
+		name="secret" />
+	<p>
+     <input type="submit" />
+</form>
+</body>
+</html>

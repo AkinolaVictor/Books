@@ -1,0 +1,91 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Chapter 12 -- Threads and Multiprocessing</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s1.html">First Section</a> |
+           <a href="../c11/index.html">Previous Chapter</a> |
+           <a href="../c13/index.html">Next Chapter</a> |
+           <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h3 class="chapter_title">Chapter 12</h3>
+<h2 class="chapter_title">Threads and Multiprocessing</h2>
+<hr class="break">
+
+<p>
+<span class="start"><big>I</big>n the classic programming model,</span> there
+is a single central processing unit that reads instructions from 
+memory and carries them out, one after the other.  The purpose of a
+program is to provide the list of instructions for the processor to execute.
+This is the only type of programming that we have considered so
+far.</p>
+
+<p>However, this model of programming has limitations.  Modern
+computers have multiple processors, making it possible for them
+to perform several tasks at the same time.  To use the full 
+potential of all those processors, you will need to write
+programs that can do <span class="newword">parallel processing</span>.
+For Java programmers, that means learning about
+<span class="newword">threads</span>.  A single thread is similar
+to the programs that you have been writing up until now,
+but more than one thread can be running at the same time,
+"in parallel." What makes things more interesting -- and more 
+difficult -- than single-threaded programming is the fact
+that the threads in a parallel program are rarely completely
+independent of one another.  They usually need to cooperate
+and communicate.  Learning to manage and control cooperation
+among threads is the main hurdle that you will face in this
+chapter.</p>
+
+<p>There are several reasons to use parallel programming.  One
+is simply to do computations more quickly by setting several 
+processors to work on them simultaneously.  Just as important,
+however, is to use threads to deal with "blocking" operations,
+where a process can't proceed until some event occurs.  In the
+<a href="../c11/index.html">previous chapter</a>, for example, we saw how
+programs can block while waiting for data to arrive over
+a network connection.  Threads make it possible for one part of a program
+to continue to do useful work even while another part is 
+blocked, waiting for some event to occur.  In this context,
+threads are a vital programming tool even for a computer that
+has only a single processing unit.</p>
+
+<hr class="break">
+<h3>Contents of Chapter 12:</h3>
+<ul class="contents">
+<li>Section 1: <a href="s1.html">Introduction to Threads</a>
+</li>
+<li>Section 2: <a href="s2.html">Programming with Threads</a>
+</li>
+<li>Section 3: <a href="s3.html">Threads and Parallel Processing</a>
+</li>
+<li>Section 4: <a href="s4.html">Threads and Networking</a>
+</li>
+<li>Section 5: <a href="s5.html">Network Programming Example: A Networked Game Framework</a>
+</li>
+<li>
+<a href="exercises.html">Programming Exercises</a>
+</li>
+<li>
+<a href="quiz.html">Quiz on This Chapter</a>
+</li>
+</ul>
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s1.html">First Section</a> |
+           <a href="../c11/index.html">Previous Chapter</a> |
+           <a href="../c13/index.html">Next Chapter</a> |
+           <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

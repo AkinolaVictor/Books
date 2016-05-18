@@ -1,0 +1,306 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 2, Chapter 8</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 8.2</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 8.2:</h3>
+<p>As discussed in <a href="../c8/s1.html">Section&nbsp;8.1</a>,
+values of type <span class="ptype">int</span> are limited to 32 bits.
+Integers that are too large to be represented in 32 bits cannot be stored in an
+<span class="ptype">int</span> variable. Java has a standard class,
+<span class="code">java.math.BigInteger</span>, that addresses this problem. An object of type
+<span class="classname">BigInteger</span> is an integer that can be arbitrarily large. (The maximum
+size is limited only by the amount of memory available to the Java Virtual Machine.) Since
+<span class="classname">BigIntegers</span> are objects, they must be manipulated using instance
+methods from the <span class="classname">BigInteger</span> class. For example, you can't add two
+<span class="classname">BigIntegers</span> with the <span class="code">+</span> operator. Instead, if <span class="code">N</span> and
+<span class="code">M</span> are variables that refer to <span class="classname">BigIntegers</span>, you can compute
+the sum of <span class="code">N</span> and <span class="code">M</span> with the function call <span class="code">N.add(M)</span>.
+The value returned by this function is a new <span class="classname">BigInteger</span> object that is
+equal to the sum of <span class="code">N</span> and <span class="code">M</span>.</p>
+
+
+<p>The <span class="code">BigInteger</span> class has a constructor 
+<span class="code">new BigInteger(str)</span>, where <span class="code">str</span> is a string.
+The string must represent an integer, such as "3" or "39849823783783283733". If
+the string does not represent a legal integer, then the constructor throws a
+<span class="classname">NumberFormatException</span>.</p>
+
+
+<p>There are many instance methods in the <span class="classname">BigInteger</span> class. Here are a
+few that you will find useful for this exercise. Assume that <span class="code">N</span> and
+<span class="code">M</span> are variables of type <span class="code">BigInteger</span>.</p>
+
+
+<ul>
+
+<li>
+<span class="codedef">N.add(M)</span>  --  a function that returns a
+<span class="classname">BigInteger</span> representing the sum of <span class="code">N</span> and <span class="code">M</span>.</li>
+
+<li>
+<span class="codedef">N.multiply(M)</span>  --  a function that
+returns a <span class="classname">BigInteger</span> representing the result of multiplying <span class="code">N</span>
+times <span class="code">M</span>.</li>
+
+<li>
+<span class="codedef">N.divide(M)</span>  --  a function that returns
+a <span class="classname">BigInteger</span> representing the result of dividing <span class="code">N</span> by
+<span class="code">M</span>, discarding the remainder.</li>
+
+<li>
+<span class="codedef">N.signum()</span>  --  a function that returns
+an ordinary <span class="ptype">int</span>. The returned value represents the sign of the integer
+<span class="code">N</span>. The returned value is 1 if <span class="code">N</span> is greater than zero. It is
+-1 if <span class="code">N</span> is less than zero. And it is 0 if <span class="code">N</span> is zero.</li>
+
+<li>
+<span class="codedef">N.equals(M)</span>  --  a function that returns
+a <span class="ptype">boolean</span> value that is <span class="code">true</span> if <span class="code">N</span> and <span class="code">M</span>
+have the same integer value.</li>
+
+<li>
+<span class="codedef">N.toString()</span>  --  a function that
+returns a <span class="classname">String</span> representing the value of <span class="code">N</span>.</li>
+
+<li>
+<span class="codedef">N.testBit(k)</span>  --  a function that
+returns a <span class="ptype">boolean</span> value. The parameter <span class="code">k</span> is an integer. The
+return value is <span class="code">true</span> if the <span class="code">k</span>-th bit in <span class="code">N</span> is 1, and
+it is <span class="code">false</span> if the <span class="code">k</span>-th bit is 0. Bits are numbered from
+right to left, starting with 0. Testing "<span class="code">if&nbsp;(N.testBit(0))</span>" is an easy
+way to check whether <span class="code">N</span> is even or odd. <span class="code">N.testBit(0)</span> is
+<span class="code">true</span> if and only if <span class="code">N</span> is an odd number.</li>
+
+</ul>
+
+
+<p>For this exercise, you should write a program that prints <span class="code">3N+1</span>
+sequences with starting values specified by the user. In this version of the
+program, you should use <span class="classname">BigIntegers</span> to represent the terms in the
+sequence. You can read the user's input into a <span class="classname">String</span> with the
+<span class="code">TextIO.getln()</span> function. Use the input value to create the
+<span class="classname">BigInteger</span> object that represents the starting point of the
+<span class="code">3N+1</span> sequence. Don't forget to catch and handle the
+<span class="classname">NumberFormatException</span> that will occur if the user's input is not a
+legal integer! You should also check that the input number is greater than
+zero.</p>
+
+
+<p>If the user's input is legal, print out the <span class="code">3N+1</span> sequence. Count
+the number of terms in the sequence, and print the count at the end of the
+sequence. Exit the program when the user inputs an empty line.</p>
+
+
+
+<p>Since it's fun to see a computer work with really big numbers, here for your
+amusement is a working applet version of the solution:</p>
+
+<p align="center">
+<applet code="BigThreeNApplet.class" width="650" height="350" archive="BigThreeNApplet.jar" alt=""></applet></p>
+
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+
+<p>My solution uses a subroutine, <span class="code">printThreeNSequence(N)</span>, to print out
+the <span class="code">3N+1</span> sequence starting from the <span class="classname">BigInteger</span>, <span class="code">N</span>.
+The subroutine assumes that <span class="code">N</span> is not <span class="code">null</span> and that it
+represents a value that is greater than one.  Given these assumptions, the
+subroutine cannot generate any errors. (These conditions are ensured by
+the main program which calls the subroutine, but I use <span class="code">assert</span>
+statements to test the assumptions during debugging.)  The only interesting aspect of the
+subroutine is that all operations on <span class="code">N</span> must be performed using
+instance methods from the <span class="classname">BigInteger</span> class. For example, to multiply
+<span class="code">N</span> by 2, I use a statement "<span class="code">N = N.multiply(TWO);</span>", where
+<span class="code">TWO</span> is a <span class="classname">BigInteger</span> that represents the integer 2. My program
+defines <span class="code">TWO</span> as a constant, along with several other
+<span class="classname">BigIntegers</span> that represent values that I need:</p>
+
+
+<pre>static final BigInteger THREE = new BigInteger("3");
+static final BigInteger ONE = new BigInteger("1");
+static final BigInteger TWO = new BigInteger("2");</pre>
+
+
+<p>With these constants, the code for computing the next term in a
+<span class="code">3N+1</span> sequence becomes:</p>
+
+
+<pre>if (N.testBit(0) == false) {
+        // N is even.  Divide N by 2.
+    N = N.divide(TWO);
+}
+else {
+        // N is odd.  Multiply N by 3, then add 1.
+    N = N.multiply(THREE);
+    N = N.add(ONE);
+}</pre>
+
+
+<p>You can find the complete subroutine in the solution that is given below.</p>
+
+
+<p>In the <span class="code">main()</span> routine, the user's input is read into a variable,
+<span class="code">line</span>, of type <span class="classname">String</span>. The input is used to construct a
+<span class="classname">BigInteger</span> with the statement "<span class="code">N = new BigInteger(line);</span>".
+Since this statement can produce a <span class="classname">NumberFormatException</span>, it is placed
+in a <span class="code">try</span> statement that can catch and handle the error. The test
+"<span class="code">if (N.signum() == 1)</span>" is used to make sure that <span class="code">N&nbsp;&gt;=&nbsp;1</span>.
+The value of <span class="code">N.signum()</span> is 1 if and only if <span class="code">N</span> is a positive
+integer. Here is the loop form the <span class="code">main()</span> routine that processes the
+user's input:</p>
+
+
+<pre>while (true) {
+   TextIO.putln();
+   TextIO.putln("Enter the starting value, or press return to end.");
+   TextIO.put("? ");
+   line = TextIO.getln().trim();
+   if (line.length() == 0)
+       break;
+   try {
+       N = new BigInteger(line);
+       if (N.signum() == 1)
+          printThreeNSequence(N);
+       else
+          TextIO.putln("Error:  The starting value cannot be less than or equal to zero.");
+   }
+   catch (NumberFormatException e) {
+       TextIO.putln("Error:  \"" + line + "\" is not a legal integer.");
+   }
+}</pre>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">import java.math.BigInteger;
+
+/** 
+ * This program prints out 3N+1 sequences for starting values of N that
+ * are entered by the user.  Since integers are represented as objects of
+ * type BigInteger, it will work for arbitrarily large integers.  The
+ * starting value specified by the user must be greater than zero.  The
+ * program continues to read input from the user and print 3N+1 sequences
+ * until the user inputs an empty line.  If the user's input is illegal,
+ * the program will print an error message and continue.
+ */
+public class BigThreeN {
+ 
+ 
+    private static final BigInteger THREE = new BigInteger("3");
+    private static final BigInteger ONE = new BigInteger("1");
+    private static final BigInteger TWO = new BigInteger("2");
+    
+    
+    public static void main(String[] args) {
+    
+       String line;   // A line of input from the user.
+  
+       BigInteger N;  // The starting point for the 3N+1 sequence,
+                      //   as specified by the user.
+       
+       TextIO.putln("This program will print 3N+1 sequences for positive starting values");
+       TextIO.putln("that you enter.  There is no pre-set limit on the number of");
+       TextIO.putln("digits in the numbers that you enter.  The program will end when");
+       TextIO.putln("you enter an empty line.");
+       
+       while (true) {
+          TextIO.putln();
+          TextIO.putln("Enter the starting value, or press return to end.");
+          TextIO.put("? ");
+          line = TextIO.getln().trim();
+          if (line.length() == 0)
+              break;
+          try {
+              N = new BigInteger(line);
+              if (N.signum() == 1)
+                 printThreeNSequence(N);
+              else
+                 TextIO.putln("Error:  The starting value cannot be less than or equal to zero.");
+          }
+          catch (NumberFormatException e) {
+              TextIO.putln("Error:  \"" + line + "\" is not a legal integer.");
+          }
+       }
+       
+       TextIO.putln();
+       TextIO.putln("OK.  Bye for now!");
+    
+    }  // end main()
+    
+    
+    /**
+     * Print the 3N+1 sequence starting from N, and count the number
+     * of terms in the sequence.  It is assumed that N is not null and
+     * that it is greater than zero.
+     */
+    private static void printThreeNSequence(BigInteger N) {
+ 
+       assert N != null &amp;&amp; N.signum() == 1 : "Illegal parameter value.";
+ 
+       int count;  // The number of terms in the sequence.
+       
+       TextIO.putln();
+       TextIO.putln("The 3N+1 sequence starting with " + N + " is:");
+       TextIO.putln();
+       
+       TextIO.putln(N.toString());   // Print N as the first term of the sequence
+       count = 1;
+       
+       while ( ! N.equals(ONE) ){   // Compute and print the next term
+          if (N.testBit(0) == false) {
+                  // N is even.  Divide N by 2.
+              N = N.divide(TWO);
+          }
+          else {
+                  // N is odd.  Multiply N by 3, then add 1.
+              N = N.multiply(THREE);
+              N = N.add(ONE);
+          }
+          TextIO.putln(N.toString());
+          count++;
+       }
+ 
+       TextIO.putln();
+       TextIO.putln("There were " + count + " terms in the sequence.");
+ 
+    }  // end printThreeNSequence
+    
+    
+} // end BigThreeN</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

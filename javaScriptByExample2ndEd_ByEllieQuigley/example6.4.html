@@ -1,0 +1,29 @@
+<html>
+<head><title>The Switch Statement</title></head>
+<body>
+<script type="text/javascript">
+<!--
+	var day_of_week=Math.floor((Math.random()* 7)+1);
+           // Get a random number between 1 and 7
+           // Monday is 1, Tuesday is 2, etc.
+  	switch(day_of_week){
+	case 1:
+	case 2:
+	case 3:
+	case 4:
+    alert("Business hours Monday through Thursday are from 9am to 10pm");
+ 	    break;
+	case 5:
+		alert("Business hours on Friday are from 9am to 6pm");
+		break;
+	case 6:
+		alert("Business hours on Saturday are from 11am to 3pm");
+		break;
+	default:
+		alert("We are closed on Sundays and holidays");
+		break;
+	}
+//-->
+</script>
+</body>
+</html>

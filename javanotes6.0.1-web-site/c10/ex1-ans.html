@@ -1,0 +1,133 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 1, Chapter 10</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 10.1</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 10.1:</h3>
+<p>Rewrite the <span class="classname">PhoneDirectory</span> class
+from <a href="../c7/s4.html#arrays.4.2">Subsection&nbsp;7.4.2</a> so that it uses a <span class="classname">TreeMap</span>
+to store directory entries, instead of an array.  (Doing this was suggested
+in <a href="../c10/s3.html#generics.3.1">Subsection&nbsp;10.3.1</a>.)</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>The class that you are asked to write for this exercise
+really is very trivial.  Everything that the class needs to do is already done
+by the <span class="classname">TreeMap</span> class, and <span class="classname">TreeMap</span>
+does much more besides.  In fact the only reason to write the <span class="classname">PhoneDirectory</span>
+class is to <b>hide</b> a lot of the capabilities of <span class="classname">TreeMaps</span>.
+A <span class="classname">PhoneDirectory</span> object is a "thin wrapper" around a <span class="classname">TreeMap</span>
+object.  It allows only the operations <span class="code">getNumber(name)</span> and
+<span class="code">putNumber(name,number)</span>.  Each of these can be implemented in a single line,
+as a call to one of the methods in the <span class="classname">TreeMap</span>.  The
+<span class="classname">PhoneDirectory</span> does provide nice, meaningful names
+for the methods, and it adds a check to the implementation of <span class="code">putNumber(name,number)</span>
+to ensure that <span class="code">name</span> and <span class="code">number</span> are not <span class="code">null</span>.</p>
+
+<p>It would be nice for phone directories to have a few more capabilities.  A method for
+listing the contents of the directory would be especially nice, so I have added one
+to my class even though there was no such method in the original <span class="classname">PhoneDirectory</span>
+class.  The print method uses a for-each loop to iterate through the entry set of
+the phone directory. It is very similar to examples in <a href="../c10/s3.html#generics.3.2">Subsection&nbsp;10.3.2</a>
+Even with this addition, though, the <span class="classname">PhoneDirectory</span> class is
+still very far from being useful in real applications.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">import java.util.Map;
+import java.util.TreeMap;
+
+/**
+ * A phone directory holds a list of names with a phone number for
+ * each name.  It is possible to find the number associated with
+ * a given name, and to specify the phone number for a given name.
+ * (This version of the class uses a TreeMap to store the data.)
+ */
+public class PhoneDirectoryWithTreeMap {
+
+
+/**
+ * The TreeMap that will store the data.  Both key and value are
+ * of type String.  The key represents a name and the value represents
+ * the associated phone number.
+ */
+private TreeMap&lt;String,String&gt; data;
+   
+   
+   /**
+    * Constructor creates an initially empty directory.
+    */
+   public PhoneDirectoryWithTreeMap() {
+      data = new TreeMap&lt;String,String&gt;();
+   }
+   
+   
+   /**
+    * Finds the phone number, if any, for a given name.
+    * @return The phone number associated with the name; if the name does
+    *    not occur in the phone directory, then the return value is null.
+    */
+   public String getNumber( String name ) {
+         return data.get(name);
+   }
+
+   
+   /**
+    * Associates a given name with a given phone number.  If the name
+    * already exists in the phone directory, then the new number replaces
+    * the old one.  Otherwise, a new name/number pair is added.  The
+    * name and number should both be non-null.  An IllegalArgumentException
+    * is thrown if this is not the case.
+    */
+   public void putNumber( String name, String number ) {
+      if (name == null || number == null)
+          throw new IllegalArgumentException("name and number cannot be null");
+      data.put(name,number);
+   }
+   
+   
+   /**
+    *  Write the contents of the phone directory to System.out.
+    */
+   public void print() {
+      for ( Map.Entry&lt;String,String&gt; entry : data.entrySet() )
+         System.out.println( entry.getKey() + ":  " + entry.getValue() );
+   }
+
+} // end class PhoneDirectory</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

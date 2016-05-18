@@ -1,0 +1,46 @@
+<html>
+	<head><title>User-defined objects</title>
+	<script type ="text/javascript">
+		function book(title, author, publisher){   // Receiving
+		                                           // parameters
+			this.pagenumber=0;      // Properties
+			this.title = title;
+			this.author = author;
+			this.publisher = publisher;
+			this.pageForward = pageForward;   // Assign function name to
+			                             // a property
+			this.pageBackward = pageBackward;
+        }
+		function pageForward(){   // Functions to be used as methods
+			this.pagenumber++;
+			return this.pagenumber;
+		}
+		function pageBackward(){
+			this.pagenumber--;
+			return this.pagenumber;
+		}
+
+	</script>
+	</head>
+	<body>
+	<script type = "text/javascript">
+		var myBook = new book("JavaScript by Example", "Ellie Quigley",
+			                  "Prentice Hall" );   // Create new object
+		myBook.pagenumber=5;
+		document.write( "<b>"+ myBook.title +
+		                "<br/>" + myBook.author +
+		                "<br/>" + myBook.publisher +
+		                "<br/>Current page is " + myBook.pagenumber );
+		document.write("<br>Page forward: " );
+		for(i=0;i<3;i++){
+			document.write("<br>" + myBook.pageForward());
+// Move forward a page
+		}
+		document.write("<br>Page backward: ");
+		for(;i>0; i--){
+			document.write("<br>" + myBook.pageBackward());
+			// Move back a page
+		}
+	</script>
+	</body>
+	</html>

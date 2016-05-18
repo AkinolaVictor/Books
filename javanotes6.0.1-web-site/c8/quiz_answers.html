@@ -1,0 +1,366 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Answers for Quiz on Chapter 8</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2 class="quiz_title">Answers for Quiz on Chapter 8</h2>
+<p>
+<span class="start"><big>T</big>his page contains</span> sample answers to the quiz on Chapter 8 of
+           <a href="../index.html"><i>Introduction to Programming Using Java</i></a>.
+           Note that generally, there are lots of correct answers to a given question.</p>
+<table border="1" align="center" cellpadding="8" width="95%">
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;1:</span></td><td>
+<p>What does it mean to say
+that a program is <i>robust</i>?</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>A robust program is one that can
+handle errors and other unexpected conditions in some reasonable way. This
+means that the program must anticipate possible errors and respond to them if
+they occur.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;2:</span></td><td>
+<p>Why do programming languages
+require that variables be declared before they are used? What does this have to
+do with correctness and robustness?</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>It's a little inconvenient to
+have to declare every variable before it is used, but its much safer. If the
+compiler would accept undeclared variables, then it would also accept
+misspelled names and treat them as valid variables. This can easily lead to
+incorrect programs. When variables must be declared, the unintentional creation
+of a variable is simply impossible, and a whole class of possible bugs is
+avoided.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;3:</span></td><td>
+<p>What is a <i>precondition</i>? Give an example.</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>A precondition is a condition
+that has to hold at given point in the execution of a program, if the execution
+of the program is to continue correctly. For example, the statement 
+"<span class="code">x&nbsp;=&nbsp;A[i];</span>" has two preconditions: that <span class="code">A</span> is not <span class="code">null</span> and
+that <span class="code">0&nbsp;&lt;=&nbsp;i &lt;&nbsp;A.length</span>. If either of these
+preconditions is violated, then the execution of the statement will generate an
+error.</p>
+
+<p>Also, a precondition of a subroutine is a condition that has to be true when
+the subroutine is called in order for the subroutine to work correctly.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;4:</span></td><td>
+<p>Explain how preconditions
+can be used as an aid in writing correct programs.</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>Suppose that a programmer
+recognizes a precondition at some point in a program. This is a signal to the
+programmer that an error might occur if the precondition is not met. In order to
+have a correct and robust program, the programmer must deal with the possible
+error. There are several approaches that the programmer can take. One approach
+is to use an <span class="code">if</span> statement to test whether the precondition is
+satisfied. If not, the programmer can take some other action such as printing
+an error message and terminating the program. Another approach is to use a
+<span class="code">try</span> statement to catch and respond to the error. This is really just a
+cleaner way of accomplishing the same thing as the first approach. The best
+approach, when it is possible, is to ensure that the precondition is satisfied
+as a result of what has already been done in the program. For example, if the
+precondition is that <span class="code">x&nbsp;&gt;=&nbsp;0</span>, and the preceding statement
+is "<span class="code">x&nbsp;=&nbsp;Math.abs(y);</span>", then we know that the precondition is
+satisfied, since the absolute value of any number is greater than or equal to
+zero.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;5:</span></td><td>
+<p>Java has a predefined class
+called <span class="classname">Throwable</span>. What does this class represent? Why does it
+exist?</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>The class <span class="classname">Throwable</span>
+represents all possible objects that can be thrown by a <span class="code">throw</span>
+statement and caught by a <span class="code">catch</span> clause in a <span class="code">try..catch</span>
+statement. That is, the thrown object must belong to the class
+<span class="classname">Throwable</span> or to one of its (many) subclasses such as
+<span class="classname">Exception</span> and <span class="classname">RuntimeException</span>. The object carries
+information about an exception from the point where the exception occurs to the
+point where it is caught and handled.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;6:</span></td><td>
+<p>Write a method that
+prints out a <span class="code">3N+1</span> sequence starting from a given integer, <span class="code">N</span>.
+The starting value should be a parameter to the method. If the parameter is
+less than or equal to zero, throw an <span class="classname">IllegalArgumentException</span>. If the
+number in the sequence becomes too large to be represented as a value of type
+<span class="ptype">int</span>, throw an <span class="classname">ArithmeticException</span>.</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>The problem of large values in a
+<span class="code">3N+1</span> sequence was discussed in <a href="../c8/s1.html">Section&nbsp;8.1</a>. In
+that section, it is pointed out that the test "<span class="code">if&nbsp;(N&nbsp;&gt;&nbsp;2147483646/3)</span>" 
+can be used to test whether the value of <span class="code">N</span> has
+become too large. This test is used in the following method.</p>
+
+
+<pre>/** Print the 3N+1 sequence starting from N.  If N
+ * is not greater than 0 or if the value of N exceeds
+ * the maximum legal value for ints, than an
+ * exception will be thrown.
+ */
+static void printThreeNSequence(int N) {
+   if (N &lt; 1) {
+      throw new IllegalArgumentException(
+                  "Starting value for 3N+1 sequence must be &gt; 0.");
+   }
+   System.out.println("3N+1 sequence starting from " + N " is: ");
+   System.out.println(N);
+   while (N &gt; 1) {
+      if (N % 2 == 0) {  // N is even.  Divide by 2.
+          N = N / 2;
+      }
+      else {  // N is odd.  Multiply by 3 and add 1.
+          if (N &gt; 2147483646/3) {
+             throw new ArithmeticError("Value has exceeded the largest int.");
+          }
+          N = 3 * N + 1;
+      }
+      System.out.println(N);
+   }
+}</pre>
+
+
+<p>(Note that it would be possible to declare that this routine can throw
+exceptions by adding a "throws" clause to the heading:</p>
+
+
+<pre>static void printThreeNSequence(int N)
+           throws IllegalArgumentException, ArithmeticException {</pre>
+
+
+<p>However, this is not required since <span class="code">IllegalArgumentExceptions</span> and
+<span class="code">ArithmeticExceptions</span> are not checked exceptions.)</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;7:</span></td><td>
+<p>Rewrite the method from the previous question, using <span class="code">assert</span>
+statements instead of exceptions to check for errors.  What is the difference between
+the two versions of the method when the program is run?</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>We can replace the <span class="code">if</span> statements that check for errors with
+assert statements that give the same error messages:</p>
+
+
+<pre>/** Print the 3N+1 sequence starting from N.
+  * Precondition:  N &gt; 0 and the 3N+1 sequence for N does not contain
+  * any numbers that are too big to be represented as 32-bit ints.
+  */
+static void printThreeNSequence(int N) {
+   
+   assert  N &gt; 0 : "Starting value for 3N+1 sequence must be &gt; 0.";
+
+   System.out.println("3N+1 sequence starting from " + N " is: ");
+   
+   System.out.println(N);
+   while (N &gt; 1) {
+      if (N % 2 == 0) {  // N is even.  Divide by 2.
+          N = N / 2;
+      }
+      else {  // N is odd.  Multiply by 3 and add 1.
+          assert  N &lt;= 2147483646/3 : "Value has exceeded the largest int.";
+          N = 3 * N + 1;
+      }
+      System.out.println(N);
+   }
+   
+}</pre>
+   
+
+<p>The first version of the method will always check for errors when the program
+is run.  The second version, on the other hand, does not actually do any error checking
+when the program is run in the ordinary way.  In order for <span class="code">assert</span> statements
+to be executed, the program must be run with assertions enabled.  The <span class="code">assert</span>
+statements are really there only to do error-checking during debugging and testing.
+(In this particular case, I would say that an exception should definitely be thrown when
+<span class="code">N</span> exceeds the maximum legal value, but that it's reasonable to use
+an <span class="code">assert</span> to check whether <span class="code">N&nbsp;&gt;&nbsp;0</span>.)</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;8:</span></td><td>
+<p>Some classes of exceptions are <i>checked exceptions</i> that
+require <i>mandatory exception handling.</i> Explain what this means.</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>Subclasses of the class
+<span class="classname">Exception</span> which are not subclasses of <span class="classname">RuntimeException</span>
+are checked exceptions. This has two consequences: First, if a
+method can throw such an exception, then it must declare this fact by
+adding a <span class="code">throws</span> clause to the method heading. Second, if a routine
+includes any code that can generate such an exception, then the routine must
+deal with the exception. It can do this by including the code in a <span class="code">try</span>
+statement that has a <span class="code">catch</span> clause to handle the exception. Or it can
+add a <span class="code">throws</span> clause to the method definition to declare that calling 
+the method might throw the exception.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;9:</span></td><td>
+<p>Consider a subroutine <span class="code">processData()</span> that has the header</p>
+
+
+<pre>static void processData() throws IOException</pre>
+
+
+<p>Write a <span class="code">try..catch</span> statement that calls this subroutine and prints
+an error message if an <span class="classname">IOException</span> occurs.</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+
+<pre>try {
+   processData();
+}
+catch (IOException e) {
+   System.out.println("An IOException occurred while processing the data.");
+}</pre>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;10:</span></td><td>
+<p>Why should a subroutine
+throw an exception when it encounters an error? Why not just terminate the
+program?</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>Terminating the program is too
+drastic, and this tactic certainly doesn't lead to robust programs! It's likely
+that the subroutine doesn't know what to do with the error, but that doesn't
+mean that it should abort the whole program. When the subroutine throws an
+exception, the subroutine is terminated, but the program that called the
+subroutine still has a chance to catch the exception and handle it. In effect,
+the subroutine is saying "Alright, I'm giving up. Let's hope someone else can
+deal with the problem."</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;11:</span></td><td>
+<p>Suppose that you have a choice of two algorithms that perform
+the same task.  One has average-case run time that is Θ(n<sup>2</sup>) while the run time
+of the second algorithm has an average-case run time that is Θ(n*log(n)).  Suppose that
+you need to process an input of size n&nbsp;=&nbsp;100.  Which algorithm would
+you choose?  Can you be certain that you are choosing the fastest algorithm for the
+input that you intend to process.
+</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>In the absence of other information, the second algorithm, with run time
+Θ(n*log(n)), is the better choice, since n*log(n) is much smaller than n<sup>2</sup>.
+However, it's not completely certain that the second algorithm is the better choice in
+a particular case.  First of all, although the n*log(n) algorithm is certainly better
+than the n<sup>2</sup> algorithm for large enough values of n, that is not necessarily
+true for n&nbsp;=&nbsp;100.  Second, there is the issue of "average-case" run time.
+Even if the n*log(n) algorithm is better for most inputs of size 100, it might not 
+be better for all such inputs.
+</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;12:</span></td><td>
+<p>Analyze the run time of the following algorithm.  That is, find a function
+f(n) such that the run time of the algorithm is O(f(n)) or, better, Θ(f(n)).
+Assume that <span class="code">A</span> is an array of integers, and use the length of the array
+as the input size, n.
+</p>
+
+<pre>
+int total = 0;
+for (int i = 0; i &lt; A.length; i++) {
+   if (A[i] &gt; 0)
+      total = total + A[i];
+}
+</pre>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>The run time of this algorithm is Θ(n).  There are several things in the
+code that are evaluated n times:  the test "i&nbsp;&lt;&nbsp;A.length", the increment
+"i++", and the test in the if statement.  The initialization is done once, and
+nothing is executed more than n times.  It follows that both the worst-case and
+the average case run times are Θ(n).</p>
+</td>
+</tr>
+</table>
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

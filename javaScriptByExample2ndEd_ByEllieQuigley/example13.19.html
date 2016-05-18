@@ -1,0 +1,43 @@
+<html><head><title>Event Handling</title>
+   <script type="text/javascript">
+	var tries=0;
+	function randomize(){
+			// Random number is set when the document has loaded
+			var now=new Date();
+			num=(now.getSeconds())%10; 
+                  //modulus-remainder afer division
+			num++;
+	}
+	function guessit(form){
+		// Function is called each time the user clicks the button
+			if (form.tfield.value == num){
+			   alert("Correct!!");
+			   form.tfield.focus();
+			   n=0;
+			   randomize();
+			}
+			else{
+			   tries++;
+			   alert(tries + " Wrong. Try again.");
+			   form.tfield.value="";  // Clear the text box
+			   form.tfield.focus();   // Put the cursor in the text box
+			}
+	}
+	// End hiding from old browsers -->
+   </script>
+</head>
+<body bgcolor="lightgreen" onLoad="randomize()">  <!--Call function when page is loaded-->
+	<div align="center">
+	<b>Pick a number between 1 and 10</b>
+	<form name="myform">
+		<input type="textbox" size=4
+			name="tfield">
+			<p>
+		<input type="button"
+			name="button1"
+			value="Check my  guess"
+			onClick="guessit(this.form)"> 
+	</form>
+   	</div>
+</body>
+</html> 

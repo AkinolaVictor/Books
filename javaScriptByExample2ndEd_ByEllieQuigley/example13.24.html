@@ -1,0 +1,33 @@
+<html>
+ <head><title>Mouse Buttons</title>
+ <script>
+   function whichButton(e) {
+	  var button;
+	  if (!e) {var e = window.event;}
+	  if(e.which){ button = e.which;}
+	  else if(e.button){ button=e.button; }
+	  alert(button);
+
+	  switch(button){	  case 0:
+	         return("FF leftclick");
+             break;
+      case 1:
+             return("leftclick");
+      case 2:
+      case 3:  // Firefox returned 3 on the Mac
+             return("rightclick");
+             break;
+      case 4:
+             return("IE middleclick");
+    }
+}
+</script>
+</head>
+<body>
+&nbsp;&nbsp;Click the mouse in the green box
+<div onMousedown="alert(whichButton(event));"
+     style="position:absolute;top:100;left:20;height:200;width:200;
+     background-color:green">
+</div>
+</body>
+</html>

@@ -1,0 +1,285 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Answers for Quiz on Chapter 2</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2 class="quiz_title">Answers for Quiz on Chapter 2</h2>
+<p>
+<span class="start"><big>T</big>his page contains</span> sample answers to the quiz on Chapter 2 of
+           <a href="../index.html"><i>Introduction to Programming Using Java</i></a>.
+           Note that generally, there are lots of correct answers to a given question.</p>
+<table border="1" align="center" cellpadding="8" width="95%">
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;1:</span></td><td>
+<p>Briefly explain what is
+meant by the <i>syntax</i> and the <i>semantics</i> of a programming language.
+Give an example to illustrate the difference between a syntax error and a
+semantics error.</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>The syntax of a language is its
+grammar, and the semantics is its meaning. A program with a syntax error cannot
+be compiled. A program with a semantic error can be compiled and run, but gives
+an incorrect result. A missing semicolon in a program is an example of a syntax
+error, because the compiler will find the error and report it. If <span class="code">N</span> is
+an integer variable, then the statement "<span class="code">frac = 1/N;</span>" is probably an
+error of semantics. The value of <span class="code">1/N</span> will be 0 for any <span class="code">N</span>
+greater than 1. It's likely that the programmer meant to say
+<span class="code">1.0/N</span>.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;2:</span></td><td>
+<p>What does the computer do
+when it executes a variable declaration statement. Give an example.</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>A variable is a "box", or
+location, in the computer's memory that has a name. The box holds a value of
+some specified type. A variable declaration statement is a statement such
+as</p>
+
+
+<pre>int x;</pre>
+
+
+<p>which creates the variable x. When the computer executes a variable
+declaration, it creates the box in memory and associates a name (in this case,
+x) with that box. Later in the program, that variable can be referred to by
+name.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;3:</span></td><td>
+<p>What is a <i>type,</i> as
+this term relates to programming?</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>A "type" represents a set of
+possible values. When you specify that a variable has a certain type, you are
+saying what values it can hold. When you say that an expression is of a certain
+type, you are saying what values the expression can have. For example, to say
+that a variable is of type <span class="ptype">int</span> says that integer values in a certain
+range can be stored in that variable.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;4:</span></td><td>
+<p>One of the primitive types
+in Java is <i>boolean.</i> What is the <span class="ptype">boolean</span> type? Where are boolean
+values used? What are its possible values?</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>The only values of type boolean
+are <span class="code">true</span> and <span class="code">false</span>. Expressions of type boolean are used in
+places where true/false values are expected, such as the conditions in
+<span class="code">while</span> loops and <span class="code">if</span> statements.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;5:</span></td><td>
+<p>Give the meaning of each of
+the following Java operators:</p>
+
+
+<pre>a)    ++
+
+b)    &amp;&amp;
+
+c)    !=</pre>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>The operator ++ is used to add 1
+to the value of a variable. For example, "<span class="code">count++</span>" has the same effect
+as "<span class="code">count = count + 1</span>".</p>
+
+<p>The operator &amp;&amp; represents the word <b>and</b>. It can be used to
+combine two boolean values, as in "<span class="code">(x&nbsp;&gt;&nbsp;0&nbsp;&amp;&amp;&nbsp;y&nbsp;&gt;&nbsp;0)</span>",
+which means, "x is greater than 0 <b>and</b> y is greater than 0."</p>
+
+<p>The operation != means "is not equal to", as in "<span class="code">if (x != 0)</span>",
+meaning "if x is not equal to zero.".</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;6:</span></td><td>
+<p>Explain what is meant by an
+<i>assignment statement,</i> and give an example. What are assignment
+statements used for?</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>An assignment statement computes
+a value and stores that value in a variable. Examples include:</p>
+
+
+<pre>x = 17;          // Assign a constant value to the variable, x.
+newRow = row;    // Copy the value from the variable, row,
+                 //             into the variable, newRow.
+ans = 17*x + 42; // Compute the value of the expression 
+                 //     17*x + 42, and store that value in ans.</pre>
+
+
+<p>An assignment statement is used to change the value of a variable as the
+program is running. Since the value assigned to the variable can be another
+variable or an expression, assignments statements can be used to copy data from
+one place to another in the computer, and to do complex computations.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;7:</span></td><td>
+<p>What is meant by
+<i>precedence</i> of operators?</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>If two or more operators are
+used in an expression, and if there are no parentheses to indicate the order in
+which the operators are to be evaluated, then the computer needs some way of
+deciding which operator to evaluate first. The order is determined by the
+precedence of the operators. For example, <span class="code">*</span> has higher precedence than
+<span class="code">+</span>, so the expression <span class="code">3+5*7</span> is evaluated as if it were written
+<span class="code">3+(5*7)</span>.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;8:</span></td><td>
+<p>What is a
+<i>literal</i>?</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>A literal is a sequence of
+characters used in a program to represent a constant value. For example,
+<span class="code">'A'</span> is a literal that represents the value A, of type <span class="ptype">char</span>,
+and <span class="code">17L</span> is a literal that represents the number 17 as a value of type
+<span class="ptype">long</span>. A literal is a way of writing a value, and should not be
+confused with the value itself.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;9:</span></td><td>
+<p>In Java, classes have two
+fundamentally different purposes. What are they?</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>A class can be used to group
+together variables and subroutines that are contained in the class. These are
+called the static members of the class. For example, the subroutine
+<span class="code">Math.sqrt</span> is a static member of the class called <span class="classname">Math</span>. Also,
+the <span class="code">main</span> routine in any program is a static member of a class. The
+second possible purpose of a class is to describe and create objects. The class
+specifies what variables and subroutines are contained in those objects. In
+this role, classes are used in object-oriented programming (which we haven't
+studied yet in any detail.)</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;10:</span></td><td>
+<p>What is the difference
+between the statement "<span class="code">x = TextIO.getDouble();</span>" and the statement
+"<span class="code">x = TextIO.getlnDouble();</span>"</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>Either statements will read a
+real number input by the user, and store that number in the variable, x. They
+would both read and return exactly the same value. The difference is that in
+the second statement (using <span class="code">getlnDouble</span>), after reading the value the
+computer will continue reading characters from input up to and including the
+next carriage return. These extra characters are discarded.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;11:</span></td><td>
+<p>Explain why the value of the expression <span class="code">2&nbsp;+&nbsp;3&nbsp;+&nbsp;"test"</span>
+      is the string <span class="code">"5test"</span> while the value of the expression
+      <span class="code">"test"&nbsp;+&nbsp;2&nbsp;+&nbsp;3</span> is the string <span class="code">"test23"</span>.
+      What is the value of <span class="code">"test"&nbsp;+&nbsp;2&nbsp;*&nbsp;3</span>&nbsp;?</p>
+   
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>The reason is somewhat technical.
+      The difference is due to the  order of evaluation.  When
+      several <span class="code">+</span> operators are used in a row, with no parentheses, they
+      are evaluated from left to right.
+      <span class="code">2&nbsp;+&nbsp;3&nbsp;+&nbsp;"test"</span> is interpreted as
+      <span class="code">(2&nbsp;+&nbsp;3)&nbsp;+&nbsp;"test"</span>, so 2 and 3 are
+      added together, giving 5, and then the 5 is concatenated onto the string <span class="code">"test"</span>.
+      On the other hand,  <span class="code">"test"&nbsp;+&nbsp;2&nbsp;+&nbsp;3</span> is interpreted as
+      <span class="code">("test"&nbsp;+&nbsp;2)&nbsp;+&nbsp;3</span>, so the 2 is first concatenated onto
+      the <span class="code">"test"</span>, giving <span class="code">"test2"</span>, and then the 3 is concatenated
+      onto that.  In the case of <span class="code">"test"&nbsp;+&nbsp;2&nbsp;*&nbsp;3</span>, the precedence
+      rules for <span class="code">+</span> and <span class="code">*</span> come into play.  Since <span class="code">*</span>
+      has higher precedence, this expression is interpreted as
+      <span class="code">"test"&nbsp;+&nbsp;(2&nbsp;*&nbsp;3)</span>, which evaluates to <span class="code">"test6"</span>.</p>
+   
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;12:</span></td><td>
+<p>Integrated Development Environments such as Eclipse often use <span class="newword">syntax coloring</span>,
+      which assigns various colors to the characters in a program to reflect the syntax of the language.
+      A student notices that Eclipse colors the word <span class="classname">String</span> differently from 
+      <span class="ptype">int</span>, <span class="ptype">double</span>, and <span class="ptype">boolean</span>.  The student asks why
+      <span class="classname">String</span> should be a different color, since all these words are names of types.
+      What's the answer to the student's question?
+   </p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>(This was a real question from a real student.)</p>
+      
+<p>Although <span class="classname">String</span>, like <span class="ptype">int</span>, <span class="ptype">double</span>, and <span class="ptype">boolean</span>, is a type name,
+      there is a fundamental difference between <span class="classname">String</span> and the other types.  <span class="classname">String</span>
+      is the name of a <b>class</b>, while <span class="ptype">int</span>, <span class="ptype">double</span>, and <span class="ptype">boolean</span> are
+      primitive types.  Eclipse colors all class names in the same way that it does <span class="classname">String</span>,
+      and it uses a different color for the primitive types.  (Although the difference between classes and
+      primitive types might not seem very important to you now, it really is an important distinction
+      and it's reasonable for Eclipse to use different colors for the two concepts.)</p>
+   
+</td>
+</tr>
+</table>
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

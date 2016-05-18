@@ -1,0 +1,442 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 3, Chapter 7</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 7.3</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 7.3:</h3>
+<p> A <span class="newword">polygon</span> 
+is a geometric figure made up of a sequence of
+connected line segments. The points where the line segments meet are called the
+<span class="newword">vertices</span> of the polygon. The <span class="classname">Graphics</span>
+class includes commands for drawing and filling polygons. For these commands,
+the coordinates of the vertices of the polygon are stored in arrays. If
+<span class="code">g</span> is a variable of type <span class="classname">Graphics</span> then</p>
+
+<ul>
+
+<li>
+<span class="codedef">g.drawPolygon(xCoords, yCoords,
+pointCt)</span> will draw the outline of the polygon with vertices at the points
+<span class="code">(xCoords[0],yCoords[0])</span>, <span class="code">(xCoords[1],yCoords[1])</span>, ...,
+<span class="code">(xCoords[pointCt-1],yCoords[pointCt-1])</span>. The third parameter,
+<span class="code">pointCt</span>, is an <span class="ptype">int</span> that specifies the number of vertices of
+the polygon. Its value should be 3 or greater. The first two parameters are
+arrays of type <span class="code">int[]</span>. Note that the polygon automatically includes a
+line from the last point, <span class="code">(xCoords[pointCt-1],yCoords[pointCt-1])</span>,
+back to the starting point <span class="code">(xCoords[0],yCoords[0])</span>.</li>
+
+<li>
+<span class="codedef">g.fillPolygon(xCoords, yCoords,
+pointCt)</span> fills the interior of the polygon with the current drawing
+color. The parameters have the same meaning as in the <span class="code">drawPolygon()</span>
+method. Note that it is OK for the sides of the polygon to cross each other,
+but the interior of a polygon with self-intersections might not be exactly what
+you expect.</li>
+
+</ul>
+
+<p>Write a panel class that lets the user draw polygons, and use your panel
+as the content pane in an applet (or standalone application).  As the user clicks a
+sequence of points, count them and store their x- and y-coordinates in two
+arrays. These points will be the vertices of the polygon. Also, draw a line
+between each consecutive pair of points to give the user some visual feedback.
+When the user clicks near the starting point, draw the complete polygon. Draw
+it with a red interior and a black border. The user should then be able to
+start drawing a new polygon. When the user shift-clicks on the applet, clear
+it.</p>
+
+<p>For this exercise, there is no need to store information about the contents of the 
+applet.  Do the drawing directly in the <span class="code">mousePressed()</span> routine, and use
+the <span class="code">getGraphics()</span> method to get a <span class="classname">Graphics</span> object
+that you can use to draw the line.  (Remember, though, that this is considered to be
+bad style.)  You will not need a <span class="code">paintComponent()</span> method, since
+the default action of filling the panel with its background color is good
+enough.</p>
+
+
+<p>You can try my solution here. Note that as the user is drawing the polygon, lines
+are drawn between the points that the user clicks. Click within two pixels of
+the starting point to see a filled polygon.</p>
+
+
+<p align="center">
+<applet code="SimplePolygons.class" width="300" height="300" archive="SimplePolygons.jar" alt="Applet 'SimplePolygons' should appear here."></applet></p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>For my solution, I wrote a subclass of <span class="classname">JApplet</span>
+and used a nested class named <span class="classname">Display</span> to represent the panel
+on which the drawing is done. The
+only method in the main class is the <span class="code">init()</span> method, which creates the
+drawing surface of type <span class="classname">Display</span>and uses it as the content pane of the applet.
+My discussion here is about <span class="classname">Display</span>.</p>
+
+
+<p>The program needs several instance variables to store information about the
+sequence of points that the user has clicked:</p>
+
+
+<pre>int[] xCoord, yCoord;  // Arrays to hold he coordinates.
+int pointCt;           // Number of points in the arrays.</pre>
+
+
+<p>The arrays <span class="code">xCoord</span> and <span class="code">yCoord</span> are examples of "partially
+full arrays", as covered in <a href="../c7/s3.html#arrays.3.1">Subsection&nbsp;7.3.1</a>. The variable
+<span class="code">pointCt</span> keeps track of how many spaces in the array are used. 
+There are, of course, other ways to represent the data, such as using a single
+array of <span class="classname">Point</span>, or using an <span class="classname">ArrayList</span>.
+However, the statement of the problem asked for two arrays.
+The instance variables are initialized in the constructor of the <span class="code">Display</span>
+with the commands:</p>
+
+
+<pre>xCoord = new int[500];
+yCoord = new int[500];
+pointCt = 0;</pre>
+
+
+<p>The size of the arrays allows for polygons with up to 500 vertices, which
+should certainly be enough. When we start, there are not yet any points in the
+array, so <span class="code">pointCt</span> is zero. (The command to set <span class="code">pointCt</span> to
+zero is not really necessary, since <span class="code">pointCt</span>, as an instance variable,
+is automatically initialized to zero in any case. However, including this
+command seemed to me to make my intentions clearer to the reader. That should
+always be a consideration.)</p>
+
+
+<p>In my solution, I included a method to draw a line and a method to
+draw a polygon. These methods are called in the <span class="code">mousePressed()</span>
+routine. Since the lines and polygons are drawn directly, rather than in the
+<span class="code">paintComponent()</span> method, these methods are responsible for
+obtaining graphics contexts to do the drawing. The <span class="code">putLine</span> method is
+simple:</p>
+
+
+<pre>private void putLine(int x1, int y1, int x2, int y2) {
+       // Draw a line from (x1,y1) to (x2,y2) directly onto this
+       // component, without going through the paintComponent() 
+       // method.
+    Graphics g = getGraphics();
+    g.drawLine(x1,y1,x2,y2);
+    g.dispose();
+}</pre>
+
+
+<p>The <span class="code">putPolygon()</span> method uses the data for the polygon that is
+stored in the instance variables <span class="code">xCoord</span>, <span class="code">yCoord</span>, and
+<span class="code">pointCt</span>. It is complicated a little by the fact that three points are
+required to draw a polygon. If there are only two points stored in the arrays,
+then I just draw a line between the two points. Note that the two points are
+stored in the first two locations in the <span class="code">xCoord</span> and <span class="code">yCoord</span>
+arrays. The coordinates of the two points are <span class="code">(xCoord[0],yCoord[0])</span>
+and <span class="code">(xCoord[1],yCoord[1])</span>. If there are fewer than two points, I don't
+draw anything. If there are three or more points, then I first draw the
+interior of the polygon in red and then draw the outline of the polygon in
+black:</p>
+
+
+<pre>/**
+ * Draw the polygon described by the arrays xCoord and yCoord
+ * and the integer pointCt.  A filled polygon with a black 
+ * outline is drawn.  If pointCt is 0 or 1, nothing is drawn.
+ * If pointCt is 2, only a black line is drawn.
+ */
+private void putPolygon() {
+   if (pointCt &lt; 2)
+      return;
+   Graphics g = getGraphics();
+   if (pointCt == 2) {
+      g.setColor(Color.BLACK);
+      g.drawLine(xCoord[0], yCoord[0], xCoord[1], yCoord[1]);
+   }
+   else {
+      g.setColor(polygonColor);  // (polygonColor has value Color.RED)
+      g.fillPolygon(xCoord, yCoord, pointCt);
+      g.setColor(Color.BLACK);
+      g.drawPolygon(xCoord, yCoord, pointCt);
+   }
+   g.dispose();
+}</pre>
+
+
+<p>The main logic of the applet is in the <span class="code">mousePressed()</span> method. An
+algorithm for this method is:</p>
+
+
+<pre>if the user was holding down the Shift key:
+    Clear the applet, and start a new polygon
+else if the user clicked near the first point:
+    Draw the current polygon and start a new one
+else
+    Add the point (evt.getX(), evt.getY()) to the coordinate arrays
+    if this is not the first point in the arrays:
+        Draw a line between the previous point and this one</pre>
+
+
+<p>Actually, in my solution, I decided to add another case: If the user
+right-clicks the applet or if the number of points reaches 500, then I draw the
+current polygon and start a new one. Also, there is a <b>bug</b> in the algorithm as
+stated, where it tests "if the user clicked near the first point". This test
+doesn't make sense unless there actually is a first point, that is unless
+<span class="code">pointCt</span> is greater than zero. The test should really read "if
+<span class="code">pointCt</span> &gt; 0 and if the user clicked near
+<span class="code">(xCoord[0],yCoord[0])</span>."</p>
+
+
+<p>Where the algorithm says "start a new polygon", it is only necessary to say
+"<span class="code">pointCt&nbsp;=&nbsp;0;</span>" since that will indicate that the coordinate arrays
+contain no valid data. The command "draw the current polygon" can be translated
+as "<span class="code">putPolygon()</span>". Adding a point to the coordinate arrays means
+putting the coordinates of the point in the next available location of the
+arrays and incrementing <span class="code">pointCt</span> to record the fact that the number of
+valid data in the arrays has increased by one. This is done with the
+commands</p>
+
+
+<pre>xCoord[pointCt] = evt.getX();
+yCoord[pointCt] = evt.getY();
+pointCt++;</pre>
+
+
+<p>Then, if <span class="code">pointCt</span> is greater than 1, we have to draw a line between
+the last two points in the array. The coordinates of these points are
+<span class="code">(xCoord[pointCt-2],yCoord[pointCt-2])</span> and
+<span class="code">(xCoord[pointCt-1],yCoord[pointCt-1])</span>, so this can be done with the
+command</p>
+
+
+<pre>putLine(xCoord[pointCt-2], yCoord[pointCt-2],
+                 xCoord[pointCt-1], yCoord[pointCt-1] );</pre>
+
+
+<p>The only thing in the algorithm that still needs implementing is to test
+whether the user clicks "near the starting point". The starting point has
+coordinates <span class="code">(xCoord[0],yCoord[0])</span> and the point where the user clicked
+has coordinates <span class="code">(evt.getX(),evt.getY())</span>. In my applet, I check whether
+the <span class="code">x</span>-coordinates of these points are two pixels or less apart and the
+<span class="code">y</span>-coordinates are also two pixels or less apart. This is done by
+checking whether "<span class="code">Math.abs(xCoord[0]&nbsp;-&nbsp;evt.getX()) &lt;= 2 &amp;&amp;
+Math.abs(yCoord[0]&nbsp;-&nbsp;evt.getY()) &lt;= 2</span>". If you are uncomfortable with
+absolute values, you can use the equivalent test "<span class="code">(evt.getX()&nbsp;-&nbsp;2 &lt;=
+xCoords[0]) &amp;&amp; (xCoords[0] &lt;= evt.getX()&nbsp;+&nbsp;2) &amp;&amp; 
+(evt.getY()&nbsp;-&nbsp;2 &lt;= yCoords[0]) &amp;&amp; (yCoords[0] &lt;= evt.getY()&nbsp;+&nbsp;2)</span>".</p>
+
+
+<p>The complete program for the applet is shown below.</p>
+
+
+<p>(By the way, there are versions of the <span class="code">drawPolygon()</span> and
+<span class="code">fillPolygon()</span> methods that work with objects belonging to a class
+called <span class="classname">Polygon</span>, instead of with arrays. So, you don't absolutely need
+arrays to work with polygons.)</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+
+/**
+ * This applet lets the user draw colored polygons.
+ * The user inputs a polygon by clicking a series of points.
+ * Clicking near the starting point (within 2 pixels) or
+ * right-clicking (or Command-clicking) will complete the
+ * polygon, so the user can begin a new one.  Shift-clicking
+ * will clear the screen.  Up to 500 points are allowed in a
+ * polygon.  This applet does not keep a copy of the image
+ * on the screen, so it will not reappear if the applet is
+ * covered and then uncovered.  The drawing done in this
+ * applet, using getGraphics() is considered to be bad style.
+ *    Note that this class contains a main program, which
+ * just opens a window that shows the same type of panel that
+ * is shown by the applet. 
+ */
+public class SimplePolygons extends JApplet {
+   
+   /**
+    * main() routine just shows a panel of type Display as its content pane.
+    * This main routine has nothing to do with the function of this class
+    * as an applet; it just makes it possible to run the class as a stand-
+    * alone application.
+    */
+   public static void main(String[] args) {
+      JFrame window = new JFrame("SimplePolygons");
+      Display content = new Display();
+      window.setContentPane(content);
+      window.pack();
+      window.setLocation(100,100);
+      window.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+      window.setResizable(false);  
+      window.setVisible(true);
+   }
+   
+   /**
+    * This simple init() method just creates a drawing surface
+    * belonging to the nested class Display and uses it for
+    * the content pane of the applet. 
+    */
+   public void init() {
+      setContentPane( new Display() );
+   }
+   
+   
+   /**
+    * This private class does all the work of the program.  It represents
+    * the drawing surface where the user draws the polygons.  It listens
+    * for mouse events on itself.
+    */
+   private static class Display extends JPanel implements MouseListener {
+      
+      /* Variables for implementing polygon input. */
+      
+      private int[] xCoord, yCoord;  // Arrays containing the points of 
+                                     //   the polygon.  Up to 500 points 
+                                     //   are allowed.
+      
+      private int pointCt;  // The number of points that have been input.
+      
+      private final static Color polygonColor = Color.RED;  
+                                // Color that is used to draw the polygons.  
+      
+      
+      /**
+       * Initialize the panel and its data; add a black border and set
+       * the panel to listen for mouse events on itself.  Also sets
+       * the preferred size of the panel to be 300-by-300.
+       */
+      public Display() {
+         setBackground(Color.WHITE);
+         setBorder(BorderFactory.createLineBorder(Color.BLACK,1));
+         setPreferredSize( new Dimension(300,300) );
+         addMouseListener(this);
+         xCoord = new int[500];
+         yCoord = new int[500];
+         pointCt = 0;
+      }
+      
+         
+      /**
+       * Draw a line from (x1,y1) to (x2,y2) directly onto this
+       * component, without going through the paintComponent() 
+       * method.
+       */
+      private void putLine(int x1, int y1, int x2, int y2) {
+         Graphics g = getGraphics();
+         g.setColor(Color.BLACK);
+         g.drawLine(x1,y1,x2,y2);
+         g.dispose();
+      }
+      
+      /**
+       * Draw the polygon described by the arrays xCoord and yCoord
+       * and the integer pointCt.  A filled polygon with a black 
+       * outline is drawn.  If pointCt is 0 or 1, nothing is drawn.
+       * If pointCt is 2, only a black line is drawn.
+       */
+      private void putPolygon() {
+         if (pointCt &lt; 2)
+            return;
+         Graphics g = getGraphics();
+         if (pointCt == 2) {
+            g.setColor(Color.BLACK);
+            g.drawLine(xCoord[0], yCoord[0], xCoord[1], yCoord[1]);
+         }
+         else {
+            g.setColor(polygonColor);
+            g.fillPolygon(xCoord, yCoord, pointCt);
+            g.setColor(Color.BLACK);
+            g.drawPolygon(xCoord, yCoord, pointCt);
+         }
+         g.dispose();
+      }
+      
+      
+      /**
+       * Processes a mouse click.
+       */
+      public void mousePressed(MouseEvent evt) { 
+         
+         if (evt.isShiftDown()) {
+               // Clear the applet. (This only requires a repaint.)
+               // Also, set pointCt to zero to start a new polygon.
+            pointCt = 0;
+            repaint();
+         }
+         else if ( pointCt &gt; 0 &amp;&amp; (Math.abs(xCoord[0] - evt.getX()) &lt;= 2)
+                              &amp;&amp; (Math.abs(yCoord[0] - evt.getY()) &lt;= 2) ) {
+               // User has clicked near the starting point.
+               // Draw the polygon and reset pointCt so that the 
+               // user can start a new polygon.
+            putPolygon();
+            pointCt = 0;
+         }
+         else if (evt.isMetaDown() || pointCt == 500) {
+               // Draw the polygon and reset pointCt so that the 
+               // user can start a new polygon.  Note that there
+               // is a limit of 500 points for one polygon.
+            putPolygon();
+            pointCt = 0;
+         }
+         else {
+               // Add the point where the user clicked to the list of
+               // points in the polygon, and draw a line between the
+               // previous point and the current point.  A line can
+               // only be drawn if there are at least two points.
+            xCoord[pointCt] = evt.getX();
+            yCoord[pointCt] = evt.getY();
+            pointCt++;
+            if (pointCt &gt;= 2) {
+               putLine(xCoord[pointCt-2], yCoord[pointCt-2], 
+                     xCoord[pointCt-1], yCoord[pointCt-1]); 
+            }
+         }
+         
+      } // end mousePressed()
+      
+      public void mouseReleased(MouseEvent evt) { }
+      public void mouseClicked(MouseEvent evt) { }
+      public void mouseEntered(MouseEvent evt) { }
+      public void mouseExited(MouseEvent evt) { }
+      
+   } // end nested class Display
+   
+   
+}  // end class SimplePolygons
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

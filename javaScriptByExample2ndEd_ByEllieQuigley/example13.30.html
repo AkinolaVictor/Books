@@ -1,0 +1,18 @@
+<html><head><title>The Word Boundary</title></head>
+<body>
+<script type="text/javascript">
+	// Anchoring a word with \b
+	var reg_expression = /\blove\b/;
+	var textString=prompt("Type a string of text","");
+	var result=reg_expression.test(textString);  // Returns true
+		                                             // or false
+	document.write(result+"<br>");
+	if (result){
+		document.write("<b>The regular expression /\\blove\\b/matched the string \""+ textString +"\".<br>");
+		}
+	else{
+		alert("No Match!");
+	}
+</script>
+</body>
+</html>

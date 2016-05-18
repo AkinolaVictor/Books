@@ -1,0 +1,427 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Answers for Quiz on Chapter 7</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2 class="quiz_title">Answers for Quiz on Chapter 7</h2>
+<p>
+<span class="start"><big>T</big>his page contains</span> sample answers to the quiz on Chapter 7 of
+           <a href="../index.html"><i>Introduction to Programming Using Java</i></a>.
+           Note that generally, there are lots of correct answers to a given question.</p>
+<table border="1" align="center" cellpadding="8" width="95%">
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;1:</span></td><td>
+<p>What does the computer do
+when it executes the following statement? Try to give as complete an answer as
+possible.</p>
+
+<pre>Color[]  palette  =  new  Color[12];</pre>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>This is a declaration statement,
+that declares and initializes a variable named <span class="code">palette</span> of type
+<span class="atype">Color[]</span>. The initial value of this variable is a newly created array
+that has space for 12 items. To be specific about what the computer does: It
+creates a new 12-element array object on the heap, and it fills each space in
+that array with <span class="code">null</span>. It allocates  memory space for the variable,
+<span class="code">palette</span>. And it stores a pointer to the new array object in that
+memory space.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;2:</span></td><td>
+<p>What is meant by the <i>basetype</i> of an array?</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>The base type of an array refers
+to the type of the items that can be stored in that array. For example, the
+base type of the array in the previous problem is <span class="code">Color</span>.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;3:</span></td><td>
+<p>What does it mean to sort an array?</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>To sort an array means to
+rearrange the items in the array so that they are in increasing or decreasing
+order (according to some criterion).</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;4:</span></td><td>
+<p>What is the main advantage of binary search over linear search?  What is the
+main disadvantage?</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>The advantage of binary search is that it is much faster.  On a list of
+one million items, linear search would take an average of five hundred thousand steps to find an
+item, whereas binary search would take only 20 steps.  The disadvantage is that
+binary search only works on a sorted list, so some extra work must be done to
+keep the sort the list or to keep the list in sorted order as it is created.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;5:</span></td><td>
+<p>What is meant by a
+<i>dynamic array?</i> What is the advantage of a dynamic array over a regular
+array?</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>A dynamic array is like an array
+in that it is a data structure that stores a sequence of items, all of the same
+type, in numbered locations. It is different from an array in that there is no
+preset upper limit on the number of items that it can contain. This is an
+advantage in situations where a reasonable value for the size of the array is
+not known at the time it is created.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;6:</span></td><td>
+<p>Suppose that a variable <span class="code">strlst</span> has been declared as</p>
+
+<pre>ArrayList&lt;String&gt; strlst = new ArrayList&lt;String&gt;();</pre>
+
+<p>Assume that the list is not empty and that all the items in the list
+are non-null. Write a code segment that will find and print the string in the list
+that comes first in lexicographic order.  How would your answer change
+if <span class="code">strlst</span> were declared to be of type <span class="classname">ArrayList</span>
+instead of <span class="atype">ArrayList&lt;String&gt;</span>?</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>Strings can be compared for lexicographic order using the <span class="code">compareTo</span>
+instance method in the <span class="classname">String</span> class.
+We can find the smallest string as follows:</p>
+
+<pre>String smallest = strlst.get(0);
+for (int i = 1; i &lt; strlist.size(); i++) {
+   String nextString = strlst.get(i);
+   if ( nextString.compareTo(smallest) &lt; 0 ) 
+       smallest = nextString;
+}
+System.out.println("The smallest string lexicographically is " + smallest);</pre>
+
+<p>If <span class="code">strlst</span> were declared to be of type <span class="classname">ArrayList</span>,
+then the return type of <span class="code">strlst.get(i)</span> would be <span class="classname">Object</span>
+instead of <span class="classname">String</span>, and a type-cast would be necessary to convert
+the returned value to type <span class="classname">String</span>:</p>
+
+<pre>String smallest = <span class="newcode">(String)</span>strlst.get(0);
+for (int i = 1; i &lt; strlist.size(); i++) {
+   String nextString = <span class="newcode">(String)</span>strlst.get(i);
+   if ( nextString.compareTo(smallest) &lt; 0 ) 
+       smallest = nextString;
+}
+System.out.println("The smallest string lexicographically is " + smallest);</pre>
+
+<p>Furthermore, it now has to be <b>assumed</b> that every item in the list is in
+fact a string, since objects of any type could now be legally stored in <span class="code">strlst</span>.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;7:</span></td><td>
+<p>What is the purpose of the
+following subroutine? What is the meaning of the value that it returns, in
+terms of the value of its parameter?</p>
+
+<pre>static String concat( String[] str ) {
+   if (str == null)
+      return "";
+   String ans = "";
+   for (int i = 0; i &lt; str.length; i++) {
+      ans = ans + str[i];
+   return ans;
+}</pre>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>The purpose of the subroutine is
+to chain all the strings in an array of strings into one long string. If the
+array parameter is null, then there are no strings, and the empty string is
+returned. Otherwise, the value returned is the string made up of all the
+strings from the array. For example, if <span class="code">stringList</span> is an array
+declared as</p>
+
+<pre>String[] stringList = { "Put 'em ",  "all", " together" };</pre>
+
+<p>then the value of <span class="code">concat(stringList)</span> is "Put 'em all together".</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;8:</span></td><td>
+<p>Show the exact output
+produced by the following code segment.</p>
+
+<pre>char[][] pic = new char[6][6];
+for (int i = 0; i &lt; 6; i++)
+   for (int j = 0; j &lt; 6; j++) {
+      if ( i == j  ||  i == 0  ||  i == 5 )
+         pic[i][j] = '*';
+      else
+         pic[i][j] = '.';
+   }
+for (int i = 0; i &lt; 6; i++) {
+   for (int j = 0; j &lt; 6; j++)
+      System.out.print(pic[i][j]);
+   System.out.println();
+}</pre>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>The output consists of six
+lines, with each line containing six characters. In the first line, <span class="code">i</span>
+is 0, so all the characters are *'s. In the last line, i is 5, so all the
+characters are *'s. In each of the four lines in the middle, one of the
+characters is a * and the rest are periods. The output is</p>
+
+<pre>******
+.*....
+..*...
+...*..
+....*.
+******</pre>
+
+<p>It might help to look at the array items that are printed on each line. Note
+that <span class="code">pic[row][col]</span> is '*' if <span class="code">row</span> is 0 or if <span class="code">row</span> is 5
+or if <span class="code">row</span> and <span class="code">col</span> are equal.</p>
+
+<pre>pic[0][0] pic[0][1] pic[0][2] pic[0][3] pic[0][4] pic[0][5] 
+pic[1][0] pic[1][1] pic[1][2] pic[1][3] pic[1][4] pic[1][5] 
+pic[2][0] pic[2][1] pic[2][2] pic[2][3] pic[2][4] pic[2][5] 
+pic[3][0] pic[3][1] pic[3][2] pic[3][3] pic[3][4] pic[3][5] 
+pic[4][0] pic[4][1] pic[4][2] pic[4][3] pic[4][4] pic[4][5] 
+pic[5][0] pic[5][1] pic[5][2] pic[5][3] pic[5][4] pic[5][5]</pre>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;9:</span></td><td>
+<p>Write a complete static method
+that finds the largest value in an array of <span class="code">ints</span>. The method
+should have one parameter, which is an array of type <span class="code">int[]</span>. The
+largest number in the array should be returned as the value of the
+method.</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>One possible answer is:</p>
+
+<pre>public static int getMax(int[] list) {
+   
+   int max = list[0];  // This is the largest item seen so far.
+   
+   for (int i = 1; i &lt; list.length; i++) {
+         // Look at each item in the array.  If the item is
+         // bigger than max, then set max equal to the item.
+       if (list[i] &gt; max)
+          max = list[i];
+   }
+   
+   // At this point, max is the largest item in the whole array.
+   
+   return max;
+   
+} // end getMax</pre>
+
+<p>(Note that this method throws an exception if the
+parameter <span class="code">list</span> is null or if it is an array of
+length&nbsp;0.  The exception is thrown by the line
+"<span class="code">int&nbsp;max&nbsp;=&nbsp;list[0];".  The reference
+to <span class="code">list[0]</span> causes a <span class="classname">NullPointerException</span></span>
+if <span class="code">list</span> is null and an <span class="classname">ArrayIndexOutOfBoundsException</span>
+if the array has lenght zero.)</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;10:</span></td><td>
+<p>Suppose that temperature
+measurements were made on each day of 1999 in each of 100 cities. The
+measurements have been stored in an array</p>
+
+<pre>int[][]  temps  =  new  int[100][365];</pre>
+
+<p>where <span class="code">temps[c][d]</span> holds the measurement for city number <span class="code">c</span>
+on the <span class="code">d</span><sup>th</sup> day of the year. Write a code segment that will
+print out the average temperature, over the course of the whole year, for each
+city. The average temperature for a city can be obtained by adding up all 365
+measurements for that city and dividing the answer by 365.0.</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>A pseudocode outline of the
+answer is</p>
+
+<pre>For each city {
+   Add up all the temperatures for that city
+   Divide the total by 365 and print the answer
+}</pre>
+
+<p>Adding up all the temperatures for a given city itself requires a for loop,
+so the code segment looks like this:</p>
+
+<pre>for (int city = 0; city &lt; 100; city++) {
+    int total = 0;  // total of temperatures for this city
+    for (int day = 0; day &lt; 365; day++)
+       total = total + temps[city][day];
+    double avg = total / 365.0;  // average temp for this city
+    System.out.println("Average temp for city number " 
+             + city + " is " + avg);
+}</pre>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;11:</span></td><td>
+<p>Suppose that a class,
+<span class="classname">Employee,</span> is defined as follows:</p>
+
+<pre>class Employee {
+   String lastName;
+   String firstName;
+   double hourlyWage;
+   int yearsWithCompany;
+}</pre>
+
+<p>Suppose that data about 100 employees is <b>already</b> stored in an
+array:</p>
+
+<pre>Employee[] employeeData = new Employee[100];</pre>
+
+<p>Write a code segment that will output the first name, last name, and hourly
+wage of each employee who has been with the company for 20 years or more.</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>(The data for the i-th employee
+is stored in an object that can be referred to as <span class="code">employeeData[i]</span>. The
+four pieces of data about that employee are members of this object and can be
+referred to as:</p>
+
+<ul>
+
+<li>
+<span class="code">employeeData[i].firstName</span>
+</li>
+
+<li>
+<span class="code">employeeData[i].lastName</span>
+</li>
+
+<li>
+<span class="code">employeeData[i].hourlyWage</span>
+</li>
+
+<li>
+<span class="code">employeeData[i].yearsWithCompany</span>
+</li>
+
+</ul>
+
+<p>The code segment uses a for loop to consider each employee in the
+array.)</p>
+
+<pre>for (int i=0; i &lt; 100; i++) {
+    if ( employeeData[i].yearsWithCompany &gt;= 20 )
+        System.out.println(employeeData[i].firstName + " " +
+                      employeeData[i].lastName + ": " +
+                      employeeData[i].hourlyWage);
+}</pre>
+
+<p>A for-each loop would also work:</p>
+
+<pre>for ( Employee emp : employeeData ) {
+    if ( emp.yearsWithCompany &gt;= 20 )
+        System.out.println(emp].firstName + " " +
+                      emp.lastName + ": " +
+                      emp.hourlyWage);
+}</pre>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;12:</span></td><td>
+<p>Suppose that <span class="code">A</span> has
+been declared and initialized with the statement</p>
+
+<pre>double[] A = new double[20];</pre>
+
+<p>and suppose that <span class="code">A</span> has <b>already</b> been filled with 20 values.
+Write a program segment that will find the average of all the <b>non-zero</b>
+numbers in the array. (The average is the sum of the numbers, divided by the
+number of numbers. Note that you will have to count the number of non-zero
+entries in the array.) Declare any variables that you use.</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>(There is one problem with this
+question. What happens if all the entries in the array <span class="code">A</span> are zero? In
+that case, the number of non-zero entries is zero, and the average of non-zero
+entries is undefined. In my answer, I assign the "undefined" value, <span class="code">Double.NaN</span>, to the average in
+this case, but this is somewhat arbitrary.)</p>
+
+<pre>int nonzeroCt = 0; // The number of non-zero entries in the array.
+double total = 0;  // The total of all the grades in the array.
+double average;    // The average of the non-zero entries in the array.
+
+for (int i = 0; i &lt; 20; i++) {
+   if (A[i] != 0) {       // Process this non-zero entry.
+       total += A[i]; // Add it to the total.
+       nonzeroCt++;   // Count it.
+   }
+}
+
+if (nonzeroCt &gt; 0)
+   average = total / nonzeroCt;
+else   // (The average is undefined in this case)
+   average = Double.NaN;</pre>
+
+</td>
+</tr>
+</table>
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

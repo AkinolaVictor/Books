@@ -1,0 +1,267 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 2.1 -- The Basic Java Application</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s2.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h3 class="section_title">Section 2.1</h3>
+<h2 class="section_title">The Basic Java Application</h2>
+<hr class="break">
+
+
+<p>
+<span class="start"><big>A</big> program is a sequence</span> of instructions that a
+computer can execute to perform some task. A simple enough idea, but for the
+computer to make any use of the instructions, they must be written in a form
+that the computer can use. This means that programs have to be written in
+<span class="newword">programming languages</span>. Programming languages
+differ from ordinary human languages in being completely unambiguous and very
+strict about what is and is not allowed in a program. The rules that determine
+what is allowed are called the <span class="newword">syntax</span> of the
+language. Syntax rules specify the basic vocabulary of the language and how
+programs can be constructed using things like loops, branches, and subroutines.
+A syntactically correct program is one that can be successfully compiled or
+interpreted; programs that have syntax errors will be rejected (hopefully with
+a useful error message that will help you fix the problem).</p>
+
+
+<p>So, to be a successful programmer, you have to develop a detailed knowledge
+of the syntax of the programming language that you are using. However, syntax
+is only part of the story. It's not enough to write a program that will
+run -- you want a program that will run and produce the correct result! That is, the
+<b>meaning</b> of the program has to be right. The meaning of a
+program is referred to as its <span class="newword">semantics</span>. A
+semantically correct program is one that does what you want it to.</p>
+   
+
+<p>Furthermore, a program can be syntactically and semantically correct but
+still be a pretty bad program.  Using the language correctly is not the
+same as using it <b>well</b>.  For example, a good program has "style."  It is written
+in a way that will make it easy for people to read and to understand.
+It follows conventions that will be familiar to other programmers.
+And it has an overall design that will make sense to human readers.
+The computer is completely oblivious to such things, but to a human
+reader, they are paramount.  These aspects of programming are sometimes
+referred to as <span class="newword">pragmatics.</span>
+
+</p>
+
+
+<p>When I introduce a new language feature, I will explain
+the syntax, the semantics, and some of the pragmatics of that feature. You should memorize the syntax;
+that's the easy part. Then you should get a feeling for the semantics by
+following the examples given, making sure that you understand how they work,
+and maybe writing short programs of your own to test your understanding.
+And you should try to appreciate and absorb the pragmatics -- this means learning
+how to use the language feature <i>well</i>, with style that will earn
+you the admiration of other programmers.
+</p>
+
+
+<p>Of course, even when you've become familiar with all the individual features
+of the language, that doesn't make you a programmer. You still have to learn
+how to construct complex programs to solve particular problems. For that,
+you'll need both experience and taste. You'll find hints about software
+development throughout this textbook.</p>
+
+
+<hr class="break">
+
+
+<p>We begin our exploration of Java with the problem that has become
+traditional for such beginnings: to write a program that displays the message
+"Hello World!". This might seem like a trivial problem, but getting a computer
+to do this is really a big first step in learning a new programming language
+(especially if it's your first programming language). It means that you
+understand the basic process of:</p>
+
+
+<ol>
+
+<li>getting the program text into the computer,</li>
+
+<li>compiling the program, and</li>
+
+<li>running the compiled program.</li>
+
+</ol>
+
+
+<p>The first time through, each of these steps will probably take you a few
+tries to get right. I won't go into the details here of how you do each of
+these steps; it depends on the particular computer and Java programming
+environment that you are using.   See <a href="../c2/s6.html">Section&nbsp;2.6</a>
+for information about creating and running Java programs in specific programming
+environments.  But in general,
+you will type the program using some sort of text editor and save the program
+in a file. Then, you will use some command to try to compile the file. You'll
+either get a message that the program contains syntax errors, or you'll get a
+compiled version of the program. In the case of Java, the program is compiled
+into Java bytecode, not into machine language. Finally, you can run the
+compiled program by giving some appropriate command. For Java, you will
+actually use an interpreter to execute the Java bytecode. Your programming
+environment might automate some of the steps for you -- for example, the
+compilation step is often done automatically -- but you can be sure that
+the same three steps are being done in the background.</p>
+
+
+<p>Here is a Java program to display the message "Hello World!". Don't expect
+to understand what's going on here just yet; some of it you won't really
+understand until a few chapters from now:</p>
+
+
+<pre>// A program to display the message
+// "Hello World!" on standard output
+
+public class HelloWorld {
+ 
+   public static void main(String[] args) {
+      System.out.println("Hello World!");
+   }
+      
+}   // end of class HelloWorld</pre>
+
+
+<p>The command that actually displays the message is:</p>
+
+
+<pre>System.out.println("Hello World!");</pre>
+
+
+<p>This command is an example of a <span class="newword">subroutine call statement</span>. 
+It uses a "built-in subroutine" named
+<span class="code">System.out.println</span> to do the actual work. Recall that a subroutine
+consists of the instructions for performing some task, chunked together and
+given a name. That name can be used to "call" the subroutine whenever that task
+needs to be performed. A <span class="newword">built-in subroutine</span> is
+one that is already defined as part of the language and therefore automatically
+available for use in any program.</p>
+
+
+<p>When you run this program, the message "Hello World!" (without the quotes)
+will be displayed on standard output. Unfortunately, I can't say exactly what
+that means! Java is meant to run on many different platforms, and standard
+output will mean different things on different platforms. However, you can
+expect the message to show up in some convenient place. (If you use a
+command-line interface, like that in Oracle's Java Development Kit,
+you type in a command to tell the computer to run the program. The computer
+will type the output from the program, Hello World!, on the next line.
+In an integrated development environment such as Eclipse, the output
+might appear somewhere in one of the environment's windows.)</p>
+
+
+<p>You must be curious about all the other stuff in the above program. Part of
+it consists of <span class="newword">comments</span>. Comments in a program are
+entirely ignored by the computer; they are there for human readers only. This
+doesn't mean that they are unimportant. Programs are meant to be read by people
+as well as by computers, and without comments, a program can be very difficult
+to understand. Java has two types of comments. The first type, used in the
+above program, begins with <span class="code">//</span> and extends to the end of a line. The computer
+ignores the <span class="code">//</span> and everything that follows it on the same line. Java has
+another style of comment that can extend over many lines. That type of comment
+begins with <span class="code">/*</span> and ends with <span class="code">*/</span>.</p>
+
+
+<p>Everything else in the program is required by the rules of Java syntax. All
+programming in Java is done inside "classes." The first line in the above
+program (not counting the comments) says that this is a class named <span class="classname">HelloWorld</span>. "HelloWorld," the
+name of the class, also serves as the name of the program. Not every class is a
+program. In order to define a program, a class must include a subroutine named
+<span class="code">main</span>, with a definition that takes the form:</p>
+
+
+<pre>public static void main(String[] args) {
+      <span class="bnf">statements</span>
+}</pre>
+
+
+<p>When you tell the Java interpreter to run the program, the interpreter calls
+this <span class="code">main()</span> subroutine, and the statements that it contains are
+executed. These statements make up the script that tells the computer exactly
+what to do when the program is executed. The <span class="code">main()</span> routine can call
+subroutines that are defined in the same class or even in other classes, but it
+is the <span class="code">main()</span> routine that determines how and in what order the other
+subroutines are used.</p>
+
+
+<p>The word "public" in the first line of <span class="code">main()</span> means that this
+routine can be called from outside the program. This is essential because the
+<span class="code">main()</span> routine is called by the Java interpreter, which is something 
+external to the program itself. The remainder of the
+first line of the routine is harder to explain at the moment; for now, just
+think of it as part of the required syntax. The definition of the subroutine -- that
+is, the instructions that say what it does -- consists of the sequence of
+"statements" enclosed between braces, <span class="code">{</span> and <span class="code">}</span>. Here, I've used <span class="bnf">statements</span> 
+as a placeholder for the actual statements that
+make up the program. Throughout this textbook, I will always use a similar
+format: anything that you see in <span class="bnf">this style of text</span>
+(green and in boldface)
+is a placeholder that describes something you need to
+type when you write an actual program.</p>
+
+
+<p>As noted above, a subroutine can't exist by itself. It has to be part of a
+"class". A program is defined by a public class that takes the form:</p>
+
+
+<pre>public class <span class="bnf">program-name</span> {
+
+    <span class="bnf">optional-variable-declarations-and-subroutines</span>
+    
+    public static void main(String[] args) {
+       <span class="bnf">statements</span>
+    }
+    
+    <span class="bnf">optional-variable-declarations-and-subroutines</span>
+
+}</pre>
+
+
+<p>The name on the first line is the name of the program, as well as the name
+of the class. (Remember, again, that <span class="bnf">program-name</span> is a placeholder for the
+actual name!)  If the name of the class is HelloWorld, then the class must be
+saved in a file called <span class="code">HelloWorld.java</span>. When this file is compiled,
+another file named <span class="code">HelloWorld.class</span> will be produced. This class file,
+<span class="code">HelloWorld.class</span>, contains the translation of the program into Java bytecode, 
+which can be executed by a
+Java interpreter. <span class="code">HelloWorld.java</span> is called the <span class="newword">source code</span>
+for the program. To execute the program, you only
+need the compiled <span class="code">class</span> file, not the source code.</p>
+
+
+<p>The layout of the program on the page, such as the use of blank lines
+and indentation, is not part of the syntax or semantics of the language.
+The computer doesn't care about layout -- you could run the entire program 
+together on one line as far as it is concerned.  However, layout is important
+to human readers, and there are certain style guidelines for layout that
+are followed by most programmers.  These style guidelines are part of
+the pragmatics of the Java programming language.</p>
+   
+
+<p>Also note that according to the above syntax specification, a program can
+contain other subroutines besides <span class="code">main()</span>, as well as things called
+"variable declarations." You'll learn more about these later, but not until
+<a href="../c4/index.html">Chapter&nbsp;4</a>.</p>
+
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s2.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

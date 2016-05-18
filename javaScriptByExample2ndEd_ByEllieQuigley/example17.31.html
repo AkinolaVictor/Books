@@ -1,0 +1,16 @@
+<html><head><title>Alternation</title></head>
+<body>
+<script type="text/javascript">
+	// Alternation: this or that or whatever...
+	var reg_expression = /Steve|Dan|Tom/;
+	var textString=prompt("Type a string of text","");
+	var result=reg_expression.test(textString);  // Returns true 
+		                                             // or false
+	document.write(result+"<br>");
+	if (result){
+		document.write("<b>The regular expression /Steve|Dan|Tom/matched the string\""+ textString +"\".<br>");
+		}
+	else{
+		alert("No Match!");
+	}
+</script></body></html>

@@ -1,0 +1,27 @@
+<html><title>Properties</title>
+  <head>
+    <style>
+       .color { color:darkblue; background:aqua;}
+     </style>
+  </head>
+  <body>
+    <p id="paraid1" dir="ltr" class=color style="font-size:x-large">
+       This is an English style.
+    </p>
+    <p id="paraid2" dir="rtl" class="color" style="font- 
+           family:cursive">
+       This is Hebrew style.
+    </p>
+    <big>
+    <script type="text/javascript">
+     p1=document.getElementById('paraid1');
+    document.write("The text direction is "+ p1.dir + 
+     "and the font size is "+ p1.style.fontSize);
+   
+     p2=document.getElementById('paraid2');
+     document.write("<br />The text direction is "+p2.dir+
+    " and the class name is "+ p2.className);
+    </script>
+ </big>
+</body>
+</html>	

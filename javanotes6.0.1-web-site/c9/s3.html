@@ -1,0 +1,779 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 9.3 -- Stacks, Queues, and ADTs</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s2.html">Previous Section</a> |
+           <a href="s4.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#recursion.3.1">Stacks</a>
+<br>
+<a href="#recursion.3.2">Queues</a>
+<br>
+<a href="#recursion.3.3">Postfix Expressions</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 9.3</h3>
+<h2 class="section_title">Stacks, Queues, and ADTs</h2>
+<hr class="break">
+
+
+<p>
+<span class="start"><big>A</big> linked list</span> is a particular type of data
+structure, made up of objects linked together by pointers. In the 
+<a href="../c9/s2.html">previous section</a>, we used a linked list to store an ordered list
+of <span class="classname">Strings</span>, and we implemented <span class="code">insert</span>, <span class="code">delete</span>, and
+<span class="code">find</span> operations on that list. However, we could easily have stored the
+list of <span class="classname">Strings</span> in an array or <span class="classname">ArrayList</span>, instead of in a
+linked list. We could still have implemented the same operations on the list. 
+The implementations of these
+operations would have been different, but their interfaces and logical behavior
+would still be the same.</p>
+
+
+<p>The term <span class="newword">abstract data type</span>, or <span class="newword">ADT</span>, 
+refers to a set of possible values and a set of
+operations on those values, without any specification of how the values are to
+be represented or how the operations are to be implemented. An "ordered list of
+strings" can be defined as an abstract data type. Any sequence of
+<span class="classname">Strings</span> that is arranged in increasing order is a possible value of
+this data type. The operations on the data type include inserting a new string,
+deleting a string, and finding a string in the list. There are often several
+different ways to implement the same abstract data type. For example, the
+"ordered list of strings" ADT can be implemented as a linked list or as an
+array. A program that only depends on the abstract definition of the ADT can
+use either implementation, interchangeably. In particular, the implementation
+of the ADT can be changed without affecting the program as a whole. This can
+make the program easier to debug and maintain, so ADTs are an important tool
+in software engineering.</p>
+
+
+<p>In this section, we'll look at two common abstract data types, 
+<span class="newword">stacks</span> and <span class="newword">queues</span>. Both stacks
+and queues are often implemented as linked lists, but that is not the only
+possible implementation. You should think of the rest of this section partly as
+a discussion of stacks and queues and partly as a case study in ADTs.</p>
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="recursion.3.1">9.3.1&nbsp;&nbsp;Stacks</a>
+</h3>
+
+
+<p>A stack consists of a sequence of items, which should be thought of as piled
+one on top of the other like a physical stack of boxes or cafeteria trays. Only
+the top item on the stack is accessible at any given time. It can be removed
+from the stack with an operation called <span class="newword">pop</span>. An
+item lower down on the stack can only be removed after all the items on top of
+it have been popped off the stack. A new item can be added to the top of the
+stack with an operation called <span class="newword">push</span>. We can make a
+stack of any type of items. If, for example, the items are values of type
+<span class="ptype">int</span>, then the push and pop operations can be implemented as instance
+methods</p>
+
+
+<ul>
+
+<li>
+<span class="codedef">void push (int newItem)</span>  --  Add newItem to top of stack.</li>
+
+<li>
+<span class="codedef">int pop()</span>  --  Remove the top int from the stack and return it.</li>
+
+</ul>
+   
+
+<p>It is an error to try to pop an item from an empty stack, so it is important
+to be able to tell whether a stack is empty. We need another stack operation to
+do the test, implemented as an instance method</p>
+
+
+<ul>
+
+<li>
+<span class="codedef">boolean isEmpty()</span>  --  Returns true if the stack is empty.</li>
+
+</ul>
+
+
+<p>This defines a "stack of ints" as an abstract data type. This ADT can be
+implemented in several ways, but however it is implemented, its behavior must
+correspond to the abstract mental image of a stack.</p>
+
+
+<p align="center">
+<img src="stack.png" width="337" height="283" alt="A stack"></p>
+
+
+<p>In the linked list implementation of a stack, the top of the stack is
+actually the node at the head of the list. It is easy to add and remove nodes
+at the front of a linked list -- much easier than inserting and deleting nodes
+in the middle of the list. Here is a class that implements the "stack of ints"
+ADT using a linked list. (It uses a static nested class to represent the nodes
+of the linked list. If the nesting bothers you, you could replace it
+with a separate <span class="classname">Node</span> class.)</p>
+
+
+<pre>public class StackOfInts {
+
+   /**
+    * An object of type Node holds one of the items in the linked list 
+    * that represents the stack.
+    */
+   private static class Node {
+      int item;
+      Node next;
+   }
+   
+   private Node top;  // Pointer to the Node that is at the top of
+                      //   of the stack.  If top == null, then the
+                      //   stack is empty.
+   
+   /**
+    * Add N to the top of the stack.
+    */
+   public void push( int N ) {
+      Node newTop;         // A Node to hold the new item.
+      newTop = new Node();
+      newTop.item = N;     // Store N in the new Node.
+      newTop.next = top;   // The new Node points to the old top.
+      top = newTop;        // The new item is now on top.
+   }
+   
+   /**
+    * Remove the top item from the stack, and return it.
+    * Throws an IllegalStateException if the stack is empty when
+    * this method is called.
+    */
+   public int pop() {
+      if ( top == null )
+         throw new IllegalStateException("Can't pop from an empty stack.");
+      int topItem = top.item;  // The item that is being popped.
+      top = top.next;          // The previous second item is now on top.
+      return topItem;
+   }
+   
+   /**
+    * Returns true if the stack is empty.  Returns false
+    * if there are one or more items on the stack.
+    */
+   public boolean isEmpty() {
+      return (top == null);
+   }
+
+} // end class StackOfInts</pre>
+
+
+<p>You should make sure that you understand how the <span class="code">push</span> and
+<span class="code">pop</span> operations operate on the linked list. Drawing some pictures might
+help. Note that the linked list is part of the <span class="code">private</span> implementation
+of the <span class="classname">StackOfInts</span> class. A program that uses this class doesn't even
+need to know that a linked list is being used.</p>
+
+
+<p>Now, it's pretty easy to implement a stack as an array instead of as a
+linked list. Since the number of items on the stack varies with time, a counter
+is needed to keep track of how many spaces in the array are actually in use. If
+this counter is called <span class="code">top</span>, then the items on the stack are stored in
+positions <span class="code">0</span>, <span class="code">1</span>, ..., <span class="code">top-1</span> in the array. The item in
+position <span class="code">0</span> is on the bottom of the stack, and the item in position
+<span class="code">top-1</span> is on the top of the stack. Pushing an item onto the stack is
+easy: Put the item in position <span class="code">top</span> and add <span class="code">1</span> to the value of
+<span class="code">top</span>. If we don't want to put a limit on the number of items that the
+stack can hold, we can use the dynamic array techniques from <a href="../c7/s3.html#arrays.3.2">Subsection&nbsp;7.3.2</a>.
+Note that the typical picture of the array
+would show the stack "upside down," with the bottom of the stack at the top of
+the array. This doesn't matter. The array is just an implementation of the
+abstract idea of a stack, and as long as the stack operations work the way they
+are supposed to, we are OK. Here is a second implementation of the
+<span class="classname">StackOfInts</span> class, using a dynamic array:</p>
+
+
+<pre>public class StackOfInts {  // (alternate version, using an array)
+
+   private int[] items = new int[10];  // Holds the items on the stack.
+   
+   private int top = 0;  // The number of items currently on the stack.
+   
+   /**
+    * Add N to the top of the stack.
+    */
+   public void push( int N ) {
+       if (top == items.length) {
+              // The array is full, so make a new, larger array and
+              // copy the current stack items into it.
+           int[] newArray = new int[ 2*items.length ];
+           System.arraycopy(items, 0, newArray, 0, items.length);
+           items = newArray;
+       }
+       items[top] = N;  // Put N in next available spot.
+       top++;           // Number of items goes up by one.
+   }
+   
+   /**
+    * Remove the top item from the stack, and return it.
+    * Throws an IllegalStateException if the stack is empty when
+    * this method is called.
+    */
+   public int pop() {
+       if ( top == 0 )
+          throw new IllegalStateException("Can't pop from an empty stack.");
+       int topItem = items[top - 1]  // Top item in the stack.
+       top--;    // Number of items on the stack goes down by one.
+       return topItem;
+   }
+   
+   /**
+    * Returns true if the stack is empty.  Returns false
+    * if there are one or more items on the stack.
+    */
+   public boolean isEmpty() {
+      return (top == 0);
+   }
+
+} // end class StackOfInts</pre>
+
+
+<p>Once again, the implementation of the stack (as an array) is private to the
+class. The two versions of the <span class="classname">StackOfInts</span> class can be used
+interchangeably, since their public interfaces are identical.</p>
+   
+
+<hr class="break">
+   
+
+<p>It's interesting to look at the run time analysis of stack operations.
+(See <a href="../c8/s5.html">Section&nbsp;8.5</a>).  We can measure the size of the problem
+by the number of items that are on the stack.
+For the linked list implementation of a stack, the worst case run
+time both for the <span class="code">push</span> and for the <span class="code">pop</span> operation is
+Θ(1).  This just means that the run time is less than some constant, independent
+of the number of items on the stack.  This is easy to see if you look at the code.
+The operations are implemented with a few simple assignment statements, and the
+number of items on the stack has no effect.</p>
+   
+
+<p>For the array implementation, on the other hand, a special case occurs in the
+<span class="code">push</span> operation when the array is full.  In that case, a new array
+is created and all the stack items are copied into the new array.  This takes
+an amount of time that is proportional to the number of items on the stack.
+So, although the run time for <span class="code">push</span> is usually Θ(1), 
+the worst case run time is Θ(n), where n is the number of items on the stack.
+(However, the worst case occurs only rarely, and there is a natural sense in which the
+<i>average</i> case run time for the array implementation is still Θ(1).)</p>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="recursion.3.2">9.3.2&nbsp;&nbsp;Queues</a>
+</h3>
+
+
+<p>Queues are similar to stacks in that a queue consists of a sequence of
+items, and there are restrictions about how items can be added to and removed
+from the list. However, a queue has two ends, called the front and the back of
+the queue. Items are always added to the queue at the back and removed from the
+queue at the front. The operations of adding and removing items are called
+<span class="newword">enqueue</span> and <span class="newword">dequeue</span>.
+An item that is added to the back of the queue will remain on the queue until
+all the items in front of it have been removed. This should sound familiar. A
+queue is like a "line" or "queue" of customers waiting for service. Customers
+are serviced in the order in which they arrive on the queue.</p>
+
+
+<p align="center">
+<img src="queue.png" width="434" height="392" alt="A queue"></p>
+
+
+<p>A queue can hold items of any type. For a queue of <span class="ptype">ints</span>, the
+enqueue and dequeue operations can be implemented as instance methods in a
+"<span class="classname">QueueOfInts</span>" class. We also need an instance method for checking
+whether the queue is empty:</p>
+
+
+<ul>
+
+<li>
+<span class="codedef">void enqueue(int N)</span>  --  Add N to the back of the queue.</li>
+
+<li>
+<span class="codedef">int dequeue()</span>  --  Remove the item at the front and return it.</li>
+
+<li>
+<span class="codedef">boolean isEmpty()</span>  --  Return true if the queue is empty.</li>
+
+</ul>
+
+
+<p>A queue can be implemented as a linked list or as an array. An efficient
+array implementation is a little trickier than the array implementation of a
+stack, so I won't give it here. In the linked list implementation, the first
+item of the list is at the front of the queue. Dequeueing an item from the front
+of the queue is just like popping an item off a stack. The back of the queue is
+at the end of the list. Enqueueing an item involves setting a pointer in the
+last node of the current list to point to a new node that contains the item. To
+do this, we'll need a command like "<span class="code">tail.next&nbsp;= newNode;</span>", where
+<span class="code">tail</span> is a pointer to the last node in the list. If <span class="code">head</span> is a
+pointer to the first node of the list, it would always be possible to get a
+pointer to the last node of the list by saying:</p>
+
+
+<pre>Node tail;    // This will point to the last node in the list.
+tail = head;  // Start at the first node.
+while (tail.next != null) {
+   tail = tail.next;  // Move to next node.
+}
+// At this point, tail.next is null, so tail points to
+// the last node in the list.</pre>
+
+
+<p>However, it would be very inefficient to do this over and over every time an
+item is enqueued. For the sake of efficiency, we'll keep a pointer to the last
+node in an instance variable. This complicates the class somewhat;
+we have to be careful to update the value of
+this variable whenever a new node is added to the end of the list. Given all
+this, writing the <span class="classname">QueueOfInts</span> class is not all that difficult:</p>
+
+
+<pre>public class QueueOfInts {
+
+   /**
+    * An object of type Node holds one of the items
+    * in the linked list that represents the queue.
+    */
+   private static class Node {
+      int item;
+      Node next;
+   }
+
+   private Node head = null;  // Points to first Node in the queue.
+                              // The queue is empty when head is null.
+   
+   private Node tail = null;  // Points to last Node in the queue.
+
+   /**
+    * Add N to the back of the queue.
+    */
+   public void enqueue( int N ) {
+      Node newTail = new Node();  // A Node to hold the new item.
+      newTail.item = N;
+      if (head == null) {
+            // The queue was empty.  The new Node becomes
+            // the only node in the list.  Since it is both
+            // the first and last node, both head and tail
+            // point to it.
+         head = newTail;
+         tail = newTail;
+      }
+      else {
+            // The new node becomes the new tail of the list.
+            // (The head of the list is unaffected.)
+         tail.next = newTail;
+         tail = newTail;
+      }
+   }
+   
+   /**
+    * Remove and return the front item in the queue.
+    * Throws an IllegalStateException if the queue is empty.
+    */
+   public int dequeue() {
+      if ( head == null)
+          throw new IllegalStateException("Can't dequeue from an empty queue.");
+      int firstItem = head.item;
+      head = head.next;  // The previous second item is now first.
+      if (head == null) {
+            // The queue has become empty.  The Node that was
+            // deleted was the tail as well as the head of the
+            // list, so now there is no tail.  (Actually, the
+            // class would work fine without this step.)
+         tail = null;
+      } 
+      return firstItem;
+   }
+   
+   /**
+    * Return true if the queue is empty.
+    */
+   boolean isEmpty() {
+      return (head == null);
+   }
+   
+} // end class QueueOfInts</pre>
+
+
+
+<p>Queues are typically used in a computer (as in real life) when only one item
+can be processed at a time, but several items can be waiting for processing.
+For example:</p>
+
+
+<ul>
+
+<li>In a Java program that has multiple threads, the threads that want
+processing time on the CPU are kept in a queue. When a new thread is started,
+it is added to the back of the queue. A thread is removed from the front of the
+queue, given some processing time, and then -- if it has not terminated -- is
+sent to the back of the queue to wait for another turn.</li>
+
+<li>Events such as keystrokes and mouse clicks are stored in a queue called the
+"event queue". A program removes events from the event queue and processes
+them. It's possible for several more events to occur while one event is being
+processed, but since the events are stored in a queue, they will always be
+processed in the order in which they occurred.</li>
+
+<li>A web server is a program that receives requests from web browsers for "pages." 
+It is easy for new requests to arrive while the web server is still fulfilling
+a previous request.  Requests that arrive while the web server is busy are placed
+into a queue to await processing.  Using a queue ensures that requests will be
+processed in the order in which they were received.</li>
+
+</ul>
+
+
+<p>Queues are said to implement a <span class="newword">FIFO</span> policy:
+First In, First Out. Or, as it is more commonly expressed, first come, first
+served. Stacks, on the other hand implement a <span class="newword">LIFO</span>
+policy: Last In, First Out. The item that comes out of the stack is the last
+one that was put in. Just like queues, stacks can be used to hold items that
+are waiting for processing (although in applications where queues are typically
+used, a stack would be considered "unfair").</p>
+   
+
+<hr class="break">
+
+
+<p>To get a better handle on the difference between stacks and queues, consider
+the sample program <span class="sourceref"><a href="../source/DepthBreadth.java">DepthBreadth.java</a></span>.  You can try the
+program in an applet version below.
+The program shows a grid of squares.  Initially, all the squares are white.
+When you click on a white square, the
+program will gradually mark all the squares in the grid, starting from the one
+where you click. To understand how the program does this, think of yourself in
+the place of the program. When the user clicks a square, you are handed an index
+card. The location of the square -- its row and column -- is written on the
+card. You put the card in a pile, which then contains just that one card. Then,
+you repeat the following: If the pile is empty, you are done. Otherwise, remove
+an index card from the pile. The index card specifies a square. Look at each
+horizontal and vertical neighbor of that square. If the neighbor has not
+already been encountered, write its location on a new index card and put the card
+in the pile.</p>
+   
+
+<p>While a square is in the pile, waiting to be processed, it is colored red;
+that is, red squares have been <i>encountered</i> but not yet <i>processed</i>.
+When a square is taken from the pile and processed, its color changes to gray.
+Once a square has been colored gray, its color won't change again.
+Eventually, all the squares have been processed, and the procedure ends. In the
+index card analogy, the pile of cards has been emptied.</p>
+
+
+<p>The program can use your choice of three methods: Stack, Queue, and Random.
+In each case, the same general procedure is used. The only difference is how
+the "pile of index cards" is managed. For a stack, cards are added and removed
+at the top of the pile. For a queue, cards are added to the bottom of the pile
+and removed from the top. In the random case, the card to be processed is
+picked at random from among all the cards in the pile. The order of processing is
+very different in these three cases.</p>
+
+
+<p>You should experiment with the program to see how it all works. Try to
+understand how stacks and queues are being used. Try starting from one of the
+corner squares. While the process is going on, you can click on other white
+squares, and they will be added to the pile. When you do this with a stack, you
+should notice that the square you click is processed immediately, and all the
+red squares that were already waiting for processing have to wait. On the other
+hand, if you do this with a queue, the square that you click will wait its
+turn until all the squares that were already in the pile have been processed.</p>
+
+
+
+<p align="center">
+<applet code="DepthBreadth.class" width="272" height="300" archive="DepthBreadth.jar" alt="(Applet 'DepthBreadth' should be displayed here.)"></applet></p>
+
+   
+
+<hr class="break">
+
+
+<p>Queues seem very natural because they occur so often in real life, but there
+are times when stacks are appropriate and even essential. For example, consider
+what happens when a routine calls a subroutine. The first routine is suspended
+while the subroutine is executed, and it will continue only when the subroutine
+returns. Now, suppose that the subroutine calls a second subroutine, and the
+second subroutine calls a third, and so on. Each subroutine is suspended while
+the subsequent subroutines are executed. The computer has to keep track of all
+the subroutines that are suspended. It does this with a stack.</p>
+
+
+<p>When a subroutine is called, an <span class="newword">activation record</span> 
+is created for that subroutine. The activation record contains
+information relevant to the execution of the subroutine, such as its local
+variables and parameters. The activation record for the subroutine is placed on
+a stack. It will be removed from the stack and destroyed when the subroutine
+returns. If the subroutine calls another subroutine, the activation record of
+the second subroutine is pushed onto the stack, on top of the activation record
+of the first subroutine. The stack can continue to grow as more subroutines are
+called, and it shrinks as those subroutines return.</p>
+   
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="recursion.3.3">9.3.3&nbsp;&nbsp;Postfix Expressions</a>
+</h3>
+
+
+<p>As another example, stacks can be used to evaluate 
+<span class="newword">postfix expressions</span>. An ordinary mathematical expression such
+as <span class="code">2+(15-12)*17</span> is called an <span class="newword">infix expression</span>. 
+In an infix expression, an operator comes in between its two
+operands, as in "<span class="code">2&nbsp;+&nbsp;2</span>". In a postfix expression, an operator comes
+after its two operands, as in "<span class="code">2&nbsp;2&nbsp;+</span>". The infix expression
+"<span class="code">2+(15-12)*17</span>" would be written in postfix form as 
+"<span class="code">2&nbsp;15&nbsp;12&nbsp;-&nbsp;17&nbsp;*&nbsp;+</span>". 
+The "<span class="code">-</span>" operator in this expression applies to the two operands that
+precede it, namely "<span class="code">15</span>" and "<span class="code">12</span>". The "<span class="code">*</span>" operator
+applies to the two operands that precede it, namely "<span class="code">15&nbsp;12&nbsp;-</span>" and
+"<span class="code">17</span>". And the "<span class="code">+</span>" operator applies to "<span class="code">2</span>" and 
+"<span class="code">15&nbsp;12&nbsp;-&nbsp;17&nbsp;*</span>". 
+These are the same computations that are done in the original infix
+expression.</p>
+
+
+<p>Now, suppose that we want to process the expression "<span class="code">2&nbsp;15&nbsp;12&nbsp;-&nbsp;17&nbsp;*&nbsp;+</span>", 
+from left to right and find its value. The first item we encounter is
+the <span class="code">2</span>, but what can we do with it? At this point, we don't know what
+operator, if any, will be applied to the <span class="code">2</span> or what the other operand
+might be. We have to remember the <span class="code">2</span> for later processing. We do this
+by pushing it onto a stack. Moving on to the next item, we see a <span class="code">15</span>,
+which is pushed onto the stack on top of the <span class="code">2</span>. Then the <span class="code">12</span>
+is added to the stack. Now, we come to the operator, "<span class="code">-</span>". This operation
+applies to the two operands that preceded it in the expression. We have saved
+those two operands on the stack. So, to process the "<span class="code">-</span>" operator, we pop two
+numbers from the stack, <span class="code">12</span> and <span class="code">15</span>, and compute <span class="code">15&nbsp;-&nbsp;12</span>
+to get the answer <span class="code">3</span>. This <span class="code">3</span> must be remembered to be used in later
+processing, so we push it onto the stack, on top of the <span class="code">2</span> that is
+still waiting there. The next item in the expression is a <span class="code">17</span>, which is
+processed by pushing it onto the stack, on top of the <span class="code">3</span>. To process
+the next item, "<span class="code">*</span>", we pop two numbers from the stack. The numbers are
+<span class="code">17</span> and the <span class="code">3</span> that represents the value of "<span class="code">15&nbsp;12&nbsp;-</span>".
+These numbers are multiplied, and the result, <span class="code">51</span> is pushed onto the
+stack. The next item in the expression is a "<span class="code">+</span>" operator, which is processed by
+popping <span class="code">51</span> and <span class="code">2</span> from the stack, adding them, and pushing the
+result, <span class="code">53</span>, onto the stack. Finally, we've come to the end of the
+expression. The number on the stack is the value of the entire expression, so
+all we have to do is pop the answer from the stack, and we are done! The value
+of the expression is <span class="code">53</span>.</p>
+
+
+<p>Although it's easier for people to work with infix expressions, postfix
+expressions have some advantages. For one thing, postfix expressions don't
+require parentheses or precedence rules. The order in which operators are
+applied is determined entirely by the order in which they occur in the
+expression. This allows the algorithm for evaluating postfix expressions to be
+fairly straightforward:</p>
+
+
+<pre>Start with an empty stack
+for each item in the expression:
+    if the item is a number:
+       Push the number onto the stack
+    else if the item is an operator:
+       Pop the operands from the stack  // Can generate an error
+       Apply the operator to the operands
+       Push the result onto the stack
+    else
+       There is an error in the expression
+Pop a number from the stack  // Can generate an error
+if the stack is not empty:
+   There is an error in the expression
+else:
+   The last number that was popped is the value of the expression</pre>
+
+
+<p>Errors in an expression can be detected easily. For example, in the
+expression "<span class="code">2&nbsp;3&nbsp;+&nbsp;*</span>", there are not enough operands for the
+"<span class="code">*</span>" operation. This will be detected in the algorithm when an attempt
+is made to pop the second operand for "<span class="code">*</span>" from the stack, since the
+stack will be empty. The opposite problem occurs in "<span class="code">2&nbsp;3&nbsp;4&nbsp;+</span>". There
+are not enough operators for all the numbers. This will be detected when the
+<span class="code">2</span> is left still sitting in the stack at the end of the algorithm.</p>
+
+
+<p>This algorithm is demonstrated in the sample program <span class="sourceref"><a href="../source/PostfixEval.java">PostfixEval.java</a></span>.
+This program lets you type in
+postfix expressions made up of non-negative real numbers and the operators "<span class="code">+</span>",
+"<span class="code">-</span>", "<span class="code">*</span>", "<span class="code">/</span>", and&nbsp;"<span class="code">^</span>". 
+The "<span class="code">^</span>" represents
+exponentiation. That is, "<span class="code">2&nbsp;3&nbsp;^</span>" is evaluated as
+<span class="code">2</span><sup>3</sup>. The program prints out a message as it processes each
+item in the expression. The stack class that is used in the program is defined in the
+file <span class="sourceref"><a href="../source/StackOfDouble.java">StackOfDouble.java</a></span>. The
+<span class="classname">StackOfDouble</span> class is identical to the first <span class="classname">StackOfInts</span>
+class, given above, except that it has been modified to store values of type
+<span class="ptype">double</span> instead of values of type <span class="ptype">int</span>.</p>
+
+
+
+<p>Here is an applet that simulates the <span class="code">PostfixEval</span> program:</p>
+
+
+<p align="center">
+<applet code="PostfixEvalConsole.class" width="500" height="320" archive="PostfixEval.jar" alt="(Applet 'PostfixEvalConsole' should be displayed here.)"></applet></p>
+
+
+
+<p>The only interesting aspect of this program is the method that implements
+the postfix evaluation algorithm. It is a direct implementation of the
+pseudocode algorithm given above:</p>
+
+
+<pre>/**
+ *  Read one line of input and process it as a postfix expression.
+ *  If the input is not a legal postfix expression, then an error
+ *  message is displayed.  Otherwise, the value of the expression
+ *  is displayed.  It is assumed that the first character on
+ *  the input line is a non-blank.
+ */
+private static void readAndEvaluate() {
+
+   StackOfDouble stack;  // For evaluating the expression.
+
+   stack = new StackOfDouble();  // Make a new, empty stack.
+
+   TextIO.putln();
+
+   while (TextIO.peek() != '\n') {
+
+      if ( Character.isDigit(TextIO.peek()) ) {
+             // The next item in input is a number.  Read it and
+             // save it on the stack.
+         double num = TextIO.getDouble();
+         stack.push(num);
+         TextIO.putln("   Pushed constant " + num);
+      }
+      else {
+             // Since the next item is not a number, the only thing
+             // it can legally be is an operator.  Get the operator
+             // and perform the operation.
+         char op;  // The operator, which must be +, -, *, /, or ^.
+         double x,y;     // The operands, from the stack, for the operation.
+         double answer;  // The result, to be pushed onto the stack.
+         op = TextIO.getChar();
+         if (op != '+' &amp;&amp; op != '-' &amp;&amp; op != '*' &amp;&amp; op != '/' &amp;&amp; op != '^') {
+                // The character is not one of the acceptable operations.
+            TextIO.putln("\nIllegal operator found in input: " + op);
+            return;
+         }
+         if (stack.isEmpty()) {
+            TextIO.putln("   Stack is empty while trying to evaluate " + op);
+            TextIO.putln("\nNot enough numbers in expression!");
+            return;
+         }
+         y = stack.pop();
+         if (stack.isEmpty()) {
+            TextIO.putln("   Stack is empty while trying to evaluate " + op);
+            TextIO.putln("\nNot enough numbers in expression!");
+            return;
+         }
+         x = stack.pop();
+         switch (op) {
+         case '+':  
+            answer = x + y; 
+            break;
+         case '-':  
+            answer = x - y;  
+            break;
+         case '*':  
+            answer = x * y;  
+            break;
+         case '/':  
+            answer = x / y;  
+            break;
+         default:   
+            answer = Math.pow(x,y);  // (op must be '^'.)
+         }
+         stack.push(answer);
+         TextIO.putln("   Evaluated " + op + " and pushed " + answer);
+      }
+
+      TextIO.skipBlanks();
+
+   }  // end while
+
+   // If we get to this point, the input has been read successfully.
+   // If the expression was legal, then the value of the expression is
+   // on the stack, and it is the only thing on the stack.
+
+   if (stack.isEmpty()) {  // Impossible if the input is really non-empty.
+      TextIO.putln("No expression provided.");
+      return;
+   }
+
+   double value = stack.pop();  // Value of the expression.
+   TextIO.putln("   Popped " + value + " at end of expression.");
+
+   if (stack.isEmpty() == false) {
+      TextIO.putln("   Stack is not empty.");
+      TextIO.putln("\nNot enough operators for all the numbers!");
+      return;
+   }
+
+   TextIO.putln("\nValue = " + value);
+
+
+} // end readAndEvaluate()</pre>
+
+
+<p>Postfix expressions are often used internally by computers. In fact, the
+Java virtual machine is a "stack machine" which uses the stack-based approach
+to expression evaluation that we have been discussing. The algorithm can easily
+be extended to handle variables, as well as constants. When a variable is
+encountered in the expression, the value of the variable is pushed onto the
+stack. It also works for operators with more or fewer than two operands. As
+many operands as are needed are popped from the stack and the result is pushed
+back onto the stack. For example, the <span class="newword">unary minus</span>
+operator, which is used in the expression "<span class="code">-x</span>", has a single operand.
+We will continue to look at expressions and expression evaluation in the next
+two sections.</p>
+   
+
+   
+
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s2.html">Previous Section</a> |
+           <a href="s4.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

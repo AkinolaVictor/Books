@@ -1,0 +1,19 @@
+<html><head><title>animation</title>
+<script type="text/javascript">
+	var pics;
+	function animate(whichone){
+    	   whichone %= pics.length;
+    	   document.images["stickman"].src=pics[whichone];
+    	   window.setTimeout("animate(" + (whichone + 1)+");",500);
+			}
+	   window.onload=function(){
+    		pics=new Array( "0.png","1.png","0.png","1.png");
+    		animate(0);
+ 	   }
+
+ </script>
+</head>
+ <body bgcolor=lightgreen>
+     <img src="0.png"  name="stickman" />
+ </body>
+ </html>

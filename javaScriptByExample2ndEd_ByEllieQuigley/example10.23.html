@@ -1,0 +1,45 @@
+
+<html><head><title>Scrolling through Autumn</title>
+<script type="text/javascript">
+    size="height='800' width='400'";
+  	winObj=window.open("BaileyIsland.jpg","myscene","width=350,height=1200,status=0,toolbar=0,scrollbars=0,location=0,menubar=0,resizeable=0");  // Create the new window
+		                                       // with an image.
+	winObj.moveTo(0, 0);
+	winObj.focus();
+	var pixelpos=0;
+	var ImgWidth=1600;
+	var pixelstep=2;
+	var timeout;
+	function scrollAgain(){
+		pixelpos = 0;  // Reset the horizontal pixel position to 0
+		startScroll();    // Start scrolling again
+	}
+	function stopHere(){
+		clearTimeout(timeout);  // Stop the clock to stop scrolling
+	}
+	function closeWindow(){
+		winObj.close();
+		}
+  </script>
+</head>
+<body bgColor="lightgreen">
+<font face="arial" size=4 >
+<b><br />
+<div align="center">
+	A Window into an Autumn Day
+  <form>
+	<input type="button"
+		value="Start scrolling"
+		onClick="startScroll();">
+	<input type="button"
+		value="Stop scrolling"
+		onClick="stopHere();">
+	<input type="button"
+		value="Start over"
+		onClick="scrollAgain();">
+  </form>
+  <font size=-1>
+  <p>When you are ready to close the window, click here<br />
+  <a href="javascript:closeWindow()">Close the window</a>
+</body>
+</html>

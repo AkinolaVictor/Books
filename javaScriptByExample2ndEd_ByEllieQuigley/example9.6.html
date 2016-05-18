@@ -1,0 +1,16 @@
+
+<html><head><title>Associative Arrays</title></head>
+<body>
+<h2>An Array Indexed by Strings</h2>
+<script type="text/javascript">
+	var states = new Array();
+	states["CA"] = "California";
+	states["ME"] = "Maine";
+	states["MT"] = "Montana";
+	for( var i in states ){
+		document.write("The index is:<em> "+ i );
+		document.write(".</em> The value is: <em>" + states[i] + ".</em><br/>");
+	}
+</script>
+</body>
+</html>

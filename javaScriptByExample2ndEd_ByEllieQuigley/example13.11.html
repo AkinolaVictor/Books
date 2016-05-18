@@ -1,0 +1,46 @@
+<html><head><title>The Four Seasons</title>
+   <script type="text/javascript">
+	var season = new Array();
+	var indx = 0;
+	var timeDelay=2000;
+
+	season[0]=new Image();
+	season[0].src="winter.jpg";
+	season[1]=new Image();
+	season[1].src="summer.jpg";
+	season[2]=new Image();
+	season[2].src="fall.aspx";
+	season[3]=new Image();
+	season[3].src="spring.aspx";
+
+	function changeSeason(){
+		var size= season.length - 1;
+		if( indx < size ) {
+		     indx++;
+		}
+		else {
+		     indx = 0;
+		}
+		document.times.src= season[indx].src;
+		timeout=setTimeout('changeSeason()', timeDelay);
+	}
+	function stopShow(){
+			clearTimeout(timeout);
+	}
+   </script>
+</head>
+<body bgcolor="cornflowerblue">
+    <div align="center"><font face="arial">
+    <h2>The 4 Seasons</h2><b>
+	To see slide show, put your mouse on the image.<br />
+	Move your mouse away from the image, to stop it.
+     <a href="javascript:void(null);"
+		onMouseOver="return changeSeason();"
+		onMouseOut="return stopShow()">
+        <img name="times" src="winter.jpg" align="left"
+	border=8  hspace="10" width="150" height="150">
+      </a>
+	<br />
+    </div>
+</body>
+</html>

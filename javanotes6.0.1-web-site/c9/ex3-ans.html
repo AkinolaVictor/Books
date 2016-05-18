@@ -1,0 +1,204 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 3, Chapter 9</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 9.3</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 9.3:</h3>
+<p>Suppose that linked lists
+of integers are made from objects belonging to the class</p>
+
+
+<pre>class ListNode {
+   int item;       // An item in the list.
+   ListNode next;  // Pointer to the next node in the list.
+}</pre>
+
+
+<p>Write a subroutine that will make a copy of a list, with the order of the
+items of the list reversed. The subroutine should have a parameter of type
+<span class="classname">ListNode</span>, and it should return a value of type <span class="classname">ListNode</span>. The
+original list should not be modified.</p>
+
+
+<p>You should also write a <span class="code">main()</span> routine to test your subroutine.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>To make any linked list from scratch, you have to create nodes one-by-one
+and link them together. In this case, we want to make nodes that contain copies
+of the items from the original list. We can run through the original list, look
+at each item, create a new node that contains a copy of that item, and link
+that new node into the reversed list that we are constructing. We just have to
+make sure that the nodes in the new list are in the desired order.</p>
+
+
+<p>In fact this is pretty easy: As we run down the original list from start to
+finish, we need to build the reversed list from back to front. The first item
+in the original list should be at the back of the reversed list, the second
+item from the original goes in front of that item, and so on. This is
+equivalent to "pushing" the items onto the reversed list, using the same push
+operation that is used for a stack. An algorithm for this is:</p>
+
+
+<pre>Let rev be an empty list
+for each item in the original list:
+    Push the item onto rev
+    Move on to the next item</pre>
+
+
+<p>This can be coded into the subroutine we need as follows:</p>
+
+
+<pre>/**
+ * Return a new list containing the same items as the list,
+ * but in the reverse order.
+ */
+static ListNode reverse( ListNode list ) {
+   ListNode rev = null;     // rev will be the reversed list.
+   ListNode runner = list;  // For running through the nodes of list.
+   while (runner != null) {
+          // "Push" the next node of list onto the front of rev.
+      ListNode newNode = new ListNode();
+      newNode.item = runner.item;
+      newNode.next = rev;
+      rev = newNode;
+         // Move on to the next node in the list.
+      runner = runner.next; 
+   }
+   return rev;
+} // end reverse()</pre>
+
+
+<p>The exercise lets you design your own routine for testing the subroutine. It
+should be tested on several lists, including an empty list. It's important to
+test it on the empty list since a <span class="code">null</span> pointer often represents a
+special case in an algorithm, and is therefore a common source of bugs. It's also a
+good idea to test a list of length one, for similar reasons. In my
+<span class="code">main()</span> routine, I build up a random list one node at a time and test
+the <span class="code">reverse()</span> subroutine on the list at each step. The <span class="code">main()</span>
+routine was probably harder to write than the subroutine!</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">/**
+ * This program includes a subroutine that makes a reversed copy of a
+ * list of ints.  The main program simply tests that routine on a few lists.
+ */
+public class ReverseListDemo {
+
+
+   /**
+    * Objects of type ListNode are linked together into linked lists.
+    */
+   static class ListNode {
+      int item;        // An item in the list.
+      ListNode next;   // Pointer to the next node in the list.
+   }
+   
+
+   /**
+    * Return a new list containing the same items as the list,
+    * but in the reverse order.
+    */
+   static ListNode reverse( ListNode list ) {
+      ListNode rev = null;     // rev will be the reversed list.
+      ListNode runner = list;  // For running through the nodes of list.
+      while (runner != null) {
+             // "Push" the next node of list onto the front of rev.
+         ListNode newNode = new ListNode();
+         newNode.item = runner.item;
+         newNode.next = rev;
+         rev = newNode;
+            // Move on to the next node in the list.
+         runner = runner.next;
+      }
+      return rev;
+   } // end reverse()
+   
+   
+   /**
+    * Prints the items in the list to which the parameter, start, points.
+    * They are printed on one line, separated by spaces.
+    */
+   static void printList(ListNode start) {
+       ListNode runner;  // For running along the list.
+       runner = start;
+       while (runner != null) {
+          System.out.print(" " + runner.item);
+          runner = runner.next;
+       }
+   } // end printList()
+   
+
+   static void main(String[] args) {
+   
+      System.out.println("I will print out a list and its reverse, for");
+      System.out.println("several different lists.  The first list is empty.\n");
+      
+      ListNode list = null;   // A list, initially empty.
+      ListNode reversedList;  // The reversed list.
+      
+      int ct = 0;  // How many lists have we processed?
+      
+      while (true) {
+             // Print the current list and its reverse.  Then
+             // add a new node onto the head of the list before
+             // repeating.
+          System.out.print("The list:          ");
+          printList(list);
+          System.out.println();
+          reversedList = reverse(list);
+          System.out.print("The reversed list: ");
+          printList(reversedList);
+          System.out.println();
+          System.out.println();
+          ct++;
+          if (ct == 6)
+             break;
+          ListNode head = new ListNode();  // A new node to add to the list.
+          head.item = (int)(Math.random()*100);  // A random item.
+          head.next = list;
+          list = head;
+      }
+      
+   } // end main()
+   
+
+} // end class ReverseListDemo
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

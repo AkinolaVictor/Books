@@ -1,0 +1,921 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 10.1 -- Generic Programming</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s2.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#generics.1.1">Generic Programming in Smalltalk</a>
+<br>
+<a href="#generics.1.2">Generic Programming in C++</a>
+<br>
+<a href="#generics.1.3">Generic Programming in Java</a>
+<br>
+<a href="#generics.1.4">The Java Collection Framework</a>
+<br>
+<a href="#generics.1.5">Iterators and for-each Loops</a>
+<br>
+<a href="#generics.1.6">Equality and Comparison</a>
+<br>
+<a href="#generics.1.7">Generics and Wrapper Classes</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 10.1</h3>
+<h2 class="section_title">Generic Programming</h2>
+<hr class="break">
+   
+
+<p>
+<span class="start"><big>G</big>eneric programming</span> refers to writing code that
+will work for many types of data. We encountered the term in <a href="../c7/s3.html">Section&nbsp;7.3</a>,
+where we looked at dynamic arrays of
+integers. The source code presented there for working with dynamic arrays of
+integers works only for data of type <span class="ptype">int</span>. But the source code for
+dynamic arrays of <span class="ptype">double</span>, <span class="classname">String</span>, 
+<span class="classname">JButton</span>, or any
+other type would be almost identical, except for the substitution of one type name
+for another.  It seems silly to write essentially the
+same code over and over. As we saw in <a href="../c7/s3.html#arrays.3.3">Subsection&nbsp;7.3.3</a>, Java goes some distance
+towards solving this problem by providing the <span class="classname">ArrayList</span> class. An
+<span class="classname">ArrayList</span> is essentially a dynamic array of values of type
+<span class="classname">Object</span>.  Since every class is a subclass of <span class="classname">Object</span>,
+objects of any type can be stored in an <span class="classname">ArrayList</span>.
+Java goes even further by providing "parameterized types,"
+which were introduced in <a href="../c7/s3.html#arrays.3.4">Subsection&nbsp;7.3.4</a>.  There
+we saw that the <span class="classname">ArrayList</span> type can be parameterized, as in
+"<span class="classname">ArrayList&lt;String&gt;</span>", to limit the values that can be stored in the
+list to objects of a specified type.  Parameterized types extend Java's basic philosophy of
+type-safe programming to generic programming.</p>
+
+
+<p>The <span class="classname">ArrayList</span> class is just one of several standard
+classes that are used for generic programming in Java. We will spend the next few sections
+looking at these classes and how they are used, and we'll see that there are also
+generic methods and generic interfaces (see <a href="../c5/s7.html#OOP.7.1">Subsection&nbsp;5.7.1</a>). 
+All the classes and interfaces discussed in
+these sections are defined in the package <span class="code">java.util</span>, and you will need
+an import statement at the beginning of your program to get access to them.
+(Before you start putting "<span class="code">import</span>&nbsp;<span class="code">java.util.*</span>" at the
+beginning of every program, you should know that some things in
+<span class="code">java.util</span> have names that are the same as things in other packages.
+For example, both <span class="code">java.util.List</span> and <span class="code">java.awt.List</span>
+exist, so it is often better to import the individual classes that you need.)</p>
+   
+
+<p>In the final section of this chapter, we will see that it is possible to define
+new generic classes, interfaces, and methods.  Until then, we will stick to using
+the generics that are predefined in Java's standard
+library.</p>
+
+
+<p>It is no easy task to design a library for generic programming. Java's
+solution has many nice features but is certainly not the only possible
+approach. It is almost certainly not the best, and has a few features that
+in my opinion can only be called bizarre, but in the context of the
+overall design of Java, it might be close to optimal. To get some perspective
+on generic programming in general, it might be useful to look very briefly at
+generic programming in two other languages.</p>
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="generics.1.1">10.1.1&nbsp;&nbsp;Generic Programming in Smalltalk</a>
+</h3>
+
+
+<p>Smalltalk was one of the very first object-oriented programming languages.
+It is still used today, although its use is not very common. It has not achieved anything like the
+popularity of Java or C++, but it is the source of many ideas used in these
+languages. In Smalltalk, essentially all programming is generic, because of two
+basic properties of the language.</p>
+
+
+<p>First of all, variables in Smalltalk are typeless. A data value has a type,
+such as integer or string, but variables do not have types. Any variable can
+hold data of any type. Parameters are also typeless, so a subroutine can be
+applied to parameter values of any type. Similarly, a data structure can hold
+data values of any type. For example, once you've defined a binary tree data
+structure in SmallTalk, you can use it for binary trees of integers or strings
+or dates or data of any other type. There is simply no need to write new code
+for each data type.</p>
+
+
+<p>Secondly, all data values are objects, and all operations on objects are
+defined by methods in a class. This is true even for types that are "primitive"
+in Java, such as integers. When the "<span class="code">+</span>" operator is used to add two integers,
+the operation is performed by calling a method in the integer class. When you
+define a new class, you can define a "<span class="code">+</span>" operator, and you will then be able to
+add objects belonging to that class by saying "<span class="code">a&nbsp;+&nbsp;b</span>" just as if you
+were adding numbers. Now, suppose that you write a subroutine that uses the "<span class="code">+</span>"
+operator to add up the items in a list. The subroutine can be applied to a list
+of integers, but it can also be applied, automatically, to any other data type
+for which "<span class="code">+</span>" is defined. Similarly, a subroutine that uses the "<span class="code">&lt;"</span> operator
+to sort a list can be applied to lists containing any type of data for which
+"<span class="code">&lt;</span>" is defined. There is no need to write a different sorting subroutine for
+each type of data.</p>
+
+
+<p>Put these two features together and you have a language where data
+structures and algorithms will work for any type of data for which they make
+sense, that is, for which the appropriate operations are defined. This is real
+generic programming. This might sound pretty good, and you might be asking
+yourself why all programming languages don't work this way. This type of
+freedom makes it easier to write programs, but unfortunately it makes it harder
+to write programs that are correct and robust (see <a href="../c8/index.html">Chapter&nbsp;8</a>).
+Once you have a data structure that can
+contain data of any type, it becomes hard to ensure that it only holds the type
+of data that you want it to hold. If you have a subroutine that can sort any
+type of data, it's hard to ensure that it will only be applied to data for
+which the "<span class="code">&lt;</span>" operator is defined. More particularly, there is no way for a
+<b>compiler</b> to ensure these things. The problem will only show up at run time
+when an attempt is made to apply some operation to a data type for which it is
+not defined, and the program will crash.</p>
+
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="generics.1.2">10.1.2&nbsp;&nbsp;Generic Programming in C++</a>
+</h3>
+
+
+<p>Unlike Smalltalk, C++ is a very strongly typed language, even more so than
+Java. Every variable has a type, and can only hold data values of that type.
+This means that the kind of generic programming that is used in Smalltalk is
+impossible in C++. Furthermore, C++ does not have anything corresponding to Java's
+<span class="classname">Object</span> class. That is, there is no class that is a superclass of all
+other classes. This means that C++ can't use Java's style of generic
+programming with non-parameterized generic types either. 
+Nevertheless, C++ has a powerful and flexible system of
+generic programming. It is made possible by a language feature known as
+<span class="newword">templates</span>. In C++, instead of writing a different
+sorting subroutine for each type of data, you can write a single subroutine
+template. The template is not a subroutine; it's more like a factory for making
+subroutines. We can look at an example, since the syntax of C++ is very similar
+to Java's:</p>
+
+
+<pre>template&lt;class ItemType&gt;
+void sort( ItemType A[], int count ) {
+      // Sort items in the array, A, into increasing order.
+      // The items in positions 0, 1, 2, ..., (count-1) are sorted.
+      // The algorithm that is used here is selection sort.
+   for (int i = count-1; i &gt; 0; i--) {
+      int position_of_max = 0;
+      for (int j = 1; j &lt;= count ; j++)
+         if ( A[j] &gt; A[position_of_max] )
+            position_of_max = j;
+      ItemType temp = A[count];
+      A[count] = A[position_of_max];
+      A[position_of_max] = temp;
+   }
+}</pre>
+
+
+<p>This piece of code defines a subroutine template. If you remove the first
+line, "template&lt;class ItemType&gt;", and substitute the word "int" for the
+word "ItemType" in the rest of the template, you get a subroutine for sorting
+arrays of <span class="ptype">ints</span>. (Even though it says "class ItemType", you can actually
+substitute any type for ItemType, including the primitive types.) If you
+substitute "string" for "ItemType", you get a subroutine for sorting arrays of
+strings. This is pretty much what the compiler does with the template. If your
+program says "<span class="code">sort(list,10)</span>" where list is an array of <span class="ptype">ints</span>, the compiler uses
+the template to generate a subroutine for sorting arrays of <span class="ptype">ints</span>. If you say
+"<span class="code">sort(cards,10)</span>" where cards is an array of objects of type <span class="classname">Card</span>,
+then the compiler generates a subroutine for sorting arrays of <span class="classname">Cards</span>. 
+At least, it tries to. The template uses the "<span class="code">&gt;</span>" operator to compare values. If this operator
+is defined for values of type <span class="classname">Card</span>, then the compiler will successfully use the
+template to generate a subroutine for sorting cards. If "<span class="code">&gt;</span>" is not defined
+for <span class="classname">Cards</span>, then the compiler will fail -- but 
+this will happen at compile time,
+not, as in Smalltalk, at run time where it would make the program crash.</p>
+
+
+<p>In addition to subroutine templates,
+C++ also has templates for making classes. If you write a template for a
+binary tree class, you can use it to generate classes for binary trees of <span class="ptype">ints</span>,
+binary trees of strings, binary trees of dates, and so on -- all from one
+template. The most recent version of C++ comes with a large number of
+pre-written templates called the <span class="newword">Standard Template Library</span> 
+or STL. The STL is quite complex. Many people would say that its
+much too complex. But it is also one of the most interesting features of
+C++.</p>
+
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="generics.1.3">10.1.3&nbsp;&nbsp;Generic Programming in Java</a>
+</h3>
+   
+
+<p>Java's generic programming features have gone through several stages of
+development.  The original version of Java had just a few generic data
+structure classes, such as <span class="classname">Vector</span>, that could hold
+values of type <span class="classname">Object</span>.  Java version 1.2 introduced
+a much larger group of generics that followed the same basic model.  These generic
+classes and interfaces as a group are known as the <span class="newword">Java Collection Framework</span>.  The
+<span class="classname">ArrayList</span> class is part of the Collection Framework.  The
+original Collection Framework was closer in spirit to Smalltalk than it was to C++, since
+a data structure designed to hold <span class="classname">Objects</span> can be used with
+objects of any type.  Unfortunately, as in Smalltalk, the result is a category
+of errors that show up only at run time, rather than at compile time.  If a
+programmer assumes that all the items in a data structure are strings and
+tries to process those items as strings, a run-time error will occur if other
+types of data have inadvertently been added to the data structure.  In
+Java, the error will most likely occur when the program retrieves an
+<span class="classname">Object</span> from the data structure and tries to
+type-cast it to type <span class="classname">String</span>.  If the
+object is not actually of type <span class="classname">String</span>, the
+illegal type-cast will throw an error of type <span class="classname">ClassCastException</span>.</p>
+   
+
+<p>Java 5.0 introduced parameterized types, such as <span class="classname">ArrayList&lt;String&gt;</span>.
+This made it possible to create generic data structures that can be type-checked
+at compile time rather than at run time.  With these data structures, type-casting
+is not necessary, so <span class="classname">ClassCastExceptions</span> are avoided.
+The compiler will detect any attempt to add an object of the wrong type to the
+data structure; it will report a syntax error and will refuse to compile the program.
+In Java 5.0, all of the classes and interfaces in the Collection Framework, 
+and even some classes that
+are not part of that framework, have been parameterized.  Java's
+parameterized classes are similar to template classes in C++ (although the implementation 
+is very different), and their introduction moves Java's generic programming model
+closer to C++ and farther from Smalltalk.  In this chapter, I will use the
+parameterized types almost exclusively, but you should remember that their use is not mandatory.
+It is still legal to use a parameterized class as a non-parameterized type, such as
+a plain <span class="classname">ArrayList</span>.</p>
+   
+
+<p>Note that there is a significant difference between parameterized classes in Java
+and template classes in C++.  A template class in C++ is not really a class at all -- it's
+a kind of factory for generating classes.  Every time the template is used with
+a new type, a new compiled class is created.  With a Java parameterized class,
+there is only one compiled class file.  For example, there is only one compiled
+class file, <span class="code">ArrayList.class</span>, for the parameterized class <span class="classname">ArrayList</span>.
+The parameterized types <span class="classname">ArrayList&lt;String&gt;</span> and 
+<span class="classname">ArrayList&lt;Integer&gt;</span> both use the same compiled class file,
+as does the plain <span class="classname">ArrayList</span> type.  The type 
+parameter -- <span class="classname">String</span> or <span class="classname">Integer</span> -- just 
+tells the compiler to limit the type of object that can be stored in the data structure.
+The type parameter has no effect at run time and is not even known at run time.
+The type information is said to be "erased" at run time.  This <span class="newword">type erasure</span> 
+introduces a certain amount of weirdness.  For example, you can't test "<span class="code">if (list instanceof
+ArrayList&lt;String&gt;)</span>" because the <span class="code">instanceof</span> operator is evaluated
+at run time, and at run time only the plain <span class="classname">ArrayList</span> exists.
+Even worse, you can't create an array that has base type <span class="classname">ArrayList&lt;String&gt;</span>
+by using the <span class="code">new</span> operator, as in "<span class="code">new ArrayList&lt;String&gt;[N]</span>".
+This is because the <span class="code">new</span> operator is evaluated at run time, and at run time
+there is no such thing as "<span class="code">ArrayList&lt;String&gt;</span>"; only the non-parameterized
+type <span class="classname">ArrayList</span> exists at run time.</p>
+
+
+<p>Fortunately, most programmers don't have to deal with such problems, since they turn
+up only in fairly advanced programming.  Most people who use the Java Collection Framework
+will not encounter them, and they will get the benefits of type-safe generic programming
+with little difficulty.</p>
+   
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="generics.1.4">10.1.4&nbsp;&nbsp;The Java Collection Framework</a>
+</h3>
+
+
+<p>Java's generic data structures can be divided into two categories:
+<span class="newword">collections</span> and <span class="newword">maps</span>.
+A collection is more or less what it sounds like: a collection of objects. A map
+associates objects in one set with objects in another set in the way that a
+dictionary associates definitions with words or a phone book associates phone
+numbers with names. A map is similar to what I called an "association list" in
+<a href="../c7/s4.html#arrays.4.2">Subsection&nbsp;7.4.2</a>.  In Java, collections and maps are represented
+by the parameterized interfaces <span class="classname">Collection&lt;T&gt;</span>
+and <span class="classname">Map&lt;T,S&gt;</span>. Here, "T" and "S" stand for any type
+except for the primitive types.  <span class="classname">Map&lt;T,S&gt;</span> is
+the first example we have seen where there are two type parameters, <span class="classname">T</span>
+and&nbsp;<span class="classname">S</span>;
+we will not deal further with this possibility until we look at maps more closely
+in <a href="../c10/s3.html">Section&nbsp;10.3</a>.  In this section and the next, we look
+at collections only.</p>
+
+
+<p>There are two types of collections: <span class="newword">lists</span> and
+<span class="newword">sets</span>. A list is a collection in which the objects
+are arranged in a linear sequence. A list has a first item, a second item, and
+so on. For any item in the list, except the last, there is an item that
+directly follows it.  The defining property of a set is that no object
+can occur more than once in a set; the elements of a set are not necessarily
+thought of as being in any particular order.  The ideas of lists and sets
+are represented as parameterized interfaces <span class="classname">List&lt;T&gt;</span>
+and <span class="classname">Set&lt;T&gt;</span>.  These are sub-interfaces of
+<span class="classname">Collection&lt;T&gt;</span>.  That is, any object that implements
+the interface <span class="classname">List&lt;T&gt;</span> or <span class="classname">Set&lt;T&gt;</span>
+automatically implements <span class="classname">Collection&lt;T&gt;</span> as well.
+The interface <span class="classname">Collection&lt;T&gt;</span> specifies general
+operations that can be applied to any collection at all.  <span class="classname">List&lt;T&gt;</span>
+and <span class="classname">Set&lt;T&gt;</span> add additional operations that
+are appropriate for lists and sets respectively.</p>
+   
+
+<p>Of course, any actual object
+that is a collection, list, or set must belong to a concrete class that
+implements the corresponding interface.  For example, the class
+<span class="classname">ArrayList&lt;T&gt;</span> implements the interface
+<span class="classname">List&lt;T&gt;</span> and therefore also implements
+<span class="classname">Collection&lt;T&gt;</span>.  This means
+that all the methods that are defined in the list and collection
+interfaces can be used with, for example, an <span class="classname">ArrayList&lt;String&gt;</span>
+object.  We will look at various classes that implement the list and set interfaces in
+the <a href="../c10/s2.html">next section</a>. But before we do that, we'll
+look briefly at some of the general operations that are available for all
+collections.</p>
+
+
+
+<hr class="break">
+
+
+<p>The interface <span class="classname">Collection&lt;T&gt;</span> 
+specifies methods for performing some basic
+operations on any collection of objects. Since "collection" is a very general
+concept, operations that can be applied to all collections are also very
+general. They are generic operations in the sense that they can be applied to
+various types of collections containing various types of objects.  
+Suppose that <span class="code">coll</span> is an object that implements the
+interface <span class="classname">Collection&lt;T&gt;</span> (for some
+specific non-primitive type <span class="classname">T</span>).
+Then the following operations, which are specified in the
+interface <span class="classname">Collection&lt;T&gt;</span>, are
+defined for <span class="code">coll</span>:</p>
+   
+
+<ul>
+
+<li>
+<span class="codedef">coll.size()</span>  --  returns an
+<span class="ptype">int</span> that gives the number of objects in the collection.</li>
+
+
+<li>
+<span class="codedef">coll.isEmpty()</span>  --  returns a <span class="ptype">boolean</span>
+value which is <span class="code">true</span> if the size of the collection is&nbsp;0.</li>
+
+
+<li>
+<span class="codedef">coll.clear()</span>  --  removes all objects
+from the collection.</li>
+
+
+<li>
+<span class="codedef">coll.add(tobject)</span>  --  adds
+<span class="code">tobject</span> to the collection. The parameter must be of type <span class="classname">T</span>;
+if not, a syntax error occurs at compile time.  This
+method returns a <span class="ptype">boolean</span> value which tells you whether the operation actually
+modified the collection. For example, adding an object to a <span class="code">Set</span> has no
+effect if that object was already in the set.</li>
+
+
+<li>
+<span class="codedef">coll.contains(object)</span>  --  returns a
+<span class="ptype">boolean</span> value that is true if <span class="code">object</span> is in the collection.
+Note that <span class="code">object</span> is <b>not</b> required to be of type <span class="classname">T</span>,
+since it makes sense to check whether <span class="code">object</span> is in the collection,
+no matter what type <span class="code">object</span> has.
+(For testing equality, <span class="code">null</span> is considered to
+be equal to itself.  The criterion for testing non-null objects for equality
+can differ from one kind of collection to another; see
+<a href="../c10/s1.html#generics.1.6">Subsection&nbsp;10.1.6</a>, below.)</li>
+
+
+<li>
+<span class="codedef">coll.remove(object)</span>  --  removes
+<span class="code">object</span> from the collection, if it occurs in the collection, and
+returns a <span class="ptype">boolean</span> value that tells you whether the object was found.
+Again, <span class="code">object</span> is not required to be of type&nbsp;<span class="classname">T</span>.</li>
+
+
+<li>
+<span class="codedef">coll.containsAll(coll2)</span>  --  returns a
+<span class="ptype">boolean</span> value that is true if every <span class="code">object</span> in <span class="code">coll2</span> is also
+in <span class="code">coll</span>. The parameter can be any collection.</li>
+
+
+<li>
+<span class="codedef">coll.addAll(coll2)</span>  --  adds all the
+objects in  <span class="code">coll2</span> to <span class="code">coll</span>.  The parameter,
+<span class="code">coll2</span>, can be any collection of type <span class="classname">Collection&lt;T&gt;</span>.
+However, it can also be more general.  For example, if <span class="classname">T</span> is a
+class and <span class="classname">S</span> is a sub-class of <span class="classname">T</span>,
+then <span class="code">coll2</span> can be of type <span class="classname">Collection&lt;S&gt;</span>.  This makes sense
+because any object of type <span class="classname">S</span> is automatically of type
+<span class="classname">T</span> and so can legally be added to <span class="code">coll</span>.
+</li>
+
+
+<li>
+<span class="codedef">coll.removeAll(coll2)</span>  --  removes
+every <span class="code">object</span> from <span class="code">coll</span> that also occurs in the collection
+<span class="code">coll2</span>.  <span class="code">coll2</span> can be any collection.</li>
+
+
+<li>
+<span class="codedef">coll.retainAll(coll2)</span>  --  removes
+every <span class="code">object</span> from <span class="code">coll</span> that <b>does not occur</b> in the
+collection <span class="code">coll2</span>. It "retains" only the objects that do occur in
+<span class="code">coll2</span>.  <span class="code">coll2</span> can be any collection.</li>
+
+
+<li>
+<span class="codedef">coll.toArray()</span>  --  returns an array of
+type <span class="atype">Object[]</span> that contains all the items in the collection. 
+Note that the return type is <span class="atype">Object[]</span>, not <span class="atype">T[]</span>!
+However, there is another version of this method that takes an array of
+type <span class="atype">T[]</span> as a parameter: the method <span class="code">coll.toArray(tarray)</span>
+returns an array of type <span class="atype">T[]</span> containing all the items in the collection.
+If the array parameter <span class="code">tarray</span> is large enough to hold the entire collection,
+then the items are stored in <span class="code">tarray</span> and <span class="code">tarray</span> is also the
+return value of the collection. If <span class="code">tarray</span> is not large enough, then a
+new array is created to hold the items; in that case <span class="code">tarray</span> serves only
+to specify the type of the array.  For example, <span class="code">coll.toArray(new&nbsp;String[0])</span>
+can be used if <span class="code">coll</span> is a collection of <span class="classname">Strings</span> and
+will return a new array of type <span class="atype">String[]</span>.
+</li>
+
+</ul>
+
+
+<p>Since these methods are part of the <span class="classname">Collection&lt;T&gt;</span> interface, they must
+be defined for every object that implements that interface. There is a problem
+with this, however. For example, the size of some collections
+cannot be changed after they are created. Methods that add or remove objects
+don't make sense for these collections. While it is still legal to call the
+methods, an exception will be thrown when the call is evaluated at run time.
+The type of the exception is <span class="classname">UnsupportedOperationException</span>.
+Furthermore, since <span class="classname">Collection&lt;T&gt;</span> is only an interface,
+not a concrete class, the actual implementation of the method is left to
+the classes that implement the interface. This means that the semantics
+of the methods, as described above, are not guaranteed to be valid for all
+collection objects; they are valid, however, for classes in the Java
+Collection Framework.</p>
+
+
+<p>There is also the question of efficiency. Even when an operation is defined
+for several types of collections, it might not be equally efficient in all
+cases. Even a method as simple as <span class="code">size()</span> can vary greatly in
+efficiency. For some collections, computing the <span class="code">size()</span> might involve
+counting the items in the collection. The number of steps in this process is
+equal to the number of items. Other collections might have instance variables
+to keep track of the size, so evaluating <span class="code">size()</span> just means returning
+the value of a variable. In this case, the computation takes only one step, no
+matter how many items there are. When working with collections, it's good to
+have some idea of how efficient operations are and to choose a collection for
+which the operations that you need can be implemented most efficiently. We'll see
+specific examples of this in the next two sections.</p>
+   
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="generics.1.5">10.1.5&nbsp;&nbsp;Iterators and for-each Loops</a>
+</h3>
+
+
+
+<p>The interface <span class="classname">Collection&lt;T&gt;</span> defines a few basic generic algorithms,
+but suppose you want to write your own generic algorithms. Suppose, for
+example, you want to do something as simple as printing out every item in a
+collection. To do this in a generic way, you need some way of going through an
+arbitrary collection, accessing each item in turn. We have seen how to do this
+for specific data structures: For an array, you can use a <span class="code">for</span> loop to iterate
+through all the array indices. For a linked list, you can use a while loop in
+which you advance a pointer along the list. For a binary tree, you can use a
+recursive subroutine to do an inorder traversal. Collections can be represented
+in any of these forms and many others besides. With such a variety of traversal
+mechanisms, how can we even hope to come up with a single generic method that will
+work for collections that are stored in wildly different forms? This problem is
+solved by <span class="newword">iterators</span>. An iterator is an object that
+can be used to traverse a collection. Different types of collections have
+iterators that are implemented in different ways, but all iterators are <b>used</b> in the same way. An
+algorithm that uses an iterator to traverse a collection is generic, because
+the same technique can be applied to any type of collection. Iterators can seem
+rather strange to someone who is encountering generic programming for the first
+time, but you should understand that they solve a difficult problem in an
+elegant way.</p>
+
+
+<p>The interface <span class="classname">Collection&lt;T&gt;</span> defines a method that can be used to
+obtain an iterator for any collection. If <span class="code">coll</span> is a collection, then
+<span class="code">coll.iterator()</span> returns an iterator that can be used to traverse the
+collection. You should think of the iterator as a kind of generalized pointer
+that starts at the beginning of the collection and can move along the
+collection from one item to the next. Iterators are defined by a parameterized interface
+named <span class="classname">Iterator&lt;T&gt;</span>.  If <span class="code">coll</span> implements the
+interface <span class="classname">Collection&lt;T&gt;</span> for some specific type <span class="classname">T</span>,
+then <span class="code">coll.iterator()</span> returns an iterator of type <span class="classname">Iterator&lt;T&gt;</span>,
+with the same type <span class="classname">T</span> as its type parameter.
+The interface <span class="classname">Iterator&lt;T&gt;</span> defines just three methods. If
+<span class="code">iter</span> refers to an object that implements <span class="classname">Iterator&lt;T&gt;</span>, then we have:</p>
+
+
+<ul>
+
+<li>
+<span class="codedef">iter.next()</span>  --  returns the next item,
+and advances the iterator. The return value is of type <span class="classname">T</span>. 
+This method lets you look at one of the items in the collection.  Note
+that there is no way to look at an item without advancing the iterator past
+that item. If this method is called when no items remain, it will throw a
+<span class="classname">NoSuchElementException</span>.</li>
+
+
+<li>
+<span class="codedef">iter.hasNext()</span>  --  returns a <span class="ptype">boolean</span>
+value telling you whether there are more items to be processed. In general,
+you should test this before calling <span class="code">iter.next()</span>.</li>
+
+
+<li>
+<span class="codedef">iter.remove()</span>  --  if you call this
+after calling <span class="code">iter.next()</span>, it will remove the item that you just saw
+from the collection.   Note that this method has <b>no parameter</b>.  It removes
+the item that was most recently returned by <span class="code">iter.next()</span>.
+This might produce an <span class="classname">UnsupportedOperationException</span>, 
+if the collection does not support removal of items.</li>
+
+</ul>
+
+
+<p>Using iterators, we can write code for printing all the items in
+<b>any</b> collection. Suppose, for example, that <span class="code">coll</span> is of type
+<span class="classname">Collection&lt;String&gt;</span>. In that case, the
+value returned by <span class="code">coll.iterator()</span> is of type <span class="classname">Iterator&lt;String&gt;</span>,
+and we can say:</p>
+
+
+<pre>Iterator&lt;String&gt; iter;          // Declare the iterator variable.
+iter = coll.iterator();         // Get an iterator for the collection.
+while ( iter.hasNext() ) {
+   String item = iter.next();   // Get the next item.
+   System.out.println(item);
+}</pre>
+
+
+<p>The same general form will work for other types of processing. For example,
+the following code will remove all <span class="code">null</span> values from any
+collection of type <span class="classname">Collection&lt;JButton&gt;</span>
+(as long as that collection supports removal of values):</p>
+
+
+<pre>Iterator&lt;JButton&gt; iter = coll.iterator():
+while ( iter.hasNext() ) {
+    JButton item = iter.next();
+    if (item == null)
+       iter.remove();
+}</pre>
+
+
+<p>(Note, by the way, that when <span class="classname">Collection&lt;T&gt;</span>,
+<span class="classname">Iterator&lt;T&gt;</span>, or any other parameterized type is 
+used in actual code, they are always used with actual types such as
+<span class="classname">String</span> or <span class="classname">JButton</span> in place
+of the "formal type parameter"&nbsp;<span class="classname">T</span>.
+An iterator of type <span class="classname">Iterator&lt;String&gt;</span> is used
+to iterate through a collection of <span class="classname">Strings</span>;
+an iterator of type <span class="classname">Iterator&lt;JButton&gt;</span> is used
+to iterate through a collection of <span class="classname">JButtons</span>;
+and so on.)</p>
+
+
+<p>An iterator is often used to apply the same operation to all the elements
+in a collection.  In many cases, it's possible to avoid the use of iterators
+for this purpose by using a for-each loop.  The for-each loop was discussed in <a href="../c3/s4.html#control.4.4">Subsection&nbsp;3.4.4</a>
+for use with enumerated types and in <a href="../c7/s2.html#arrays.2.2">Subsection&nbsp;7.2.2</a> for use with arrays.
+A for-each loop can also be used to iterate through any collection.  For
+a collection <span class="code">coll</span> of type <span class="classname">Collection&lt;T&gt;</span>,
+a for-each loop takes the form:</p>
+
+
+<pre>for ( T x : coll ) { // "for each object x, of type T, in coll"
+   //  process x  
+}</pre>
+   
+
+<p>Here, <span class="code">x</span> is the loop control variable.  Each object in
+<span class="code">coll</span> will be assigned to <span class="code">x</span> in turn, and the
+body of the loop will be executed for each object.  Since objects in
+<span class="code">coll</span> are of type <span class="classname">T</span>, <span class="code">x</span>
+is declared to be of type <span class="classname">T</span>.  For example, if
+<span class="code">namelist</span> is of type <span class="classname">Collection&lt;String&gt;</span>,
+we can print out all the names in the collection with:</p>
+   
+
+<pre>for ( String name : namelist ) { 
+   System.out.println( name );
+}</pre>
+   
+
+<p>This for-each loop could, of course, be written as a <span class="code">while</span> loop
+using an iterator, but the for-each loop is much easier to follow.</p>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="generics.1.6">10.1.6&nbsp;&nbsp;Equality and Comparison</a>
+</h3>
+
+
+<p>There are several methods in the <span class="classname">Collection</span> interface that test objects for equality.
+For example, the methods <span class="code">coll.contains(object)</span>
+and <span class="code">coll.remove(object)</span> look for an item in the collection that is
+equal to <span class="code">object</span>. However, equality is not such a simple matter. The
+obvious technique for testing equality -- using the <span class="code">==</span> operator -- does
+not usually give a reasonable answer when applied to objects. The
+<span class="code">==</span> operator tests whether two objects are identical in the sense that
+they share the same location in memory. Usually, however, we want to consider
+two objects to be equal if they represent the same value, which is a very
+different thing. Two values of type <span class="classname">String</span> should be considered equal
+if they contain the same sequence of characters. The question of whether those
+characters are stored in the same location in memory is irrelevant. Two values
+of type <span class="classname">Date</span> should be considered equal if they represent the same
+time.</p>
+
+
+<p>The <span class="classname">Object</span> class defines the <span class="ptype">boolean</span>-valued method
+<span class="code">equals(Object)</span> for testing whether one object is equal to another.
+This method is used by many, but not by all, collection classes for deciding whether
+two objects are to be considered the same. In the <span class="classname">Object</span> class,
+<span class="code">obj1.equals(obj2)</span> is defined to be the same as <span class="code">obj1&nbsp;==&nbsp;obj2</span>.
+However, for most sub-classes of <span class="code">Object</span>, this definition is not
+reasonable, and it should be overridden. The <span class="classname">String</span> class, for
+example, overrides <span class="code">equals()</span> so that for a <span class="classname">String</span>
+<span class="code">str</span>, <span class="code">str.equals(obj)</span> if <span class="code">obj</span> is also a
+<span class="classname">String</span> and <span class="code">obj</span> contains the same sequence of characters as
+<span class="code">str</span>.</p>
+
+
+<p>If you write your own class, you might want to define an <span class="code">equals()</span>
+method in that class to get the correct behavior when objects are tested for
+equality. For example, a <span class="classname">Card</span> class that will work correctly when used
+in collections could be defined as:</p>
+
+
+<pre>public class Card {  // Class to represent playing cards.
+   
+   int suit;  // Number from 0 to 3 that codes for the suit --
+              // spades, diamonds, clubs or hearts.
+   int value; // Number from 1 to 13 that represents the value.
+   
+   public boolean equals(Object obj) {
+       try {
+          Card other = (Card)obj;  // Type-cast obj to a Card.
+          if (suit == other.suit &amp;&amp; value == other.value) {
+                // The other card has the same suit and value as
+                // this card, so they should be considered equal.
+             return true;
+          }
+          else
+             return false;
+       }
+       catch (Exception e) {
+              // This will catch the NullPointerException that occurs if obj
+              // is null and the ClassCastException that occurs if obj is
+              // not of type Card.  In these cases, obj is not equal to
+              // this Card, so return false.
+           return false;
+       }
+    }
+   
+    .
+    . // other methods and constructors
+    .
+}</pre>
+
+
+<p>Without the <span class="code">equals()</span> method in this class, methods such as
+<span class="code">contains()</span> and <span class="code">remove()</span> in the interface <span class="classname">Collection&lt;Card&gt;</span>
+will not work as expected.</p>
+
+
+<p>A similar concern arises when items in a collection are sorted. Sorting
+refers to arranging a sequence of items in ascending order, according to some
+criterion. The problem is that there is no natural notion of ascending order
+for arbitrary objects. Before objects can be sorted, some method must be
+defined for comparing them. Objects that are meant to be compared should
+implement the interface <span class="code">java.lang.Comparable</span>.  
+In fact, <span class="classname">Comparable</span> is defined as a parameterized interface, 
+<span class="classname">Comparable&lt;T&gt;</span>,
+which represents the ability to be compared to an object of type <span class="classname">T</span>.
+The interface <span class="classname">Comparable&lt;T&gt;</span> defines one method:</p>
+
+
+<pre>public int compareTo( T obj )</pre>
+
+
+<p>The value returned by <span class="code">obj1.compareTo(obj2)</span> should be 
+negative if and only if <span class="code">obj1</span> comes before <span class="code">obj2</span>,
+when the objects are arranged in ascending order. It should be positive if
+and only if <span class="code">obj1</span> comes after <span class="code">obj2</span>. 
+A return value of zero means that the objects are considered to be the same
+for the purposes of this comparison.  This does not necessarily mean that
+the objects are equal in the sense that <span class="code">obj1.equals(obj2)</span> is true.
+For example, if the objects are of type <span class="classname">Address</span>,  
+representing mailing addresses, it might be useful to sort the objects by zip code.
+Two <span class="classname">Addresses</span> are considered the same for the purposes of
+the sort if they have the same zip code -- but clearly that would not mean that
+they are the same address.</p>
+   
+
+<p>The <span class="classname">String</span> class implements the
+interface <span class="classname">Comparable&lt;String&gt;</span> and 
+defines <span class="code">compareTo</span> in a reasonable
+way. In this case, the return value of <span class="code">compareTo</span> is zero
+if and only if the two strings that are being compared are equal.  (It 
+is generally a good idea for the <span class="code">compareTo</span> method in classes
+that implement <span class="classname">Comparable</span> to have the analogous
+property.)  If you define your own class and want to be able to sort objects belonging
+to that class, you should do the same. For example:</p>
+
+
+<pre>/**
+ * Represents a full name consisting of a first name and a last name.
+ */
+public class FullName implements Comparable&lt;FullName&gt; {
+
+   private String firstName, lastName;  // Non-null first and last names.
+   
+   public FullName(String first, String last) {  // Constructor.
+      if (first == null || last == null)
+         throw new IllegalArgumentException("Names must be non-null.");
+      firstName = first;
+      lastName = last;
+   }
+   
+   public boolean equals(Object obj) {
+      try {
+         FullName other = (FullName)obj;  // Type-cast obj to type FullName
+         return firstName.equals(other.firstName) 
+                                &amp;&amp; lastName.equals(other.lastName);
+      }
+      catch (Exception e) {
+         return false;  // if obj is null or is not of type FullName
+      }
+   }
+   
+   public int compareTo( FullName other ) {
+      if ( lastName.compareTo(other.lastName) &lt; 0 ) {
+             // If lastName comes before the last name of
+             // the other object, then this FullName comes
+             // before the other FullName.  Return a negative
+             // value to indicate this.
+         return -1;
+      }
+      else if ( lastName.compareTo(other.lastName) &gt; 0 ) {
+             // If lastName comes after the last name of
+             // the other object, then this FullName comes
+             // after the other FullName.  Return a positive
+             // value to indicate this.
+         return 1;
+      }
+      else {
+             // Last names are the same, so base the comparison on
+             // the first names, using compareTo from class String.
+         return firstName.compareTo(other.firstName);
+      }
+   }
+   
+   .
+   . // other methods 
+   .
+}</pre>
+   
+
+<p>(I find it a little odd that the class here is declared as "<span class="code">class 
+FullName implements Comparable&lt;FullName&gt;</span>", with "FullName"
+repeated as a type parameter in the name of the interface.  However, it does
+make sense.  It means that we are going to compare objects that belong to
+the class <span class="classname">FullName</span> to other objects <b>of the same type</b>.
+Even though this is the only reasonable thing to do, that fact is not
+obvious to the Java compiler -- and the type parameter in
+<span class="classname">Comparable&lt;FullName&gt;</span> is there for the
+compiler.)</p>
+
+
+<p>There is another way to allow for comparison of objects in Java, and that is
+to provide a separate object that is capable of making the comparison. The
+object must implement the interface <span class="classname">Comparator&lt;T&gt;</span>, 
+where <span class="classname">T</span> is the type of the objects that are to be compared.
+The interface <span class="classname">Comparator&lt;T&gt;</span> defines the method:</p>
+
+
+<pre>public int compare( T obj1, T obj2 )</pre>
+
+
+<p>This method compares two objects of type <span class="classname">T</span>
+and returns a value that is negative, or positive, or
+zero, depending on whether <span class="code">obj1</span> comes before
+<span class="code">obj2</span>, or comes after <span class="code">obj2</span>,
+or is considered to be the same as <span class="code">obj2</span> for the purposes of this comparison. 
+Comparators are useful for comparing objects that do not implement the
+<span class="classname">Comparable</span> interface and for defining several different orderings on
+the same collection of objects.</p>
+   
+
+<p>In the next two sections, we'll see how <span class="classname">Comparable</span> and
+<span class="classname">Comparator</span> are used in the context of collections and maps.</p>
+
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="generics.1.7">10.1.7&nbsp;&nbsp;Generics and Wrapper Classes</a>
+</h3>
+
+
+<p>As noted above, Java's generic programming does not apply to the primitive
+types, since generic data structures can only hold objects, while values of
+primitive type are not objects.  However, the "wrapper classes" that were
+introduced in <a href="../c5/s3.html#OOP.3.2">Subsection&nbsp;5.3.2</a> make it possible to get around
+this restriction to a great extent.</p>
+
+
+<p>Recall that each primitive type has an associated wrapper class:
+class <span class="classname">Integer</span> for type <span class="ptype">int</span>,
+class <span class="classname">Boolean</span> for type <span class="ptype">boolean</span>,
+class <span class="classname">Character</span> for type <span class="ptype">char</span>,
+and so on.</p>
+
+
+<p>An object of type <span class="classname">Integer</span> contains
+a value of type <span class="ptype">int</span>.  The object serves as a
+"wrapper" for the primitive type value, which allows it to be
+used in contexts where objects are required, such as in generic data
+structures.  For example, a list of <span class="classname">Integers</span>
+can be stored in a variable of type <span class="classname">ArrayList&lt;Integer&gt;</span>,
+and interfaces such as <span class="classname">Collection&lt;Integer&gt;</span> and
+<span class="classname">Set&lt;Integer&gt;</span> are defined.  Furthermore,
+class <span class="classname">Integer</span> defines <span class="code">equals()</span>,
+<span class="code">compareTo()</span>, and <span class="code">toString()</span> methods that
+do what you would expect (that is, that compare and write out the
+corresponding primitive type values in the usual way).
+Similar remarks apply for all the wrapper classes.</p>
+   
+
+<p>Recall also that Java does automatic conversions between a primitive type and
+the corresponding wrapper type.  (These conversions, which are called
+autoboxing and unboxing, were also introduced in <a href="../c5/s3.html#OOP.3.2">Subsection&nbsp;5.3.2</a>.)
+This means that once you have created a generic data structure to hold
+objects belonging to one of the wrapper classes, you can use the data structure
+pretty much as if it actually contained primitive type values.  For
+example, if <span class="code">numbers</span> is a variable of type <span class="classname">Collection&lt;Integer&gt;</span>,
+it is legal to call <span class="code">numbers.add(17)</span> or <span class="code">numbers.remove(42)</span>.
+You can't literally add the primitive type value 17 to <span class="code">numbers</span>, but
+Java will automatically convert the 17 to the corresponding wrapper object,
+<span class="code">new&nbsp;Integer(17)</span>, and the wrapper object will be added to
+the collection.  (The creation of the object does add some time and memory
+overhead to the operation, and you should keep that in mind in situations
+where efficiency is important.  An array of <span class="ptype">int</span> is more
+efficient than an <span class="classname">ArrayList&lt;Integer&gt;</span>.)</p>
+
+
+  
+
+   
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s2.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

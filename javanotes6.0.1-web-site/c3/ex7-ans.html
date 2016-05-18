@@ -1,0 +1,237 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 7, Chapter 3</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 3.7</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 3.7:</h3>
+<p>Write an animation applet
+that shows a checkerboard pattern in which the even numbered rows slide to the
+left while the odd numbered rows slide to the right. You can assume that the
+applet is 160 by 160 pixels. Each row can be offset towards the left or right from its usual position
+by the amount <span class="code">getFrameNumber()&nbsp;%&nbsp;40</span>. Hints: Anything you draw outside
+the boundaries of the applet will be invisible, so you can draw more than 8
+squares in a row. You can use negative values of x in
+<span class="code">g.fillRect(x,y,w,h)</span>. Here is a working solution to this exercise:
+</p>
+
+
+<p align="center">
+<applet code="SlidingCheckerboard.class" width="160" height="160" archive="SlidingCheckerboard.jar" alt=""></applet></p>
+
+
+<p>As with <a href="../c3/ex6-ans.html">Exercise&nbsp;3.6</a>, you can write your class as a subclass of
+<span class="classname">AnimationBase</span>.  Compile and run the program in the same way,
+as described in that exercise.  Assuming that the name of your class is <span class="code">SlidingCheckerboard</span>, then the
+source file for the Web page this time should contain the lines:</p>
+
+
+<pre>&lt;applet code="SlidingCheckerboard.class" width=160 height=160&gt;
+&lt;/applet&gt;</pre>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>Obviously, this exercise builds on the previous exercise, so you should read
+and understand the <a href="../c3/ex6-ans.html">solution to the previous exercise</a>
+first.</p>
+
+
+<p>The squares on the checkerboard are 20 pixels on each side. Looking from
+left to right, the pattern of red and black squares repeats itself after two
+squares, that is, after 40 pixels. If a row moves one pixel per frame, then
+after 40 frames, the pattern will look the same as it did in the first frame.
+So there are only 40 distinct frames in the animation. The appearance of the
+frame is determined by how far each row is offset from its original position.
+The offsets are given by 0, 1, 2, ..., 39. This sequence repeats itself over
+and over. The proper offset for a given frame can be computed as
+<span class="code">getFrameNumber()&nbsp;%&nbsp;40</span>, as noted in the statement of the exercise.
+For rows that are sliding towards the left, this amount is subtracted from the
+horizontal position of each square; for rows that are sliding towards the right, this
+amount is added to the square's horizontal position.</p>
+
+
+<p>If we just slide a row of eight squares, it will leave a blank area on the
+right as the row slides left, or a blank area on the left as the row slides
+right. It's useful to think of the checkerboard as being extended by two extra
+squares on each side. With all the rows in their usual position, only the middle eight squares will be visible. Instead of
+8 squares extending from <span class="code">x = 0</span> to <span class="code">x = 160</span>, we have 12 squares
+extending from <span class="code">x = -40</span> to <span class="code">x = 200</span>. Even when the rows are
+offset by up to two squares, the whole visible area of the applet will be
+filled with squares. Here, for example, is what it looks like for an offset of
+13 pixels:</p>
+
+
+<p align="center">
+<img src="SlidingCheckerboard.gif" width="302" height="193" alt="checkerboard with rows offset"></p>
+
+
+
+<p>A white rectangle is drawn around the visible area of the applet. The parts
+of the rows outside this rectangle are shown in this picture, and my program
+will issue commands for drawing them, but they are not visible when the applet
+is run.</p>
+
+
+<p>With all this figured out, it's not terribly difficult to adapt the solution
+from the previous exercise. If we were just drawing a static, 12-column
+checkerboard where the first column starts at <span class="code">x&nbsp;=&nbsp;-40</span> instead of 
+<span class="code">x&nbsp;=&nbsp;0</span>, the code would be almost identical to the code from that
+exercise:</p>
+
+
+<pre>for ( row = 0;  row &lt; 8;  row++ ) {
+   for ( col = 0;  col &lt; 12;  col++ ) {
+   
+       x = -40 + 20*col;
+       y = 20*row;
+       
+       if ( (row % 2) == (col % 2) )
+          g.setColor(Color.red);
+       else
+          g.setColor(Color.black);
+          
+       g.fillRect(x,y,20,20);
+   }
+}</pre>
+
+
+<p>The only problem is that the starting point of the first square is not -40.
+It is offset from -40 by an amount that depends on the frame number. It also
+depends on whether the row number is odd or even, since odd rows are offset to
+the left and even rows are offset to the right. The amount of offset is
+computed as <span class="code">offset&nbsp;=&nbsp;frameNumber()&nbsp;%&nbsp;40</span>. This offset has to be added
+to -40 to give the starting point of the row. Let <span class="code">leftEdge</span> be a
+variable that will store the starting point of the row. If the row number is
+even, <span class="code">leftEdge</span> is computed as <span class="code">-40&nbsp;-&nbsp;offset</span>. If the row number
+is even, <span class="code">leftEdge</span> is <span class="code">-40&nbsp;+&nbsp;offset</span>. Adding these computations
+to the above code gives a complete algorithm for drawing one frame in the
+animation:</p>
+
+
+<pre>offset = frameNumber() % 40;  // Amount by which each row is offset.
+
+for ( row = 0;  row &lt; 8;  row++ ) {
+
+   if ( row % 2 == 0)    // if row number is even
+      leftEdge = -40 - offset;
+   else
+      leftEdge = -40 + offset;
+   
+   for ( col = 0;  col &lt; 12;  col++ ) {
+   
+       x = leftEdge + 20*col;
+       y = 20*row;
+       
+       if ( (row % 2) == (col % 2) )
+          g.setColor(Color.red);
+       else
+          g.setColor(Color.black);
+          
+       g.fillRect(x,y,20,20);
+   }
+}</pre>
+
+
+<p>Once the variable declarations are added, this becomes the body of the
+<span class="code">drawFrame()</span> subroutine of the applet. The applet must follow the
+general framework for animations based on the <span class="sourceref"><a href="../source/AnimationBase.java">AnimationBase.java</a></span>,
+as given in <a href="../c3/s8.html">Section&nbsp;3.8</a>.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">import java.awt.*;
+
+public class SlidingCheckerboard extends AnimationBase {
+
+   /* 
+      Applet shows a checkerboard pattern in which the even numbered
+      rows slide to the left and the odd numbered rows slide to the
+      right.  It is ASSUMED that the applet is 160x160 pixels, since
+      the individual squares in the board are 20 pixels on a side.
+   */
+
+  public void drawFrame(Graphics g) {
+
+         // Draw one frame in the animation.  
+         
+      int offset;    // Amount by which the rows are offset from their usual
+                     //   position.  Even numbered rows are offset by this
+                     //   amount to the left, odd numbered rows to the right.
+                     
+      int row, col;  // Row and column numbers, used as loop control variables.
+      
+      int x,y;       // Top-left corner of a square.
+                    
+      offset = getFrameNumber() % 40;  // horizontal offset is in the range 0 to 39.
+      
+      for ( row = 0; row &lt; 8; row++ ) {
+      
+         /* Draw one row. */
+      
+         int leftEdge;  // Position of left edge of this row, after it is offset from its
+                        // usual position.  This is given by -40-offset if row is even
+                        // and by -40+offset if row is odd.
+         
+         if (row % 2 == 0)
+            leftEdge = -40 - offset;
+         else
+            leftEdge = -40 + offset;
+            
+         /* Draw 12 squares per row, to make sure that the part of the row that
+            is visible in the applet is completely filled with squares.  When offset
+            is zero, the row extends two squares to the left and two squares to the
+            right of the applet, starting at x = -40.  When offset &gt; 0, the rows
+            are offset by that amount to the left or right.
+         */
+            
+         for ( col = 0; col &lt; 12; col++) {
+            x = leftEdge + col * 20;
+            y = row * 20;
+            if ( (row % 2) == (col % 2) ) // Make colors alternate in a checkerboard fashion.
+               g.setColor(Color.red);
+            else
+               g.setColor(Color.black);
+            g.fillRect(x, y, 20, 20);
+         }
+      
+      }  // end for row
+      
+   }  // end drawFrame()
+
+}  // end class SlidingCheckerboard
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

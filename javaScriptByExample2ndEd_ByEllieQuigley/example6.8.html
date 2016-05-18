@@ -1,0 +1,30 @@
+<html><head><title>Looping Constructs</title></head>
+<body>
+<script type="text/javascript">
+    while(true) {
+	var grade=eval(prompt("What was your grade? ",""));
+	if (grade < 0 || grade > 100) {
+		alert("Illegal choice!");
+		continue;   // Go back to the top of the loop
+	}
+	if(grade > 89 && grade < 101) {
+		alert("Wow! You got an A!");
+	}
+	else if (grade > 79 && grade < 90){
+		alert("You got a B");
+	}
+	else if (grade > 69 && grade < 80){
+		alert("You got a C");
+	}
+	else if (grade > 59 && grade < 70){
+		alert("You got a D");
+	}
+	else {alert("Study harder. You Failed.");}
+	answer=prompt("Do you want to enter another grade?","");
+	if(answer != "yes"){
+		break;    // Break out of the loop to line 12
+	}
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<html><head><title>Testing for Alphabetic Characters</title>
+  <script type="text/javascript">
+	function okAlpha(form){
+		var regex=/^[a-zA-Z]+$/; //Match for upper- or lowercase letters
+		if ( regex.test(form.fname.value) == false) {
+			alert("First name must contain alphabetic characters!");
+			form.fname.focus();
+			return false;
+		}
+		if ( form.fname.value == ""){
+			alert("You must enter your first name.");
+			form.fname.focus();
+			return false;
+		}
+ 		return true;
+	}
+  </script>
+</head>
+<body>
+   <big>
+	<form name="alphaTest" 
+		method="post" 
+		action="/cgi-bin/testing.pl" 
+		onSubmit="return okAlpha(this)" >
+		Enter your first name:
+		<input type="text"
+			name="fname"
+			size=20>
+		<p>
+		<input type="submit" value="Submit">
+		<input type="reset">
+	</form>
+   </big>
+</body>
+</html>

@@ -1,0 +1,518 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 3, Chapter 8</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 8.3</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 8.3:</h3>
+<p>A Roman numeral represents
+an integer using letters. Examples are XVII to represent 17, MCMLIII for 1953,
+and MMMCCCIII for 3303. By contrast, ordinary numbers such as 17 or 1953 are
+called Arabic numerals. The following table shows the Arabic equivalent of all
+the single-letter Roman numerals:</p>
+
+
+<pre>M    1000            X   10
+D     500            V    5
+C     100            I    1
+L      50</pre>
+
+
+<p>When letters are strung together, the values of the letters are just added
+up, with the following exception. When a letter of smaller value is followed by
+a letter of larger value, the smaller value is subtracted from the larger
+value. For example, IV represents 5&nbsp;-&nbsp;1, or 4. And MCMXCV is interpreted as 
+M&nbsp;+&nbsp;CM&nbsp;+&nbsp;XC&nbsp;+&nbsp;V, 
+or 1000&nbsp;+ (1000&nbsp;-&nbsp;100) + (100&nbsp;-&nbsp;10)&nbsp;+&nbsp;5, which is 1995. In
+standard Roman numerals, no more than three consecutive copies of the same
+letter are used. Following these rules, every number between 1 and 3999 can be
+represented as a Roman numeral made up of the following one- and two-letter
+combinations:</p>
+
+
+<pre>M    1000            X   10
+CM    900            IX   9
+D     500            V    5
+CD    400            IV   4
+C     100            I    1
+XC     90
+L      50
+XL     40</pre>
+
+
+<p>Write a class to represent Roman numerals. The class should have two
+constructors. One constructs a Roman numeral from a string such as "XVII" or
+"MCMXCV". It should throw a <span class="classname">NumberFormatException</span> if the string is not
+a legal Roman numeral. The other constructor constructs a Roman numeral from an
+<span class="ptype">int</span>. It should throw a <span class="classname">NumberFormatException</span> if the
+<span class="ptype">int</span> is outside the range 1 to 3999.</p>
+
+
+<p>In addition, the class should have two instance methods. The method
+<span class="code">toString()</span> returns the string that represents the Roman numeral. The
+method <span class="code">toInt()</span> returns the value of the Roman numeral as an
+<span class="ptype">int</span>.</p>
+
+
+<p>At some point in your class, you will have to convert an <span class="ptype">int</span> into
+the string that represents the corresponding Roman numeral. One way to approach
+this is to gradually "move" value from the Arabic numeral to the Roman numeral.
+Here is the beginning of a routine that will do this, where <span class="code">number</span> is
+the <span class="ptype">int</span> that is to be converted:</p>
+
+
+<pre>String roman = "";
+int N = number;
+while (N &gt;= 1000) {
+      // Move 1000 from N to roman.
+   roman += "M";
+   N -= 1000;
+}
+while (N &gt;= 900) {
+      // Move 900 from N to roman.
+   roman += "CM";
+   N -= 900;
+}
+.
+.  // Continue with other values from the above table.
+.</pre>
+
+
+<p>(You can save yourself a lot of typing in this routine if you use arrays in
+a clever way to represent the data in the above table.)</p>
+
+
+<p>Once you've written your class, use it in a main program that will read both
+Arabic numerals and Roman numerals entered by the user. If the user enters an
+Arabic numeral, print the corresponding Roman numeral. If the user enters a
+Roman numeral, print the corresponding Arabic numeral. (You can tell the
+difference by using <span class="code">TextIO.peek()</span> to peek at the first character in
+the user's input (see <a href="../c8/s2.html#robustness.2.2">Subsection&nbsp;8.2.2</a>). 
+If the first character is a digit, then the user's input is an
+Arabic numeral. Otherwise, it's a Roman numeral.) The program should end when
+the user inputs an empty line. Here is an applet that simulates my solution to
+this problem:</p>
+
+
+
+<p align="center">
+<applet code="RomanConverterConsole.class" width="520" height="300" archive="RomanConverter.jar" alt=""></applet></p>
+
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+
+<p>My class is called <span class="classname">RomanNumeral</span>. An object of type
+<span class="classname">RomanNumeral</span> has a <span class="code">private</span> instance variable of type
+<span class="ptype">int</span> that stores the integer value of the Roman numeral. When the
+<span class="code">toString()</span> method is called, it computes the string that represents
+the Roman number based on the value of this <span class="ptype">int</span>. By contrast, the
+<span class="code">toInt()</span> method simply returns the value of the instance variable. This
+is not the only way that things could be done. I might have stored the string
+representation of the Roman numeral in an instance variable. In that case, the
+<span class="code">toString()</span> method would simply return the stored value, while the
+<span class="code">toInt()</span> method would have to compute the <span class="ptype">int</span> value from the
+stored <span class="classname">String</span>. It would even be possible to store both the
+<span class="ptype">int</span> and <span class="classname">String</span> representations in the object. (The point,
+though, is that it's not necessary to do so. The two representations hold
+exactly the same information.)</p>
+
+
+<p>In my version of the class, the constructor which takes a parameter of type
+<span class="ptype">int</span> simply has to store the parameter value in the instance variable,
+after checking that it is in the legal range of values.</p>
+
+
+<p>The constructor that takes a parameter of type <span class="classname">String</span> must
+interpret the string as a Roman numeral and convert it to the corresponding
+<span class="ptype">int</span> value. This is done by adding up the integer value associated with
+each character or pair of characters in the string. The fact that characters
+sometimes need to be considered in pairs complicates things a bit. An algorithm
+for converting a <span class="classname">String</span>, <span class="code">roman</span>, to an <span class="ptype">int</span>,
+<span class="code">arabic</span>, is:</p>
+
+
+<pre>Let arabic = 0
+Let i = 0  // representing a position in the string
+
+while i is a legal position in the string:
+    Let ch be the character in position i
+    Let N be the numeric equivalent of ch
+    i++   // to account for the character, ch
+    if there are no addition characters in the string:
+       Add N to arabic
+    else:   // Try pairing the ch with the next character
+       Let N2 be the numeric equivalent of the NEXT character
+       If N &lt; N2:  // Evaluate the characters as a pair
+           Add (N2 - N) to arabic
+           i++    // to account for the extra character
+       else:
+           Add N to arabic</pre>
+
+
+<p>This algorithm does not take into account that the string might not be a
+legal Roman numeral. If a character in the string is not one of the characters
+M, D, C, L, X, V, or I, then a <span class="classname">NumberFormatException</span> must be
+thrown.</p>
+
+
+<p>The job of converting an <span class="ptype">int</span> into an equivalent Roman numeral is
+handled in my <span class="code">toString()</span> method. The exercise includes code that shows how to write this
+method as a long sequence of <span class="code">while</span> loops. Consider the loop</p>
+
+
+<pre>while (N &gt;= 1000) {
+   roman += "M";
+   N -= 1000;
+}</pre>
+
+
+<p>After this loop, all the 1000's in <span class="code">N</span> have been converted to M's in
+<span class="code">roman</span>, and we can be sure that <span class="code">N</span> is 999 or less. So what's
+left of <span class="code">N</span> can be expressed in terms of the smaller numbers in the
+table: 900, 500, 400, and so on. Each of these numbers must be processed by a
+<span class="code">while</span> loop. Note that the numbers in these loops must be in decreasing
+order for this to work.</p>
+
+
+<p>However, all the loops in this algorithm have the same form. They just use
+different numbers and letters. In my program, I use two arrays to store the
+numbers and letters from the table:</p>
+
+
+<pre>private static int[]    numbers = { 1000,  900,  500,  400,  100,   90,  
+                                      50,   40,   10,    9,    5,    4,    1 };
+                                   
+private static String[] letters = { "M",  "CM",  "D",  "CD", "C",  "XC",
+                                    "L",  "XL",  "X",  "IX", "V",  "IV", "I" };</pre>
+
+
+<p>For each index <span class="code">i</span>, <span class="code">numbers[i]</span> is the <span class="ptype">int</span>
+equivalent of the Roman numeral <span class="code">letters[i]</span>. All the processing can
+then be done with a <span class="code">for</span> loop that does all the required <span class="code">while</span>
+loops one after the other:</p>
+
+
+<pre>public String toString() {
+      // Return the standard representation of this Roman numeral.
+   String roman = "";  // The Roman numeral.
+   int N = num;        // N represents the part of num that still has
+                       //   to be converted to Roman numeral representation.
+   for (int i = 0; i &lt; numbers.length; i++) {
+      while (N &gt;= numbers[i]) {
+         roman += letters[i];
+         N -= numbers[i];
+      }
+   }
+   return roman;
+}</pre>
+
+
+<hr class="break">
+
+
+<p>An algorithm for the main program is given by:</p>
+
+
+<pre>while (true):
+    Prompt the user for input
+    If the first thing on the line is the end-of-line:
+       break
+    else if the first character on the line is a digit:
+       Let arabic = TextIO.getlnInt()
+       Let roman = new RomanNumeral(arabic)
+       Print out roman.toString()
+    else:
+       Let str = TextIO.getln();
+       Let roman = new RomanNumeral(str);
+       Print out roman.toInt();</pre>
+
+
+<p>This algorithm ignores the possibility that the user's input might be
+illegal. If it is, then the <span class="classname">RomanNumeral</span> constructor will throw a
+<span class="classname">NumberFormatException</span>. This exception must be caught and handled. With
+this in mind, the algorithm becomes:</p>
+
+
+<pre>while (true):
+    Prompt the user for input
+    If the first thing on the line is the end-of-line:
+       break
+    else if the first character on the line is a digit:
+       Let arabic = TextIO.getlnInt()
+       try {
+          Let roman = new RomanNumeral(arabic)
+          Print out roman.toString()
+       }
+       catch (NumberFormatException e) {
+          Print an error message
+       }
+    else:
+       Let str = TextIO.getln();
+       try {
+          Let roman = new RomanNumeral(str);
+          Print out roman.toInt();
+       }
+       catch (NumberFormatException e) {
+          Print an error message
+       }</pre>
+
+
+<p>This can be easily coded into Java. By the way, the test as to whether the
+first character on the input line is a digit can be performed using the
+standard <span class="ptype">boolean</span>-valued function <span class="code">Character.isDigit(ch)</span>, which
+returns <span class="code">true</span> if the character <span class="code">ch</span> is a digit.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<p>
+<b>The Roman numerals class:</b>
+</p>
+
+
+<pre class="exercisecode">
+    /**
+     * An object of type RomanNumeral is an integer between 1 and 3999.  It can
+     * be constructed either from an integer or from a string that represents
+     * a Roman numeral in this range.  The function toString() will return a
+     * standardized Roman numeral representation of the number.  The function
+     * toInt() will return the number as a value of type int.
+     */
+    public class RomanNumeral {
+    
+       private final int num;   // The number represented by this Roman numeral.
+       
+       /* The following arrays are used by the toString() function to construct
+          the standard Roman numeral representation of the number.  For each i,
+          the number numbers[i] is represented by the corresponding string, letters[i].
+       */
+       
+       private static int[]    numbers = { 1000,  900,  500,  400,  100,   90,  
+                                             50,   40,   10,    9,    5,    4,    1 };
+                                          
+       private static String[] letters = { "M",  "CM",  "D",  "CD", "C",  "XC",
+                                           "L",  "XL",  "X",  "IX", "V",  "IV", "I" };
+          
+       /**
+        * Constructor.  Creates the Roman number with the int value specified
+        * by the parameter.  Throws a NumberFormatException if arabic is
+        * not in the range 1 to 3999 inclusive.
+        */
+       public RomanNumeral(int arabic) {
+          if (arabic &lt; 1)
+             throw new NumberFormatException("Value of RomanNumeral must be positive.");
+          if (arabic &gt; 3999)
+             throw new NumberFormatException("Value of RomanNumeral must be 3999 or less.");
+          num = arabic;
+       }
+       
+    
+       /*
+        * Constructor.  Creates the Roman number with the given representation.
+        * For example, RomanNumeral("xvii") is 17.  If the parameter is not a
+        * legal Roman numeral, a NumberFormatException is thrown.  Both upper and
+        * lower case letters are allowed.
+        */
+       public RomanNumeral(String roman) {
+             
+          if (roman.length() == 0)
+             throw new NumberFormatException("An empty string does not define a Roman numeral.");
+             
+          roman = roman.toUpperCase();  // Convert to upper case letters.
+          
+          int i = 0;       // A position in the string, roman;
+          int arabic = 0;  // Arabic numeral equivalent of the part of the string that has
+                           //    been converted so far.
+          
+          while (i &lt; roman.length()) {
+          
+             char letter = roman.charAt(i);        // Letter at current position in string.
+             int number = letterToNumber(letter);  // Numerical equivalent of letter.
+                             
+             i++;  // Move on to next position in the string
+             
+             if (i == roman.length()) {
+                   // There is no letter in the string following the one we have just processed.
+                   // So just add the number corresponding to the single letter to arabic.
+                arabic += number;
+             }
+             else {
+                   // Look at the next letter in the string.  If it has a larger Roman numeral
+                   // equivalent than number, then the two letters are counted together as
+                   // a Roman numeral with value (nextNumber - number).
+                int nextNumber = letterToNumber(roman.charAt(i));
+                if (nextNumber &gt; number) {
+                     // Combine the two letters to get one value, and move on to next position in string.
+                   arabic += (nextNumber - number);
+                   i++;
+                }
+                else {
+                     // Don't combine the letters.  Just add the value of the one letter onto the number.
+                   arabic += number;
+                }
+             }
+             
+          }  // end while
+          
+          if (arabic &gt; 3999)
+             throw new NumberFormatException("Roman numeral must have value 3999 or less.");
+             
+          num = arabic;
+          
+       } // end constructor
+       
+    
+       /**
+        * Find the integer value of letter considered as a Roman numeral.  Throws
+        * NumberFormatException if letter is not a legal Roman numeral.  The letter 
+        * must be upper case.
+        */
+       private int letterToNumber(char letter) {
+          switch (letter) {
+             case 'I':  return 1;
+             case 'V':  return 5;
+             case 'X':  return 10;
+             case 'L':  return 50;
+             case 'C':  return 100;
+             case 'D':  return 500;
+             case 'M':  return 1000;
+             default:   throw new NumberFormatException(
+                          "Illegal character \"" + letter + "\" in Roman numeral");
+          }
+       }
+       
+    
+       /**
+        * Return the standard representation of this Roman numeral.
+        */
+       public String toString() {
+          String roman = "";  // The roman numeral.
+          int N = num;        // N represents the part of num that still has
+                              //   to be converted to Roman numeral representation.
+          for (int i = 0; i &lt; numbers.length; i++) {
+             while (N &gt;= numbers[i]) {
+                roman += letters[i];
+                N -= numbers[i];
+             }
+          }
+          return roman;
+       }
+       
+     
+       /**
+        * Return the value of this Roman numeral as an int.
+        */
+       public int toInt() {
+          return num;
+       }
+     
+       
+    } // end class RomanNumeral
+
+</pre>
+
+
+<p>
+<b>The main program class:</b>
+</p>
+
+
+<pre class="exercisecode">
+    /** 
+     * This program will convert Roman numerals to ordinary arabic numerals
+     * and vice versa.  The user can enter a numerals of either type.  Arabic
+     * numerals must be in the range from 1 to 3999 inclusive.  The user ends
+     * the program by entering an empty line.
+     */
+    public class RomanConverter {
+    
+       public static void main(String[] args) {
+          
+          TextIO.putln("Enter a Roman numeral and I will convert it to an ordinary");
+          TextIO.putln("arabic integer.  Enter an integer in the range 1 to 3999");
+          TextIO.putln("and I will convert it to a Roman numeral.  Press return when");
+          TextIO.putln("you want to quit.");
+          
+          while (true) {
+    
+             TextIO.putln();
+             TextIO.put("? ");
+             
+             /* Skip past any blanks at the beginning of the input line.
+                Break out of the loop if there is nothing else on the line. */
+             
+             while (TextIO.peek() == ' ' || TextIO.peek() == '\t')
+                TextIO.getAnyChar();
+             if ( TextIO.peek() == '\n' )
+                break;
+                
+             /* If the first non-blank character is a digit, read an arabic
+                numeral and convert it to a Roman numeral.  Otherwise, read
+                a Roman numeral and convert it to an arabic numeral. */
+                
+             if ( Character.isDigit(TextIO.peek()) ) {
+                int arabic = TextIO.getlnInt();
+                try {
+                    RomanNumeral N = new RomanNumeral(arabic);
+                    TextIO.putln(N.toInt() + " = " + N.toString());
+                }
+                catch (NumberFormatException e) {
+                    TextIO.putln("Invalid input.");
+                    TextIO.putln(e.getMessage());
+                }
+             }
+             else {
+                String roman = TextIO.getln();
+                try {
+                    RomanNumeral N = new RomanNumeral(roman);
+                    TextIO.putln(N.toString() + " = " + N.toInt());
+                }
+                catch (NumberFormatException e) {
+                    TextIO.putln("Invalid input.");
+                    TextIO.putln(e.getMessage());
+                }
+             }
+    
+          }  // end while
+          
+          TextIO.putln("OK.  Bye for now.");
+    
+       }  // end main()
+       
+    } // end class RomanConverter
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

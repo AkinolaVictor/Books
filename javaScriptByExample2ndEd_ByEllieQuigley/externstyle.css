@@ -1,0 +1,18 @@
+  body { background-color: silver;
+	 font-size: 22pt;
+	 font-weight: bold;
+	}
+
+	.red { color:rgb(255,0,0);   /* Defining classes */
+		font-style: verdana;
+		font-size: 32;
+	}
+	.blue { color:blue;
+		font-style: verdana;
+		font-size: 36;
+	}
+	.green { color: green;			     
+		 font-style: verdana;
+		 font-size: 40;
+	}
+	

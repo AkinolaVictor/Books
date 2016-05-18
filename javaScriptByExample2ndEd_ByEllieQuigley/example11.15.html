@@ -1,0 +1,43 @@
+<html><head><title>An HTML Form</title></head>
+<body>
+<b>
+<form name=myForm
+	action="http://localhost/cgi-bin/printenv.pl"
+	method="post">
+<p>
+	<fieldset><legend><big> All About You</legend>
+	<p><font size=3 color="blue">
+	Type your name here:
+	<input type="text"
+		name="namestring"
+		size="50" />
+	<p>
+	Talk about yourself here:<br>
+	<textarea name="comments"
+		align="left"
+		rows="5" cols="50">I was born...
+	</textarea>
+	<p>
+	<b>Choose a work place:</b><br>
+	<input type="checkbox"
+		name="place"
+		value="LA">Los Angeles
+	<br />
+	<input type="checkbox"
+		name="place"
+		value="SJ">San Jose
+	<br />
+	<input type="checkbox"
+		name="place"
+		value="SF"
+		checked>San Francisco
+	<p></fieldset>
+  </form>
+  <p>
+  <a href="#" onClick="javascript: myForm.submit();" />
+   Click here to submit this form</a>
+   <p>
+   <a href="#" onClick="javascript: myForm.reset();" />
+   Click here to reset this form</a>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<html><head><title>Simulation Methods</title></head>
+<body bgcolor="yellow">
+    <form name="myform"
+	  action="http://localhost/cgi-bin/doit.pl"
+	  method="post">
+	Enter your name:<br>
+	<input type="text"
+	       name="namefield"
+               id="namefield"
+	       size="30"
+	       value="Name: "
+	       onFocus="this.select()">
+	<p>
+	Enter your address:<br>
+	<input type="text"
+	       name="addressfield"
+               id="namefield"
+	       size="30"
+	       value="Address: "
+	       onFocus="this.select()">
+	</p><p>
+     </form>
+	<a href="#" onClick="javascript: document.myform.submit();">
+	Click here to submit your form</a>
+	<p>
+	<a href="#" onClick="javascript:document.myform.reset();">
+	Click here to reset your form</a>
+	</p>
+</body>
+</html>

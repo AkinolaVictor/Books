@@ -1,0 +1,434 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 6.1 -- The Basic GUI Application</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s2.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#GUI1.1.1">JFrame and JPanel</a>
+<br>
+<a href="#GUI1.1.2">Components and Layout</a>
+<br>
+<a href="#GUI1.1.3">Events and Listeners</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 6.1</h3>
+<h2 class="section_title">The Basic GUI Application</h2>
+<hr class="break">
+   
+
+<p>
+<span class="start"><big>T</big>here are two basic types</span> of GUI program in Java:
+<span class="newword">stand-alone applications</span> and <span class="newword">applets</span>.
+An applet is a program that runs in a rectangular area on a Web page.  Applets
+are generally small programs, meant to do fairly simple things, although there is
+nothing to stop them from being very complex.  Applets were responsible for
+a lot of the initial excitement about Java when it was introduced, since they
+could do things that could not otherwise be done on Web pages.  However, there
+are now easier ways to do many of the more basic things that can be done with
+applets, and they are no longer the main focus of interest in Java.  Nevertheless,
+there are still some things that can be done best with applets, and they are
+still somewhat common on the Web.  We will look at applets in the
+<a href="../c6/s2.html">next section</a>.</p>
+   
+
+<p>A stand-alone application is a program that runs on its own, without
+depending on a Web browser.  You've been writing stand-alone applications
+all along.  Any class that has a <span class="code">main()</span> routine defines a
+stand-alone application; running the program just means executing this
+<span class="code">main()</span> routine.  However, the programs that you've seen up
+till now have been "command-line" programs, where the user and computer
+interact by typing things back and forth to each other.  A GUI program
+offers a much richer type of user interface, where the user uses a mouse
+and keyboard to interact with GUI components such as windows, menus, buttons,
+check boxes, text input boxes, scroll bars, and so on.  The main routine
+of a GUI program creates one or more such components and displays them
+on the computer screen.  Very often, that's all it does. Once a GUI
+component has been created, it follows its <b>own</b> programming---programming
+that tells it how to draw itself on the screen and how to respond to events
+such as being clicked on by the user.</p>
+
+
+<p>A GUI program doesn't have to be immensely complex.  We can, for example,
+write a very simple GUI "Hello World" program that says "Hello" to the user,
+but does it by opening a window where the greeting is displayed:</p>
+   
+
+<pre>import javax.swing.JOptionPane;
+
+public class HelloWorldGUI1 {
+   
+   public static void main(String[] args) {
+      JOptionPane.showMessageDialog( null, "Hello World!" );
+   }
+
+}</pre>   
+   
+
+<p>When this program is run, a window appears on the screen that contains the
+message "Hello World!".   The window also contains an "OK" button for the user 
+to click after reading the message.  When the user clicks this button, the 
+window closes and the program ends.  By the way, this program can be placed
+in a file named <span class="sourceref"><a href="../source/HelloWorldGUI1.java">HelloWorldGUI1.java</a></span>, compiled, and run
+just like any other Java program.</p>
+   
+
+<p>Now, this program is already doing some pretty fancy stuff.  It creates a window,
+it draws the contents of that window, and it handles the event that is generated
+when the user clicks the button.  The reason the program was so easy to write is that all
+the work is done by <span class="code">showMessageDialog()</span>, a <span class="code">static</span> method in the
+built-in class <span class="classname">JOptionPane</span>.  (Note that the source code 
+"imports" the class <span class="code">javax.swing.JOptionPane</span> to make it possible
+to refer to the <span class="classname">JOptionPane</span> class using its simple name.
+See <a href="../c4/s5.html#subroutines.5.3">Subsection&nbsp;4.5.3</a> for information about importing classes from
+Java's standard packages.)</p>
+   
+
+<p>If you want to display a message to the user in a GUI program, this is a good way to
+do it:  Just use a standard class that already knows how to do the work!  And in fact,
+<span class="classname">JOptionPane</span> is regularly used for just this purpose 
+(but as part of a larger program, usually).
+Of course, if you want to do anything serious in a GUI program, there is a lot more to learn.  To give you
+an idea of the types of things that are involved, we'll look at a short GUI program that
+does the same things as the previous program -- open a window containing a message
+and an OK button, and respond to a click on the button by ending the program -- but
+does it all by hand instead of by using the built-in <span class="classname">JOptionPane</span> class.
+Mind you, this is <b>not</b> a good way to write the program, but it will
+illustrate some important aspects of GUI programming in Java.</p>
+   
+
+<p>Here is the source code for the program.  You are not expected to understand it yet.
+I will explain how it works below, but it will take the rest of the chapter before you
+will really understand completely.  In this section, you will just get a brief overview
+of GUI programming.</p>
+   
+
+<pre>import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+public class HelloWorldGUI2 {
+   
+   private static class HelloWorldDisplay extends JPanel {
+      public void paintComponent(Graphics g) {
+         super.paintComponent(g);
+         g.drawString( "Hello World!", 20, 30 );
+      }
+   }
+   
+   private static class ButtonHandler implements ActionListener {
+      public void actionPerformed(ActionEvent e) {
+         System.exit(0);
+      }
+   }
+   
+   public static void main(String[] args) {
+      
+      HelloWorldDisplay displayPanel = new HelloWorldDisplay();
+      JButton okButton = new JButton("OK");
+      ButtonHandler listener = new ButtonHandler();
+      okButton.addActionListener(listener);
+
+      JPanel content = new JPanel();
+      content.setLayout(new BorderLayout());
+      content.add(displayPanel, BorderLayout.CENTER);
+      content.add(okButton, BorderLayout.SOUTH);
+
+      JFrame window = new JFrame("GUI Test");
+      window.setContentPane(content);
+      window.setSize(250,100);
+      window.setLocation(100,100);
+      window.setVisible(true);
+
+   }
+   
+}</pre>   
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="GUI1.1.1">6.1.1&nbsp;&nbsp;JFrame and JPanel</a>
+</h3>
+   
+
+<p>In a Java GUI program, each GUI component in the interface is represented by an object in the program.
+One of the most fundamental types of component is the <span class="newword">window</span>.  Windows have
+many behaviors.  They can be opened and closed.  They can be resized.  They have "titles" that
+are displayed in the title bar above the window.  And most important, they can contain other
+GUI components such as buttons and menus.</p>
+   
+
+<p>Java, of course, has a built-in class to represent windows.  There are actually several
+different types of window, but the most common type is represented by the <span class="classname">JFrame</span>
+class (which is included in the package <span class="code">javax.swing</span>).
+A <span class="classname">JFrame</span> is an independent window that can, for example, act as the main window
+of an application.  One of the most important things to understand is that a <span class="classname">JFrame</span>
+object comes with many of the behaviors of windows already programmed in.  In particular, it
+comes with the basic properties shared by all windows, such as a titlebar and the ability to be opened and
+closed.  Since a <span class="classname">JFrame</span> comes with these behaviors, you don't have to
+program them yourself!  This is, of course, one of the central ideas of object-oriented programming.
+What a <span class="classname">JFrame</span> doesn't come with, of course, is <span class="newword">content</span>, the 
+stuff that is contained in the window.  If you don't add any other content to a <span class="classname">JFrame</span>,
+it will just display a blank area.  You can add content either by creating a <span class="classname">JFrame</span>
+object and then adding the content to it or by creating a subclass of <span class="classname">JFrame</span> and
+adding the content in the constructor of that subclass.</p>
+   
+
+<p>The main program above declares a variable, <span class="code">window</span>, of type <span class="classname">JFrame</span>
+and sets it to refer to a new window object with the statement:</p>
+  
+
+<pre>JFrame window = new JFrame("GUI Test");</pre>
+   
+
+<p>The parameter in the constructor, "GUI Test", specifies the title that will be displayed in 
+the titlebar of the window.  This line creates the window object, but the window itself is
+not yet visible on the screen.  Before making the window visible, some of its properties are set
+with these statements:</p>
+   
+
+<pre>window.setContentPane(content);
+window.setSize(250,100);
+window.setLocation(100,100);</pre>
+   
+
+<p>The first line here sets the content of the window. (The content itself was created earlier
+in the main program.)  The second line says that the window will be 250 pixels wide and 100 pixels
+high.  The third line says that the upper left corner of the window will be 100 pixels over from
+the left edge of the screen and 100 pixels down from the top.  Once all this has been set
+up, the window is actually made visible on the screen with the command:</p>
+   
+
+<pre>window.setVisible(true);</pre>
+   
+
+<p>It might look as if the program ends at that point, and, in fact, the <span class="code">main()</span> routine
+does end.  However, the window is still on the screen and the program as a whole does not end
+until the user clicks the OK button.  Once the window was opened, a new thread was created
+to manage the graphical user interface, and that thread continues to run even after
+<span class="code">main()</span> has finished.</p>
+
+
+<hr class="break">
+   
+
+<p>The content that is displayed in a <span class="classname">JFrame</span> is called its
+<span class="newword">content pane</span>.  (In addition to its content pane, a <span class="classname">JFrame</span> can also have
+a menu bar, which is a separate thing that I will talk about later.)  A basic <span class="classname">JFrame</span>
+already has a blank content pane; you can either add things to that pane or you can replace the
+basic content pane entirely.  In my sample program, the line
+<span class="code">window.setContentPane(content)</span> replaces the original blank content pane with
+a different component.  (Remember that a "component" is just a visual element of a graphical user interface.)
+In this case, the new content is a component of type <span class="classname">JPanel</span>.</p>
+
+
+<p>
+<span class="classname">JPanel</span> is another of the fundamental classes in Swing.  The basic <span class="classname">JPanel</span>
+is, again, just a blank rectangle.  There are two ways to make a useful <span class="classname">JPanel</span>:
+The first is to <b>add other components</b> to the panel; the second is to <b>draw something</b> in
+the panel.  Both of these techniques are illustrated in the sample program. In fact, you will find two <span class="classname">JPanels</span>
+in the program:  <span class="code">content</span>, which is used to contain other components, and <span class="code">displayPanel</span>, which
+is used as a drawing surface.</p>
+   
+
+<p>Let's look more closely at <span class="code">displayPanel</span>.  This variable is of type <span class="classname">HelloWorldDisplay</span>,
+which is a nested static class inside the <span class="classname">HelloWorldGUI2</span> class.  (Nested classes were introduced
+in <a href="../c5/s7.html#OOP.7.2">Subsection&nbsp;5.7.2</a>.)  This class defines just one instance method, <span class="code">paintComponent()</span>, which
+overrides a method of the same name in the <span class="classname">JPanel</span> class:</p>
+   
+
+<pre>private static class HelloWorldDisplay extends JPanel {
+   public void paintComponent(Graphics g) {
+      super.paintComponent(g);
+      g.drawString( "Hello World!", 20, 30 );
+   }
+}</pre>
+
+
+<p>The <span class="code">paintComponent()</span> method is called by the system when a component needs to be painted
+on the screen.  In the <span class="classname">JPanel</span> class, the <span class="code">paintComponent</span> method simply
+fills the panel with the panel's background color.  The <span class="code">paintComponent()</span> method in
+<span class="classname">HelloWorldDisplay</span> begins by calling <span class="code">super.paintComponent(g)</span>.  This
+calls the version of <span class="code">paintComponent()</span> that is defined in the superclass, <span class="classname">JPanel</span>;
+that is, it fills the panel with the background color.  (See <a href="../c5/s6.html#OOP.6.2">Subsection&nbsp;5.6.2</a> for a discussion of the
+special variable <span class="code">super</span>.)  Then it calls <span class="code">g.drawString()</span> to paint
+the string "Hello World!" onto the panel.  The net result is that whenever a <span class="classname">HelloWorldDisplay</span>
+is shown on the screen, it displays the string "Hello World!".</p>
+   
+
+<p>We will often use <span class="classname">JPanels</span> in this way, as drawing surfaces.  Usually, when we do this,
+we will define a nested class that is a subclass of <span class="classname">JPanel</span> and we will write a <span class="code">paintComponent</span>
+method in that class to draw the desired content in the panel.</p>
+   
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="GUI1.1.2">6.1.2&nbsp;&nbsp;Components and Layout</a>
+</h3>
+   
+
+<p>Another way of using a <span class="classname">JPanel</span> is as a <span class="newword">container</span>
+to hold other components.  Java has many classes that define GUI components.  Before these
+components can appear on the screen, they must be <span class="newword">added</span> to a container.  In this program,
+the variable named <span class="code">content</span> refers to a <span class="classname">JPanel</span> that is
+used as a container, and two other components are added to that container.  This is done in the
+statements:</p>
+   
+
+<pre>content.add(displayPanel, BorderLayout.CENTER);
+content.add(okButton, BorderLayout.SOUTH);</pre>
+
+
+<p>Here, <span class="code">content</span> refers to an object of type <span class="classname">JPanel</span>;
+later in the program, this panel becomes the content pane of the window.
+The first component that is added to <span class="code">content</span> is <span class="code">displayPanel</span> which, as discussed above, displays
+the message, "Hello World!".  The second is <span class="code">okButton</span> which represents the button that
+the user clicks to close the window.  The variable
+<span class="code">okButton</span> is of type <span class="classname">JButton</span>, the Java class that represents 
+push buttons.</p>
+
+
+<p>The "BorderLayout" stuff in these statements has to do with
+how the two components are arranged in the container.  When components
+are added to a container, there has to be some way of deciding how those components are arranged
+inside the container.  This is called "laying out" the components in the container, and the
+most common technique for laying out components is to use a <span class="newword">layout manager</span>.
+A layout manager is an object that implements some policy for how to arrange the components
+in a container; different types of layout manager implement different policies.  One type of
+layout manager is defined by the <span class="classname">BorderLayout</span> class.  In the program, the
+statement</p>
+   
+
+<pre>content.setLayout(new BorderLayout());</pre>
+   
+
+<p>creates a new <span class="classname">BorderLayout</span> object and tells the <span class="code">content</span>
+panel to use the new object as its layout manager.  Essentially, this line determines how
+components that are added to the content panel will be arranged inside the panel.  We will
+cover layout managers in much more detail later, but for now all you need to know is
+that adding <span class="code">okButton</span> in the <span class="code">BorderLayout.SOUTH</span> position puts
+the button at the bottom of the panel, and putting <span class="code">displayPanel</span> in the
+<span class="code">BorderLayout.CENTER</span> position makes it fill any space that is not taken
+up by the button.</p>
+   
+
+<p>This example shows a general technique for setting up a GUI:  Create a container and
+assign a layout manager to it, create components and add them to the container, and
+use the container as the content pane of a window or applet. A container is itself a
+component, so it is possible that some of the components that are added to the top-level
+container are themselves containers, with their own layout managers and components.
+This makes it possible to build up complex user interfaces in a hierarchical fashion,
+with containers inside containers inside containers...</p>
+
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="GUI1.1.3">6.1.3&nbsp;&nbsp;Events and Listeners</a>
+</h3>
+   
+
+<p>The structure of containers and components sets up the physical appearance of a
+GUI, but it doesn't say anything about how the GUI <b>behaves</b>.  That is, what
+can the user do to the GUI and how will it respond?  GUIs are largely
+<span class="newword">event-driven</span>; that is, the program waits for events that are generated
+by the user's actions (or by some other cause).  When an event occurs, the program
+responds by executing an <span class="newword">event-handling method</span>.  In order to
+program the behavior of a GUI, you have to write event-handling methods to respond
+to the events that you are interested in.</p>
+   
+
+<p>The most common technique for handling events in Java is to use <span class="newword">event
+listeners</span>.  A listener is an object that includes one or more event-handling
+methods.  When an event is detected by another object, such as a button or menu,
+the listener object is notified and it responds by running the appropriate event-handling
+method.  An event is detected or generated by an object.  Another object, the listener,
+has the responsibility of responding to the event.  The event itself is actually represented
+by a third object, which carries information about the type of event, when it occurred,
+and so on.  This division of responsibilities makes it easier to organize large programs.</p>
+   
+
+<p>As an example, consider the OK button in the sample program.  When the user
+clicks the button, an event is generated.  This event is represented by an object belonging
+to the class <span class="classname">ActionEvent</span>.  The event that is generated is associated
+with the button; we say that the button is the <span class="newword">source</span> of the event.
+The listener object in this case is an object belonging to the class <span class="classname">ButtonHandler</span>,
+which is defined as a nested class inside <span class="classname">HelloWorldGUI2</span>:</p>
+
+
+<pre>private static class ButtonHandler implements ActionListener {
+   public void actionPerformed(ActionEvent e) {
+      System.exit(0);
+   }
+}</pre>
+   
+
+<p>This class implements the <span class="classname">ActionListener</span> interface -- a requirement for
+listener objects that handle events from buttons.  (Interfaces were introduced in 
+<a href="../c5/s7.html#OOP.7.1">Subsection&nbsp;5.7.1</a>.)  The event-handling method is named <span class="code">actionPerformed</span>,
+as specified by the <span class="classname">ActionListener</span> interface.  This method contains the
+code that is executed when the user clicks the button; in this case, the code is a call
+to <span class="code">System.exit()</span>, which will terminate the program.</p>
+   
+
+<p>There is one more ingredient that is necessary to get the event from the button to the
+listener object:  The listener object must <span class="newword">register</span> itself with the button
+as an event listener.  This is done with the statement:</p>
+
+
+<pre>okButton.addActionListener(listener);</pre>
+   
+
+<p>This statement tells <span class="code">okButton</span> that when the user clicks the button, the
+ActionEvent that is generated should be sent to <span class="code">listener</span>.  Without this statement,
+the button has no way of knowing that some other object would like to listen for events
+from the button.</p>
+   
+
+<p>This example shows a general technique for programming the behavior of a GUI:
+Write classes that include event-handling methods.  Create objects that belong to these
+classes and register them as listeners with the objects that will actually detect or
+generate the events.  When an event occurs, the listener is notified, and the code that you
+wrote in one of its event-handling methods is executed.  At first, this might seem like
+a very roundabout and complicated way to get things done, but as you gain experience
+with it, you will find that it is very flexible and that it goes together very well with
+object oriented programming.  (We will return to events and listeners in much more detail in
+<a href="../c6/s3.html">Section&nbsp;6.3</a> and later sections; I do not expect you to completely
+understand them at this time.)</p>
+
+
+   
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s2.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

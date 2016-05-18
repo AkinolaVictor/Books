@@ -1,0 +1,18 @@
+<html><head><title>Event Properties</title>
+</head>
+<body bgcolor="yellow"
+
+<!--Internet Explorer has srcElement property-->
+<!--Firefox has target property-->
+<!--Opera has both-->
+   <form name="form1">
+	<input type=button
+	            value="Internet Explorer"
+		        onClick="alert( event.type + ' ' + event.srcElement);">
+	<input type=button
+            value="Firefox"
+ 			onClick="alert( event.type + ' ' +event.target);">
+
+   </form>
+</body>
+</html> 

@@ -1,0 +1,454 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 4, Chapter 7</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 7.4</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 7.4:</h3>
+<p>For this problem, you will
+need to use an array of objects. The objects belong to the class
+<span class="classname">MovingBall</span>, which I have already written. You can find the source code
+for this class in the file <span class="sourceref"><a href="../source/MovingBall.java">MovingBall.java</a></span>. A <span class="classname">MovingBall</span>
+represents a circle that has an associated color, radius, direction, and speed.
+It is restricted to moving inside some rectangle in the <span class="code">(x,y)</span> plane. It will
+"bounce back" when it hits one of the sides of this rectangle. A
+<span class="classname">MovingBall</span> does not actually move by itself. It's just a collection of
+data. You have to call instance methods to tell it to update its position and
+to draw itself. The constructor for the <span class="classname">MovingBall</span> class takes the
+form</p>
+
+
+<pre>new MovingBall(xmin, xmax, ymin, ymax)</pre>
+
+
+<p>where the parameters are integers that specify the limits on the <span class="code">x</span>
+and <span class="code">y</span> coordinates of the ball.  (This sets the rectangle inside which the ball
+will stay.)  In this exercise, you will want balls
+to bounce off the sides of the applet, so you will create them with the
+constructor call</p>
+   
+
+<pre>new MovingBall(0, getWidth(), 0, getHeight())</pre> 
+
+
+<p>The constructor creates a ball that initially is colored red, has a radius of 5
+pixels, is located at the center of its range, has a random speed between 4 and
+12, and is headed in a random direction. There is one <b>problem</b> here:  You
+can't use this constructor until the width and height of the component are known.
+It would be OK to use it in the <span class="code">init()</span> method of an applet, but not
+in the constructor of an applet or panel class.  If you are using a panel class to
+display the ball, one slightly messy solution is to create the <span class="classname">MovingBall</span> 
+objects in the panel's <span class="code">paintComponent()</span> method the first time that method
+is called.  You can be sure that the size of the panel has been determined before
+<span class="code">paintComponent()</span> is called.  This is what I did in my own solution to
+this exercise.</p>
+   
+
+<p>If <span class="code">ball</span> is a variable of type
+<span class="classname">MovingBall</span>, then the following methods are available:</p>
+   
+
+<ul>
+
+<li>
+<span class="codedef">ball.draw(g)</span>  --  draw the ball in a
+graphics context. The parameter, <span class="code">g</span>, must be of type <span class="code">Graphics</span>.
+(The drawing color in <span class="code">g</span> will be changed to the color of the
+ball.)</li>
+
+<li>
+<span class="codedef">ball.travel()</span>  --  change the
+<span class="code">(x,y)-</span>coordinates of the ball by an amount equal to its speed. The
+ball has a certain direction of motion, and the ball is moved in that
+direction. Ordinarily, you will call this once for each frame of an animation,
+so the speed is given in terms of "pixels per frame". Calling this routine does
+not move the ball on the screen. It just changes the values of some instance
+variables in the object. The next time the object's <span class="code">draw()</span> method is
+called, the ball will be drawn in the new position.</li>
+
+<li>
+<span class="codedef">ball.headTowards(x,y)</span>  --  change the
+direction of motion of the ball so that it is headed towards the point
+<span class="code">(x,y)</span>. This does not affect the speed.</li>
+
+</ul>
+
+<p>These are the methods that you will need for this exercise. There are also
+methods for setting various properties of the ball, such as 
+<span class="code">ball.setColor(color)</span> for changing the color and
+<span class="code">ball.setRadius(radius)</span> for changing its
+size. See the source code for more information.
+A nice variation on the exercise would be to use random
+colors and sizes for the balls.  </p>
+
+
+<p>For this exercise, you should create an applet that shows an animation of
+balls bouncing around on a black background. Use a <span class="classname">Timer</span>
+to drive the animation.  (See <a href="../c6/s5.html#GUI1.5.1">Subsection&nbsp;6.5.1</a>.)  Use an array of
+type <span class="code">MovingBall[]</span> to hold the data for the balls.
+In addition, your program should listen for mouse and mouse motion events. 
+When the user presses the mouse or
+drags the mouse, call each of the ball's <span class="code">headTowards()</span> methods to make
+the balls head towards the mouse's location.
+My solution uses 50 balls and a time delay of 50 milliseconds for the timer.</p>
+
+
+<p>Here is my solution. Try clicking and dragging on the applet:</p>
+
+<p align="center">
+<applet code="BallisticBalls.class" width="400" height="300" archive="BallisticBalls.jar" alt=""></applet></p>
+
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>The solution to this exercise is not very long, although it 
+is rather complicated conceptually and it might take time
+to get used to working with arrays of objects.</p>
+   
+
+<p>My program uses a nested class named <span class="classname">Display</span>, defined
+as a subclass of <span class="classname">JPanel</span>, as a drawing surface where the moving
+balls are drawn.  The main class is a subclass of <span class="classname">JApplet</span>, but
+it just uses an object of type <span class="classname">Display</span> as its content pane.
+Here, I only discuss the programming of the <span class="classname">Display</span> class.</p>
+    
+
+<p>An instance variable of type
+<span class="atype">MovingBall[]</span> is needed to hold the data for the  balls. This
+instance variable can be declared as</p>
+
+
+<pre>MovingBall[] balls;</pre>
+
+
+<p>As discussed in the exercise, it is not possible to create the ball objects
+in the constructor of the <span class="classname">Display</span> class, so I create the
+array and the ball objects that it contains in <span class="code">paintComponent()</span>.
+This should only be done once, the first time <span class="code">paintComponent()</span>
+is called.  To achieve this, I test whether <span class="code">balls == null</span> at the
+beginning of the <span class="code">paintComponent()</span> method.  If not, then the
+objects have already been created; if so, then this is the first time
+<span class="code">paintComponent()</span> is being called, and the objects must be
+created.  The array object is created with a statement of the form
+"<span class="code">balls&nbsp;= new&nbsp;MovingBall[ballCount];</span>" where <span class="code">ballCount</span>
+is the number of balls. However, this just gives an array filled with <span class="code">null</span> values. There
+aren't any balls yet. Each of the balls must be created with a call to the
+constructor from the <span class="code">MovingBall</span> class:</p>
+
+
+<pre>if (balls == null) {
+   balls = new MovingBall[ ballCount ];  // Create the array
+   for (int i = 0; i &lt; balls.length; i++) {
+         // Create each of the ball objects.  The parameters specify
+         // that the balls are restricted to moving within the bounds
+         // of the panel.
+      balls[i] = new MovingBall(0, getWidth(), 0, getHeight());
+   }
+}</pre>
+
+
+<p>The <span class="code">paintComponent()</span> method must draw the balls.  I decided to
+put the code for moving the balls into the <span class="code">paintComponent()</span> method
+as well.  This means that each ball will move in its current direction of motion
+by a small amount each time <span class="code">paintComponent()</span> is called.  The
+<span class="code">i</span>-th ball can be moved by calling its <span class="code">travel()</span> method with
+the command "<span class="code">balls[i].travel()</span>". It can be drawn in the graphics
+context <span class="code">g</span> by calling its <span class="code">draw()</span> method with the command
+<span class="code">balls[i].draw(g);</span>". To apply these commands to every ball in the
+array, we need a <span class="code">for</span> loop</p>
+
+
+<pre>for (int i = 0; i &lt; balls.length; i++) {
+    balls[i].travel();
+    balls[i].draw(g);
+}</pre>
+   
+
+<p>An alternative to this would be the for-each loop:</p>
+   
+
+<pre>for ( MovingBall ball : balls ) {
+   ball.travel();
+   ball.draw(g);  
+}</pre>
+
+
+<p>Similarly, in the <span class="code">mousePressed()</span> and
+<span class="code">mouseDragged()</span> routine, we need a <span class="code">for</span> loop 
+(or for-each loop) to tell each ball
+to head towards the location of the mouse,
+<span class="code">(evt.getX(),evt.getY())</span>:</p>
+
+
+<pre>for (int i = 0; i &lt; balls.length; i++) {
+   balls[i].headTowards(evt.getX(),evt.getY());
+}</pre>
+   
+
+<p>My program uses anonymous inner classes for the mouse listener and mouse motion
+listener.  We also need a timer to drive the animation.  Since the balls move
+every time <span class="code">paintComponent()</span> is called, the response to an action event
+from the timer is simply to call <span class="code">repaint()</span>, which will in turn cause
+<span class="code">paintComponent()</span> to be called.  The action listener for the timer
+is also defined by an anonymous inner class:</p>
+
+
+<pre>Timer timer = new Timer(millisecondsPerFrame, new ActionListener() {
+       // This timer will drive the animation by calling repaint()
+       // at periodic intervals.
+   public void actionPerformed(ActionEvent evt) {
+      repaint();
+   }
+});
+timer.start();</pre>
+
+
+<p>That's really all there is to it. You might want to try variations like
+giving the balls random colors or sizes. This can be done when the ball objects
+are created in the <span class="code">paintComponent()</span> method. 
+In my program, I decided to use applet parameters to
+make it possible to customize the applet by specifying the number of balls and
+by setting the speed at which the animation plays.
+Recall that applet parameters are specified in the
+<span class="code">&lt;applet&gt;</span> tag on the web page. The following applet tag specifies
+fewer balls, moving more slowly, than the default:</p>
+
+
+<pre>&lt;applet code="BallisticBalls.class" archive="BallisticBalls.jar" width=400 height=300&gt;
+   &lt;param name="frameTime" value="25"&gt;
+   &lt;param name="ballCount" value="100"&gt;
+&lt;/applet&gt;</pre>
+
+
+<p>The <span class="code">param</span> with name "ballCount" specifies the number of balls in
+the applet. The <span class="code">param</span> with name "frameTime" specifies the number of
+milliseconds to use for each frame of the animation. You can look at the source
+code for the applet, below, to see how I use these params. The applet's
+<span class="code">init()</span> demonstrates how to get an integer value from an applet
+param.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+
+/**
+ * This applet shows an animation of red balls moving on a black
+ * background.  The balls "bounce" off the sides of the applet.
+ * The number of balls can be set as the value of an applet
+ * param with name "ballCount".  The default number is 50.
+ * The number of milliseconds per frame can be set as the value of an
+ * applet parameter with name "frameTime".  The default is 
+ * 50 milliseconds. 
+ * 
+ * If the user clicks on the applet, or drags the mouse on
+ * the applet, all the balls head towards the mouse location.
+ * 
+ * The "balls" are represented by objects of type MovingBall, which
+ * is defined in the file MovingBall.java.
+ * 
+ * This class also contains a main() routine that allows the class
+ * to be run as a stand-alone application.
+ */
+public class BallisticBalls extends JApplet {
+   
+   
+   /**
+    * main() routine simply opens a window that uses an object of
+    * type Display as its content pane, where Display is a static
+    * nested class inside this class.
+    */
+   public static void main(String[] args) {
+      JFrame window = new JFrame("Ballistic Balls");
+      Display content = new Display(50,50);
+      window.setContentPane(content);
+      window.pack();
+      window.setLocation(100,100);
+      window.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+      window.setResizable(false);  
+      window.setVisible(true);
+   }
+   
+
+   /**
+    * The init() method of the applet uses an object of type Display
+    * as the content pane of the applet. It also process the
+    * applet params named "ballCount" and "frameTime", if present,
+    * and uses their values to configure the Display.
+    */
+   public  void init() {
+      
+      int millisecondsPerFrame;  // Time between frames in animation.
+      int ballCount;             // Number of MovingBalls that are used.
+      
+      try {
+            // Try to read the value of millisecondsPerFrame from
+            // an applet parameter named "frameTime".  If it is not
+            // present or is not a legal value, an error will occur,
+            // and the default value of 50 will be used.
+         String str = getParameter("frameTime");
+         millisecondsPerFrame = Integer.parseInt(str);
+         if (millisecondsPerFrame &lt;= 0)
+            millisecondsPerFrame = 50;
+      }
+      catch (NumberFormatException e) {
+         millisecondsPerFrame = 50;  // Use default value.
+      }
+      
+      try {
+            // Try to read the value of ballCount from
+            // an applet parameter named "ballCount".  If it is not
+            // present or is not a legal value, an error will occur,
+            // and the default value of 50 will be used.
+         String str = getParameter("ballCount");
+         ballCount = Integer.parseInt(str);
+         if (ballCount &lt;= 0)
+            ballCount = 50;
+      }
+      catch (NumberFormatException e) {
+         ballCount = 50;  // Use default value.
+      }
+      
+      setContentPane( new Display(ballCount, millisecondsPerFrame) );
+      
+   } // end init();
+   
+   
+   
+   /**
+    * The nested class Display does all the work of the program.
+    * It represents the drawing area in which the balls move.
+    */
+   private static class Display extends JPanel {
+
+      MovingBall[] balls;  // An array to hold the balls.  This will be
+                           //    null until the first time paintComponent()
+                           //    is called.
+      
+      int ballCount;       // Number of balls requested in the constructor.
+      
+      
+      /**
+       * Constructor sets the background color (black) and preferred size (400-by-400)
+       * of the panel.  It sets up mouse listeners and creates and starts a timer
+       * that will drive the motion of the balls.
+       * @param ballCount  the number of balls that should be used
+       * @param millisecondsPerFrame  the time between frames; this becomes
+       *    the delay time of the timer that drives the animation.
+       */
+      Display(int ballCount, int millisecondsPerFrame) {
+         
+         setBackground(Color.BLACK);
+         setPreferredSize( new Dimension(400,400) );
+         
+         this.ballCount = ballCount;
+         
+         addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent evt) { 
+                  // The user has clicked on the panel.  Tell all the
+                  // balls to head towards the location of the mouse.
+               for (int i = 0; i &lt; balls.length; i++)
+                  balls[i].headTowards(evt.getX(), evt.getY());
+            }
+         });
+         
+         addMouseMotionListener(new MouseMotionAdapter() {
+            public void mouseDragged(MouseEvent evt) { 
+                  // The user has dragged the mouse on the panel.  Tell all
+                  // the balls to head towards the location of the mouse.
+               for (int i = 0; i &lt; balls.length; i++)
+                  balls[i].headTowards(evt.getX(), evt.getY());
+            }
+            
+         });
+         
+         Timer timer = new Timer(millisecondsPerFrame, new ActionListener() {
+                // This timer will drive the animation by calling repaint()
+                // at periodic intervals.
+            public void actionPerformed(ActionEvent evt) {
+               repaint();
+            }
+         });
+         timer.start();
+
+      } // end constructor
+      
+      
+      /**
+       * The paint component method moves all the balls along their trajectories
+       * (by calling ball.travel() for each ball) and draws all the balls  (by
+       * calling ball.draw(g) for each ball).  Thus, the balls move each time
+       * paintComponent() is called, and to drive the animation, it is only necessary
+       * to call repaint() over-and-over.
+       */
+      public void paintComponent(Graphics g) {
+         
+         super.paintComponent(g);
+         
+         if (balls == null) {
+            balls = new MovingBall[ ballCount ];  // Create the array
+            for (int i = 0; i &lt; balls.length; i++) {
+                  // Create each of the ball objects.  The parameters specify
+                  // that the balls are restricted to moving within the bounds
+                  // of the panel.  NOTE: This is done in paintComponent() 
+                  // because the size of the panel has not yet been set when the
+                  // constructor is called.
+               balls[i] = new MovingBall(0, getWidth(), 0, getHeight());
+            }
+         }
+         
+         /* Tell each ball to move.  It moves an amount depending on
+          its current direction and speed, and it will "bounce" off the
+          side of the applet if necessary.  Then the ball is told
+          to draw itself in the graphics context g.
+          */
+         
+         for (int i = 0; i &lt; balls.length; i++) {
+            balls[i].travel();
+            balls[i].draw(g);
+         }
+         
+      } // end paintComponent()
+      
+      
+   } // end nested class Display
+   
+}  // end class BallisticBalls 
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

@@ -1,0 +1,51 @@
+
+<html><title>Slide Show</title>
+<head>
+<script type="text/javascript">
+var i=0;
+var timeout;
+ function preLoadImages(){
+     if(document.images){
+       planet = new Array();  // global variable
+       planet[0]=new Image();
+ 	    planet[0]="/images/Venus.jpg";
+	    planet[1]=new Image();
+	    planet[1]="/images/Neptune.jpg";
+	    planet[2]=new Image();
+	    planet[2]="/images/Earth.jpg";
+	    planet[3]=new Image();
+        planet[3]="/images/Mars.jpg";
+	    planet[4]=new Image();
+	    planet[4]="/images/Jupiter.jpg";
+	 }
+     else{
+          alert("There are no images to preload");
+     }
+   }
+  function startSlideShow(){
+    if(i < planet.length){
+       document.images["planet_pic"].src = planet[i];
+         i++;
+     }
+     else{
+         i=0;
+        document.images["planet_pic"].src = planet[i];
+     }
+        timeout = setTimeout('startSlideShow()',1500);
+    }
+   function stopSlideShow(){
+        clearTimeout(timeout);
+    }
+   </script>
+   </head>
+   <body bgColor="black" onload = "preLoadImages()">
+    <img name="planet_pic" src="file:///C:/wamp/www/Jupiter.bmp" "height"="348""width"="545px">
+  <form>
+    <br /><br />
+    <input type=button value="Start Show"
+           onClick="return startSlideShow();"/>
+    <input type=button value="Stop Show"
+           onClick="return stopSlideShow();"/>
+  </form>
+</body>
+</html>

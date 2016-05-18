@@ -1,0 +1,236 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 1, Chapter 5</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 5.1</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 5.1:</h3>
+<p>In all versions of the
+<span class="classname">PairOfDice</span> class in <a href="../c5/s2.html">Section&nbsp;5.2</a>, the instance
+variables <span class="code">die1</span> and <span class="code">die2</span> are declared to be <span class="code">public</span>.
+They really should be private, so that they would be protected from being changed
+from outside the class. Write another version of the <span class="classname">PairOfDice</span> class
+in which the instance variables <span class="code">die1</span> and <span class="code">die2</span> are
+<span class="code">private</span>. Your class will need "getter" methods that can be used to find out the
+values of <span class="code">die1</span> and <span class="code">die2</span>. (The idea is to protect their values
+from being changed from outside the class, but still to allow the values to be
+read.) Include other improvements in the class, if you can think of any. Test
+your class with a short program that counts how many times a pair of dice is
+rolled, before the total of the two dice is equal to two.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+
+<p>The versions of the <span class="classname">PairOfDice</span> class in Section 2 differ in how the
+dice are initialized. I like the idea of initializing the dice to random
+values, so I will work with the following version:</p>
+
+
+<pre>public class PairOfDice {
+
+    public int die1;   // Number showing on the first die.
+    public int die2;   // Number showing on the second die.
+    
+    /**
+     * Constructor creates a pair of dice and rolls them so that
+     * they initially show some random value.
+     */            
+    public PairOfDice() {
+        roll();  // Call the roll() method to roll the dice.
+    }
+    
+    /**
+     * Roll the dice by setting each die to be a random number between 1 and 6.
+     */
+    public void roll() {
+        die1 = (int)(Math.random()*6) + 1;
+        die2 = (int)(Math.random()*6) + 1;
+    }
+    
+} // end class PairOfDice</pre>
+
+
+<p>After a <span class="classname">PairOfDice</span> object has just been created, the number on each
+die is definitely between 1 and 6, just like the number on a real die. Can we
+be sure that this will always be true? Not if the instance variables
+<span class="code">die1</span> and <span class="code">die2</span> are <span class="code">public</span>, since they can be changed
+from outside the class. There is nothing to stop someone from changing them to
+42 and -17 or anything else. It's not good enough to say that you're not
+supposed to do that with dice. I want an absolute guarantee that my dice
+objects can only have the values that real dice could have. By making
+<span class="code">die1</span> and <span class="code">die2</span> <span class="code">private</span>, I can have that guarantee,
+because the code that I write in the <span class="classname">PairOfDice</span> class is the only code
+that will ever affect the values of the variables.</p>
+
+
+<p>So, we will make <span class="code">die1</span> and <span class="code">die2</span> private, and add instance
+methods <span class="code">getDie1()</span> and <span class="code">getDie2()</span> to return the values of
+<span class="code">die1</span> and <span class="code">die2</span>.  These are "getter" methods that get the
+value of a member variable, and their names follow the convention that the name of
+a getter method consists of "get" followed by a capitalized version of the variable name.
+As for other improvements, I can foresee that
+people who use my class will often be interested in the total on the dice, so
+they will tend to say things like "<span class="code">dice.getDie1() + dice.getDie2()</span>" a
+lot. If this is going to be done over and over, why not provide a method in the
+class to do it? So, I will also add a method <span class="code">getTotal()</span> that returns
+the total value showing on the two dice. The complete, modified
+<span class="classname">PairOfDice</span> class is shown below.</p>
+
+
+<p>(Here is another improvement that I thought about. We could modify the
+<span class="code">roll()</span> method so that in addition to rolling the dice, it would also
+return an <span class="ptype">int</span> value giving the total on the dice. For example, this
+would allow us to replace "<span class="code">dice.roll(); val = dice.getTotal()</span>" with
+"<span class="code">val = dice.roll()</span>". Since it's legal to call a function with a
+subroutine call statement, we could still say "<span class="code">dice.roll()</span>" if we just
+want to roll the dice without recording the total immediately. However, I
+decided that it was a little clearer to leave this feature out.)</p>
+
+
+<p>The main program is easy, especially since we've done the same problem
+before without using objects (in <a href="../c3/ex1-ans.html">Exercise&nbsp;3.1</a>).
+Note how the pair of dice object is used. To test whether or not the
+total on the dice is 2, I use the test "<span class="code">while (dice.getTotal() != 2)</span>".
+To show the numbers on the two dice, I use</p>
+
+
+<pre>System.out.println("The dice come up " + dice.getDie1() 
+                                         + " and " + dice.getDie2());</pre>
+
+
+<p>Remember that a function call such as <span class="code">dice.getDie1()</span> represents a
+value, so it can be used anyplace where a literal number or variable could be
+used. There is no requirement that you assign the value returned by the
+function to a variable. You can use it directly.</p>
+
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">
+
+
+<b><span class="newcode">The Modified PairOfDice Class</span></b>
+
+     /**
+      * An object of class PairOfDice represents a pair of dice,
+      * where each die shows a number between 1 and 6.  The dice
+      * can be rolled, which randomizes the numbers showing on the
+      * dice.
+      */
+     
+     public class PairOfDice {
+     
+        private int die1;   // Number showing on the first die.
+        private int die2;   // Number showing on the second die.
+
+        /**
+         * Constructor creates a pair of dice and rolls them so that
+         * they initially show some random value.
+         */
+        public PairOfDice() {
+            roll();  // Call the roll() method to roll the dice.
+        }
+        
+        /**
+         * Roll the dice by setting each die to be a random number between 1 and 6.
+         */
+        public void roll() {
+            die1 = (int)(Math.random()*6) + 1;
+            die2 = (int)(Math.random()*6) + 1;
+        }
+                
+        /**
+         * Return the number showing on the first die.
+         */ 
+        public int getDie1() {
+           return die1;
+        }
+        
+        /**
+         * Return the number showing on the second die.
+         */ 
+        public int getDie2() {
+           return die2;
+        }
+        
+        /**
+         * Return the total showing on the two dice.
+         */ 
+        public int getTotal() {
+           return die1 + die2;
+        }
+        
+     }  // end class PairOfDice
+     
+     
+     
+<b><span class="newcode">The Main Program</span></b>
+      
+     /** 
+      * Rolls a pair of dice until the dice come up snake eyes
+      * (with a total value of 2).  Counts and reports the
+      * number of rolls.
+      */
+     
+     public class RollFor2 {
+     
+        public static void main(String[] args) {
+           
+           PairOfDice dice;  // A variable that will refer to the dice.
+           int rollCount;    // Number of times the dice have been rolled.
+     
+           dice = new PairOfDice();  // Create the PairOfDice object.
+           rollCount = 0;
+           
+           /* Roll the dice until they come up snake eyes. */
+           
+           do {
+               dice.roll();
+               System.out.println("The dice come up " + dice.getDie1() 
+                                                + " and " + dice.getDie2());
+               rollCount++;
+           } while (dice.getTotal() != 2);
+           
+           /* Report the number of rolls. */
+           
+           System.out.println("\nIt took " + rollCount + " rolls to get a 2.");
+           
+        }
+        
+     }  // end class RollFor2
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

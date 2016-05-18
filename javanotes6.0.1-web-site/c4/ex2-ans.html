@@ -1,0 +1,259 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 2, Chapter 4</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 4.2</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 4.2:</h3>
+<p>The hexadecimal digits are
+the ordinary, base-10 digits '0' through '9' plus the letters 'A' through 'F'.
+In the hexadecimal system, these digits represent the values 0 through 15,
+respectively. Write a function named <span class="code">hexValue</span> that uses a
+<span class="code">switch</span> statement to find the hexadecimal value of a given character.
+The character is a parameter to the function, and its hexadecimal value is the
+return value of the function. You should count lower case letters 'a' through
+'f' as having the same value as the corresponding upper case letters. If the
+parameter is not one of the legal hexadecimal digits, return <span class="code">-1</span> as the value of
+the function.</p>
+
+
+<p>A hexadecimal integer is a sequence of hexadecimal digits, such as 34A7,
+FF8, 174204, or FADE. If <span class="code">str</span> is a string containing a hexadecimal
+integer, then the corresponding base-10 integer can be computed as follows:</p>
+
+
+<pre>value = 0;
+for ( i = 0; i &lt; str.length();  i++ )
+   value = value*16 + hexValue( str.charAt(i) );</pre>
+
+
+<p>Of course, this is not valid if <span class="code">str</span> contains any characters that
+are not hexadecimal digits. Write a program that reads a string from the user.
+If all the characters in the string are hexadecimal digits, print out the
+corresponding base-10 value. If not, print out an error message.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>The subroutine has a parameter of type <span class="ptype">char</span> and a return value of
+type <span class="ptype">int</span>. It's easy to write the <span class="code">switch</span> statement, although
+it's tedious because of the number of cases. A little creative cut-and-paste
+can help. The <span class="code">switch</span> statement has a <span class="code">default</span> case that covers
+all the characters that are not hexadecimal digits. For such characters, a
+value of <span class="code">-1</span> is returned. The subroutine is shown in the program below, and I
+will not repeat it here.</p>
+
+
+<p>In the main program, I will use <span class="code">TextIO.getlnWord()</span> to read the
+user's input, rather than <span class="code">TextIO.getln()</span>. This has the advantage that
+it will return a non-empty string that is guaranteed not to contain any blanks.
+We still have the problem of checking whether the user's input contains only
+valid hexadecimal digits. One approach is to check all the characters first and
+use a <span class="ptype">boolean</span> variable to record whether they are all valid. We can test
+whether an individual character, <span class="code">ch</span>, is valid by checking whether
+<span class="code">hexValue(ch)</span> is <span class="code">-1</span>.  Let
+<span class="code">hex</span> be a <span class="classname">String</span> holding the user's input. Then we have:</p>
+
+
+<pre>boolean valid; // Flag variable for testing whether the string is valid.
+valid = true;  // Assume that the input is valid, and change our
+               // mind if we find an invalid character.
+for ( i = 0; i &lt; hex.length(); i++ ) {
+    if ( hexValue(hex.charAt(i)) == -1 ) {  // Character number i is bad.
+       valid = false;
+       break; // Leave the for loop, since we are now sure of the answer.
+    }
+}
+if ( valid ) {  // If the input is valid, compute and print base-10 value
+   dec = 0;
+   for ( i = 0; i &lt; hex.length(); i++ )
+      dec = 16*dec + hexValue( hex.charAt(i) );
+   System.out.println("Base-10 value is:  " + dec);
+}
+else {  // Input is not valid, print an error message
+   System.out.println("Error:  Input is not a hexadecimal number.");
+}</pre>
+
+
+<p>This works, but we have to process the string twice. We can avoid this by
+checking the input at the same time that we do the conversion. If the input is
+illegal, I want to end the program. I use the fact that a <span class="code">return</span>
+statement in the <span class="code">main()</span> routine will end the program, since it returns
+control back to the system:</p>
+
+
+<pre>dec = 0;
+for ( i = 0; i &lt; hex.length(); i++) {
+   int digit = hexValue( hex.charAt(i) );
+   if (digit == -1) {
+       TextIO.putln("Error:  Input is not a hexadecimal number.");
+       return;  // Ends the main() routine.
+   }
+   dec = 16*dec + digit;
+}
+TextIO.putln("Base-10 value:  " + dec);</pre>
+
+
+<p>This is the code that is used in the <span class="code">main()</span> routine of the program
+to do the conversion. Note that I declared <span class="code">dec</span> to be of type
+<span class="ptype">long</span> to allow bigger values than would fit in a variable of type
+<span class="ptype">int</span>. The program still has a problem if the user enters too many
+characters. (It gets the wrong answer.)</p>
+
+
+<p>It would probably be better to write a function to do the conversion of a
+string to base-10. It could return a <span class="code">-1</span> if the string is not a legal
+hexadecimal number. The <span class="code">main()</span> routine could then call the function
+and check its return value to find out whether there was an error.</p>
+   
+
+<hr class="break">
+
+
+<p>In this exercise, a special value, <span class="code">-1</span>, is returned by a subroutine
+to indicate that its parameter value is not valid.  An alternative approach would be
+to throw an <a href="../c4/s3.html#subroutines.3.5">exception</a> if the parameter value is
+not legal.  Instead of saying "<span class="code">return&nbsp;-1</span>", the <span class="code">default</span> case of
+the <span class="code">switch</span> statement in the subroutine could read:</p>
+   
+
+<pre>default:
+   throw new IllegalArgumentException("Not a legal hexadecimal digit: '" + ch + "'.");</pre>
+   
+
+<p>The <span class="code">main</span> program would then do the conversion from string to hexadecimal
+in a <span class="code">try..catch</span> statement.  If an exception occurs, the <span class="code">catch</span> part
+of the statement can print an error message:</p>
+   
+
+<pre>try {    // <span class="newcode">IF WE WERE USING AN EXCEPTION-THROWING VERSION OF hexValue</span>
+    dec = 0;
+    for ( i = 0; i &lt; hex.length(); i++ ) {
+       int digit = hexValue( hex.charAt(i) );  // Might throw an exception.
+       dec = 16*dec + digit;
+    }
+    // We get here only if no exception occurred.
+    TextIO.putln("Base-10 value:  " + dec);  
+}
+catch ( IllegalArgumentException e ) {
+   TextIO.putln("Error:  Input is not a hexadecimal number.");
+}</pre>
+
+
+<p>I think that this approach is much neater!</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+<pre class="exercisecode">
+/**
+ * This program reads a hexadecimal number input by the user and prints the 
+ * base-10 equivalent.  If the input contains characters that are not 
+ * hexadecimal numbers, then an error message is printed.
+ */
+
+public class Hex2Dec {
+ 
+    public static void main(String[] args) {
+       String hex;  // Input from user, containing a hexadecimal number.
+       long dec;    // Decimal (base-10) equivalent of hexadecimal number.
+       int i;       // A position in hex, from 0 to hex.length()-1.
+       TextIO.put("Enter a hexadecimal number: ");
+       hex = TextIO.getlnWord();
+       dec = 0;
+       for ( i = 0; i &lt; hex.length(); i++ ) {
+          int digit = hexValue( hex.charAt(i) );
+          if (digit == -1) {
+              TextIO.putln("Error:  Input is not a hexadecimal number.");
+              return;  // Ends the main() routine.
+          }
+          dec = 16*dec + digit;
+       }
+       TextIO.putln("Base-10 value:  " + dec);
+    }  // end main
+    
+    /**
+     * Returns the hexadecimal value of a given character, or -1 if it is not
+     * a valid hexadecimal digit.
+     * @param ch the character that is to be converted into a hexadecimal digit
+     * @return the hexadecimal value of ch, or -1 if ch is not 
+     *     a legal hexadecimal digit
+     */
+    static int hexValue(char ch) {
+       switch (ch) {
+          case '0':
+             return 0;
+          case '1':
+             return 1;
+          case '2':
+             return 2;
+          case '3':
+             return 3;
+          case '4':
+             return 4;
+          case '5':
+             return 5;
+          case '6':
+             return 6;
+          case '7':
+             return 7;
+          case '8':
+             return 8;
+          case '9':
+             return 9;
+          case 'a':     // Note:  Handle both upper and lower case letters.
+          case 'A':
+             return 10;
+          case 'b':
+          case 'B':
+             return 11;
+          case 'c':
+          case 'C':
+             return 12;
+          case 'd':
+          case 'D':
+             return 13;
+          case 'e':
+          case 'E':
+             return 14;
+          case 'f':
+          case 'F':
+             return 15;
+          default:
+             return -1;
+       }
+    }  // end hexValue
+
+}</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

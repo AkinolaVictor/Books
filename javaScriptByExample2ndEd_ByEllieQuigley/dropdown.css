@@ -1,0 +1,51 @@
+/* this style sheet is in a file called dropdown.css */
+    a {  font-family: verdana, arial;
+	text-decoration: none;
+	font-weight: bold;
+	margin-left: 4px; 
+      } /*link style for main menu*/
+	.linkstyle { color: #f33;}
+
+    #menu, .menu { font-stye: verdana;
+		       font-size:10pt;
+		color:black; }
+/* link style for drop-down menu */
+    #menu { position:absolute;
+        text-decoration:underline;
+	top:40px;
+	border-style:solid;
+	border-width:1px;
+	padding: 5px;
+	background-color:yellow;
+	width:75px;
+	color: black;
+	font-size: 12pt;
+	visibility:hidden; 
+	}
+    #menu2 { position:absolute;
+	        text-decoration:underline;
+		top:40px;
+		left:3.2cm;
+		border-style:solid;
+		border-width:1px;
+		padding: 5px;
+		background-color:orange;
+		width:80px;
+		color: black;
+		font-size: 12pt;
+		visibility:hidden;
+	}
+    #menu3 { position:absolute;
+		text-decoration:underline;
+		top:40px;
+		left:6.2cm;
+		border-style:solid;
+		border-width:1px;
+		padding: 5px;
+		background-color:pink;
+		width:80px;
+		color: black;
+		font-size: 12pt;
+                visibility:hidden;
+              }
+  /* End of style sheet */

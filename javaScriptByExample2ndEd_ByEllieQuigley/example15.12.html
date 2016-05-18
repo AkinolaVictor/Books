@@ -1,0 +1,28 @@
+<html><head><title>Cloning Nodes</title>
+<head>
+<style>
+  p { font-family: cursive ;
+      background-color: yellow;
+      border-style:solid;
+      border-width:2px;
+      border-color:blue;
+     }
+</style>
+<script type="text/javascript">
+
+  function addPara(mode){
+     var p1 = document.getElementById("para1");
+     var oldPara=p1.firstChild;
+     newPara=oldPara.cloneNode(mode);
+     p1.appendChild(newPara);
+ }
+  </script>
+  <body>
+   <p id="para1">
+    The news is so fabulous, I need to shout it out again! You won the   
+    lottery!<br />
+   </p>
+   <input type="button" onClick="addPara(true);"    
+       value="Clone me" />
+</body>
+</html>

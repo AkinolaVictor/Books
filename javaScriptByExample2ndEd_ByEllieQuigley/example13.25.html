@@ -1,0 +1,17 @@
+<html>
+<head><title>keypress event</title>
+    <script type="text/javascript" src="browser_info.js">
+
+    </script>
+</head>
+    <body onKeyPress="
+        if(browserName =='Firefox'){
+			  alert('The key pressed:'+ event.which +' ASCII= '+ String.fromCharCode(event.which));
+	        }
+	else if(browserName=='Microsoft Internet Explorer'||browserName=='Opera') {
+		   alert('The key pressed:'+ event.keyCode +' ASCII='+ String.fromCharCode(event.keyCode));
+		    }"  >
+   <font face = "verdana">
+	<b>Press any key on your keyboard and see what happens!</b>
+   </body>
+</html>

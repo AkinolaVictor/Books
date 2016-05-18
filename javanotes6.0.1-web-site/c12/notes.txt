@@ -1,0 +1,19 @@
+
+s4.html is from Chapter 8
+s5.html is from chapter 10
+
+
+
+There was an example in Generics, Section 5
+that runs all Runnables in a collection in parallel,
+by creating a separate thread for each Runnable.
+Move it to Chapter 12 and add a version that uses
+a limited number of threads or a thread pool.
+
+
+Add an exercise to apply problem decompostion to
+prime-counting.
+
+An exercise using an unsynchronized queue, to see
+how long it takes for an error to occur because two
+threads try to remove items at the same time.

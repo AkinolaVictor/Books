@@ -1,0 +1,39 @@
+<html><head><title>Id and Name Attributes</title>
+<body>
+<big>
+
+ <form method="get" action="http://localhost/color.php">
+  Pick a color: <br />
+        <input type ="radio" name="color" id="rbutton1"
+                  value="green"/>
+         <label for="rbutton1">Green</label>
+         <br />
+
+        <input type ="radio" name="color" id="rbutton2"
+               value="blue"/>
+         <label for="rbutton2">Blue</label>
+         <br />
+
+        <input type ="radio" name="color" id="rbutton3"
+                value="yellow"/>
+          <label for="rbutton3">Yellow</label>
+        <br />
+        <br/>
+        <input type="submit" value="Send to Server" />
+   </form>
+
+  <script type="text/javascript">
+
+       var rb1=document.getElementById("rbutton1");
+       var rb2=document.getElementById("rbutton2");
+       var rb3=document.getElementById("rbutton3");
+
+       document.write("Using the id Attribute:<br />");
+       document.write(rb1.value+"<br />");
+       document.write(rb2.value+"<br />");
+       document.write(rb3.value+"<br />");
+
+   </script>
+</big>
+</body>
+</html>

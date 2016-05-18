@@ -1,0 +1,32 @@
+
+<html><head><title>Drop Down Menus</title>
+   <script type="text/javascript">
+	function showme(form){
+		var choices="";
+		for (i=0;i< form.vacation.options.length;i++){
+			   if( form.vacation.options[i].selected == true){
+			       choices += form.vacation.options[i].text+"\n";
+			   }
+		}
+			alert(choices);
+	}
+   </script>
+<body bgcolor=lightgreen>
+   <font face=arial >
+	<b>
+	<form name="form1" onSubmit="showme(this);" />
+	Where do you want to go? <br />
+	<select name="vacation" size=4 multiple>
+		<option>Maui</option>
+		<option>Jamaica</option>
+		<option>Bali</option>
+		<option>Virgin Islands</option>
+	</select>
+	<p></p>
+    </b>
+	<input type="submit" />
+	<input type="reset" />
+	</form>
+    </font>
+</body>
+</html>

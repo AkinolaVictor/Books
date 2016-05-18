@@ -1,0 +1,202 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 1.7 -- The Internet and Beyond</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s6.html">Previous Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h3 class="section_title">Section 1.7</h3>
+<h2 class="section_title">The Internet and Beyond</h2>
+<hr class="break">
+
+
+<p>
+<span class="start"><big>C</big>omputers can be connected</span> together on <span class="newword">networks</span>. 
+A computer on a network can communicate with other
+computers on the same network by exchanging data and files or by sending and
+receiving messages. Computers on a network can even work together on a large
+computation.</p>
+
+
+<p>Today, millions of computers throughout the world are connected to a single
+huge network called the <span class="newword">Internet</span>. New computers
+are being connected to the Internet every day, both by wireless communication
+and by physical connection using technologies such as DSL, cable modems,
+or Ethernet.
+</p>
+
+
+<p>There are elaborate <span class="newword">protocols</span> for communication
+over the Internet. A protocol is simply a detailed specification of how
+communication is to proceed. For two computers to communicate at all, they must
+both be using the same protocols. The most basic protocols on the Internet are
+the <span class="newword">Internet Protocol</span> (IP), which specifies how
+data is to be physically transmitted from one computer to another, and the
+<span class="newword">Transmission Control Protocol</span> (TCP), which ensures
+that data sent using IP is received in its entirety and without error. These
+two protocols, which are referred to collectively as TCP/IP, provide a
+foundation for communication. Other protocols use TCP/IP to send specific types
+of information such as web pages, electronic mail, and data files.</p>
+
+
+<p>All communication over the Internet is in the form of <span class="newword">packets</span>.
+A packet consists of some data being sent from one
+computer to another, along with addressing information that indicates where on
+the Internet that data is supposed to go. Think of a packet as an envelope with
+an address on the outside and a message on the inside. (The message is the
+data.) The packet also includes a "return address," that is, the address of the
+sender. A packet can hold only a limited amount of data; longer messages must
+be divided among several packets, which are then sent individually over the net
+and reassembled at their destination.</p>
+
+
+<p>Every computer on the Internet has an <span class="newword">IP address</span>, 
+a number that identifies it uniquely among all the computers on
+the net. The IP address is used for addressing packets. A computer can only
+send data to another computer on the Internet if it knows that computer's IP
+address. Since people prefer to use names rather than numbers, most computers
+are also identified by names, called <span class="newword">domain names</span>.
+For example, the main computer of the Mathematics Department at Hobart and William Smith Colleges has the
+domain name math.hws.edu. (Domain names are just for convenience; your computer
+still needs to know IP addresses before it can communicate. There are computers
+on the Internet whose job it is to translate domain names to IP addresses. When
+you use a domain name, your computer sends a message to a domain name server to
+find out the corresponding IP address. Then, your computer uses the IP address,
+rather than the domain name, to communicate with the other computer.)</p>
+
+
+<p>The Internet provides a number of services to the computers connected to it
+(and, of course, to the users of those computers). These services use TCP/IP to
+send various types of data over the net. Among the most popular services are
+instant messaging, file sharing, electronic mail, and the World-Wide Web.
+Each service has its own protocols, which are used to control transmission of
+data over the network.  Each service also has some sort of user interface,
+which allows the user to view, send, and receive data through the service.</p>
+
+
+<p>For example, the email service uses a protocol known as <span class="newword">SMTP</span>
+(Simple Mail Transfer Protocol) to transfer email messages from one computer to another.
+Other protocols, such as POP and IMAP, are used to fetch messages from an email
+account so that the recipient can read them.  A person who uses email, however, 
+doesn't need to understand or even know about these protocols.  Instead, they
+are used behind the scenes by computer programs to send
+and receive email messages.  These programs provide the user with an easy-to-use user interface
+to the underlying network protocols.</p>
+
+
+<p>The World-Wide Web is perhaps the most exciting of network services.  The World-Wide Web
+allows you to request <span class="newword">pages</span> of information that are stored on computers all over
+the Internet.  A Web page can contain <span class="newword">links</span> to other pages on the
+same computer from which it was obtained or to other computers anywhere in the world.
+A computer that stores such pages of information is called a
+<span class="newword">web server</span>.  The user interface to the Web is the type of
+program known as a <span class="newword">web browser</span>.  Common web browsers include 
+Internet Explorer and Firefox.  You use a Web browser to
+request a page of information.  The browser sends a request for that page to
+the computer on which the page is stored, and when a response is received from that
+computer, the web browser displays it to you in a neatly formatted form.
+A web browser is just a user interface to the Web.  Behind the scenes, the
+web browser uses a protocol called <span class="newword">HTTP</span> (HyperText Transfer Protocol) 
+to send each page request and to receive the response from the web server.
+</p>
+
+
+<hr class="break">
+
+
+<p>Now just what, you might be thinking, does all this have to do with Java? In
+fact, Java is intimately associated with the Internet and the World-Wide Web.
+As you have seen in the previous section, special Java programs called applets
+are meant to be transmitted over the Internet and displayed on Web pages. A Web
+server transmits a Java applet just as it would transmit any other type of
+information. A Web browser that understands Java -- that is, that includes an
+interpreter for the Java Virtual Machine -- can then run the applet right on
+the Web page. Since applets are programs, they can do almost anything,
+including complex interaction with the user. With Java, a Web page becomes more
+than just a passive display of information. It becomes anything that
+programmers can imagine and implement.</p>
+
+
+<p>But applets are only one aspect of Java's relationship with the Internet,
+and not the major one.  In fact, as both Java and the Internet have matured, 
+applets have become much less important.  At the same time, however, Java has increasingly
+been used to write complex, stand-alone applications that do not depend
+on a Web browser.  Many of these programs are network-related.  For example
+many of the largest and most complex web sites use web server software
+that is written in Java.  Java includes excellent support for network protocols,
+and its platform independence makes it possible to write network programs
+that work on many different types of computer.  You will learn about Java's
+network support in <a href="../c11/index.html">Chapter&nbsp;11</a>.
+</p>   
+
+
+<p>Its association with the Internet is not Java's only advantage. But many good
+programming languages have been invented only to be soon forgotten. Java has
+had the good luck to ride on the coattails of the Internet's immense and increasing
+popularity.</p>
+
+
+<hr class="break">
+
+
+<p>As Java has matured, its applications have reached far beyond the Net.
+The standard version of Java already comes with support for many technologies, 
+such as cryptography and data compression.  Free extensions are available to support
+many other technologies such as advanced sound processing and three-dimensional
+graphics.  Complex, high-performance systems can be developed in Java.  For example,
+Hadoop, a system for large scale data processing, is written in Java.  Hadoop is
+used by Yahoo, Facebook, and other Web sites to process the huge amounts of data
+generated by their users.</p>
+
+
+<p>Furthermore, Java is not restricted to use on traditional computers.  Java can
+be used to write programs for many smartphones (though not for the iPhone).
+It is the primary development language for Blackberries and Android-based 
+phones such as the Verizon Droid.  Mobile devices such as smartphones use
+a version of Java called Java ME ("Mobile Edition").  It's the same basic language
+as the standard edition, but the set of classes that is included as a standard
+part of the language is different.  Java ME is also the programming language
+for the Amazon Kindle eBook reader and for interactive features on Blu-Ray
+video disks.</p>
+
+
+<p>At this time, Java certainly ranks as one of the most widely used programming
+languages. It is a good choice for almost any programming project that
+is meant to run on more than one type of computing device, and is
+a reasonable choice even for many programs that will run on only one device.
+It is probably the most widely taught language at Colleges and Universities.
+It is similar enough to other popular languages, such as C, C++, and C#, that
+knowing it will give you a good start on learning those languages as well.
+Overall, learning Java is a great starting point on the road to becoming an
+expert programmer.  I hope you enjoy the journey!</p>
+
+
+<hr>
+<div align="center">
+<b><small>End of Chapter 1</small></b>
+</div>
+<hr>
+<p align="center">
+<applet code="Moire.class" width="210" height="210" alt=""></applet></p>
+
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s6.html">Previous Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

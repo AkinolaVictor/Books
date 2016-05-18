@@ -1,0 +1,239 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 4, Chapter 2</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 2.4</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 2.4:</h3>
+<p>Write a program that helps
+the user count his change. The program should ask how many quarters the user
+has, then how many dimes, then how many nickels, then how many pennies. Then
+the program should tell the user how much money he has, expressed in
+dollars.</p>
+   
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+
+<p>The program will need variables to represent the number of each type of
+coin. Since the number of coins has to be an integer, these variables are of
+type <span class="ptype">int</span>. I'll call the variables <span class="code">quarters</span>, <span class="code">dimes</span>,
+<span class="code">nickels</span>, and <span class="code">pennies</span>.</p>
+
+
+<p>The total value of the coins, when expressed in dollars, can be a
+non-integer number such as 1.57 or 3.02. Since the total value in dollars is a
+real number, I will use a variable of type <span class="ptype">double</span> to represent it. The
+variable is named <span class="code">dollars</span>
+</p>
+
+
+<p>The outline of the program is clear enough:</p>
+
+
+<pre>Declare the variables.
+Ask the user for the number of each type of coin, and read the responses.
+Compute the total value of the coins, in dollars.
+Display the result to the user.</pre>
+
+
+<p>The function <span class="code">TextIO.getlnInt()</span> can be used to read each of the
+user's responses. The alternative function <span class="code">TextIO.getInt()</span> could also
+be used, but it is less safe. Suppose, for example, that the user responds to
+the request to type in the number of quarters by entering "7 quarters". After
+<span class="code">TextIO.getlnInt()</span> reads the number 7, it will discard the extra input
+"quarters". <span class="code">TextIO.getInt()</span> will read the 7 correctly, but the extra
+input is not discarded. Later, when the program tries to read the number of
+dimes, it sees the left-over input and tries to read that, without giving the
+user a chance to type in another response. You might want to experiment and see
+what happens if you change <span class="code">getlnInt()</span> to <span class="code">getInt()</span>. (Of
+course, if the user's response is "I have 7 quarters" or "seven", then you are
+out of luck in any case.)</p>
+
+
+<p>Since one quarter is worth 0.25 dollars, the number of dollars in N quarters
+is 0.25*N. Similarly, a dime is worth 0.10 dollars, a nickel is 0.05 dollars,
+and a penny is 0.01 dollars. So, to get the total value of all the user's
+coins, I just have to add up <span class="code">(0.25*quarters) + (0.10*dimes) +
+(0.05*nickels) + (0.01*pennies)</span>. This value is assigned to the variable,
+<span class="code">dollars</span>, and that is the result that is displayed to the user.
+Formatted output, using <span class="code">TextIO.putf</span> or <span class="code">System.out.printf</span>
+can be used to specify that the output value should be printed with two
+digits after the decimal point.</p>
+
+
+<p>Alternatively, I could first have computed the total number of cents in all
+the coins, and then divided by 100 to convert the amount into dollars:</p>
+
+
+<pre>int totalCents;   // Total number of cents in the coins.
+
+totalCents = 25*quarters + 10*dimes + 5*nickels + pennies;
+dollars = totalCents/100.0;</pre>
+
+
+<p>Since <span class="code">totalCents</span> is of type <span class="ptype">int</span>, it is essential here that
+I compute <span class="code">dollars</span> as <span class="code">totalCents/100.0</span> and not as
+<span class="code">totalCents/100</span>. The value computed by <span class="code">totalCents/100</span> is an
+integer. For example, if <span class="code">totalCents</span> is 397, then
+<span class="code">totalCents/100</span> is 3. Using <span class="code">totalCents/100.0</span> forces the
+computer to compute the answer as a real number, giving 3.97.</p>
+
+
+<p>A second version of the program, using a <span class="classname">Scanner</span> for input,
+is also given.  (See <a href="../c2/s4.html#basics.4.6">Subsection&nbsp;2.4.6</a>.)  A <span class="classname">Scanner</span>
+named <span class="code">stdio</span> is created, and integers are read using the function
+<span class="code">stdio.nextInt()</span>.  This method corresponds to <span class="code">TextIO.getInt()</span>,
+not <span class="code">TextIO.getlnInt()</span>.  To get something equivalent to <span class="code">TextIO.getlnInt()</span>,
+we can follow the call to <span class="code">stdio.nextInt()</span> with a call to <span class="code">stdio.nextLine()</span>.
+The call to <span class="code">stdio.nextLine()</span> will read on discard any extra characters on the
+same line after the integer that was read by <span class="code">stdio.nextInt()</span>.</p>
+
+
+<p>In the second version of the program, in order to avoid any dependence on <span class="classname">TextIO</span>,
+I also use <span class="code">System.out</span> instead of <span class="code">TextIO</span> for output.</p>
+
+   
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">public class CountChange {
+  
+   /*  This program will add up the value of a number of quarters,
+       dimes, nickels, and pennies.  The number of each type of 
+       coin is input by the user.  The total value is reported
+       in dollars.  This program depends on the non-standard class,
+       TextIO.
+   */
+
+   public static void main(String[] args) {
+   
+      int quarters;   // Number of quarters, to be input by the user.
+      int dimes;      // Number of dimes, to be input by the user.
+      int nickels;    // Number of nickels, to be input by the user.
+      int pennies;    // Number of pennies, to be input by the user.
+      
+      double dollars; // Total value of all the coins, in dollars.
+      
+      /* Ask the user for the number of each type of coin. */
+      
+      TextIO.put("Enter the number of quarters:  ");
+      quarters = TextIO.getlnInt();
+      
+      TextIO.put("Enter the number of dimes:     ");
+      dimes = TextIO.getlnInt();
+      
+      TextIO.put("Enter the number of nickels:   ");
+      nickels = TextIO.getlnInt();
+      
+      TextIO.put("Enter the number of pennies:   ");
+      pennies = TextIO.getlnInt();
+      
+      /* Add up the values of the coins, in dollars. */
+      
+      dollars = (0.25 * quarters) + (0.10 * dimes) 
+                          + (0.05 * nickels) + (0.01 * pennies); 
+      
+      /* Report the result back to the user. */
+      
+      TextIO.putln();
+      TextIO.put("The total in dollars is $");
+      TextIO.putf("%1.2f", dollars);  // Formatted output!
+      TextIO.putln();
+   
+   }  // end main()
+ 
+}  // end class
+</pre>
+
+
+
+<p>
+<b><u>A version using <span class="classname">Scanner</span> for input:</u></b>
+
+</p>
+
+
+<pre class="exercisecode">
+<span class="newcode">import java.util.Scanner;</span>
+
+public class CountChange {
+  
+   public static void main(String[] args) {
+   
+      int quarters;   // Number of quarters, to be input by the user.
+      int dimes;      // Number of dimes, to be input by the user.
+      int nickels;    // Number of nickels, to be input by the user.
+      int pennies;    // Number of pennies, to be input by the user.
+      
+      <span class="newcode">Scanner stdio = new Scanner( System.in );</span>
+      
+      double dollars; // Total value of all the coins, in dollars.
+      
+      /* Ask the user for the number of each type of coin. */
+      
+      System.out.print("Enter the number of quarters:  ");
+      quarters = <span class="newcode">stdio.nextInt();
+      stdio.nextLine();</span>
+      
+      System.out.print("Enter the number of dimes:     ");
+      dimes = <span class="newcode">stdio.nextInt();
+      stdio.nextLine();</span>
+      
+      System.out.print("Enter the number of nickels:   ");
+      nickels = <span class="newcode">stdio.nextInt();
+      stdio.nextLine();</span>
+      
+      System.out.print("Enter the number of pennies:   ");
+      pennies = <span class="newcode">stdio.nextInt();
+      stdio.nextLine();</span>
+      
+      /* Add up the values of the coins, in dollars. */
+      
+      dollars = (0.25 * quarters) + (0.10 * dimes) 
+                          + (0.05 * nickels) + (0.01 * pennies); 
+      
+      /* Report the result back to the user. */
+      
+      System.out.println();
+      System.out.print("The total in dollars is $");
+      System.out.printf("%1.2f", dollars);  // Formatted output!
+      System.out.println();
+   
+   }  // end main()
+ 
+}  // end class</pre>
+
+   
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

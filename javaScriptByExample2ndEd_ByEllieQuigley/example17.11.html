@@ -1,0 +1,21 @@
+
+<html><head><title>The dot Metacharacter</title>
+</head>
+<body>
+   <script type="text/javascript">
+		var textString="Norma Jean";
+		var reg_expression = /N..ma/;
+
+		var result=reg_expression.test(textString);  // Returns true
+		                                             // or false
+		document.write(result+"<br />");
+		if ( reg_expression.test(textString)){       //  if (result)
+			document.write("<b>The reg_ex /N..ma/ matched the string\""+
+			textString +"\".<br>");
+		}
+		else{
+			document.write("No Match!");
+		}
+   </script>
+</body>
+</html>

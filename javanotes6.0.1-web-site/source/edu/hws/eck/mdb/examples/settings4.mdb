@@ -1,0 +1,8 @@
+<?xml version='1.0'?>
+<mandelbrot_settings version='edu.hws.eck.mdb/1.0'>
+<limits value='0.2726031397857463,0.2726031483804942,0.0053565210436868176,0.005356527489747753'/>
+<imagesize value='800,600'/>
+<maxiterations value='7500'/>
+<palettetype value='Spectrum'/>
+<palettelength value='2500'/>
+</mandelbrot_settings>

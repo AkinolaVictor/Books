@@ -1,0 +1,46 @@
+<html><head><title>Scrolling Text</title>
+	<style type="text/css">
+		#div1 { background-color:darkgreen;
+			color: white;
+			font-family:courier;
+			font-weight: bold;
+			position:absolute;
+			border-style:groove;
+			border-color:white;
+			padding-left:10px;
+			top:20px;
+			left:10px;
+			width: 595px; height: 6%;
+			overflow: hidden;
+		}
+		img { position: absolute; top: 50px;left:60px;
+			  border-style:solid;border-color:"darkgreen";}
+       		body { background-color:#669966;}
+	</style>
+   <script type="text/javascript">
+	/*Modification of text box marquee by Dave Methvin,
+	  Windows Magazine */
+		var scroll_speed = 200;   // 200 milliseconds
+		var chars = 1;
+                var divElement;
+		window.onload=function() {
+			divElement=document.getElementById("div1");
+		}
+		function scroller() {
+			window.setTimeout('scroller()',scroll_speed);
+			var msg=divElement.firstChild.nodeValue;
+			divElement.firstChild.nodeValue = msg.substring(chars)
+                        + msg.substring(0,chars);
+		 }
+		scroller();
+  </script>
+</head>
+<body>
+	<img src="marines.bmp" width="450" length="500">
+	<div id="div1">
+			The latest news from Afghanistan is not good tonight. Snow and
+			mud are hindering our troops. Terrorist plots continue to add
+			to the instability in the region...
+	</div>
+</body>
+</html>

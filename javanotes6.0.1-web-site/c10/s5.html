@@ -1,0 +1,890 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 10.5 -- Writing Generic Classes and Methods</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s4.html">Previous Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#generics.5.1">Simple Generic Classes</a>
+<br>
+<a href="#generics.5.2">Simple Generic Methods</a>
+<br>
+<a href="#generics.5.3">Type Wildcards</a>
+<br>
+<a href="#generics.5.4">Bounded Types</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 10.5</h3>
+<h2 class="section_title">Writing Generic Classes and Methods</h2>
+<hr class="break">
+   
+
+<p>
+<span class="start"><big>S</big>o far in this chapter,</span> you have learned
+about using the generic classes and methods that are part of the
+Java Collection Framework.  Now, it's time to learn how to write
+new generic classes and methods from scratch.  Generic programming produces
+highly general and reusable code -- it's very useful for people
+who write reusable software libraries to know how to do generic
+programming, since it enables them to write code that can be used in
+many different situations.  Not every programmer needs to write reusable 
+software libraries, but every programmer should know at least a little
+about how to do it.  In fact, just to read the JavaDoc documentation for
+Java's standard generic classes, you need to know some of the syntax that is
+introduced in this section.</p>
+
+
+<p>I will not cover every detail of generic programming in Java in this
+section, but the material presented here should be sufficient to cover the
+most common cases.</p>
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="generics.5.1">10.5.1&nbsp;&nbsp;Simple Generic Classes</a>
+</h3>
+   
+
+<p>Let's start with an example that illustrates the motivation for generic
+programming.  In <a href="../c10/s2.html#generics.2.1">Subsection&nbsp;10.2.1</a>, I remarked that it would
+be easy to use a <span class="classname">LinkedList</span> to implement a queue.
+(Queues were introduced in <a href="../c9/s3.html#recursion.3.2">Subsection&nbsp;9.3.2</a>.)
+To ensure that the only operations that are performed on the list are
+the queue operations <span class="code">enqueue</span>, <span class="code">dequeue</span>, and
+<span class="code">isEmpty</span>, we can create a new class that contains the
+linked list as a private instance variable.  To implement
+queues of strings, for example, we can define the class:</p>
+   
+
+<pre>class QueueOfStrings {
+   private LinkedList&lt;String&gt; items = new LinkedList&lt;String&gt;();
+   public void enqueue(String item) {
+      items.addLast(item);
+   }
+   public String dequeue() {
+      return items.removeFirst();
+   }
+   public boolean isEmpty() {
+      return (items.size() == 0);
+   }
+}</pre>
+   
+
+<p>This is a fine and useful class.  But, if this is how we write queue classes, and
+if we want queues of <span class="classname">Integers</span>
+or <span class="classname">Doubles</span> or <span class="classname">JButtons</span> or any other type,
+then we will have to write a different class for each type.  The code for all of these
+classes will be almost identical, which seems like a lot of redundant programming.
+To avoid the redundancy, we can write a <b>generic</b> <span class="classname">Queue</span>
+class that can be used to define queues of any type of object.</p>
+  
+
+<p>The syntax for writing the generic class is straightforward: We replace the specific
+type <span class="classname">String</span> with a type parameter such as&nbsp;<span class="classname">T</span>,
+and we add the type parameter to the name of the class:</p>
+
+
+<pre>class Queue&lt;T&gt; {
+   private LinkedList&lt;T&gt; items = new LinkedList&lt;T&gt;();
+   public void enqueue(T item) {
+      items.addLast(item);
+   }
+   public T dequeue() {
+      return items.removeFirst();
+   }
+   public boolean isEmpty() {
+      return (items.size() == 0);
+   }
+}</pre>
+   
+
+<p>Note that within the class, the type parameter <span class="classname">T</span> is used
+just like any regular type name.  It's used to declare the return type for
+<span class="code">dequeue</span>, as the type of the formal parameter <span class="code">item</span> in
+<span class="code">enqueue</span>, and even as the actual type parameter in <span class="classname">LinkedList&lt;T&gt;</span>.
+Given this class definition, we can use parameterized types such
+as <span class="classname">Queue&lt;String&gt;</span> and <span class="classname">Queue&lt;Integer&gt;</span>
+and <span class="classname">Queue&lt;JButton&gt;</span>.  That is, the <span class="classname">Queue</span> class
+is used in exactly the same way as built-in generic classes like <span class="classname">LinkedList</span>
+and <span class="classname">HashSet</span>.</p>
+   
+
+<p>Note that you don't have to use "T" as the name of the type parameter in the
+definition of the generic class.  Type parameters are like formal parameters in subroutines.
+You can make up any name you like in the <b>definition</b> of the class.  The
+name in the definition will be replaced by an actual type name when the class
+is used to declare variables or create objects.  If you prefer to use a more
+meaningful name for the type parameter, you might define the <span class="classname">Queue</span>
+class as:</p>
+      
+
+<pre>class Queue&lt;<span class="newcode">ItemType</span>&gt; {
+   private LinkedList&lt;<span class="newcode">ItemType</span>&gt; items = new LinkedList&lt;<span class="newcode">ItemType</span>&gt;();
+   public void enqueue(<span class="newcode">ItemType</span> item) {
+      items.addLast(item);
+   }
+   public <span class="newcode">ItemType</span> dequeue() {
+      return items.removeFirst();
+   }
+   public boolean isEmpty() {
+      return (items.size() == 0);
+   }
+}</pre>
+   
+
+<p>Changing the name from "<span class="code">T</span>" to "<span class="code">ItemType</span>" has absolutely no effect on the meaning
+of the class definition or on the way that <span class="classname">Queue</span> is used.</p>
+   
+
+<p>Generic interfaces can be defined in a similar way.
+It's also easy to define generic classes and interfaces that have two or more type parameters,
+as is done with the standard interface <span class="classname">Map&lt;T,S&gt;</span>. 
+A typical example is the definition of a "Pair" that contains two objects,
+possibly of different types.  A simple version of such a class can be defined as:</p>
+
+
+<pre>class Pair&lt;T,S&gt; {
+   public T first;
+   public S second;
+   public Pair( T a, S b ) {  // Constructor.
+      first = a;
+      second = b;
+   }
+}</pre>
+   
+
+<p>This class can be used to declare variables and create objects such as:</p>
+   
+
+<pre>Pair&lt;String,Color&gt; colorName = new Pair&lt;String,Color&gt;("Red", Color.RED);
+Pair&lt;Double,Double&gt; coordinates = new Pair&lt;Double,Double&gt;(17.3,42.8);</pre>
+   
+
+<p>Note that in the definition of the constructor in this class, the name "<span class="code">Pair</span>"
+does <b>not</b> have type parameters.  You might have expected "<span class="code">Pair&lt;T,S&gt;</span>.
+However, the name of the class is "<span class="code">Pair</span>", not "<span class="code">Pair&lt;T,S&gt;</span>,
+and within the definition of the class, "<span class="code">T</span>" and "<span class="code">S</span>" are used 
+as if they are the names of specific, actual types.  Note in any case that type
+parameters are <b>never</b> added to the names of methods or constructors, only
+to the names of classes and interfaces.</p>
+   
+
+   
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="generics.5.2">10.5.2&nbsp;&nbsp;Simple Generic Methods</a>
+</h3>
+   
+
+<p>In addition to generic classes, Java also has generic methods.  An example
+is the method <span class="code">Collections.sort()</span>, which can sort collections of
+objects of any type.  To see how to write generic methods, let's start
+with a non-generic method for counting the number of times that a
+given string occurs in an array of strings:</p>
+   
+
+<pre>/**
+ * Returns the number of times that itemToCount occurs in list.  Items in the
+ * list are tested for equality using itemToCount.equals(), except in the
+ * special case where itemToCount is null.
+ */
+public static int countOccurrences(String[] list, String itemToCount) {
+   int count = 0;
+   if (itemToCount == null) {
+      for ( String listItem : list )
+         if (listItem == null)
+            count++;
+   }
+   else {
+      for ( String listItem : list )
+         if (itemToCount.equals(listItem))
+            count++;
+   }
+   return count;
+}</pre>
+ 
+
+<p>Once again, we have some code that works for type <span class="classname">String</span>,
+and we can imagine writing almost identical code to work with other types of objects.
+By writing a generic method, we get to write a single method definition that will
+work for objects of any type.  We need to replace the specific type <span class="classname">String</span>
+in the definition of the method with the name of a type parameter, such as&nbsp;<span class="classname">T</span>.
+However, if that's the only change we make, the compiler will think that "T" is the name
+of an actual type, and it will mark it as an undeclared identifier.  We need some way of
+telling the compiler that "T" is a type parameter.  That's what the "<span class="code">&lt;T&gt;</span>"
+does in the definition of the generic class "<span class="code">class&nbsp;Queue&lt;T&gt;&nbsp;{&nbsp;...</span>".
+For a generic method, the "<span class="code">&lt;T&gt;</span>" goes just before the name of the return
+type of the method:</p>
+
+
+<pre>public static &lt;T&gt; int countOccurrences(T[] list, T itemToCount) {
+   int count = 0;
+   if (itemToCount == null) {
+      for ( T listItem : list )
+         if (listItem == null)
+            count++;
+   }
+   else {
+      for ( T listItem : list )
+         if (itemToCount.equals(listItem))
+            count++;
+   }
+   return count;
+}   
+</pre>
+   
+
+<p>The "<span class="code">&lt;T&gt;</span>" marks the method as being generic and specifies the name
+of the type parameter that will be used in the definition.  Of course, the name of the
+type parameter doesn't have to be "T"; it can be anything.  (The "<span class="code">&lt;T&gt;</span>"
+looks a little strange in that position, I know, but it had to go somewhere and
+that's just where the designers of Java decided to put it.)</p>
+   
+
+<p>Given the generic method definition, we can apply it to objects of any type.
+If <span class="code">wordList</span> is a variable of type
+<span class="atype">String[]</span> and <span class="code">word</span> is a variable of type <span class="classname">String</span>,
+then</p>
+   
+
+<pre>int ct = countOccurrences( wordList, word );</pre>
+   
+
+<p>will count the number of times that <span class="code">word</span> occurs in <span class="code">wordList</span>.
+If <span class="code">palette</span> is a variable of type <span class="atype">Color[]</span> and
+<span class="code">color</span> is a variable of type <span class="classname">Color</span>, then</p>
+
+
+<pre>int ct = countOccurrences( palette, color );</pre>
+   
+
+<p>will count the number of times that <span class="code">color</span> occurs in <span class="code">palette</span>.
+If <span class="code">numbers</span> is a variable of type <span class="atype">Integer[]</span>, then</p>
+
+
+<pre>int ct = countOccurrences( numbers, 17 );</pre>
+   
+
+<p>will count the number of times that <span class="code">17</span> occurs in <span class="code">numbers</span>.
+This last example uses autoboxing; the 17 is automatically converted to a value of
+type <span class="classname">Integer</span>, as if we had said
+"<span class="code">countOccurrences( numbers, new&nbsp;Integer(17)&nbsp;)</span>".  Note that,
+since generic programming in Java applies only to objects, we <b>cannot</b> use
+<span class="code">countOccurrences</span> to count the number of occurrences of 17 in an
+array of type <span class="atype">int[]</span>.</p>
+   
+
+<p>A generic method can have one or more type parameters, such as the "T" in
+<span class="code">countOccurrences</span>.  Note that when a generic method is used, 
+as in the function call "<span class="code">countOccurrences(wordlist, word)</span>", 
+there is no explicit mention of the type that is substituted for the
+type parameter.  The compiler deduces the type from the types of the
+actual parameters in the method call.  Since <span class="code">wordlist</span> is
+of type <span class="atype">String[]</span>, the compiler can tell that in
+"<span class="code">countOccurrences(wordlist, word)</span>", the type that replaces
+<span class="classname">T</span> is <span class="classname">String</span>.  This contrasts
+with the use of generic classes, as in "<span class="code">new&nbsp;Queue&lt;String&gt;()</span>",
+where the type parameter is specified explicitly.</p>
+   
+
+<p>The <span class="code">countOccurrences</span> method operates on an array.
+We could also write a similar method to count occurrences of an object
+in any collection:</p>
+   
+
+<pre>public static &lt;T&gt; int countOccurrences(Collection&lt;T&gt; collection, T itemToCount) {
+   int count = 0;
+   if (itemToCount == null) {
+      for ( T item : collection )
+         if (item == null)
+            count++;
+   }
+   else {
+      for ( T item : collection )
+         if (itemToCount.equals(item))
+            count++;
+   }
+   return count;
+}</pre>
+   
+
+<p>Since <span class="classname">Collection&lt;T&gt;</span> is itself a generic type,
+this method is very general.  It can operate on an <span class="classname">ArrayList</span>
+of <span class="classname">Integers</span>, a <span class="classname">TreeSet</span> of <span class="classname">Strings</span>,
+a <span class="classname">LinkedList</span> of <span class="classname">JButtons</span>,&nbsp;....</p>
+
+
+   
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="generics.5.3">10.5.3&nbsp;&nbsp;Type Wildcards</a>
+</h3>
+   
+
+<p>There is a limitation on the sort of generic classes and methods that we have
+looked at so far:  The type parameter in our examples, usually named <span class="classname">T</span>,
+can be any type at all.  This is OK in many cases, but it means that the only things that
+you can do with <span class="classname">T</span> are things that can be done with <b>every</b> type,
+and the only things that you can do with objects of type <span class="classname">T</span>
+are things that you can do with <b>every</b> object.  With the techniques that we have
+covered so far, you can't, for example, write a generic method that compares
+objects with the <span class="code">compareTo()</span> method, since that
+method is not defined for all objects.  The <span class="code">compareTo()</span> method is
+defined in the <span class="classname">Comparable</span> interface.  What we need is a
+way of specifying that a generic class or method only applies to objects of
+type <span class="classname">Comparable</span> and not to arbitrary objects.  With that
+restriction, we should be free to use <span class="code">compareTo()</span> in the definition of
+the generic class or method.</p>
+
+
+<p>There are two different but related syntaxes for putting restrictions on the
+types that are used in generic programming.  One of these is <span class="newword">bounded type parameters</span>,
+which are used as formal type parameters in generic class and method definitions;
+a bounded type parameter would be used in place of the simple type parameter <span class="classname">T</span>
+in "<span class="code">class GenericClass&lt;T&gt;&nbsp;...</span>" or in "<span class="code">public static
+&lt;T&gt; void genericMethod(...</span>".  The second syntax is <span class="newword">wildcard
+types</span>, which are used as type parameters in the declarations of
+variables and of formal parameters in method definitions; a wildcard type could be used in
+place of the type parameter <span class="classname">String</span> in the declaration
+statement "<span class="code">List&lt;String&gt;&nbsp;list;</span>" or in the formal parameter list
+"<span class="code">void max(Collection&lt;String&gt;&nbsp;c)</span>".  We will look at
+wildcard types first, and we will return to the topic of bounded types later
+in this section.</p>
+   
+
+<p>Let's start with a simple example in which a wildcard type is useful.
+Suppose that <span class="classname">Shape</span> is
+a class that defines a method <span class="code">public void draw()</span>, and suppose that
+<span class="classname">Shape</span> has subclasses such as <span class="classname">Rect</span> 
+and <span class="classname">Oval</span>.  Suppose that we want a method that can draw
+all the shapes in a collection of <span class="classname">Shapes</span>.  We might try:</p>
+   
+
+<pre>public static void drawAll(Collection&lt;Shape&gt; shapes) {
+   for ( Shape s : shapes )
+      s.draw();
+}</pre>
+
+
+<p>This method works fine if we apply it to a variable of type
+<span class="classname">Collection&lt;Shape&gt;</span>, or <span class="classname">ArrayList&lt;Shape&gt;</span>,
+or any other collection class with type parameter <span class="classname">Shape</span>.
+Suppose, however, that you have a list of <span class="classname">Rects</span> stored
+in a variable named <span class="code">rectangles</span> of type <span class="classname">Collection&lt;Rect&gt;</span>.
+Since <span class="classname">Rects</span> are <span class="classname">Shapes</span>, you might
+expect to be able to call <span class="code">drawAll(rectangles)</span>.  Unfortunately, this
+will not work; a collection of <span class="classname">Rects</span> is <b>not</b> considered
+to be a collection of <span class="classname">Shapes</span>!  The variable <span class="code">rectangles</span>
+cannot be assigned to the formal parameter <span class="code">shapes</span>.  The solution is to
+replace the type parameter "<span class="code">Shape</span>" in the declaration of
+<span class="code">shapes</span> with the wildcard type "<span class="code">?&nbsp;extends&nbsp;Shape</span>":
+</p>
+
+
+<pre>public static void drawAll(Collection&lt;<span class="newcode">? extends Shape</span>&gt; shapes) {
+   for ( Shape s : shapes )
+      s.draw();
+}</pre>
+
+
+<p>The wildcard type "<span class="code">?&nbsp;extends&nbsp;Shape</span>" means roughly
+"any type that is either equal to <span class="classname">Shape</span> or 
+that is a subclass of <span class="classname">Shape</span>".  When the
+parameter <span class="code">shapes</span> is declared to be of type
+<span class="classname">Collection&lt;?&nbsp;extends&nbsp;Shape&gt;</span>, it
+becomes possible to call the <span class="code">drawAll</span> method with an actual
+parameter of type <span class="classname">Collection&lt;Rect&gt;</span> since 
+<span class="classname">Rect</span> is a subclass of <span class="classname">Shape</span>
+and therefore matches the wildcard.
+We could also pass actual parameters to <span class="code">drawAll</span> of type
+<span class="classname">ArrayList&lt;Rect&gt;</span> or <span class="classname">Set&lt;Oval&gt;</span>
+or <span class="classname">List&lt;Oval&gt;</span>.  And we can still pass
+variables of type <span class="classname">Collection&lt;Shape&gt;</span>
+or <span class="classname">ArrayList&lt;Shape&gt;</span>, since the class
+<span class="classname">Shape</span> itself matches "<span class="code">?&nbsp;extends&nbsp;Shape</span>".
+We have greatly increased the usefulness of the method by using the
+wildcard type.</p>
+
+
+<p>(Although it is not essential, you might be interested in knowing <i>why</i>
+Java does not allow a collection of <span class="classname">Rects</span> to be used
+as a collection of <span class="classname">Shapes</span>, even though every <span class="classname">Rect</span>
+is considered to be a <span class="classname">Shape</span>.  Consider the rather silly
+but legal method that adds an oval to a list of shapes:</p>
+   
+
+<pre>static void addOval(List&lt;Shape&gt; shapes, Oval oval) {
+   shapes.add(oval);
+}</pre>
+   
+
+<p>Suppose that <span class="code">rectangles</span> is of type <span class="classname">List&lt;Rect&gt;</span>.
+It's illegal to call <span class="code">addOval(rectangles,oval)</span>, because of the rule that
+a list of <span class="classname">Rects</span> is not a list of <span class="classname">Shapes</span>.
+If we dropped that rule, then <span class="code">addOval(rectangles,oval)</span> would be legal,
+and it would add an <span class="classname">Oval</span> to a list of <span class="classname">Rects</span>.
+This would be bad: Since <span class="classname">Oval</span> is not a subclass of <span class="classname">Rect</span>,
+an <span class="classname">Oval</span> is <b>not</b> a <span class="classname">Rect</span>, 
+and a list of <span class="classname">Rects</span> should never be able to contain an <span class="classname">Oval</span>.
+The method call <span class="code">addOval(rectangles,oval)</span> does not make sense and
+<b>should</b> be illegal, so the rule that a collection of <span class="classname">Rects</span> 
+is not a collection of <span class="classname">Shapes</span> is a good rule.)</p>
+   
+
+<p>As another example, consider the method <span class="code">addAll()</span> from the
+interface <span class="classname">Collection&lt;T&gt;</span>.  In my description of
+this method in <a href="../c10/s1.html#generics.1.4">Subsection&nbsp;10.1.4</a>, I say that for a collection, <span class="code">coll</span>,
+of type <span class="classname">Collection&lt;T&gt;</span>, <span class="code">coll.addAll(coll2)</span>
+"adds all the objects in <span class="code">coll2</span> to <span class="code">coll</span>. The parameter, <span class="code">coll2</span>, 
+can be any collection of type <span class="classname">Collection&lt;T&gt;</span>. However, it can also be 
+more general. For example, if <span class="classname">T</span> is a class and <span class="classname">S</span> 
+is a sub-class of <span class="classname">T</span>, then <span class="code">coll2</span> can be of type 
+<span class="classname">Collection&lt;S&gt;</span>.  This makes sense because any object of type <span class="classname">S</span>
+is automatically of type <span class="classname">T</span> and so can legally be added to <span class="code">coll</span>." 
+If you think for a moment, you'll see that what I'm
+describing here, a little awkwardly, is a use of wildcard types: We don't want to
+require <span class="code">coll2</span> to be a collection of objects of type <span class="classname">T</span>;
+we want to allow collections of any subclass of <span class="classname">T</span>.
+To be more specific, let's look at how a similar <span class="code">addAll()</span> method could
+be added to the generic <span class="classname">Queue</span> class that was defined earlier
+in this section:</p>
+
+
+<pre>class Queue&lt;T&gt; {
+   private LinkedList&lt;T&gt; items = new LinkedList&lt;T&gt;();
+   public void enqueue(T item) {
+      items.addLast(item);
+   }
+   public T dequeue() {
+      return items.removeFirst();
+   }
+   public boolean isEmpty() {
+      return (items.size() == 0);
+   }
+   <span class="newcode">public void addAll(Collection&lt;? extends T&gt; collection) {
+         // Add all the items from the collection to the end of the queue
+      for ( T item : collection ) 
+         enqueue(item);
+   }</span>
+}</pre>
+   
+
+<p>Here, <span class="classname">T</span> is a type parameter in the generic class definition.
+We are combining wildcard types with generic classes.
+Inside the generic class definition, "<span class="code">T</span>" is used as if it is a specific, though unknown, type.
+The wildcard type "<span class="code">?&nbsp;extends&nbsp;T</span>" means some type that extends that specific type.
+When we create a queue of type <span class="classname">Queue&lt;Shape&gt;</span>, "<span class="code">T</span>" refers to "Shape",
+and the wildcard type "<span class="code">?&nbsp;extends&nbsp;T</span>" in the class definition means
+"<span class="code">?&nbsp;extends&nbsp;Shape</span>", meaning that the <span class="code">addAll</span> method of the queue 
+can be applied to collections of <span class="classname">Rects</span> and <span class="classname">Ovals</span>
+as well as to collections of <span class="classname">Shapes</span>.</p>
+   
+
+<p>The for-each loop in the definition of <span class="code">addAll</span> iterates through the
+<span class="code">collection</span> using a variable, <span class="code">item</span>, of type <span class="classname">T</span>.
+Now, <span class="code">collection</span> can be of type <span class="classname">Collection&lt;S&gt;</span>,
+where <span class="classname">S</span> is a subclass of <span class="classname">T</span>.  Since
+<span class="code">item</span> is of type <span class="classname">T</span>, not <span class="classname">S</span>,
+do we have a problem here?  No, no problem.  As long as <span class="classname">S</span> is a 
+subclass of <span class="classname">T</span>, a value of type <span class="classname">S</span> can
+be assigned to a variable of type <span class="classname">T</span>.  The restriction
+on the wildcard type makes everything work nicely.</p> 
+   
+
+<p>The <span class="code">addAll</span> method adds all the items from a collection to the queue.
+Suppose that we wanted to do the opposite: Add all the items that are currently
+on the queue to a given collection.  An instance method defined as</p>
+   
+
+<pre>public void addAllTo(Collection&lt;T&gt; collection)</pre>
+   
+
+<p>would only work for collections whose base type is exactly the same as
+<span class="classname">T</span>.  This is too restrictive.  We need some sort of wildcard.
+However, "<span class="code">?&nbsp;extends&nbsp;T</span>" won't work.  Suppose we try it:</p>
+   
+
+<pre>public void addAllTo(Collection&lt;? extends T&gt; collection) {
+      // Remove all items currently on the queue and add them to collection
+   while ( ! isEmpty() ) {
+      T item = dequeue();  // Remove an item from the queue.
+      collection.add( item );  // Add it to the collection.  <span class="newcode">ILLEGAL!!</span>
+   }
+}</pre>
+   
+
+<p>The problem is that we can't add an <span class="code">item</span> of type <span class="classname">T</span>
+to a collection that might only be able to hold items belonging to some
+subclass, <span class="classname">S</span>, of <span class="classname">T</span>.  The containment is
+going in the wrong direction: An <span class="code">item</span> of type <span class="classname">T</span>
+is not necessarily of type <span class="classname">S</span>.   For example, if we have
+a queue of type <span class="classname">Queue&lt;Shape&gt;</span>, it doesn't make sense
+to add items from the queue to a collection of type <span class="classname">Collection&lt;Rect&gt;</span>,
+since not every <span class="classname">Shape</span> is a <span class="classname">Rect</span>.
+On the other hand, if we have a <span class="classname">Queue&lt;Rect&gt;</span>, it would
+make sense to add items from that queue to a <span class="classname">Collection&lt;Shape&gt;</span>
+or indeed to any collection <span class="classname">Collection&lt;S&gt;</span> where
+<span class="classname">S</span> is a <b>super</b>class of <span class="classname">Rect</span>.
+</p>
+   
+
+<p>To express this type of relationship, we need a new kind of type wildcard:
+"<span class="code">?&nbsp;super&nbsp;T</span>".  This wildcard means, roughly, "either <span class="classname">T</span>
+itself or any class that is a superclass of <span class="classname">T</span>."  For example,
+<span class="classname">Collection&lt;?&nbsp;super&nbsp;Rect&gt;</span> would
+match the types <span class="classname">Collection&lt;Shape&gt;</span>,
+<span class="classname">ArrayList&lt;Object&gt;</span>, and <span class="classname">Set&lt;Rect&gt;</span>.
+This is what we need for our <span class="code">addAllTo</span> method.  With this change,
+our complete generic queue class becomes:</p>
+   
+
+<pre>class Queue&lt;T&gt; {
+   private LinkedList&lt;T&gt; items = new LinkedList&lt;T&gt;();
+   public void enqueue(T item) {
+      items.addLast(item);
+   }
+   public T dequeue() {
+      return items.removeFirst();
+   }
+   public boolean isEmpty() {
+      return (items.size() == 0);
+   }
+   public void addAll(Collection&lt;? extends T&gt; collection) {
+         // Add all the items from the collection to the end of the queue
+      for ( T item : collection ) 
+         enqueue(item);
+   }
+   <span class="newcode">public void addAllTo(Collection&lt;? super T&gt; collection) {
+         // Remove all items currently on the queue and add them to collection
+      while ( ! isEmpty() ) {
+         T item = dequeue();  // Remove an item from the queue.
+         collection.add( item );  // Add it to the collection.
+      }
+   }</span>
+}</pre>
+   
+   
+
+<p>In a wildcard type such as "<span class="code">?&nbsp;extends&nbsp;T</span>", <span class="classname">T</span>
+can be an <span class="code">interface</span> instead of a class.  Note that the term
+"<span class="code">extends</span>"  (not "<span class="code">implements</span>") is used
+in the wildcard type, even if <span class="classname">T</span> is an interface.  For
+example, we will see that <span class="classname">Runnable</span> is an <span class="code">interface</span>
+that defines the method <span class="code">public void run()</span>.  (Runnable objects
+are usually associated with threads; see <a href="../c12/index.html">Chapter&nbsp;12</a>.)
+Here is a method that runs all the objects in a collection of
+<span class="classname">Runnables</span> by executing the <span class="code">run()</span>
+method from each runnable object:</p>
+
+
+<pre>public static runAll( Collection&lt;?&nbsp;extends&nbsp;Runnable&gt; runnables ) {
+   for ( Runnable runnable : runnables ) {
+      runnable.run();
+   }
+}</pre>
+   
+
+<hr class="break">
+   
+
+<p>Wildcard types are used <b>only</b> as type parameters in parameterized
+types, such as <span class="classname">Collection&lt;?&nbsp;extends&nbsp;Runnable&gt;</span>.
+The place where a wildcard type is most likely to occur, by far, is
+in a formal parameter list, where the wildcard type is used in the declaration of the type
+of a formal parameter.  However, they can also be used in a few other places.  
+For example, they can be used  in the type specification in a variable declaration 
+statement.</p>
+   
+
+<p>One final remark: The wildcard type "<span class="code">&lt;?&gt;</span>" is equivalent to
+"<span class="code">&lt;?&nbsp;extends&nbsp;Object&gt;</span>".  That is, it matches any possible
+type.  For example, the <span class="code">removeAll()</span> method in the generic interface
+<span class="classname">Collections&lt;T&gt;</span> is declared as</p>
+   
+
+<pre>public boolean removeAll( Collection&lt;?&gt; c ) { ...</pre>
+   
+
+<p>This just means that the <span class="code">removeAll</span> method can be applied to any
+collection of any type of object.</p>
+   
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="generics.5.4">10.5.4&nbsp;&nbsp;Bounded Types</a>
+</h3>
+   
+
+<p>Wildcard types don't solve all of our problems.  They allow us to generalize
+method definitions so that they can work with collections of objects of various types,
+rather than just a single type.  However, they do not allow us to restrict
+the types that are allowed as type parameters in a generic class or method definition.
+Bounded types exist for this purpose.</p>
+   
+
+<p>We start with a small, not very realistic example.  
+Suppose that you would like to create groups of GUI
+components using a generic class named <span class="classname">ComponentGroup</span>.
+For example, the parameterized type <span class="classname">ComponentGroup&lt;JButton&gt;</span>
+would represent a group of <span class="classname">JButtons</span>, while 
+<span class="classname">ComponentGroup&lt;JPanel&gt;</span> would represent a group
+of <span class="classname">JPanels</span>.  The class will include methods that can be
+called to apply certain operations to all components in the group at once.
+For example, there will be an instance method of the form</p>
+   
+
+<pre>public void repaintAll() {
+   .
+   .  // Call the repaint() method of every component in the group.
+   .
+}</pre>
+   
+
+<p>The problem is that the <span class="code">repaint()</span> method is defined in a
+<span class="classname">JComponent</span> object, but not for objects of arbitrary
+type.  It wouldn't make sense to allow types such as
+<span class="classname">ComponentGroup&lt;String&gt;</span> or 
+<span class="classname">ComponentGroup&lt;Integer&gt;</span>, since <span class="classname">Strings</span>
+and <span class="classname">Integers</span> don't have <span class="code">repaint()</span> methods.
+We need some way to restrict the type parameter <span class="classname">T</span>
+in <span class="classname">ComponentGroup&lt;T&gt;</span> so that only <span class="classname">JComponent</span>
+and subclasses of <span class="classname">JComponent</span> are allowed
+as actual type parameters.
+We can do this by using the <span class="newword">bounded type</span> "<span class="code">T&nbsp;extends&nbsp;JComponent</span>"
+instead of a plain "<span class="code">T</span>" in the definition of the class:
+</p>
+
+
+<pre>public class ComponentGroup&lt;<span class="newcode">T extends JComponent</span>&gt; {
+   private ArrayList&lt;T&gt; components; // For storing the components in this group.
+   public void repaintAll() {
+      for ( JComponent c : components )
+         if (c != null)
+            c.repaint();
+   }
+   public void setAllEnabled( boolean enable ) {
+      for ( JComponent c : components )
+         if (c != null)
+            c.setEnabled(enable);
+      }
+   }
+   public void add( T c ) {  // Add a value c, of type T, to the group.
+      components.add(c);
+   }
+   .
+   .  // Additional methods and constructors.
+   .
+}</pre>
+   
+
+<p>The restriction "<span class="code">extends JComponent</span>" on <span class="code">T</span> makes it
+illegal to create the parameterized types <span class="classname">ComponentGroup&lt;String&gt;</span> and
+<span class="classname">ComponentGroup&lt;Integer&gt;</span>, since the actual type parameter
+that replaces "<span class="code">T</span>" is required to be either <span class="classname">JComponent</span> itself
+or a subclass of <span class="classname">JComponent</span>.
+With this restriction, we know -- and, more important, the compiler knows -- that
+the objects in the group are of type <span class="classname">JComponent</span> and the
+operations <span class="code">c.repaint()</span> and <span class="code">c.setEnabled()</span> are defined
+for any <span class="code">c</span> in the group.</p>
+  
+
+<p>In general, a bounded type parameter "<span class="code">T&nbsp;extends&nbsp;SomeType</span>" means roughly
+"a type, <span class="classname">T</span>, that is either equal to <span class="classname">SomeType</span>
+or is a subclass of <span class="classname">SomeType</span>", and the upshot is that any
+object of type <span class="classname">T</span> is also of type <span class="classname">SomeType</span>, and
+any operation that is defined for objects of type <span class="classname">SomeType</span>
+is defined for objects of type <span class="classname">T</span>.  The type
+<span class="classname">SomeType</span> doesn't have to be the name of a class.
+It can be any name that represents an actual object type.  For example, it can be
+an <span class="code">interface</span> or even a parameterized type.</p>
+   
+
+<p>Bounded types and wildcard types are clearly related.
+They are, however, used in very different ways.  A bounded type can be used only
+as a formal type parameter in the definition of a generic method, class, or interface.
+A wildcard type is used most often to declare the type of a formal parameter in a
+method and cannot be used as a formal type parameter.  One other difference, by 
+the way, is that, in contrast to wildcard types, bounded type parameters can only
+use "<span class="code">extends</span>", never "<span class="code">super</span>".</p> 
+   
+
+<p>Bounded type parameters can be used when declaring generic methods.
+For example, as an alternative to the generic <span class="classname">ComponentGroup</span>
+class, one could write a free-standing generic <span class="code">static</span> method that can
+repaint any collection of <span class="classname">JComponents</span> as follows:</p>
+   
+
+<pre>public static &lt;T extends JComponent&gt; void repaintAll(Collection&lt;T&gt; comps) {
+   for ( JComponent c : comps )
+      if (c != null)
+         c.repaint();
+}</pre>
+   
+
+<p>Using "<span class="code">&lt;T extends JComponent&gt;</span>" as the formal type parameter
+means that the method can only be called for collections whose base type is
+<span class="classname">JComponent</span> or some subclass of <span class="classname">JComponent</span>.
+Thus, it is legal to call <span class="code">repaintAll(coll)</span> where <span class="code">coll</span>
+is of type <span class="classname">List&lt;JPanel&gt;</span> but not where
+<span class="code">coll</span> is of type <span class="classname">Set&lt;String&gt;</span>.</p>
+   
+
+
+<p>Note that we don't really need a generic type parameter in this case.  We can
+write an equivalent method using a wildcard type:</p>
+      
+
+<pre>public static void repaintAll(Collection&lt;? extends JComponent&gt; comps) {
+   for ( JComponent c : comps )
+      if (c != null)
+         c.repaint();
+}</pre>
+
+
+<p>In this situation, the version that uses the wildcard type is to be preferred,
+since the implementation is simpler.  However, there are some situations where
+a generic method with a bounded type parameter cannot be rewritten using 
+a wildcard type. Note that a generic type parameter gives a name, such as <span class="classname">T</span>,
+to the unknown type, while a wildcard type does not give a name to the unknown type.
+The name makes it possible to refer to the unknown type in the body of the method
+that is being defined.  If a generic method definition uses the generic type name
+more than once or uses it outside the formal parameter list of the method,
+then the generic type cannot be replaced with a wildcard type.</p>
+
+
+<p>Let's look at a generic method in which a bounded type parameter is essential.  
+In <a href="../c10/s2.html#generics.2.1">Subsection&nbsp;10.2.1</a>, I presented a code segment for inserting
+a string into a sorted list of strings, in such a way that the modified list
+is still in sorted order.  Here is the same code, but this time in the form
+of a method definition (and without the comments):</p>
+   
+
+<pre>static void sortedInsert(List&lt;String&gt; sortedList, String newItem) {
+   ListIterator&lt;String&gt; iter = sortedList.listIterator();
+   while (iter.hasNext()) {
+      String item = iter.next();
+      if (newItem.compareTo(item) &lt;= 0) {
+         iter.previous();
+         break;
+      } 
+   }
+   iter.add(newItem);
+}</pre>
+   
+
+<p>This method works fine for lists of strings, but it would be nice to have
+a generic method that can be applied to lists of other types of objects.  The
+problem, of course, is that the code assumes that the <span class="code">compareTo()</span>
+method is defined for objects in the list, so the method can only work for
+lists of objects that implement the <span class="classname">Comparable</span> interface.
+We can't simply use a wildcard type to enforce this restriction.  Suppose we try to do it, by replacing
+<span class="classname">List&lt;String&gt;</span> with 
+<span class="classname">List&lt;?&nbsp;extends&nbsp;Comparable&gt;</span>:</p>
+
+
+<pre>static void sortedInsert(List&lt;? extends Comparable&gt; sortedList, <span class="newcode">????</span> newItem) {
+   ListIterator&lt;<span class="newcode">????</span>&gt; iter = stringList.listIterator();
+   ...</pre>
+   
+
+<p>We immediately run into a problem, because we have no name for the unknown
+type represented by the wildcard.  We <b>need</b> a name for that type because
+the type of <span class="code">newItem</span> and of <span class="code">iter</span> should be the same
+as the type of the items in the list.  The problem is solved if we write a
+generic method with a bounded type parameter, since then we have a name for
+the unknown type, and we can write a valid generic method:</p>
+   
+
+<pre>static &lt;T extends Comparable&gt; void sortedInsert(List&lt;T&gt; sortedList, T newItem) {
+   ListIterator&lt;T&gt; iter = sortedList.listIterator();
+   while (iter.hasNext()) {
+      T item = iter.next();
+      if (newItem.compareTo(item) &lt;= 0) {
+         iter.previous();
+         break;
+      } 
+   }
+   iter.add(newItem);
+}</pre>
+
+
+<p>There is still one technicality to cover in this example.  <span class="classname">Comparable</span>
+is itself a parameterized type, but I have used it here without a type parameter.
+This is legal but the compiler might give you a warning about using a "raw type."
+In fact, the objects in the list should implement the parameterized interface
+<span class="classname">Comparable&lt;T&gt;</span>, since they are being compared to items
+of type <span class="classname">T</span>.  This just means that instead of using
+<span class="classname">Comparable</span> as the type bound, we should use
+<span class="classname">Comparable&lt;T&gt;</span>:</p>
+   
+
+<pre>static &lt;T extends <span class="newcode">Comparable&lt;T&gt;</span>&gt; void sortedInsert(List&lt;T&gt; sortedList, ...</pre>
+   
+
+<hr class="break">
+   
+
+<p>With this example, I will leave the topic of generic types and generic programming.
+In this chapter, I have occasionally used terms such as "strange" and "weird" to
+talk about generic programming in Java.  I will confess that I have some affection
+for the more simple-minded generic programming style of Smalltalk.  Nevertheless,
+I recognize the power and increased robustness of generics in Java.  I hope that
+I have convinced you that using the Java Collection Framework is reasonably
+natural and straightforward, and that using it can save you a lot of time and
+effort compared to repeatedly recoding the same data structures and algorithms
+from scratch.  Things become more technical when you
+start writing new generic classes and methods of your own, and the syntax is
+(as I've said) a little strange.  But with some practice, you'll get used to the
+syntax and will find that it's not that difficult after all.</p>
+   
+
+
+
+ 
+
+
+
+<hr>
+<div align="center">
+<b><small>End of Chapter 10</small></b>
+</div>
+<hr>
+<p align="center">
+<applet code="LittlePentominosApplet.class" width="244" height="244" archive="LittlePentominosApplet.jar" alt=""></applet></p>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s4.html">Previous Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

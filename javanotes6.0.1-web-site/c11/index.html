@@ -1,0 +1,85 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Chapter 11 -- Advanced Input/Output: Streams, Files, and Networking</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s1.html">First Section</a> |
+           <a href="../c10/index.html">Previous Chapter</a> |
+           <a href="../c12/index.html">Next Chapter</a> |
+           <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h3 class="chapter_title">Chapter 11</h3>
+<h2 class="chapter_title">Advanced Input/Output: Streams, Files, and Networking</h2>
+<hr class="break">
+
+<p>
+<span class="start"><big>C</big>omputer programs are</span> only useful if they interact
+with the rest of the world in some way. This interaction is referred to as
+<span class="newword">input/output</span>, or <span class="newword">I/O</span>. 
+Up until now, this book has concentrated on just one 
+type of interaction: interaction with the user, through either a
+graphical user interface or a command-line interface. But the user is only one
+possible source of information and only one possible destination for
+information. We have already encountered one other type of input/output, since
+<span class="classname">TextIO</span> can read data from files and write data
+to files.  However, Java has an input/output framework that provides much
+more power and flexibility than does <span class="classname">TextIO</span>,
+and that covers other kinds of I/O in addition to files.  Most importantly,
+it supports communication over network connections.
+In Java, input/output involving files and networks is based on
+<span class="newword">streams</span>, which are objects that support I/O
+commands that are similar to those that you have already used.
+In fact, standard output (<span class="code">System.out</span>) and
+standard input (<span class="code">System.in</span>) are examples of streams.</p>
+
+
+<p>Working with files and networks requires familiarity with exceptions, which
+were covered in <a href="../c8/index.html">Chapter&nbsp;8</a>. Many of
+the subroutines that are used can throw exceptions that require mandatory
+exception handling. This generally means calling the subroutine in a
+<span class="code">try..catch</span> statement that can deal with the exception if one
+occurs.  Effective network communication also requires the use of
+threads, which will be covered in the <a href="../c12/index.html">Chapter&nbsp;12</a>.
+We will look at the basic networking API in this chapter, but
+we will return to the topic of threads and networking in <a href="../c12/s4.html">Section&nbsp;12.4</a>.
+</p>
+
+<hr class="break">
+<h3>Contents of Chapter 11:</h3>
+<ul class="contents">
+<li>Section 1: <a href="s1.html">Streams, Readers, and Writers</a>
+</li>
+<li>Section 2: <a href="s2.html">Files</a>
+</li>
+<li>Section 3: <a href="s3.html">Programming With Files</a>
+</li>
+<li>Section 4: <a href="s4.html">Networking</a>
+</li>
+<li>Section 5: <a href="s5.html">A Brief Introduction to XML</a>
+</li>
+<li>
+<a href="exercises.html">Programming Exercises</a>
+</li>
+<li>
+<a href="quiz.html">Quiz on This Chapter</a>
+</li>
+</ul>
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s1.html">First Section</a> |
+           <a href="../c10/index.html">Previous Chapter</a> |
+           <a href="../c12/index.html">Next Chapter</a> |
+           <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

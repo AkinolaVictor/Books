@@ -1,0 +1,577 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 2.2 -- Variables and the Primitive Types</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s1.html">Previous Section</a> |
+           <a href="s3.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#basics.2.1">Variables</a>
+<br>
+<a href="#basics.2.2">Types and Literals</a>
+<br>
+<a href="#basics.2.3">Variables in Programs</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 2.2</h3>
+<h2 class="section_title">Variables and the Primitive Types</h2>
+<hr class="break">
+
+
+<p>
+<span class="start"><big>N</big>ames are fundamental to programming</span>. In programs,
+names are used to refer to many different sorts of things. In order to use
+those things, a programmer must understand the rules for giving names to things
+and the rules for using the names to work with those things. That is, the
+programmer must understand the syntax and the semantics of names.</p>
+
+
+<p>According to the syntax rules of Java, a name is a sequence of one or more
+characters. It must begin with a letter or underscore and must consist entirely of letters,
+digits, and underscores. ("Underscore" refers to the character '_'.) For example, here are some legal
+names:</p>
+
+
+<pre>N   n   rate  x15   quite_a_long_name   HelloWorld</pre>
+
+
+<p>No spaces are allowed in identifiers; <span class="code">HelloWorld</span> is a legal identifier,
+but "Hello World" is not.
+Upper case and lower case letters are considered to be different, so that
+<span class="code">HelloWorld</span>, <span class="code">helloworld</span>, <span class="code">HELLOWORLD</span>, and
+<span class="code">hElloWorLD</span> are all distinct names. Certain names are reserved for
+special uses in Java, and cannot be used by the programmer for other purposes.
+These <span class="newword">reserved words</span> include: <span class="code">class</span>,
+<span class="code">public</span>, <span class="code">static</span>, <span class="code">if</span>, <span class="code">else</span>, <span class="code">while</span>,
+and several dozen other words.</p>
+
+
+<p>Java is actually pretty liberal about what counts as a letter or a digit.
+Java uses the <span class="newword">Unicode</span> character set, which
+includes thousands of characters from many different languages and different
+alphabets, and many of these characters count as letters or digits. However, I
+will be sticking to what can be typed on a regular English keyboard.</p>
+   
+
+<p>The pragmatics of naming includes style guidelines about how to choose
+names for things.  For example, it is customary for names of classes to begin with
+upper case letters, while names of variables and of subroutines begin with
+lower case letters; you can avoid a lot of confusion by following the same
+convention in your own programs.  Most Java programmers do not use underscores in names,
+although some do use them at the beginning of the names of certain kinds
+of variables.  When a name  is made up of several words, such
+as <span class="code">HelloWorld</span> or <span class="code">interestRate</span>, it is customary
+to capitalize each word, except possibly the first; this is sometimes
+referred to as <span class="newword">camel case</span>, since the
+upper case letters in the middle of a name are supposed to look something
+like the humps on a camel's back.</p>
+
+
+<p>Finally, I'll note that things are often referred to by <span class="newword">compound names</span>
+which consist of several ordinary names separated by periods.  (Compound names
+are also called <span class="newword">qualified names</span>.) You've already
+seen an example: <span class="code">System.out.println</span>. The idea here is that things in
+Java can contain other things. A compound name is a kind of path to an item
+through one or more levels of containment. The name <span class="code">System.out.println</span>
+indicates that something called "System" contains something called "out" which
+in turn contains something called "println".  Non-compound names are called
+<span class="newword">simple identifiers</span>.  I'll use the term <span class="newword">identifier</span> 
+to refer to any name -- simple or compound -- that
+can be used to refer to something in Java.  (Note that the reserved words are
+<b>not</b> identifiers, since they can't be used as names for things.)</p>
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="basics.2.1">2.2.1&nbsp;&nbsp;Variables</a>
+</h3>
+
+
+<p>Programs manipulate data that are stored in memory. In machine language,
+data can only be referred to by giving the numerical address of the location in
+memory where it is stored. In a high-level language such as Java, names are
+used instead of numbers to refer to data. It is the job of the computer to keep
+track of where in memory the data is actually stored; the programmer only has
+to remember the name. A name used in this way -- to refer to data stored in
+memory -- is called a <span class="newword">variable</span>.</p>
+
+
+<p>Variables are actually rather subtle. Properly speaking, a variable is not a
+name for the data itself but for a location in memory that can hold data. You
+should think of a variable as a container or box where you can store data that
+you will need to use later. The variable refers directly to the box and only
+indirectly to the data in the box. Since the data in the box can change, a
+variable can refer to different data values at different times during the
+execution of the program, but it always refers to the same box. Confusion can
+arise, especially for beginning programmers, because when a variable is used in
+a program in certain ways, it refers to the container, but when it is used in
+other ways, it refers to the data in the container. You'll see examples of both
+cases below.</p>
+
+
+<p>(In this way, a variable is something like the title, "The President of the
+United States." This title can refer to different people at different times, but
+it always refers to the same office. If I say "the President is playing basketball," I
+mean that Barack Obama is playing basketball. But if I say "Sarah Palin wants to
+be President" I mean that she wants to fill the office, not that she wants to
+be Barack Obama.)</p>
+
+
+<p>In Java, the <b>only</b> way to get data into a variable -- that
+is, into the box that the variable names -- is with an <span class="newword">assignment statement</span>. 
+An assignment statement takes the
+form:</p>
+
+
+<pre>
+<span class="bnf">variable</span> = <span class="bnf">expression</span>;</pre>
+
+
+<p>where <span class="bnf">expression</span> represents anything that
+refers to or computes a data value. When the computer comes to an assignment
+statement in the course of executing a program, it evaluates the expression and
+puts the resulting data value into the variable. For example, consider the
+simple assignment statement</p>
+
+
+<pre>rate = 0.07;</pre>
+
+
+<p>The <span class="bnf">variable</span> in this assignment statement is
+<span class="code">rate</span>, and the <span class="bnf">expression</span> is the number
+0.07. The computer executes this assignment statement by putting the number
+0.07 in the variable <span class="code">rate</span>, replacing whatever was there before. Now,
+consider the following more complicated assignment statement, which might come
+later in the same program:</p>
+
+
+<pre>interest = rate * principal;</pre>
+
+
+<p>Here, the value of the expression "<span class="code">rate * principal</span>" is being
+assigned to the variable <span class="code">interest</span>. In the expression, the <span class="code">*</span>
+is a "multiplication operator" that tells the computer to multiply
+<span class="code">rate</span> times <span class="code">principal</span>. The names <span class="code">rate</span> and
+<span class="code">principal</span> are themselves variables, and it is really the
+<b>values</b> stored in those variables that are to be multiplied. We
+see that when a variable is used in an expression, it is the value stored in
+the variable that matters; in this case, the variable seems to refer to the
+data in the box, rather than to the box itself. When the computer executes this
+assignment statement, it takes the <b>value</b> of <span class="code">rate</span>,
+multiplies it by the <b>value</b> of <span class="code">principal</span>, and stores
+the answer in the <b>box</b> referred to by <span class="code">interest</span>.
+When a variable is used on the left-hand side of an assignment statement,
+it refers to the box that is named by the variable.</p>
+
+
+<p>(Note, by the way, that an assignment statement is a command that is
+executed by the computer at a certain time. It is not a statement of fact. For
+example, suppose a program includes the statement "<span class="code">rate = 0.07;</span>". If
+the statement "<span class="code">interest = rate * principal;</span>" is executed later in the
+program, can we say that the <span class="code">principal</span> is multiplied by 0.07? No! The
+value of <span class="code">rate</span> might have been changed in the meantime by another
+statement. The meaning of an assignment statement is completely different from
+the meaning of an equation in mathematics, even though both use the symbol
+"=".)</p>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="basics.2.2">2.2.2&nbsp;&nbsp;Types and Literals</a>
+</h3>
+
+
+<p>A variable in Java is designed to hold only one particular type of data; it
+can legally hold that type of data and no other. The compiler will consider it
+to be a syntax error if you try to violate this rule. We say that Java is a
+<span class="newword">strongly typed</span> language because it enforces this
+rule.</p>
+
+
+<p>There are eight so-called <span class="newword">primitive types</span> built
+into Java. The primitive types are named <span class="ptype">byte</span>, <span class="ptype">short</span>,
+<span class="ptype">int</span>, <span class="ptype">long</span>, <span class="ptype">float</span>, <span class="ptype">double</span>, <span class="ptype">char</span>,
+and <span class="ptype">boolean</span>. The first four types hold integers (whole numbers such as
+17, -38477, and 0). The four integer types are distinguished by the ranges of
+integers they can hold. The <span class="ptype">float</span> and <span class="ptype">double</span> types hold real
+numbers (such as 3.6 and -145.99). Again, the two real types are distinguished
+by their range and accuracy. A variable of type <span class="ptype">char</span> holds a single
+character from the Unicode character set. And a variable of type
+<span class="ptype">boolean</span> holds one of the two logical values <span class="code">true</span> or
+<span class="code">false</span>.</p>
+
+
+<p>Any data value stored in the computer's memory must be represented as a
+binary number, that is as a string of zeros and ones. A single zero or one is
+called a <span class="newword">bit</span>. A string of eight bits is called a
+<span class="newword">byte</span>. Memory is usually measured in terms of
+bytes. Not surprisingly, the <span class="ptype">byte</span> data type refers to a single byte of
+memory. A variable of type <span class="ptype">byte</span> holds a string of eight bits, which
+can represent any of the integers between -128 and 127, inclusive. (There are
+256 integers in that range; eight bits can represent 256 -- two raised to the
+power eight -- different values.) As for the other integer types,</p>
+
+
+<ul>
+
+<li>
+<span class="ptype">short</span> corresponds to two bytes (16 bits). Variables of type
+<span class="ptype">short</span> have values in the range -32768 to 32767.</li>
+
+
+<li>
+<span class="ptype">int</span> corresponds to four bytes (32 bits). Variables of type
+<span class="ptype">int</span> have values in the range -2147483648 to 2147483647.</li>
+
+
+<li>
+<span class="ptype">long</span> corresponds to eight bytes (64 bits). Variables of type
+<span class="ptype">long</span> have values in the range -9223372036854775808 to
+9223372036854775807.</li>
+
+</ul>
+
+
+<p>You don't have to remember these numbers, but they do give you some idea of
+the size of integers that you can work with. Usually, for representing integer
+data you should just stick to
+the <span class="ptype">int</span> data type, which is good enough for most purposes.</p>
+
+
+<p>The <span class="ptype">float</span> data type is represented in four bytes of memory, using a
+standard method for encoding real numbers. The maximum value for a
+<span class="ptype">float</span> is about 10 raised to the power 38. A <span class="ptype">float</span> can have
+about 7 significant digits. (So that 32.3989231134 and 32.3989234399 would both
+have to be rounded off to about 32.398923 in order to be stored in a variable
+of type <span class="ptype">float</span>.) A <span class="ptype">double</span> takes up 8 bytes, can range up to
+about 10 to the power 308, and has about 15 significant digits. Ordinarily, you
+should stick to the <span class="ptype">double</span> type for real values.</p>
+
+
+<p>A variable of type <span class="ptype">char</span> occupies two bytes in memory. The value of
+a <span class="ptype">char</span> variable is a single character such as A, *, x, or a space
+character. The value can also be a special character such a tab or a carriage
+return or one of the many Unicode characters that come from different
+languages. When a character is typed into a program, it must be surrounded by
+single quotes; for example: <span class="code">'A'</span>, <span class="code">'*'</span>, or <span class="code">'x'</span>. 
+Without the quotes, <span class="code">A</span> would be an
+identifier and <span class="code">*</span> would be a multiplication operator. The quotes are not part of
+the value and are not stored in the variable; they are just a convention for
+naming a particular character constant in a program.</p>
+
+
+<p>A name for a constant value is called a <span class="newword">literal</span>. 
+A literal is what you have to type in a program to
+represent a value. <span class="code">'A'</span> and <span class="code">'*'</span> are literals of type <span class="ptype">char</span>, representing
+the character values A and *. Certain special characters have special literals
+that use a backslash, <span class="code">\</span>, as an "escape character". In particular, a tab is
+represented as <span class="code">'\t'</span>, a carriage return as <span class="code">'\r'</span>, a linefeed as
+<span class="code">'\n'</span>, the single quote character as <span class="code">'\''</span>, and the backslash
+itself as <span class="code">'\\'</span>. Note that even though you type two characters between
+the quotes in <span class="code">'\t'</span>, the value represented by this literal is a single
+tab character.</p>
+
+
+<p>Numeric literals are a little more complicated than you might expect. Of
+course, there are the obvious literals such as 317 and 17.42. But there are
+other possibilities for expressing numbers in a Java program. First of all,
+real numbers can be represented in an exponential form such as 1.3e12 or
+12.3737e-108. The "e12" and "e-108" represent powers of 10, so that 1.3e12
+means 1.3 times 10<sup>12</sup> and 12.3737e-108 means 12.3737 times
+10<sup>-108</sup>. This format can be used to express very large and very small numbers.
+Any numerical literal that contains a decimal point or exponential is a literal
+of type <span class="ptype">double</span>. To make a literal of type <span class="ptype">float</span>, you have to
+append an "F" or "f" to the end of the number. For example, "1.2F" stands for
+1.2 considered as a value of type <span class="ptype">float</span>. (Occasionally, you need to
+know this because the rules of Java say that you can't assign a value of type
+<span class="ptype">double</span> to a variable of type <span class="ptype">float</span>, so you might be
+confronted with a ridiculous-seeming error message if you try to do something
+like "<span class="code">x = 1.2;</span>" when <span class="code">x</span> is a variable of type
+<span class="ptype">float</span>. You have to say "<span class="code">x = 1.2F;"</span>.
+This is one reason why I advise sticking to type <span class="ptype">double</span> for real
+numbers.)</p>
+
+
+<p>Even for integer literals, there are some complications. Ordinary integers
+such as 177777 and -32 are literals of type <span class="ptype">byte</span>, <span class="ptype">short</span>, or
+<span class="ptype">int</span>, depending on their size. You can make a literal of type
+<span class="ptype">long</span> by adding "L" as a suffix. For example: 17L or 728476874368L. As
+another complication, Java allows octal (base-8) and hexadecimal (base-16)
+literals. I don't want to cover base-8 and base-16 in detail, but in case
+you run into them in other people's programs, it's worth knowing a few things:
+Octal numbers use only the digits 0 through 7.  In Java, a numeric literal
+that begins with a 0 is interpreted as an octal number; for example, the
+literal 045 represents the number 37, not the number 45.  Hexadecimal
+numbers use 16 digits, the usual digits 0 through 9 and the letters
+A, B, C, D, E, and F.  Upper case and lower case letters can be used
+interchangeably in this context.  The letters represent the numbers 10 through 15.
+In Java, a hexadecimal literal begins with <span class="code">0x</span> or <span class="code">0X</span>,
+as in <span class="code">0x45</span> or <span class="code">0xFF7A</span>.</p>
+
+
+<p>Hexadecimal numbers are also used in character literals to represent
+arbitrary Unicode characters.  A Unicode literal consists of <span class="code">\u</span> followed
+by four hexadecimal digits.  For example, the character literal <span class="code">'\u00E9'</span>
+represents the Unicode character that is an "e" with an acute accent.
+</p>
+
+
+<p>Java 7 introduces a couple of minor improvements in numeric literals.  First of all, numeric
+literals in Java&nbsp;7 can include the underscore character&nbsp;("<span class="code">_</span>"), which
+can be used to separate groups of digits.  For example, the integer constant
+for one billion could be written 1_000_000_000, which is a good deal easier to decipher
+than 1000000000.  There is no rule about how many digits have to be in each group.
+Java&nbsp;7 also supports binary numbers, using the digits 0 and 1 and
+the prefix <span class="code">0b</span> (or&nbsp;<span class="code">OB</span>).  For example: <span class="code">0b10110</span> 
+or <span class="code">0b1010_1100_1011</span>.</p>
+
+
+<p>For the type <span class="ptype">boolean</span>, there are precisely two literals:
+<span class="code">true</span> and <span class="code">false</span>. These literals are typed just as I've written
+them here, without quotes, but they represent values, not variables. Boolean
+values occur most often as the values of conditional expressions. For
+example,</p>
+
+
+<pre>rate &gt; 0.05</pre>
+   
+
+<p>is a boolean-valued expression that evaluates to <span class="code">true</span> if the value
+of the variable <span class="code">rate</span> is greater than 0.05, and to <span class="code">false</span> if
+the value of <span class="code">rate</span> is not greater than 0.05. As you'll see in <a href="../c3/index.html">Chapter&nbsp;3</a>, 
+boolean-valued expressions are used
+extensively in control structures. Of course, boolean values can also be
+assigned to variables of type <span class="ptype">boolean</span>.</p>
+
+
+<p>Java has other types in addition to the primitive types, but all the other
+types represent objects rather than "primitive" data values. For the most part,
+we are not concerned with objects for the time being. However, there is one
+predefined object type that is very important: the type <span class="classname">String</span>. A
+<span class="classname">String</span> is a sequence of characters. You've already seen a string
+literal: <span class="code">"Hello World!"</span>. The double quotes are part of the literal; they have
+to be typed in the program. However, they are not part of the actual string
+value, which consists of just the characters between the quotes. Within a
+string, special characters can be represented using the backslash notation.
+Within this context, the double quote is itself a special character. For
+example, to represent the string <b>value</b>
+</p>
+
+
+<pre>I said, "Are you listening!"</pre>
+
+
+<p>with a linefeed at the end, you would have to type the string <b>literal</b>:</p>
+
+
+<pre>"I said, \"Are you listening!\"\n"</pre>
+
+
+<p>You can also use <span class="code">\t</span>, <span class="code">\r</span>, <span class="code">\\</span>, 
+and Unicode sequences such as <span class="code">\u00E9</span> to
+represent other special characters in string literals.
+Because strings are objects, their behavior in programs is peculiar in some
+respects (to someone who is not used to objects). I'll have more to say about
+them in the <a href="../c2/s3.html">next section</a>.</p>
+
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="basics.2.3">2.2.3&nbsp;&nbsp;Variables in Programs</a>
+</h3>
+
+
+<p>A variable can be used in a program only if it has first been <span class="newword">declared</span>. 
+A <span class="newword">variable declaration statement</span> is used to declare one or more variables and to give them
+names. When the computer executes a variable declaration, it sets aside memory
+for the variable and associates the variable's name with that memory. A simple
+variable declaration takes the form:</p>
+
+
+<pre>
+<span class="bnf">type-name</span>  <span class="bnf">variable-name-or-names</span>;</pre>
+   
+
+<p>The <span class="bnf"><b>variable-name-or-names</b></span> can be a single
+variable name or a list of variable names separated by commas. (We'll see later
+that variable declaration statements can actually be somewhat more complicated
+than this.) Good programming style is to declare only one variable in a
+declaration statement, unless the variables are closely related in some way.
+For example:</p>
+
+
+<pre>int numberOfStudents;
+String name;
+double x, y;        
+boolean isFinished;
+char firstInitial, middleInitial, lastInitial;</pre>
+   
+
+<p>It is also good style to include a comment with each variable declaration to
+explain its purpose in the program, or to give other information that might
+be useful to a human reader.  For example:</p>
+   
+
+<pre>double principal;    // Amount of money invested.
+double interestRate; // Rate as a decimal, not percentage.</pre>
+
+
+<p>In this chapter, we will only use variables declared inside the
+<span class="code">main()</span> subroutine of a program. Variables declared inside a subroutine
+are called <span class="newword">local variables</span> for that subroutine.
+They exist only inside the subroutine, while it is running, and are completely
+inaccessible from outside. Variable declarations can occur anywhere inside the
+subroutine, as long as each variable is declared before it is used in any
+expression. Some people like to declare all the variables at the beginning of
+the subroutine. Others like to wait to declare a variable until it is needed.
+My preference: Declare important variables at the beginning of the subroutine,
+and use a comment to explain the purpose of each variable. Declare "utility
+variables" which are not important to the overall logic of the subroutine at
+the point in the subroutine where they are first used. Here is a simple program
+using some variables and assignment statements:</p>
+
+
+<pre>/**
+ * This class implements a simple program that
+ * will compute the amount of interest that is
+ * earned on $17,000 invested at an interest
+ * rate of 0.07 for one year.  The interest and
+ * the value of the investment after one year are
+ * printed to standard output.
+ */
+ 
+public class Interest {
+   
+   public static void main(String[] args) {
+   
+       /* Declare the variables. */
+   
+       double principal;     // The value of the investment.
+       double rate;          // The annual interest rate.
+       double interest;      // Interest earned in one year.
+       
+       /* Do the computations. */
+       
+       principal = 17000;
+       rate = 0.07;
+       interest = principal * rate;   // Compute the interest.
+       
+       principal = principal + interest;
+             // Compute value of investment after one year, with interest.
+             // (Note: The new value replaces the old value of principal.)
+             
+       /* Output the results. */
+             
+       System.out.print("The interest earned is $");
+       System.out.println(interest);
+       System.out.print("The value of the investment after one year is $");
+       System.out.println(principal);
+                      
+   } // end of main()
+      
+} // end of class Interest</pre>
+
+
+
+<p>This program uses several subroutine call statements to display information
+to the user of the program. Two different subroutines are used:
+<span class="code">System.out.print</span> and <span class="code">System.out.println</span>. The difference
+between these is that <span class="code">System.out.println</span> adds a linefeed after
+the end of the information that it displays, while <span class="code">System.out.print</span>
+does not. Thus, the value of <span class="code">interest</span>, which is displayed by the
+subroutine call "<span class="code">System.out.println(interest);</span>", follows on the same
+line after the string displayed by the previous <span class="code">System.out.print</span> statement. Note that the value
+to be displayed by <span class="code">System.out.print</span> or <span class="code">System.out.println</span> is
+provided in parentheses after the subroutine name. This value is called a
+<span class="newword">parameter</span> to the subroutine. A parameter provides
+a subroutine with information it needs to perform its task. In a subroutine
+call statement, any parameters are listed in parentheses after the subroutine
+name. Not all subroutines have parameters. If there are no parameters in a
+subroutine call statement, the subroutine name must be followed by an empty
+pair of parentheses.</p>
+   
+
+<p>
+All the sample programs for this textbook are available in separate source code files in
+the on-line version of this text at <a href="http://math.hws.edu/javanotes/source">http://math.hws.edu/javanotes/source</a>.  
+They are also included in the downloadable archives of the web site.
+The source code for the <span class="code">Interest</span> program, for example, 
+can be found in the file <span class="sourceref"><a href="../source/Interest.java">Interest.java</a></span>.
+</p>
+
+
+
+
+<hr class="break">
+   
+
+<p>By the way, recall that one of the neat features of Java is that it can be
+used to write applets that can run on pages in a Web browser. Applets are very
+different things from stand-alone programs such as the <span class="classname">Interest</span> program, and
+they are not written in the same way. For one thing, an applet doesn't have a
+<span class="code">main()</span> routine. Applets will be covered in <a href="../c6/index.html">Chapter&nbsp;6</a>.
+In the meantime, you will see applets in this text that <b>simulate</b>
+stand-alone programs. The applets you see are not really the same as the
+stand-alone programs that they simulate, since they run right on a Web page,
+but they will have the same behavior as the programs I describe. Here, just for
+fun, is an applet simulating the <span class="classname">Interest</span> program. To run the
+program, click on the button labeled "Run the Program".  You will see the
+output from the program in the large white area of the applet:</p>
+
+
+<p align="center">
+<applet code="InterestConsole" width="600" height="250" archive="InterestApplet.jar" alt="(Applet 'InterestConsole' should be displayed here.)"></applet></p>
+
+
+<p>This applet requires Java 5.0 (or higher).  It will not work in a web browser
+that does not support Java or that uses an earlier version of Java.</p> 
+     
+
+<p>I will include many applets like this one in the text to simulate my example
+programs.  This example isn't very interesting, since it does exactly the same thing
+every time you run it.  That's not true of most programs, and it won't be true
+of future examples.
+You don't need to know how these applets are written, but if you
+are curious about how I convert my programs into applets, you can look at the source
+code file <span class="sourceref"><a href="../source/TextIOApplet.java">TextIOApplet.java</a></span>.</p>
+
+   
+   
+
+   
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s1.html">Previous Section</a> |
+           <a href="s3.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

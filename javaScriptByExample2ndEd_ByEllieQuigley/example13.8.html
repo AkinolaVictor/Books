@@ -1,0 +1,36 @@
+
+<html><head><title>Test window.onresize</title>
+<html>
+  <head>
+    <script type="text/javascript">
+      function shrinkScreen() {
+         var newWidth=screen.availWidth/2;
+         var newHeight=screen.availHeight/2;
+         window.resizeTo(newWidth,newHeight);
+         alert("The screen's width is: " +
+               newWidth+ " and the height is: "+ newHeight);
+       }
+      function getDimensions() {
+         if (window.outerWidth){  // Firefox
+          alert("OnResize event: the original screen dimensions are: "
+                +screen.availWidth+" x "+ screen.availHeight+
+                ", new dimensions are: \n" + window.outerWidth + " "+
+                 window.outerHeight);
+         }
+         else{ // Internet Explorer
+         alert("OnResize event: the original screen dimensions are: "
+			      +screen.availWidth+" x "+ screen.availHeight+
+                "\nnew dimensions are: " + document.body.clientWidth +
+                  " "+ document.body.clientHeight);
+         }
+      }
+   </script>
+  </head>
+  <body onResize="getDimensions();">
+     <form>
+       <input type="button" value="Click to change window size"
+          onClick="javascript:shrinkScreen()" />
+     </form>
+  </body>
+</html>
+

@@ -1,0 +1,318 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Excercises for Chapter 6</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Programming Exercises for Chapter 6</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> several exercises for Chapter 6
+        in <a href="../index.html">Introduction to Programming Using Java</a>.  For each exercise, a link to
+        a possible solution is provided.   Each solution includes a discussion of how a programmer might approach the
+        problem and interesting points raised by the problem or its solution, as well as complete source
+        code of the solution.</p>
+<hr>
+<h3 class="exercise">Exercise 6.1:</h3>
+<p>In the <span class="classname">SimpleStamperPanel</span> example from
+<a href="../c6/s4.html#GUI1.4.2">Subsection&nbsp;6.4.2</a>, a rectangle or oval is drawn on the panel when
+the user clicks the mouse, except that when the user shift-clicks, the panel is cleared
+instead.  Modify this class so that the modified version will continue to draw figures as the user
+drags the mouse.  That is, the mouse will leave a trail of figures as the user
+drags.  However, if the user shift-clicks, the panel should simply be
+cleared and no figures should be drawn even if the user drags the mouse after
+shift-clicking. Use your panel either in an applet or in a stand-alone application
+(or both).  Here is an applet version of my solution:</p>
+
+<p align="center">
+<applet code="SimpleStamperAppletWithDrag.class" width="350" height="250" archive="SimpleStamperWithDrag.jar" alt=""></applet></p>
+
+<p>The source code for the original panel class is <span class="sourceref"><a href="../source/SimpleStamperPanel.java">SimpleStamperPanel.java</a></span>.
+An applet that uses this class can be found in <span class="sourceref"><a href="../source/SimpleStamperApplet.java">SimpleStamperApplet.java</a></span>,
+and a main program that uses the panel in a frame is in <span class="sourceref"><a href="../source/SimpleStamper.java">SimpleStamper.java</a></span>.
+See the discussion of dragging in <a href="../c6/s4.html#GUI1.4.4">Subsection&nbsp;6.4.4</a>.
+(Note that in the original version, I drew a black outline around each shape.
+In the modified version, I decided that it would look better to draw a gray
+outline instead.)</p>
+
+<p>If you want to make the problem a little more challenging, when drawing shapes
+during a drag operation, make sure that the shapes that are drawn are at least, say,
+5 pixels apart.  To implement this, you have to keep track of the position of the
+last shape that was drawn.</p>
+
+<p align="right">
+<a href="ex1-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 6.2:</h3>
+<p>Write a panel that shows a small red square and a small blue
+square. The user should be able to drag either square with the mouse.
+(You'll need an instance variable to remember which square the user is
+dragging.) The user can drag the square off the applet if she wants; if she
+does this, there is no
+way to get it back. Use your panel in either an applet or a stand-alone application.
+You can try the applet version here:</p>
+<p align="center">
+<applet code="DragTwoSquaresApplet.class" width="260" height="160" archive="DragTwoSquares.jar" alt=""></applet></p>
+
+<p>Note that for this exercise, you should do all the drawing in the
+<span class="code">paintComponent()</span> method (as indeed you should whenever possible).</p>
+
+<p align="right">
+<a href="ex2-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 6.3:</h3>
+<p>Write a panel that shows
+a pair of dice. When the user clicks on the panel, the dice should be rolled
+(that is, the dice should be assigned newly computed random values). Each die
+should be drawn as a square showing from 1 to 6 dots. Since you have to draw
+two dice, its a good idea to write a subroutine, "<span class="code">void drawDie(Graphics g,
+int val, int x, int y)</span>", to draw a die at the specified <span class="code">(x,y)</span>
+coordinates. The second parameter, <span class="code">val</span>, specifies the value that is
+showing on the die. Assume that the size of the panel is 100 by 100 pixels.
+Also write an applet that uses your panel as its content pane.
+Here is a working version of the applet:</p>
+
+<p align="center">
+<applet code="DiceApplet.class" width="100" height="100" archive="Dice.jar" alt=""></applet></p>
+
+<p align="right">
+<a href="ex3-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 6.4:</h3>
+<p>In <a href="../c6/ex3-ans.html">Exercise&nbsp;6.3</a>,
+you wrote a pair-of-dice panel where the dice are rolled when the user clicks on
+the panel. Now make a pair-of-dice program in which the user rolls the
+dice by clicking a button.  The button should appear under the
+panel that shows the dice.  Also make the following change:  When the
+dice are rolled, instead of just showing the new value, show a short animation
+during which the values on the dice are changed in every frame.  The animation
+is supposed to make the dice look more like they are actually rolling.
+Write your program as a stand-alone application. Here is an applet version of 
+the program:</p>
+
+<p align="center">
+<applet code="DiceAppletWithButton.class" width="100" height="140" archive="DiceWithButton.jar" alt=""></applet></p>
+
+<p align="right">
+<a href="ex4-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 6.5:</h3>
+<p>In <a href="../c3/ex6-ans.html">Exercise&nbsp;3.6</a>, you drew a checkerboard. For this
+exercise, write a checkerboard applet where the user can select a square by
+clicking on it. Highlight the selected square by drawing a colored border around
+it. When the applet is first created, no square is selected. When the user
+clicks on a square that is not currently selected, it becomes selected (and the
+previously selected square, if any, is unselected). If the
+user clicks the square that is selected, it becomes unselected. Assume that the
+size of the applet is exactly 160 by 160 pixels, so that each square on the
+checkerboard is 20 by 20 pixels. 
+Here is a working version of the applet:</p>
+
+<p align="center">
+<applet code="ClickableCheckerboard.class" width="160" height="160" archive="ClickableCheckerboard.jar" alt=""></applet></p>
+
+<p align="right">
+<a href="ex5-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 6.6:</h3>
+<p>For this exercise, you
+should modify the SubKiller game from <a href="../c6/s5.html#GUI1.5.4">Subsection&nbsp;6.5.4</a>. You
+can start with the existing source code, from the file 
+<span class="sourceref"><a href="../source/SubKillerPanel.java">SubKillerPanel.java</a></span>. Modify the game so it
+keeps track of the number of hits and misses and displays these quantities.
+That is, every time the depth charge blows up the sub, the number of hits goes
+up by one. Every time the depth charge falls off the bottom of the screen
+without hitting the sub, the number of misses goes up by one. There is room at
+the top of the panel to display these numbers. To do this exercise, you only
+have to add a half-dozen lines to the source code. But you have to figure out
+what they are and where to add them. To do this, you'll have to read the source
+code closely enough to understand how it works.</p>
+
+<p align="right">
+<a href="ex6-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 6.7:</h3>
+<p>
+<a href="../c5/ex2-ans.html">Exercise&nbsp;5.2</a> involved a class, <span class="sourceref"><a href="../source/StatCalc.java">StatCalc.java</a></span>,
+that could compute some statistics
+of a set of numbers. Write a program that uses the <span class="classname">StatCalc</span> class to
+compute and display statistics of numbers entered by the user. The panel will
+have an instance variable of type <span class="classname">StatCalc</span> that does the computations.
+The panel should include a <span class="classname">JTextField</span> where the user enters a number.
+It should have four labels that display four statistics for the numbers that
+have been entered: the number of numbers, the sum, the mean, and the standard
+deviation. Every time the user enters a new number, the statistics displayed on
+the labels should change. The user enters a number by typing it into the
+<span class="classname">JTextField</span> and pressing return. There should be a "Clear" button that
+clears out all the data. This means creating a new <span class="classname">StatCalc</span> object and
+resetting the displays on the labels. My panel also has an "Enter" button that
+does the same thing as pressing the return key in the <span class="classname">JTextField</span>.
+(Recall that a <span class="classname">JTextField</span> generates an <span class="classname">ActionEvent</span> when the
+user presses return, so your panel should register itself to listen for
+<span class="classname">ActionEvents</span> from the <span class="classname">JTextField</span>.)
+Write your program as a stand-alone application.  Here is an applet version of my solution to
+this problem:</p>
+
+<p align="center">
+<applet code="StatsApplet.class" width="320" height="218" archive="Stats.jar" alt=""></applet></p>
+
+<p align="right">
+<a href="ex7-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 6.8:</h3>
+<p> Write a panel with a
+<span class="classname">JTextArea</span> where the user can enter some text. The panel should have a
+button. When the user clicks on the button, the panel should count the number
+of lines in the user's input, the number of words in the user's input, and the
+number of characters in the user's input. This information should be displayed
+on three labels in the panel. Recall that if <span class="code">textInput</span> is a
+<span class="classname">JTextArea</span>, then you can get the contents of the <span class="classname">JTextArea</span> by
+calling the function <span class="code">textInput.getText()</span>. This function returns a
+<span class="classname">String</span> containing all the text from the text area. The number
+of characters is just the length of this <span class="classname">String</span>. Lines in the
+<span class="classname">String</span> are separated by the new line character, <span class="code">'\n'</span>, so the number of
+lines is just the number of new line characters in the <span class="classname">String</span>, plus
+one. Words are a little harder to count. <a href="../c3/ex4-ans.html">Exercise&nbsp;3.4</a> 
+has some advice about finding the
+words in a <span class="classname">String</span>. Essentially, you want to count the number of
+characters that are first characters in words. Don't forget to put your
+<span class="classname">JTextArea</span> in a <span class="classname">JScrollPane</span>,
+and add the scroll pane to the container, not the text area. Scrollbars should appear when the
+user types more text than will fit in the available area. Here is an
+applet version of my solution:</p>
+
+<p align="center">
+<applet code="TextCounterApplet.class" width="280" height="280" archive="TextCounter.jar" alt=""></applet></p>
+
+<p align="right">
+<a href="ex8-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 6.9:</h3>
+<p>Write a GUI Blackjack program
+that lets the user play a game of Blackjack, with the computer as the dealer.
+The applet should draw the user's cards and the dealer's cards, just as was
+done for the graphical HighLow card game in  <a href="../c6/s7.html#GUI1.7.6">Subsection&nbsp;6.7.6</a>.
+You can use the source code for that game, <span class="sourceref"><a href="../source/HighLowGUI.java">HighLowGUI.java</a></span>, for some ideas about how to
+write your Blackjack game. The structures of the HighLow panel and the
+Blackjack panel are very similar. You will certainly want to use the
+<span class="code">drawCard()</span> method from the HighLow program.</p>
+
+
+<p>You can find a description of the game of Blackjack in <a href="../c5/ex5-ans.html">Exercise&nbsp;5.5</a>. 
+Add the following rule to that
+description: If a player takes five cards without going over 21, that player
+wins immediately. This rule is used in some casinos. For your program, it means
+that you only have to allow room for five cards. You should assume that the
+panel is just wide enough to show five cards, and that it is tall enough 
+show the user's hand and the dealer's hand.</p>
+
+
+<p>Note that the design of a GUI Blackjack game is very different from the
+design of the text-oriented program that you wrote for <a href="../c5/ex5-ans.html">Exercise&nbsp;5.5</a>. The user
+should play the game by clicking on "Hit" and "Stand" buttons. There should be
+a "New Game" button that can be used to start another game after one game ends.
+You have to decide what happens when each of these buttons is pressed. You
+don't have much chance of getting this right unless you think in terms of the
+states that the game can be in and how the state can change.</p>
+
+
+<p>Your program will need the classes defined in 
+<span class="sourceref"><a href="../source/Card.java">Card.java</a></span>,
+<span class="sourceref"><a href="../source/Hand.java">Hand.java</a></span>,
+<span class="sourceref"><a href="../source/Deck.java">Deck.java</a></span>, and
+<span class="sourceref"><a href="../source/BlackjackHand.java">BlackjackHand.java</a></span>.</p>
+
+
+
+<p>Here is an applet version of the program for you to try:</p>
+
+<p align="center">
+<applet code="BlackjackGUIApplet.class" width="466" height="346" archive="BlackjackGUI.jar" alt=""></applet></p>
+
+
+<p align="right">
+<a href="ex9-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 6.10:</h3>
+<p>In the Blackjack game 
+from <a href="../c6/ex9-ans.html">Exercise&nbsp;6.9</a>, the user can click on the "Hit",
+"Stand", and "NewGame" buttons even when it doesn't make sense to do so. It
+would be better if the buttons were disabled at the appropriate times. The "New
+Game" button should be disabled when there is a game in progress. The "Hit" and
+"Stand" buttons should be disabled when there is not a game in progress. The
+instance variable <span class="code">gameInProgress</span> tells whether or not a game is in
+progress, so you just have to make sure that the buttons are properly enabled
+and disabled whenever this variable changes value. 
+I strongly advise writing a subroutine that can be called whenever it is
+necessary to set the value of the <span class="code">gameInProgress</span> variable. Then the
+subroutine can take responsibility for enabling and disabling the buttons.
+Recall that if <span class="code">bttn</span> is a variable of type <span class="code">JButton</span>, then
+<span class="code">bttn.setEnabled(false)</span> disables the button and
+<span class="code">bttn.setEnabled(true)</span> enables the button.</p>
+
+
+<p>As a second (and more difficult) improvement, make it possible
+for the user to place bets on the Blackjack game. When the applet starts, give
+the user $100. Add a <span class="classname">JTextField</span> to the strip of controls along the
+bottom of the applet. The user can enter the bet in this <span class="classname">JTextField</span>.
+When the game begins, check the amount of the bet. You should do this when the
+game begins, not when it ends, because several errors can occur: The contents
+of the <span class="classname">JTextField</span> might not be a legal number. The bet that the user
+places might be more money than the user has, or it might be &lt;= 0. You
+should detect these errors and show an error message instead of starting the
+game. The user's bet should be an integral number of dollars.</p>
+
+
+<p>It would be a good idea to make the <span class="classname">JTextField</span> uneditable while the
+game is in progress. If <span class="code">betInput</span> is the <span class="classname">JTextField</span>, you can
+make it editable and uneditable by the user with the commands
+<span class="code">betInput.setEditable(true)</span> and <span class="code">betInput.setEditable(false)</span>.</p>
+
+
+<p>In the <span class="code">paintComponent()</span> method, you should include commands to
+display the amount of money that the user has left.</p>
+
+
+<p>There is one other thing to think about: Ideally, the applet should not start a new
+game when it is first created. The user should have a chance to set a bet
+amount before the game starts. So, in the constructor for the drawing surface class, you
+should not call <span class="code">doNewGame()</span>. You might want to display a message such
+as "Welcome to Blackjack" before the first game starts.</p>
+   
+
+<p>Here is an applet version of my program:</p>
+
+<p align="center">
+<applet code="BlackjackGUIApplet2.class" width="466" height="365" archive="BlackjackGUI2.jar" alt=""></applet></p>
+
+<p align="right">
+<a href="ex10-ans.html">See the Solution</a>
+</p>
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

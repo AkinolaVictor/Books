@@ -1,0 +1,223 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 6, Chapter 3</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 3.6</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 3.6:</h3>
+<p>Write an applet that draws
+a checkerboard.  Write your solution as a subclass of
+<span class="classname">AnimationBase</span>, even though all the
+frames that it draws will be the same.
+Assume that the size of the applet is 160 by 160 pixels. Each
+square in the checkerboard is 20 by 20 pixels. The checkerboard contains 8 rows
+of squares and 8 columns. The squares are red and black. Here is a tricky way
+to determine whether a given square should be red or black: If the row number and the
+column number are either both even or both odd, then the square is red.
+Otherwise, it is black. Note that a square is just a rectangle in which the
+height is equal to the width, so you can use the subroutine
+<span class="code">g.fillRect()</span> to draw the squares. Here is an image of the
+checkerboard:</p>
+
+
+<p align="center">
+<img src="checkerboard.gif" width="170" height="169" alt="checkerboard"></p>
+
+
+<p>(To run an applet, you need a Web page to display it. A very simple page
+will do. Assume that your applet class is called <span class="code">Checkerboard</span>, so that
+when you compile it you get a class file named <span class="code">Checkerboard.class</span> Make
+a file that contains only the lines:</p>
+
+
+<pre>&lt;applet code="Checkerboard.class" width=160 height=160&gt;
+&lt;/applet&gt;</pre>
+
+
+<p>Call this file <span class="code">Checkerboard.html</span>. This is the source code for a
+simple Web page that shows nothing but your applet. The compiled class file,
+<span class="code">Checkerboard.class</span>, must be in the same directory with the Web-page
+file, <span class="code">Checkerboard.html</span>.  Furthermore, since your program depends on
+the non-standard class <span class="classname">AnimationBase</span>, you also have to
+make that class available to your program.  To do this, you should 
+compile the source code, <span class="sourceref"><a href="../source/AnimationBase.java">AnimationBase.java</a></span>.  
+The result will 
+be <b>two</b> class files, <span class="code">AnimationBase.class</span> and
+<span class="code">AnimationBase$1.class</span>.  Place <b>both</b> of these class
+files in the same directory, together with <span class="code">Checkerboard.html</span>
+and <span class="code">Checkerboard.class</span>. Now, to run the applet, simply
+open <span class="code">Checkerboard.html</span> in a web browser.  Alternatively,
+on the command line, you can use the command</p>
+
+
+<pre>appletviewer Checkerboard.html</pre>
+
+
+<p>The <span class="code">appletviewer</span> command, like <span class="code">java</span> and <span class="code">javac</span>
+is part of a standard installation of the JDK.</p>
+
+
+<p>If you are using the Eclipse Integrated Development Environment, you should add
+<span class="sourceref"><a href="../source/AnimationBase.java">AnimationBase.java</a></span> to the project where you want to write
+<span class="code">Checkerboard.java</span>.  You can then
+simply right-click the name of the source code file in the Package Explorer.
+In the pop-up menu, go to "Run&nbsp;As" then to "Java Applet".  This will open
+the window in which the applet appears.  The default size for the window
+is bigger than 160-by-160, so the drawing of the checkerboard will not fill the
+entire window.)</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+
+<p>The basic algorithm is obvious:</p>
+
+
+<pre>for each row on the checkerboard:
+    Draw all the squares in that row</pre>
+
+
+<p>Since any given row contains eight squares, one in each column of the
+checkerboard, we can expand the body of the for loop into another for loop:</p>
+
+
+<pre>for each row on the checkerboard:
+    for each of the eight columns:
+        Draw the square in that row and column</pre>
+
+
+<p>Each square is a rectangle with height 20 and width 20, so it can be drawn
+with the command <span class="code">g.fillRect(x,y,20,20)</span>, where <span class="code">x</span> and
+<span class="code">y</span> are the coordinates of the top-left corner of the square. Before
+drawing the square, we have to determine whether it should be red or black, and
+we have to set the correct color with <span class="code">g.setColor</span>. So, the algorithm
+becomes</p>
+
+
+<pre>for each row on the checkerboard:
+    for each of the eight columns:
+        Compute x,y for the top-left corner of the square
+        if its a red square:
+           g.setColor(Color.red)
+        else
+           g.setColor(Color.black)
+        g.fillRect(x,y,20,20)</pre>
+
+
+<p>The top of the first row of squares is at <span class="code">y=0</span>. Since each square is
+20 pixels high, the top of the second row is at <span class="code">y=20</span>, followed by 40
+for the third row, then 60, 80, 100, 120, and 140. If we assume that the rows
+are numbered 0, 1, 2, ..., 7, then the tops are given by <span class="code">y&nbsp;=&nbsp;row*20</span>,
+where <span class="code">row</span> is the row number. (If you number the rows 1, 2, ..., 8, the
+formula would be <span class="code">(row-1)*20</span>. The simpler formula in this and in many
+similar cases is one reason why computer scientists like to start counting with
+0 instead of 1.) Similarly, the left edge of the squares in column <span class="code">col</span>
+is given by <span class="code">x&nbsp;=&nbsp;col*20</span>, where again the columns are numbered 0, 1, 2,
+..., 7. I'll use "<span class="code">for (row=0;&nbsp;row&lt;8;&nbsp;row++)</span>" to count off the rows,
+rather than the equivalent "<span class="code">for (row=0;&nbsp;row&lt;=7;&nbsp;row++)</span>". The 8
+reminds me that I am counting off the <b>eight</b> numbers 0, 1, 2,
+..., 7. Again, this is typical computer science style.</p>
+
+
+<p>The only problem remaining is how to determine whether the square is red. As
+noted in the exercise, a square is red if <span class="code">row</span> and <span class="code">col</span> are
+either both even or both odd. Since an integer <span class="code">N</span> is even if
+<span class="code">N%2</span> is 0, the test could be expressed as</p>
+
+
+<pre>if ((row%2 == 0 &amp;&amp; col%2 == 0) || (row%2 == 1 &amp;&amp; col%2 == 1))</pre>
+
+
+<p>However,
+note that this is the same as asking whether <span class="code">row%2</span> and <span class="code">col%2</span>
+have the same value. So the test can be written more simply as 
+"<span class="code">if&nbsp;(row%2&nbsp;==&nbsp;col%2)</span>". Putting this all together into syntactically correct Java
+code, the algorithm becomes</p>
+
+
+<pre>for ( row = 0;  row &lt; 8;  row++ ) {
+   for ( col = 0;  col &lt; 8;  col++ ) {
+       x = 20*col;
+       y = 20*row;
+       if ( (row % 2) == (col % 2) )
+          g.setColor(Color.red);
+       else
+          g.setColor(Color.black);
+       g.fillRect(x,y,20,20);
+   }
+}</pre>
+
+
+<p>Of course, the variables <span class="code">row</span>, <span class="code">col</span>, <span class="code">x</span>, and
+<span class="code">y</span> have to be declared to be of type <span class="ptype">int</span>. Then, the code goes
+into the body of the <span class="code">drawFrame()</span> method of an applet. The syntax of the
+applet definition must follow the format given in <a href="../c3/s8.html">Section&nbsp;3.8</a>.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">import java.awt.*;
+
+public class Checkerboard extends AnimationBase {
+  
+   /*  This applet draws a red-and-black checkerboard.
+       It is assumed that the size of the applet is 160
+       by 160 pixels.
+   */
+
+   public void drawFrame(Graphics g) {
+      
+      int row;   // Row number, from 0 to 7
+      int col;   // Column number, from 0 to 7
+      int x,y;   // Top-left corner of square
+   
+      for ( row = 0;  row &lt; 8;  row++ ) {
+      
+         for ( col = 0;  col &lt; 8;  col++) {
+            x = col * 20;
+            y = row * 20;
+            if ( (row % 2) == (col % 2) )
+               g.setColor(Color.red);
+            else
+               g.setColor(Color.black);
+            g.fillRect(x, y, 20, 20);
+         } 
+      
+      } // end for row
+   
+   }  // end paint()
+
+}  // end class Checkerboard</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

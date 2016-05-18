@@ -1,0 +1,243 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 1, Chapter 9</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 9.1</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 9.1:</h3>
+<p>In many textbooks, the first examples of recursion are
+the mathematical functions <i>factorial</i> and <i>fibonacci</i>.  These functions
+are defined for non-negative integers using the following recursive formulas:</p>
+
+<pre>factorial(0)  =  1
+factorial(N)  =  N*factorial(N-1)   for N &gt; 0
+
+fibonacci(0)  =  1
+fibonacci(1)  =  1
+fibonacci(N)  =  fibonacci(N-1) + fibonacci(N-2)   for N &gt; 1</pre>
+
+<p>Write recursive functions to compute <span class="code">factorial(N)</span> and
+<span class="code">fibonacci(N)</span> for a given non-negative integer&nbsp;<span class="code">N</span>,
+and write a <span class="code">main()</span> routine to test your functions.</p>
+
+<p>(In fact, <i>factorial</i> and <i>fibonacci</i> are really not very good
+examples of recursion, since the most natural way to compute them is to use
+simple <span class="code">for</span> loops.  Furthermore, <i>fibonacci</i> is a particularly
+bad example, since the natural recursive approach to computing this function
+is extremely inefficient.)</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>The recursive definitions of the two functions can be translated
+rather easily into Java code.  Note that for <span class="code">factorial(N)</span>, the base
+case is <span class="code">N=0</span>, while <span class="code">fibonacci(N)</span> has two base cases,
+<span class="code">N=0</span> and <span class="code">N=1</span>.  The obvious recursive function for
+computing <span class="code">fibonacci(N)</span> is:</p>
+
+<pre>static int fibonacci( int N ) {
+    if ( N == 0 || N == 1 ) {
+           // Base cases; the answer is 1.
+        return 1;
+    }
+    else {
+           // Recursive case; the answer is obtained by applying the function
+           // recursively to N-1 and to N-2, and adding the two answers.
+        return fibonacci(N-1) + fibonacci(N-2);
+    }
+}</pre>
+
+<p>and for <span class="code">factorial(N)</span> is</p>
+
+<pre>static int factorial( int N ) {
+   if ( N == 0) {
+          // Base case; the answer is 1.
+      return 1;
+   }
+   else {
+         // Recursive case; the answer is obtained by applying the function
+         // recursively to N-1 and multiplying the answer by N.
+      return factorial(N-1) * N;
+   }
+}</pre>
+
+<p>Adding a <span class="code">main()</span> routine that calls these methods for several values
+of <span class="code">N</span> would be an acceptable solution to the exercise.  However, when testing
+the program, you will quickly notice some problems.  First of all, the recursive algorithm
+for <span class="code">fibonacci(N)</span> is so inefficient that it takes an unreasonably long
+time for it run even for values of <span class="code">N</span> as small as 40.  (In fact, the
+recursive evaluation of <span class="code">fibonacci(N)</span> calls both <span class="code">fibonacci(N-1)</span>
+and <span class="code">fibonacci(N-2)</span> and so takes almost twice as along as the evaluation
+of <span class="code">fibonacci(N-1)</span>; with the computation time for <span class="code">fibonacci(N)</span>
+almost doubling every time <span class="code">N</span> goes up by&nbsp;1, the computation time
+quickly becomes unreasonable.)  Although I include
+the recursive version of <span class="code">fibonacci</span> in my solution, my program refuses to
+use this function if <span class="code">N</span> is greater than 40.</p>
+
+<p>Another problem occurs because of the limited size of values of type <span class="code">int</span>.
+The value of <span class="code">factorial(N)</span> grows very quickly as <span class="code">N</span> increases -- so
+quickly that by the time <span class="code">N</span> reaches 13, the value of <span class="code">factorial(N)</span>
+is already too large to be expressed as a 32-bit integer!  So, the <span class="code">factorial</span>
+function as defined above only gives the correct answer for numbers 0 through&nbsp;12.
+Although <span class="code">fibonacci(N)</span> does not grow nearly so fast as <span class="code">factorial(N)</span>,
+it is still true that by the time <span class="code">N</span> reaches 46, <span class="code">fibonacci(N)</span> is
+outside the range of 32-bit integers.</p>
+
+<p>The problem of the limited size of values of type <span class="ptype">int</span>
+was discussed in <a href="../c8/s1.html#robustness.1.3">Subsection&nbsp;8.1.3</a>.  One approach to dealing with
+the problem was presented in <a href="../c8/ex2-ans.html">Exercise&nbsp;8.2</a>: The class <span class="code">java.math.BigInteger</span>
+represents integer values that can be arbitrarily large (within the limits of the computer's
+memory).  In my solution to the exercise, I decided to use <span class="classname">BigInteger</span>
+values to compute <span class="code">factorial(N)</span> and to compute <span class="code">fibonacci(N)</span> non-recursively.
+This allows my program to work even for fairly large values of <span class="code">N</span>, say up to
+a few thousand.  Since it's still fun to see a computer working with very large numbers,
+here is an applet version of my program for you to try:</p>
+
+
+<p align="center">
+<applet code="FibonacciAndFactorialConsole.class" width="600" height="350" archive="FibonacciAndFactorial.jar" alt=""></applet></p>
+
+
+<p>You can read my solution below to see how I used the <span class="classname">BigInteger</span> class
+and how I computed <span class="code">fibonacci(N)</span> non-recursively.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">import java.math.BigInteger;
+
+/**
+ * Computes factorial(N) and fibonacci(N) for integers N entered by
+ * the user, as a demonstration of recursion.
+ */
+public class FibonacciAndFactorial {
+   
+   /**
+    * Main routine reads integers N from the user and prints the
+    * values of factorial(N) and fibonacci(N), stopping when the 
+    * user inputs a zero.
+    */
+   public static void main( String[] args ) {
+      while (true) {
+         System.out.print("\n\nEnter a postive integer, or 0 to end:  ");
+         int N = TextIO.getlnInt();
+         if (N == 0)
+            break;
+         else if (N &lt; 0) {
+            System.out.println("Negative numbers are not allowed.");
+            continue;
+         }
+         BigInteger NasBigInteger = BigInteger.valueOf(N);
+         System.out.println("\n  factorial(" + N + ") is " + factorial(NasBigInteger));
+         if (N &gt; 40) {
+            System.out.println("\n  N is too big to compute fibonacci(N) recursively");
+         }
+         else {
+            System.out.println("\n  fibonacci(" + N + ") is " + 
+                  fibonacci(N) + "   (recursively)");
+         }
+         System.out.println("\n  fibonacci(" + N + ") is " + 
+                  fibonacci_nonrecursive(N) + "   (non-recursively)");
+      }
+   }
+   
+   
+   /**
+    * Compute fibonacci(N) using recursion.  Because this is so inefficient,
+    * even for fairly small values of N, N should be less than or equal to 40.
+    * Also, N must be greater than or equal to zero, or an infinite recursion
+    * will occur.
+    */
+   static int fibonacci( int N ) {
+       assert N &gt;= 0 : "fibonacci(n) is only defined for non-negative n";
+       assert N &lt;= 40 : "n is to large to compute fibonacci(N) recursively";
+       if ( N == 0 || N == 1 ) {
+                // Base cases; the answer is 1.
+           return 1;
+       }
+       else {
+              // Recursive case; the answer is obtained by applying the function
+              // recursively to N-1 and to N-2, and adding the two answers.
+           return fibonacci(N-1) + fibonacci(N-2);
+       }
+   }
+   
+   
+   /**
+    * Compute fibonacci(N) using a for loop.  The answer is returned as
+    * a BigInteger and can be very large even for fairly small values
+    * of N.  N must be greater than or equal to zero.
+    */
+   static BigInteger fibonacci_nonrecursive( int N ) {
+      assert N &gt;= 0 : "fibonacci(n) is only defined for non-negative n";
+      if (N == 0 || N == 1) {
+             // fibonacci(0) = fibonacci(1) = 1;
+         return BigInteger.ONE;
+      }
+      else {
+         BigInteger f0 = BigInteger.ONE;  // In the loop, this is fibonacci(i-2)
+         BigInteger f1 = BigInteger.ONE;  // In the loop, this is fibonacci(i-1)
+         for (int i = 2; i &lt;= N; i++) {
+            BigInteger fi = f0.add(f1);  // Computes fibonacci(i)
+            f0 = f1;  // Update to account for i++
+            f1 = fi;  // Update to account for i++
+         }
+         return f1;  // Final value of f1 is fibonacci(N)
+      }
+   }
+
+   
+   /**
+    * Compute factorial(N) using recursion.  The computation is done using
+    * BigIntegers and can be very large even for fairly small values of N.
+    * N must be greater than or equal to zero.
+    */
+   static BigInteger factorial( BigInteger N ) {
+      assert N.signum() &gt;= 0 : "factorial(n) is only defined for non-negative n";
+       if ( N.equals(BigInteger.ZERO) ) {
+              // Base case; the answer is 1.
+           return BigInteger.ONE;
+       }
+       else {
+              // Recursive case; the answer is obtained by applying the function
+              // recursively to N-1 and multiplying the answer by N.
+           BigInteger factorialOfNMinus1 = factorial(N.subtract(BigInteger.ONE));
+           return N.multiply(factorialOfNMinus1);
+       }
+   }
+
+}
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

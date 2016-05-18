@@ -1,0 +1,30 @@
+<html>
+<head><title>Preloading Images</title>
+   <script type="text/javascript">
+	window.onload=preLoad;			   
+     function preLoad(){
+		 var linkId=document.getElementById("link1");
+       	 	baby = new Array();  // global variable
+ 		 baby[0]=new Image(); // Preload an image
+         baby[0].src="babysmile.jpg";
+         baby[1]=new Image();    
+        	baby[1].src="babygoo.jpg";
+
+        linkId.onmouseover=firstBaby;  // Event property on a link
+        linkId.onmouseout=secondBaby;
+      }
+			 function firstBaby(){
+			    document.images["willy"].src=baby[1].src;
+			 }
+			 function secondBaby(){
+			    document.images["willy"].src=baby[0].src;
+			 }
+   </script>
+</head>
+		  <body>
+			<h1>This is Baby William</h1>
+          <a id="link1"><img name="willy"  src="babygoo.jpg" 
+                 width="220" height="250">
+ 			</a>
+</body>
+</html>

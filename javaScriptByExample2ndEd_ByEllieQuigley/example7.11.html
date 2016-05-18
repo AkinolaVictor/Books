@@ -1,0 +1,23 @@
+
+<html>
+<head>
+<title>Recursion</title>
+	<script type="text/javascript">
+   		function upDown(num){
+	      alert("Call level: "+ num);
+			if(num< 4){
+			   upDown(num + 1);   // Function calls itself
+			   alert("Backing out: " + num );
+			}
+
+		}
+
+	</script>
+</head>
+<body bgcolor="blue">
+	<script type="text/javascript">
+		upDown(1);
+		alert("All done!");
+	</script>
+</body>
+</html>

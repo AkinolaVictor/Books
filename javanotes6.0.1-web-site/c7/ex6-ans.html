@@ -1,0 +1,296 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 6, Chapter 7</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 7.6</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 7.6:</h3>
+<p>Write a program that will read a text file selected by the user,
+and will make an alphabetical list of all the different words in that file.  All words
+should be converted to lower case, and duplicates should be eliminated from the list.
+The list should be written to an output file selected by the user.  As discussed
+in <a href="../c2/s4.html#basics.4.5">Subsection&nbsp;2.4.5</a>, you can use <span class="classname">TextIO</span> to read and
+write files.  Use a variable of type <span class="atype">ArrayList&lt;String&gt;</span> to
+store the words.  (See <a href="../c7/s3.html#arrays.3.4">Subsection&nbsp;7.3.4</a>.)
+It is not easy to separate a file into words as you are reading
+it.  You can use the following method:</p>
+
+<pre>/**
+ * Read the next word from TextIO, if there is one.  First, skip past
+ * any non-letters in the input.  If an end-of-file is encountered before 
+ * a word is found, return null.  Otherwise, read and return the word.
+ * A word is defined as a sequence of letters.  Also, a word can include
+ * an apostrophe if the apostrophe is surrounded by letters on each side.
+ * @return the next word from TextIO, or null if an end-of-file is 
+ * encountered
+ */
+private static String readNextWord() {
+   char ch = TextIO.peek(); // Look at next character in input.
+   while (ch != TextIO.EOF &amp;&amp; ! Character.isLetter(ch)) {
+          // Skip past non-letters.
+      TextIO.getAnyChar();  // Read the character.
+      ch = TextIO.peek();   // Look at the next character.
+   }
+   if (ch == TextIO.EOF) // Encountered end-of-file
+      return null;
+   // At this point, we know the next character is a letter, so read a word.
+   String word = "";  // This will be the word that is read.
+   while (true) {
+      word += TextIO.getAnyChar();  // Append the letter onto word.
+      ch = TextIO.peek();  // Look at next character.
+      if ( ch == '\'' ) {
+            // The next character is an apostrophe.  Read it, and
+            // if the following character is a letter, add both the
+            // apostrophe and the letter onto the word and continue
+            // reading the word.  If the character after the apostrophe
+            // is not a letter, the word is done, so break out of the loop.
+         TextIO.getAnyChar();   // Read the apostrophe.
+         ch = TextIO.peek();    // Look at char that follows apostrophe.
+         if (Character.isLetter(ch)) {
+            word += "\'" + TextIO.getAnyChar();
+            ch = TextIO.peek();  // Look at next char.
+         }
+         else
+            break;
+      }
+      if ( ! Character.isLetter(ch) ) {
+            // If the next character is not a letter, the word is
+            // finished, so break out of the loop.
+         break;
+      }
+      // If we haven't broken out of the loop, next char is a letter.
+   }
+   return word;  // Return the word that has been read.
+}</pre>
+
+<p>Note that this method will return <span class="code">null</span> when the file has been
+entirely read.  You can use this as a signal to stop processing the input file.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>This is actually not a very difficult program to write.
+The main point of the exercise is to get you to use a list of strings and
+to do something with files.</p>
+
+<p>There are several possible approaches to this problem.  One approach is to simply dump
+all the words from the file into a list, without worrying about eliminating
+duplicates or keeping the list in order.  After the file has been read, the list
+can be sorted and printed.  Although the list can contain duplicates, the output
+file should list each word only once.  However, it's easy to leave out the duplicates
+as the file is being written.  If <span class="code">wordList</span> is the variable of
+type <span class="atype">ArrayList&lt;String&gt;</span> that holds the already sorted list of words,
+then the following code will output the list without duplicates.  The idea is
+that a word is written only if it is different from the previous word in the list.
+Word number 0 is a special case, because there is no previous location in the list
+in that case:</p>
+
+<pre>for (int i = 0; i &lt; wordlist.size(); i++) {
+   if (i == 0 || ! wordlist.get(i).equals(wordList.get(i-1) )  
+      TextIO.putln(wordlist.get(i));
+}</pre>
+
+<p>A second approach to the problem would be to keep the list of words in sorted
+order as it is being constructed.  This can be done by applying the <span class="code">insert()</span>
+routine from <a href="../c7/s4.html#arrays.4.3">Subsection&nbsp;7.4.3</a> to insert each word into the list.</p>
+
+<p>A third approach, and the one that I use in my solution, is to eliminate duplicates
+from the list as it being constructed.  Each time a word is read from the input file,
+I first check whether the word is already in the list.  If so, I discard it; if not,
+I add it to the end of the list.  The function <span class="code">wordList.indexOf(word)</span>
+can be used to test whether a given word is already in the list; this function returns
+the value <span class="code">-1</span> if <span class="code">word</span> is not in the list.  After the
+input file has been read, the list contains one copy of each word that was found
+in the file.  At this point the list still has to be sorted.  I use a
+selection sort algorithm (<a href="../c7/s4.html#arrays.4.4">Subsection&nbsp;7.4.4</a>) to do the sorting.
+Then, all the elements of the list are output using a for-each loop:</p>
+
+<pre>for (String w : wordList)
+   TextIO.putln("   " + w);</pre>
+
+<p>To let the user select the input and the output files, I use the methods
+<span class="code">TextIO.readUserSelectedFile()</span> and <span class="code">TextIO.writeUserSelectedFile()</span>,
+which are discussed in <a href="../c2/s4.html#basics.4.5">Subsection&nbsp;2.4.5</a>.  These methods put up a file
+dialog where the user can select a file.  After the user selects an input file, <span class="code">TextIO</span>
+reads from that file instead of from the user's input.  After the user selects an output
+file, <span class="code">TextIO</span> writes to that file instead of to standard output.
+If the user cancels the input file dialog,  then there is no input file to process, 
+so I exit the program.  If the user cancels the output file dialog, I write the list of
+words anyway -- it will go to standard output so the user will see it on the screen.</p>
+
+<p>When <span class="code">TextIO</span> is working with files and an error occurs, it will generate
+an error of type <span class="classname">IllegalArgumentException</span>.  My program catches
+the error if one occurs, and it prints an error message. An error is not very likely
+in this case but one could occur if, for example, the user selects an input file that
+the user does not have permission to read.</p>
+
+<p>The complete code for my solution is shown below.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">import java.util.ArrayList;
+
+/**
+ * Makes an alphabetical list of all the words in a file selected
+ * by the user.  The list can be written to a file.
+ */
+public class ListAllWordsFromFile {
+   
+   
+   public static void main(String[] args) {
+      
+      System.out.println("\n\nThis program will ask you to select an input file");
+      System.out.println("It will read that file and make an alphabetical");
+      System.out.println("list of all the words in the file.  After reading");
+      System.out.println("the file, the program asks you to select an output");
+      System.out.println("file.  If you select a file, the list of words will");
+      System.out.println("be written to that file; if you cancel, the list");
+      System.out.println("be written to standard output.  All words are converted");
+      System.out.println("lower case, and duplicates are eliminated from the list.\n\n");
+      System.out.print("Press return to begin.");
+      TextIO.getln();  // Wait for user to press return.
+      
+      try {
+         if (TextIO.readUserSelectedFile() == false) {
+            System.out.println("No input file selected.  Exiting.");
+             System.exit(1);
+         }
+         ArrayList&lt;String&gt; wordList = new ArrayList&lt;String&gt;();
+         String word = readNextWord();
+         while (word != null) {
+            word = word.toLowerCase();  // convert word to lower case
+            if ( wordList.indexOf(word) == -1 ) {
+                  // This is a new word, so add it to the list
+               wordList.add(word);
+            }
+            word = readNextWord();
+         }
+         System.out.println("Number of different words found in file:  " 
+               + wordList.size());
+         System.out.println();
+         if (wordList.size() == 0) {
+            System.out.println("No words found in file.");
+            System.out.println("Exiting without saving data.");
+            System.exit(0);
+         }
+         selectionSort(wordList);
+         TextIO.writeUserSelectedFile(); // If user cancels, output automatically
+                                         // goes to standard output.
+         TextIO.putln(wordList.size() + " words found in file:\n");
+         for (String w : wordList)
+            TextIO.putln("   " + w);
+         System.out.println("\n\nDone.\n\n");
+      }
+      catch (Exception e) {
+         System.out.println("Sorry, an error has occurred.");
+         System.out.println("Error Message:  " + e.getMessage());
+      }
+      System.exit(0);  // Might be necessary, because of use of file dialogs.
+   }
+
+
+   /**
+    * Sorts a list of strings into lexicographical order, using
+    * selection sort and treating the list much like an array.  In this 
+    * program, the list only contains words made up of lower case
+    * letters, so lexicographic order is the same as alphabetical order.
+    */
+   private static void selectionSort(ArrayList&lt;String&gt; list) {
+      for (int top = list.size() - 1; top &gt; 0; top--) {
+         int indexOfBiggest = 0;
+         for (int j = 0; j &lt; top; j++) {
+            String str = list.get(j);
+            if (str.compareTo( list.get(indexOfBiggest) ) &gt; 0) {
+               indexOfBiggest = j;
+            }
+         }
+         String temp = list.get(top);
+         list.set( top, list.get(indexOfBiggest) );
+         list.set( indexOfBiggest, temp );
+      }
+   }
+
+
+   /**
+    * Read the next word from TextIO, if there is one.  First, skip past
+    * any non-letters in the input.  If an end-of-file is encountered before 
+    * a word is found, return null.  Otherwise, read and return the word.
+    * A word is defined as a sequence of letters.  Also, a word can include
+    * an apostrophe if the apostrophe is surrounded by letters on each side.
+    * @return the next word from TextIO, or null if an end-of-file is encountered
+    */
+   private static String readNextWord() {
+      char ch = TextIO.peek(); // Look at next character in input.
+      while (ch != TextIO.EOF &amp;&amp; ! Character.isLetter(ch)) {
+             // Skip past non-letters.
+         TextIO.getAnyChar();  // Read the character.
+         ch = TextIO.peek();   // Look at the next character.
+      }
+      if (ch == TextIO.EOF) // Encountered end-of-file
+         return null;
+      // At this point, we know that the next character, so read a word.
+      String word = "";  // This will be the word that is read.
+      while (true) {
+         word += TextIO.getAnyChar();  // Append the letter onto word.
+         ch = TextIO.peek();  // Look at next character.
+         if ( ch == '\'' ) {
+               // The next character is an apostrophe.  Read it, and
+               // if the following character is a letter, add both the
+               // apostrophe and the letter onto the word and continue
+               // reading the word.  If the character after the apostrophe
+               // is not a letter, the word is done, so break out of the loop.
+            TextIO.getAnyChar();   // Read the apostrophe.
+            ch = TextIO.peek();    // Look at char that follows apostrophe.
+            if (Character.isLetter(ch)) {
+               word += "\'" + TextIO.getAnyChar();
+               ch = TextIO.peek();  // Look at next char.
+            }
+            else
+               break;
+         }
+         if ( ! Character.isLetter(ch) ) {
+               // If the next character is not a letter, the word is
+               // finished, so break out of the loop.
+            break;
+         }
+         // If we haven't broken out of the loop, next char is a letter.
+      }
+      return word;  // Return the word that has been read.
+   }
+   
+}
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

@@ -1,0 +1,22 @@
+<html>
+<head><title>Return Value</title>
+  <script type="text/javascript">
+	function mileage(miles, gas){
+		return miles/gas;   // Return the result of the division
+	}
+  </script>
+</head>
+<body bgcolor="lightgreen">
+      <font face="arial" size="+1">
+	  <div align="center">
+      <img src="car-wave.gif">
+	  <script type="text/javascript">
+		   var distance=eval(prompt("How many miles did you drive? ", ""));
+		   var amount=eval(prompt("How much gas did you use?", ""));
+		   var rate = mileage(distance, amount);
+                // Return value assigned to rate
+		   alert("Your mileage "+ rate  +" miles per gallon.\n");
+	  </script>
+      </div>
+</body>
+</html>

@@ -1,0 +1,484 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 5, Chapter 8</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 8.5</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 8.5:</h3>
+<p>This exercise uses the
+class <span class="classname">Expr</span>, which was described in
+<a href="../c8/ex4-ans.html">Exercise&nbsp;8.4</a> and which is defined in the source code
+file <span class="sourceref"><a href="../source/Expr.java">Expr.java</a></span>.  For this exercise, you
+should write a GUI program that can graph a function, <span class="code">f(x)</span>, whose
+definition is entered by the user. The program should have a text-input box
+where the user can enter an expression involving the variable <span class="code">x</span>, such
+as <span class="code">x^2</span> or <span class="code">sin(x-3)/x</span>. This expression is the definition of
+the function. When the user presses return in the text input box, the program
+should use the contents of the text input box to construct an object of type
+<span class="classname">Expr</span>. If an error is found in the definition, then the program should
+display an error message. Otherwise, it should display a graph of the function.
+(Note: A <span class="code">JTextField</span> generates an <span class="code">ActionEvent</span> when the user
+presses return.)</p>
+
+
+<p>The program will need a <span class="classname">JPanel</span> for displaying the graph. To keep
+things simple, this panel should represent a fixed region in the xy-plane,
+defined by <span class="code">-5&nbsp;&lt;=&nbsp;x&nbsp;&lt;=&nbsp;5</span> and
+<span class="code">-5&nbsp;&lt;=&nbsp;y&nbsp;&lt;=&nbsp;5</span>. To draw the graph, compute a
+large number of points and connect them with line segments. (This method does
+not handle discontinuous functions properly; doing so is very hard, so you
+shouldn't try to do it for this exercise.) My program divides the interval
+<span class="code">-5&nbsp;&lt;=&nbsp;x&nbsp;&lt;=&nbsp;5</span> into 300 subintervals and uses
+the 301 endpoints of these subintervals for drawing the graph. Note that the
+function might be undefined at one of these <span class="code">x</span>-values. In that case,
+you have to skip that point.</p>
+
+
+<p>A point on the graph has the form <span class="code">(x,y)</span> where <span class="code">y</span> is
+obtained by evaluating the user's expression at the given value of <span class="code">x</span>.
+You will have to convert these real numbers to the integer coordinates of the
+corresponding pixel on the canvas. The formulas for the conversion are:</p>
+
+
+<pre>a  =  (int)( (x + 5)/10 * width );
+b  =  (int)( (5 - y)/10 * height );</pre>
+
+
+<p>where <span class="code">a</span> and <span class="code">b</span> are the horizontal and vertical coordinates
+of the pixel, and <span class="code">width</span> and <span class="code">height</span> are the width and height
+of the panel.</p>
+
+
+   
+
+
+<p>Here is an applet version of my solution to this exercise:</p>
+
+<p align="center">
+<applet code="SimpleGrapherApplet.class" width="520" height="400" archive="SimpleGrapher.jar" alt=""></applet></p>
+
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+
+<p>I wrote my solution as a subclass, <span class="classname">SimpleGrapher</span>,
+of <span class="classname">JPanel</span> that represents
+the main panel of the program.  The class includes a <span class="code">main()</span> routine
+that makes it possible to run the class as a stand-alone application; <span class="code">main()</span>
+just opens a window and sets its content pane to be a <span class="classname">SimpleGrapher</span>.
+(To make it possible to run the program as an applet, I also defined a separate
+class named <span class="classname">SimpleGrapherApplet</span>, a subclass
+of <span class="classname">JApplet</span>, to run the program as an applet, but that
+is not required by the exercise.)</p>
+
+
+<p>My solution uses a nested class, <span class="classname">GraphPanel</span>, for displaying the graph.
+This class is defined as a subclass of <span class="classname">JPanel</span>. It has an instance
+variable, <span class="code">func</span>, of type <span class="classname">Expr</span> that represents the function to
+be drawn. If there is no function, then <span class="code">func</span> is null. This is true
+when the applet is first started and when the user's input has been found to be
+illegal. The <span class="code">paintComponent()</span> method checks the value of <span class="code">func</span>
+to decide what to draw. If <span class="code">func</span> is <span class="code">null</span>, then the paint
+method simply draws a message on the panel stating that no function is
+available. Otherwise, it draws a pair of axes and the graph of the
+function.</p>
+
+
+<p>The interesting work in class <span class="classname">GraphPanel</span> is done in the
+<span class="code">drawFunction()</span> method, which is called by the
+<span class="code">paintComponent()</span> method. This function draws the graph of the function
+for <span class="code">-5 &lt;= x &lt;= 5</span>. This interval on the <span class="code">x</span> axis is
+divided into 300 subintervals. Since the length of the interval is 10, the
+length of each subinterval is given by <span class="code">dx</span>, where <span class="code">dx</span> is
+<span class="code">10.0/300</span>. The <span class="code">x</span> values for the points that I want to plot are
+given by <span class="code">-5</span>, <span class="code">-5+dx</span>, <span class="code">-5+2*dx</span>, and so on. Each
+<span class="code">x</span>-value is obtained by adding <span class="code">dx</span> to the previous value. For
+each <span class="code">x</span> value, the <span class="code">y</span>-value of the point on the graph is
+computed as <span class="code">func.value(x)</span>. As the points on the graph are computed,
+line segments are drawn to connect pairs of points (unless the <span class="code">y</span>-value
+of either point is undefined). An algorithm for the <span class="code">drawFunction()</span>
+method is:</p>
+
+
+<pre>Let dx = 10.0 / 300;
+Let x = -5                // Get the first point
+Let y = func.value(x)
+for i = 1 to 300:
+    Let prevx = x         // Save the previous point
+    Let prevy = y
+    Let x = x + dx        // Get the next point
+    Let y = func.value(x)
+    if neither y nor prevy is Double.NaN:
+       draw a line segment from (prevx,prevy) to (x,y)</pre>
+
+
+<p>The method for drawing the line segment uses the conversion from real
+coordinates to integer pixel coordinates that is given in the exercise. By the
+way, more general conversion formulas can be given in the case where <span class="code">x</span>
+extends from <span class="code">xmin</span> to <span class="code">xmax</span> and <span class="code">y</span> extends from
+<span class="code">ymin</span> to <span class="code">ymax</span>. The general formulas are:</p>
+
+
+<pre>a  =  (int)( (x - xmin) / (xmax - xmin) * width );
+b  =  (int)( (ymax - y) / (ymax - ymin) * height );</pre>
+
+
+<p>The formulas for <span class="code">a</span> and <span class="code">b</span> are of slightly different form to
+reflect the fact that <span class="code">a</span> increases from 0 to <span class="code">width</span> as
+<span class="code">x</span> increases from <span class="code">xmin</span> to <span class="code">xmax</span>, while <span class="code">b</span>
+<b>decreases</b> from <span class="code">height</span> to 0 as <span class="code">y</span> increases
+from <span class="code">ymin</span> to <span class="code">ymax</span>. You could improve the applet by adding
+text input boxes where the user can enter values for <span class="code">xmin</span>,
+<span class="code">xmax</span>, <span class="code">ymin</span>, and <span class="code">ymax</span>.</p>
+
+
+<p>In the main applet class, the <span class="code">init()</span> method lays out the components
+in the content pane of the applet with a <span class="classname">BorderLayout</span> that has a
+vertical gap, to allow some space between the graph and the components that are
+above it and below it. The "North" component is a <span class="classname">JLabel</span> that is used
+to display messages to the user. The "South" component holds
+a <span class="classname">JTextField</span>
+where the user enters the definition of the function. Since I wanted to add a
+label, "<span class="code">f(x)&nbsp;=&nbsp;</span>", next to the text field, I created a
+sub-panel to hold both the label and the text field, and I put the sub-panel
+in the "South" position of the main panel.  Finally, the "Center"
+component of the main panel is the <span class="classname">GraphPanel</span>
+where the graph is drawn. A listener for <span class="classname">ActionEvents</span> 
+is registered with the <span class="classname">JTextField</span>. 
+When the user presses return in the <span class="classname">JTextField</span>, the listener's
+<span class="code">actionPerformed()</span> method will be called.</p>
+
+
+<p>The <span class="code">actionPerformed()</span> method just has to get the user's input
+string from the <span class="code">JTextField</span>. It tries to use this string to construct
+an object of type <span class="code">Expr</span>. The constructor throws an
+<span class="code">IllegalArgumentException</span> if the string contains an error, so the
+constructor is called in a <span class="code">try</span> statement that can catch and handle the
+error. If an error occurs, then the error message in the exception object is
+displayed in the <span class="code">JLabel</span> at the top of the applet, and the graph is
+cleared. If no error occurs, the graph is set to display the user's function,
+and the <span class="code">JLabel</span> is set to display the generic message, "Enter a
+function and press return." The code for all this is:</p>
+
+
+<pre>Expr function;  // The user's function.
+  
+try {
+    String def = functionInput.getText();
+    function = new Expr(def);
+    graph.setFunction(function);
+    message.setText(" Enter a function and press return.");
+}
+catch (IllegalArgumentException e) {
+    graph.clearFunction();
+    message.setText(e.getMessage());
+}</pre>
+   
+
+<p>(After viewing my applet for the first time, I was dissatisfied with the
+appearance of the label at the top of the applet. 
+There was no space between the text of the label and
+the gray background of the component. I decided to fix this by adding an
+<span class="classname">EmptyBorder</span> to the label to allow more space around the text where the
+white background of the label shows through. I also added borders around the main
+panel and around the subpanel that contains the text field.  Borders were covered in
+<a href="../c6/s7.html#GUI1.7.2">Subsection&nbsp;6.7.2</a>)</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+/*
+   The SimpleGrapher program can draw graphs of functions input by the
+   user.  The user enters the definition of the function in a text
+   input box.  When the user presses return, the function is graphed.
+   (Unless the definition contains an error.  In that case, an error
+   message is displayed.)
+   
+   The graph is drawn on a canvas which represents the region of the
+   (x,y)-plane given by  -5 &lt;= x &lt;= 5  and  -5 &lt;= y &lt;= 5.  Any part of
+   the graph that lies outside this region is not shown.  The graph
+   is drawn by plotting 301 points and joining them with lines.  This
+   does not handle discontinuous functions properly.
+   
+   This program requires the class Expr,
+   which is defined in by a separate file, Expr.java.
+   That file contains a full description of the syntax
+   of legal function definitions.
+   
+   This class has a main() routine so that it can be run as an application.
+ */
+
+public class SimpleGrapher extends JPanel {
+   
+   //-- Support for running this class as a stand-alone application --
+   
+   public static void main(String[] args) {
+          // Open a window that shows a SimpleGrapher panel.
+      JFrame window = new JFrame("SimpleGrapher");
+      window.setContentPane( new SimpleGrapher() );
+      window.setLocation(50,50);
+      window.setSize(500,540);
+      window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      window.setVisible(true);
+   }
+      
+   //---------------------------------------------------------------------------------
+
+   private GraphPanel graph;  // The JPanel that will display the graph.
+                              // The nested class, Graph, is defined below.
+
+   private JTextField functionInput;  // A text input box where the user enters
+                                      // the definition of the function.
+
+   private JLabel message;  // A label for displaying messages to the user,
+                            // including error messages when the function
+                            // definition is illegal.
+
+   public SimpleGrapher() {
+         // Initialize the panel by creating and laying out the components
+         // and setting up an action listener for the text field.
+
+      setBackground(Color.GRAY);
+      setLayout(new BorderLayout(3,3));
+      setBorder(BorderFactory.createLineBorder(Color.GRAY,3));
+
+      graph = new GraphPanel();
+      add(graph, BorderLayout.CENTER);
+
+      message = new JLabel(" Enter a function and press return");
+      message.setBackground(Color.WHITE);
+      message.setForeground(Color.RED);
+      message.setOpaque(true);
+      message.setBorder( BorderFactory.createEmptyBorder(5,0,5,0) );
+      add(message, BorderLayout.NORTH);
+
+      functionInput = new JTextField();
+      JPanel subpanel = new JPanel();
+      subpanel.setLayout(new BorderLayout());
+      subpanel.setBorder(BorderFactory.createEmptyBorder(3,3,3,3));
+      subpanel.add(new JLabel("f(x) = "), BorderLayout.WEST);
+      subpanel.add(functionInput, BorderLayout.CENTER);
+      add(subpanel, BorderLayout.SOUTH);
+      
+      functionInput.addActionListener(new ActionListener() {
+         public void actionPerformed(ActionEvent evt) {
+                  // Get the user's function definition from the box and use it
+                  // to create a new object of type Expr.  Tell the GraphPanel to 
+                  // graph this function.  If the  definition is illegal, an 
+                  // IllegalArgumentException is  thrown by the Expr constructor.
+                  // If this happens, the graph is cleared and an error message 
+                  // is displayed in the message label.
+            Expr function;  // The user's function.
+            try {
+               String def = functionInput.getText();
+               function = new Expr(def);
+               graph.setFunction(function);
+               message.setText(" Enter a function and press return.");
+            }
+            catch (IllegalArgumentException e) {
+               graph.clearFunction();
+               message.setText(e.getMessage());
+            }
+            functionInput.selectAll();
+            functionInput.requestFocus();  // Let's user start typing in input box.
+         }
+      });
+
+   }  // end constructor
+
+
+    //   -------------------------- Nested class ----------------------------
+
+   private static class GraphPanel extends JPanel {
+
+      // A object of this class can display the graph of a function
+      // on the region of the (x,y)-plane given by -5 &amp;lt;= x &amp;lt;= 5 and
+      // -5 &amp;lt;= y &amp;lt;= 5.  The graph is drawn very simply, by plotting
+      // 301 points and connecting them with line segments.
+
+
+      Expr func;  // The definition of the function that is to be graphed.
+                  // If the value is null, no graph is drawn.
+
+
+      GraphPanel() {
+             // Constructor.
+         setBackground(Color.WHITE);
+         func = null;
+      }
+
+
+      public void setFunction(Expr exp) {
+             // Set the canvas to graph the function whose definition is
+             // given by the function exp.
+         func = exp;
+         repaint();
+      }
+
+
+      public void clearFunction() {
+             // Set the canvas to draw no graph at all.
+         func = null;
+         repaint();
+      }
+
+
+      public void paintComponent(Graphics g) {
+             // Draw the graph of the function or, if func is null, 
+             // display a message that there is no function to be graphed.
+         super.paintComponent(g); // Fill with background color, white.
+         if (func == null) {
+            g.drawString("No function is available.", 20, 30);
+         }
+         else {
+            g.drawString("y = " + func, 5, 15);
+            drawAxes(g);
+            drawFunction(g);
+         }
+      }
+
+
+      void drawAxes(Graphics g) {
+             // Draw horizontal and vertical axes in the middle of the
+             // canvas.  A 5-pixel border is left at the ends of the axes.
+         int width = getWidth();
+         int height = getHeight();
+         g.setColor(Color.BLUE);
+         g.drawLine(5, height/2, width-5, height/2);
+         g.drawLine(width/2, 5, width/2, height-5);
+      }
+
+
+      void drawFunction(Graphics g) {
+             // Draw the graph of the function defined by the instance 
+             // variable func.  Just plot 301 points with lines 
+             // between them. 
+         
+         double x, y;          // A point on the graph.  y is f(x).
+         double prevx, prevy;  // The previous point on the graph.
+
+         double dx;  // Difference between the x-values of consecutive 
+                     // points on the graph.
+
+         dx  = 10.0 / 300;
+
+         g.setColor(Color.RED);
+
+         /* Compute the first point. */
+
+         x = -5;
+         y = func.value(x);
+
+         /* Compute each of the other 300 points, and draw a line segment
+               between each consecutive pair of points.  Note that if the
+               function is undefined at one of the points in a pair, then 
+               the line segment is not drawn.  */
+
+         for (int i = 1; i &lt;= 300; i++) {
+
+            prevx = x;           // Save the coords of the previous point.
+            prevy = y;
+
+            x += dx;            // Get the coords of the next point.
+
+            y = func.value(x);
+
+            if ( (! Double.isNaN(y)) &amp;&amp; (! Double.isNaN(prevy)) ) {
+                   // Draw a line segment between the two points.
+               putLine(g, prevx, prevy, x, y);
+            }
+
+         }  // end for
+
+      }  // end drawFunction()
+
+
+      void putLine(Graphics g, double x1, double y1, 
+            double x2, double y2) {
+                // Draw a line segment from the point (x1,y1) to (x2,y2).
+                // These real values must be scaled to get the integer 
+                // coordinates of the corresponding pixels.
+
+         int a1, b1;   // Pixel coordinates corresponding to (x1,y1).
+         int a2, b2;   // Pixel coordinates corresponding to (x2,y2).
+
+         int width = getWidth();     // Width of the canvas.
+         int height = getHeight();   // Height of the canvas. 
+
+         a1 = (int)( (x1 + 5) / 10 * width );
+         b1 = (int)( (5 - y1) / 10 * height );
+         a2 = (int)( (x2 + 5) / 10 * width );
+         b2 = (int)( (5 - y2) / 10 * height );
+
+         if (Math.abs(y1) &lt; 30000 &amp;&amp; Math.abs(y2) &lt; 30000) {
+                // Only draw lines for reasonable y-values.
+                // This should not be necessary, I think,
+                // but I got a problem when y was very large.)
+            g.drawLine(a1,b1,a2,b2);
+         }
+
+      }  // end putLine()
+
+   }  // end nested class GraphPanel
+
+
+} // end class SimpleGrapher
+</pre>
+
+<p>
+<b>A class to run the program as an applet:</b>
+</p>
+
+<pre class="exercisecode">
+import javax.swing.JApplet;
+
+/**
+ * An applet that simply displays a SimpleGrapher panel
+ * as its content.
+ */
+public class SimpleGrapherApplet extends JApplet {
+
+    public void init() {
+       setContentPane( new SimpleGrapher() );
+    }
+	
+}
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

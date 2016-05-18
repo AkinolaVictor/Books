@@ -1,0 +1,909 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 7.2 -- Programming  With Arrays</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s1.html">Previous Section</a> |
+           <a href="s3.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#arrays.2.1">Arrays and for Loops</a>
+<br>
+<a href="#arrays.2.2">Arrays and for-each Loops</a>
+<br>
+<a href="#arrays.2.3">Array Types in Subroutines</a>
+<br>
+<a href="#arrays.2.4">Random Access</a>
+<br>
+<a href="#arrays.2.5">Arrays of Objects</a>
+<br>
+<a href="#arrays.2.6">Variable Arity Methods</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 7.2</h3>
+<h2 class="section_title">Programming  With Arrays</h2>
+<hr class="break">
+   
+
+<p>
+<span class="start"><big>A</big>rrays are the most basic</span> and the most important
+type of data structure, and techniques for processing arrays are among the most
+important programming techniques you can learn. Two fundamental array
+processing techniques -- searching and sorting -- will be covered in
+<a href="../c7/s4.html">Section&nbsp;7.4</a>. This section introduces some of the basic ideas of
+array processing in general.</p>
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="arrays.2.1">7.2.1&nbsp;&nbsp;Arrays and for Loops</a>
+</h3>
+   
+
+<p>In many cases, processing an array means applying the same operation to each
+item in the array. This is commonly done with a <span class="code">for</span> loop. A loop for
+processing all the elements of an array <span class="code">A</span> has the form:</p>
+
+
+<pre>// do any necessary initialization
+for (int i = 0; i &lt; A.length; i++) {
+   . . . // process A[i]
+}</pre>
+
+
+<p>Suppose, for example, that <span class="code">A</span> is an array of type <span class="atype">double[]</span>.
+Suppose that the goal is to add up all the numbers in the array. An informal
+algorithm for doing this would be:</p>
+
+
+<pre>Start with sum = 0;
+Add A[0] to sum;   (process the first item in A)
+Add A[1] to sum;   (process the second item in A)
+  .
+  .
+  .
+Add A[ A.length - 1 ] to sum;   (process the last item in A)</pre>
+
+
+<p>Putting the obvious repetition into a loop,
+this becomes:</p>
+
+
+<pre>double sum;  // The sum of the numbers in A.
+sum = 0;     // Start with 0.
+for (int i = 0; i &lt; A.length; i++)
+   sum += A[i];  // add A[i] to the sum, for
+                 //     i = 0, 1, ..., A.length - 1</pre>
+
+
+<p>Note that the continuation condition, "<span class="code">i &lt; A.length</span>", implies
+that the last value of <span class="code">i</span> that is actually processed is
+<span class="code">A.length-1</span>, which is the index of the final item in the array. It's
+important to use "<span class="code">&lt;</span>" here, not "<span class="code">&lt;=</span>", since
+"<span class="code">&lt;=</span>" would give an array index out of bounds error.
+There is no element at position <span class="code">A.length</span> in&nbsp;<span class="code">A</span>.</p>
+
+
+<p>Eventually, you should just about be able to write loops similar to this one
+in your sleep. I will give a few more simple examples. Here is a loop that will
+count the number of items in the array <span class="code">A</span> which are less than zero:</p>
+
+
+<pre>int count;  // For counting the items.
+count = 0;  // Start with 0 items counted.
+for (int i = 0; i &lt; A.length; i++) {
+   if (A[i] &lt; 0.0)   // if this item is less than zero...
+      count++;       //     ...then count it
+}
+// At this point, the value of count is the number
+// of items that have passed the test of being &lt; 0</pre>
+
+
+<p>Replace the test "<span class="code">A[i] &lt; 0.0</span>", if you want to count the number
+of items in an array that satisfy some other property. Here is a variation on
+the same theme. Suppose you want to count the number of times that an item in
+the array <span class="code">A</span> is equal to the item that follows it. The item that
+follows <span class="code">A[i]</span> in the array is <span class="code">A[i+1]</span>, so the test in this case
+is "<span class="code">if (A[i] == A[i+1])</span>". But there is a catch: This test cannot be
+applied when <span class="code">A[i]</span> is the last item in the array, since then there is
+no such item as <span class="code">A[i+1]</span>. The result of trying to apply the test in this
+case would be an <span class="classname">ArrayIndexOutOfBoundsException</span>. This just means that we have
+to stop one item short of the final item:</p>
+
+
+<pre>
+int count = 0;
+for (int i = 0; i &lt; <span class="newcode">A.length - 1</span>; i++) {
+   if (A[i] == A[i+1])
+      count++;
+}</pre>
+
+
+<p>Another typical problem is to find the largest number in <span class="code">A</span>. The
+strategy is to go through the array, keeping track of the largest number found
+so far. We'll store the largest number found so far in a variable called
+<span class="code">max</span>. As we look through the array, whenever we find a number larger
+than the current value of <span class="code">max</span>, we change the value of <span class="code">max</span> to
+that larger value. After the whole array has been processed, <span class="code">max</span> is
+the largest item in the array overall. The only question is, what should the
+original value of <span class="code">max</span> be? One possibility is to start with
+<span class="code">max</span> equal to <span class="code">A[0]</span>, and then to look through the rest of the
+array, starting from <span class="code">A[1]</span>, for larger items:</p>
+
+
+<pre>double max = A[0];
+for (<span class="newcode">int i = 1</span>; i &lt; A.length; i++) {
+   if (A[i] &gt; max)
+      max = A[i];
+}
+// at this point, max is the largest item in A</pre>
+
+
+<p>(There is one subtle problem here. It's possible in Java for an array to
+have length zero. In that case, <span class="code">A[0]</span> doesn't exist, and the reference
+to <span class="code">A[0]</span> in the first line gives an array index out of bounds error.
+However, zero-length arrays are normally something that you want to avoid in
+real problems. Anyway, what would it mean to ask for the largest item in an
+array that contains no items at all?)</p>
+
+
+<p>As a final example of basic array operations, consider the problem of
+copying an array. To make a copy of our sample array <span class="code">A</span>, it is
+<b>not</b> sufficient to say</p>
+
+
+<pre>double[] B = A;</pre>
+
+
+<p>since this does not create a new array object. All it does is declare a new
+array variable and make it refer to the same object to which <span class="code">A</span> refers.
+(So that, for example, a change to <span class="code">A[i]</span> will automatically change
+<span class="code">B[i]</span> as well.) Remember that arrays are objects, and array variables 
+hold pointers to objects; the assignment <span class="code">B&nbsp;=&nbsp;A</span> just copies
+a pointer.   To make a new array that is a copy of <span class="code">A</span>, it is
+necessary to make a new array object and to copy each of the individual items
+from <span class="code">A</span> into the new array:</p>
+
+
+<pre>double[] B = new double[A.length]; // Make a new array object,
+                                   //   the same size as A.
+for (int i = 0; i &lt; A.length; i++)
+   B[i] = A[i];   // Copy each item from A to B.</pre>
+
+
+<p>Copying values from one array to another is such a common operation that
+Java has a predefined subroutine to do it. The subroutine,
+<span class="code">System.arraycopy()</span>, is a static method in the standard
+<span class="code">System</span> class. Its declaration has the form</p>
+
+
+<pre>public static void arraycopy(Object sourceArray, int sourceStartIndex,
+        Object destArray, int destStartIndex, int count)</pre>
+
+
+<p>where <span class="code">sourceArray</span> and <span class="code">destArray</span> can be arrays with any
+base type. Values are copied from <span class="code">sourceArray</span> to <span class="code">destArray</span>.
+The <span class="code">count</span> tells how many elements to copy. Values are taken from
+<span class="code">sourceArray</span> starting at position <span class="code">sourceStartIndex</span> and are
+stored in <span class="code">destArray</span> starting at position <span class="code">destStartIndex</span>. For
+example, to make a copy of the array, <span class="code">A</span>, using this subroutine, you
+would say:</p>
+
+
+<pre>double B = new double[A.length];
+System.arraycopy( A, 0, B, 0, A.length );</pre>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="arrays.2.2">7.2.2&nbsp;&nbsp;Arrays and for-each Loops</a>
+</h3>
+   
+
+<p>Java 5.0 introduced a new form of the <span class="code">for</span> loop, the
+"for-each loop" that was discussed in <a href="../c3/s4.html#control.4.4">Subsection&nbsp;3.4.4</a>.
+The for-each loop is meant specifically for processing all the values
+in a data structure.  When used to process an array, a for-each loop
+can be used to perform the same operation on each value that is stored
+in the array.  If <span class="code">anArray</span> is an array of type <span class="atype">BaseType[]</span>,
+then a for-each loop for <span class="code">anArray</span> has the form:</p>
+   
+
+<pre>for ( BaseType item : anArray ) {
+   .
+   .  // process the item
+   .
+}</pre>
+   
+
+<p>In this loop, <span class="code">item</span> is the loop control variable.  It is being
+declared as a variable of type <span class="classname">BaseType</span>, where
+<span class="classname">BaseType</span> is the base type of the array.  (In a
+for-each loop, the loop control variable <b>must</b> be declared in the
+loop.)  When this loop is executed, each value from the array is assigned
+to <span class="code">item</span> in turn and the body of the loop is executed for each
+value.  Thus, the above loop is exactly equivalent to:</p>
+   
+
+<pre>for ( int index = 0; index &lt; anArray.length; index++ ) {
+   BaseType item;
+   item = anArray[index];  // Get one of the values from the array
+     .
+     .  // process the item
+     .  
+}</pre>
+   
+
+<p>For example, if <span class="code">A</span> is an array of type <span class="atype">int[]</span>, then
+we could print all the values from <span class="code">A</span> with the for-each loop:</p>
+   
+
+<pre>
+for ( int item : A )
+   System.out.println( item );
+</pre>
+
+
+<p>and we could add up all the positive integers in <span class="code">A</span> with:</p>
+   
+
+<pre>int sum = 0;   // This will be the sum of all the positive numbers in A
+for ( int item : A ) {
+   if (item &gt; 0)
+      sum = sum + item;
+}</pre>
+   
+
+<p>The for-each loop is not always appropriate.  For example, there is no
+simple way to use it to process the items in just a part of an array.
+However, it does make it a little easier to process all the values in an array,
+since it eliminates any need to use array indices.</p>   
+   
+
+<p>It's important to note that a for-each loop processes the <b>values</b> in
+the array, not the <b>elements</b> (where an element means the actual memory
+location that is part of the array).  For example, consider the following
+incorrect attempt to fill an array of integers with 17's:</p>
+   
+
+<pre>int[] intList = new int[10];
+for ( int item : intList ) {   <span class="newcode">// INCORRECT! DOES NOT MODIFY THE ARRAY!</span>
+   item = 17;
+}</pre>
+   
+
+<p>The assignment statement <span class="code">item = 17</span> assigns the value 17 to
+the loop control variable, <span class="code">item</span>.  However, this has nothing to
+do with the array.  When the body of the loop is executed, the
+value from one of the elements of the array is copied into <span class="code">item</span>.
+The statement <span class="code">item&nbsp;=&nbsp;17</span> replaces that copied value
+but has no effect on the array element from which it was copied; the
+value in the array is not changed.</p>
+   
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="arrays.2.3">7.2.3&nbsp;&nbsp;Array Types in Subroutines</a>
+</h3>
+
+
+<p>Any array type, such as <span class="atype">double[]</span>, is a full-fledged Java type, so it
+can be used in all the ways that any other Java type can be used. In
+particular, it can be used as the type of a formal parameter in a subroutine.
+It can even be the return type of a function. For example, it might be useful
+to have a function that makes a copy of an array of <span class="code">double</span>:</p>
+
+
+<pre>/**
+ *  Create a new array of doubles that is a copy of a given array.
+ *  @param source the array that is to be copied; the value can be null
+ *  @return a copy of source; if source is null, then the return value is also null
+ */
+public static double[]  copy( double[] source ) {
+    if ( source == null )
+       return null;
+    double[]  cpy;  // A copy of the source array.
+    cpy = new double[source.length];
+    System.arraycopy( source, 0, cpy, 0, source.length );
+    return cpy;
+}</pre>
+
+
+<p>The <span class="code">main()</span> routine of a program has a parameter of type
+<span class="atype">String[]</span>. You've seen this used since all the way back in 
+<a href="../c2/s1.html">Section&nbsp;2.1</a>, but I haven't really been able to explain it
+until now. The parameter to the <span class="code">main()</span> routine is an array of
+<span class="classname">Strings</span>. When the system calls the <span class="code">main()</span> routine, 
+it passes an actual array of strings, which becomes the value of this parameter.
+Where do the strings come from?  The
+strings in the array are the <span class="newword">command-line arguments</span> from the
+command that was used to run the program.
+When using a command-line interface, the user types a
+command to tell the system to execute a program. The user can include extra
+input in this command, beyond the name of the program. This extra input becomes
+the command-line arguments. For example, if the name of the class that
+contains the <span class="code">main()</span> routine is <span class="code">myProg</span>, then the user can type
+"<span class="code">java&nbsp;myProg</span>" to execute the program. In this case, there are no
+command-line arguments. But if the user types the command</p>
+   
+
+<pre>java myProg one two three</pre>
+
+
+<p>then the command-line arguments are the strings "one", "two",
+and "three". The system puts these strings into an array of <span class="classname">Strings</span>
+and passes that array as a parameter to the <span class="code">main()</span> routine. Here, for
+example, is a short program that simply prints out any command line arguments
+entered by the user:</p>
+
+
+<pre>public class CLDemo {
+   
+   public static void main(String[] args) {
+      System.out.println("You entered " + args.length
+                                  + " command-line arguments");
+      if (args.length &gt; 0) {
+         System.out.println("They were:");
+         for (int i = 0; i &lt; args.length; i++)
+            System.out.println("   " + args[i]);
+      }
+   } // end main()
+   
+} // end class CLDemo</pre>
+
+
+<p>Note that the parameter, <span class="code">args</span>, is never <span class="code">null</span> when
+<span class="code">main()</span> is called by the system, but it might be an array of length
+zero.</p>
+
+
+<p>In practice, command-line arguments are often the names of files to be
+processed by the program. I will give some examples of this in 
+<a href="../c11/index.html">Chapter&nbsp;11</a>, when I discuss file processing.</p>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="arrays.2.4">7.2.4&nbsp;&nbsp;Random Access</a>
+</h3>
+
+
+<p>So far, all my examples of array processing have used <span class="newword">sequential access</span>. 
+That is, the elements of the array were
+processed one after the other in the sequence in which they occur in the array.
+But one of the big advantages of arrays is that they allow <span class="newword">random access</span>. 
+That is, every element of the array is equally accessible at any given time.</p>
+
+
+<p>As an example, let's look at a well-known problem called the birthday
+problem: Suppose that there are <span class="code">N</span> people in a room. What's the chance
+that there are two people in the room who have the same birthday? (That is,
+they were born on the same day in the same month, but not necessarily in the
+same year.) Most people severely underestimate the probability. We will actually
+look at a different version of the question:  Suppose you choose people at random
+and check their birthdays. How many people will you check before you find one
+who has the same birthday as someone you've already checked? Of course, the
+answer in a particular case depends on random factors, but we can simulate the
+experiment with a computer program and run the program several times to get an
+idea of how many people need to be checked on average.</p>
+
+
+<p>To simulate the experiment, we need to keep track of each birthday that we
+find. There are 365 different possible birthdays. (We'll ignore leap years.)
+For each possible birthday, we need to keep track of whether or not we
+have already found a person who has that birthday.
+The answer to this question is a boolean value, true or false. To hold the data
+for all 365 possible birthdays, we can
+use an array of 365 boolean values:</p>
+
+
+<pre>boolean[] used; 
+used = new boolean[365];</pre>
+
+
+<p>The days of the year are numbered from 0 to 364. The value of
+<span class="code">used[i]</span> is true if someone has been selected whose birthday is day
+number <span class="code">i</span>. Initially, all the values in the array, <span class="code">used</span>, are
+false. When we select someone whose birthday is day number <span class="code">i</span>, we first
+check whether <span class="code">used[i]</span> is true. If it is true, then this is the second person
+with that birthday. We are done. If <span class="code">used[i]</span> is false, we set
+<span class="code">used[i]</span> to be true to record the fact that we've encountered someone
+with that birthday, and we go on to the next person. Here is a subroutine that
+carries out the simulated experiment (of course, in the subroutine, there are
+no simulated people, only simulated birthdays):</p>
+
+
+<pre>/**
+ * Simulate choosing people at random and checking the day of the year they 
+ * were born on.  If the birthday is the same as one that was seen previously, 
+ * stop, and output the number of people who were checked.
+ */
+private static void birthdayProblem() {
+
+   boolean[] used;  // For recording the possible birthdays
+                    //   that have been seen so far.  A value
+                    //   of true in used[i] means that a person
+                    //   whose birthday is the i-th day of the
+                    //   year has been found.
+
+   int count;       // The number of people who have been checked.
+
+   used = new boolean[365];  // Initially, all entries are false.
+   
+   count = 0;
+
+   while (true) {
+          // Select a birthday at random, from 0 to 364.
+          // If the birthday has already been used, quit.
+          // Otherwise, record the birthday as used.
+      int birthday;  // The selected birthday.
+      birthday = (int)(Math.random()*365);
+      count++;
+      if ( used[birthday] )  // This day was found before; It's a duplicate.
+         break;
+      used[birthday] = true;
+   }
+
+   System.out.println("A duplicate birthday was found after " 
+                                             + count + " tries.");
+
+} // end birthdayProblem()</pre>
+
+
+<p>This subroutine makes essential use of the fact that every element in a
+newly created array of <span class="ptype">boolean</span> is set to be <span class="code">false</span>. If we
+wanted to reuse the same array in a second simulation, we would have to reset
+all the elements in it to be <span class="code">false</span> with a <span class="code">for</span> loop:</p>
+
+
+<pre>for (int i = 0; i &lt; 365; i++)
+    used[i] = false;</pre>
+   
+
+
+
+
+<p>Here is an applet that will run the simulation as many times as you like.
+Are you surprised at how few people have to be chosen, in general?</p>
+
+
+<p align="center">
+<applet code="BirthdayProblemDemoConsole.class" width="550" height="275" archive="BirthdayProblem.jar" alt="(Applet 'BirthdayProblemConsole' should be displayed here.)"></applet></p>
+
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="arrays.2.5">7.2.5&nbsp;&nbsp;Arrays of Objects</a>
+</h3>
+
+
+<p>One of the examples in <a href="../c6/s4.html#GUI1.4.2">Subsection&nbsp;6.4.2</a> was an applet
+that shows multiple copies of a message in random positions, colors, and fonts.
+When the user clicks on the applet, the positions, colors, and fonts are
+changed to new random values. Like several other examples from that chapter,
+the applet had a flaw: It didn't have any way of storing the data that would be
+necessary to redraw itself.  Arrays provide us with one possible solution to this
+problem.  We can write a new version of the RandomStrings applet that uses
+an array to store the position, font, and color of each string. When the content pane
+of the applet is painted, this information is used to draw the strings,
+so the applet will paint itself correctly whenever it has to be redrawn.
+When the user clicks on the applet, the array is filled with new
+random values and the applet is repainted using the new data.  So, the
+only time that the picture will change is in response to a mouse click.
+Here is the new version of the applet:</p>
+
+
+<p align="center">
+<applet code="RandomStringsWithArray.class" width="250" height="160" archive="RandomStringsWithArray.jar" alt="(Applet 'RandomStringsWithArray' should be displayed here.)"></applet></p>
+
+
+<p>In this applet, the number of copies of the message is given by a named
+constant, <span class="code">MESSAGE_COUNT</span>. One way to store the position, color, and
+font of <span class="code">MESSAGE_COUNT</span> strings would be to use four arrays:</p>
+
+
+<pre>int[] x = new int[MESSAGE_COUNT];  
+int[] y = new int[MESSAGE_COUNT];
+Color[] color = new Color[MESSAGE_COUNT];
+Font[] font = new Font[MESSAGE_COUNT];</pre>
+
+
+<p>These arrays would be filled with random values. In the
+<span class="code">paintComponent()</span> method, the <span class="code">i</span>-th copy of the string would be
+drawn at the point <span class="code">(x[i],y[i])</span>. Its color would be given by
+<span class="code">color[i]</span>. And it would be drawn in the font <span class="code">font[i]</span>. This
+would be accomplished by the <span class="code">paintComponent()</span> method</p>
+
+
+<pre>public void paintComponent(Graphics g) {
+   super.paintComponent(); // (Fill with background color.)
+   for (int i = 0; i &lt; MESSAGE_COUNT; i++) {
+      g.setColor( color[i] );
+      g.setFont( font[i] );
+      g.drawString( message, x[i], y[i] );
+   }
+}</pre>
+
+
+<p>This approach is said to use <span class="newword">parallel arrays</span>.
+The data for a given copy of the message is spread out across several arrays.
+If you think of the arrays as laid out in parallel columns -- array <span class="code">x</span>
+in the first column, array <span class="code">y</span> in the second, array <span class="code">color</span> in
+the third, and array <span class="code">font</span> in the fourth -- then the data for the
+<span class="code">i</span>-th string can be found along the <span class="code">i</span>-th row. There is
+nothing wrong with using parallel arrays in this simple example, but it does go
+against the object-oriented philosophy of keeping related data in one object.
+If we follow this rule, then we don't have to <b>imagine</b> the relationship
+among the data, because all the data for one copy of the message is physically
+in one place. So, when I wrote the applet, I made a simple class to represent
+all the data that is needed for one copy of the message:</p>
+
+
+<pre>/**
+ * An object of this type holds the position, color, and font
+ * of one copy of the string.
+ */
+private static class StringData {
+   int x, y;     // The coordinates of the left end of baseline of string.
+   Color color;  // The color in which the string is drawn.
+   Font font;    // The font that is used to draw the string.
+}</pre>
+
+
+<p>(This class is actually defined as a static nested class in the main applet
+class.) To store the data for multiple copies of the message, I use an array of
+type <span class="atype">StringData[]</span>. The array is declared as an instance variable, with
+the name <span class="code">stringData</span>:</p>
+
+
+<pre>StringData[] stringData;</pre>
+
+
+<p>Of course, the value of <span class="code">stringData</span> is <span class="code">null</span> until an actual array
+is created and assigned to it. This is done in the <span class="code">init()</span> method of
+the applet with the statement</p>
+
+
+<pre>stringData = new StringData[MESSAGE_COUNT];</pre>
+
+
+<p>The base type of this array is <span class="classname">StringData</span>, which is a class.
+We say that <span class="code">stringData</span> is an <span class="newword">array of objects</span>.
+This means that the elements of the array are variables of type  <span class="classname">StringData</span>.
+Like any object variable, each element of the array can either be <span class="code">null</span> or can
+hold a reference to an object.  (Note that the term "array of objects" is a little misleading,
+since the objects are not in the array; the array can only contain references to objects.)
+When the <span class="code">stringData</span>
+array is first created, the value of each element in the array is
+<span class="code">null</span>.</p>
+
+<p>The data needed by the RandomStrings program will be stored
+in objects of type <span class="classname">StringData</span>,
+but no such objects exist yet.  All we have so far is an array of variables that are
+capable of referring to such objects. I decided to create the <span class="classname">StringData</span> objects in the
+applet's <span class="code">init</span> method. (It could be done in other places -- just so
+long as we avoid trying to use an object that doesn't exist. This is
+important: Remember that a newly created array whose base type is an object
+type is always filled with <span class="code">null</span> elements. There are <b>no</b>
+objects in the array until you put them there.) The objects are created with
+the <span class="code">for</span> loop</p>
+
+
+<pre>for (int i = 0; i &lt; MESSAGE_COUNT; i++)
+    stringData[i] = new StringData();</pre>
+
+
+<p>For the RandomStrings applet, the idea is to store data for the <span class="code">i</span>-th copy of the message in
+the variables <span class="code">stringData[i].x</span>, <span class="code">stringData[i].y</span>, <span class="code">stringData[i].color</span>,
+and <span class="code">stringData[i].font</span>. Make sure that you understand the notation here:
+<span class="code">stringData[i]</span> refers to an object. That object contains instance variables.
+The notation <span class="code">stringData[i].x</span> tells the computer: "Find your way to the
+object that is referred to by <span class="code">stringData[i]</span>. Then go to the instance
+variable named <span class="code">x</span> in that object." Variable names can get even more
+complicated than this, so it is important to learn how to read them.
+Using the array, <span class="code">stringData</span>, the
+<span class="code">paintComponent()</span> method for the applet could be written</p>
+
+
+<pre>public void paintComponent(Graphics g) {
+   super.paintComponent(g); // (Fill with background color.)
+   for (int i = 0; i &lt; MESSAGE_COUNT; i++) {
+      g.setColor( <span class="newcode">stringData[i].</span>color );
+      g.setFont( <span class="newcode">stringData[i].</span>font );
+      g.drawString( message, <span class="newcode">stringData[i].</span>x, <span class="newword">stringData[i].</span>y );
+   }
+}</pre>
+   
+
+<p>However, since the <span class="code">for</span> loop is processing every value in the
+array, an alternative would be to use a for-each loop:</p>
+   
+
+<pre>public void paintComponent(Graphics g) {
+   super.paintComponent(g);
+   for ( StringData data : stringData) {
+          // Draw a copy of the message in the position, color, 
+          // and font stored in data.
+      g.setColor( data.color );
+      g.setFont( data.font );
+      g.drawString( message, data.x, data.y );
+   }
+}</pre>
+   
+
+<p>In this loop, the loop control variable, <span class="code">data</span>, holds a copy of one
+of the values from the array.  That value is a reference to an object of type
+<span class="classname">StringData</span>, which has instance variables named
+<span class="code">color</span>, <span class="code">font</span>, <span class="code">x</span>, and <span class="code">y</span>.
+Once again, the use of a for-each loop has eliminated the need to work with
+array indices.</p>
+
+
+<p>There is still the matter of filling the array, <span class="code">data</span>, with random
+values. If you are interested, you can look at the source code for the applet,
+<span class="sourceref"><a href="../source/RandomStringsWithArray.java">RandomStringsWithArray.java</a></span>.</p>
+
+
+<hr class="break">
+
+
+<p>The RandomStrings applet uses one other array of objects. The font for a given copy of the
+message is chosen at random from a set of five possible fonts. In the original
+version of the applet, there were five variables of type <span class="classname">Font</span> to
+represent the fonts. The variables were named <span class="code">font1</span>, <span class="code">font2</span>,
+<span class="code">font3</span>, <span class="code">font4</span>, and <span class="code">font5</span>. To select one of these
+fonts at random, a <span class="code">switch</span> statement could be used:</p>
+
+
+<pre>Font randomFont;  // One of the 5 fonts, chosen at random.
+int rand;         // A random integer in the range 0 to 4.
+
+rand = (int)(Math.random() * 5);
+switch (rand) {
+   case 0:
+      randomFont = font1;
+      break;
+   case 1:
+      randomFont = font2;
+      break;
+   case 2:
+      randomFont = font3;
+      break;
+   case 3:
+      randomFont = font4;
+      break;
+   case 4:
+      randomFont = font5;
+      break;
+}</pre>
+
+
+<p>In the new version of the applet, the five fonts are stored in an array,
+which is named <span class="code">fonts</span>. This array is declared as an instance
+variable of type <span class="atype">Font[]</span>
+</p>
+
+
+<pre>Font[] fonts;</pre>
+
+
+<p>The array is created in the <span class="code">init()</span>
+method of the applet, and each element of the array is set
+to refer to a new <span class="classname">Font</span> object:</p>
+
+
+<pre>fonts = new Font[5];  // Create the array to hold the five fonts.
+ 
+fonts[0] = new Font("Serif", Font.BOLD, 14);
+fonts[1] = new Font("SansSerif", Font.BOLD + Font.ITALIC, 24);
+fonts[2] = new Font("Monospaced", Font.PLAIN, 20);
+fonts[3] = new Font("Dialog", Font.PLAIN, 30);
+fonts[4] = new Font("Serif", Font.ITALIC, 36);</pre>
+
+
+<p>This makes it much easier to select one of the fonts at random. It can be
+done with the statements</p>
+
+
+<pre>Font randomFont;  // One of the 5 fonts, chosen at random.
+int fontIndex;    // A random number in the range 0 to 4.
+fontIndex = (int)(Math.random() * 5);
+randomFont = fonts[ fontIndex ];</pre>
+
+
+<p>The <span class="code">switch</span> statement has been replaced by a single line of code.
+In fact, the preceding four lines could be replaced by the single line:</p>
+   
+
+<pre>Font randomFont = fonts[ (int)(Math.random() * 5) ];</pre>
+   
+
+<p>This is a very typical application of arrays. Note that this example uses
+the random access property of arrays:  We can pick an array index at random
+and go directly to the array element at that index.</p>
+
+
+<p>Here is another example of the
+same sort of thing. Months are often stored as numbers 1, 2, 3, ..., 12.
+Sometimes, however, these numbers have to be translated into the names January,
+February, ..., December. The translation can be done with an array. The array
+can be declared and initialized as</p>
+
+
+<pre>static String[] monthName = { "January", "February", "March",
+                              "April",   "May",      "June",
+                              "July",    "August",   "September",
+                              "October", "November", "December" };</pre>
+
+
+<p>If <span class="code">mnth</span> is a variable that holds one of the integers 1 through 12,
+then <span class="code">monthName[mnth-1]</span> is the name of the corresponding month. We need
+the "<span class="code">-1</span>" because months are numbered starting from 1, while array
+elements are numbered starting from 0. Simple array indexing does the
+translation for us!</p>
+   
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="arrays.2.6">7.2.6&nbsp;&nbsp;Variable Arity Methods</a>
+</h3>
+   
+
+<p>Arrays are used in the implementation of a feature that was introduced in
+Java&nbsp;5.0.  Before version 5.0, every method in Java had a fixed arity.
+(The <span class="newword">arity</span> of a subroutine is defined as the number
+of parameters in a call to the method.)  In a fixed arity method, the number
+of parameters must be the same in every call to the method.  Java 5.0 introduced
+<span class="newword">variable arity methods</span>.  In a variable arity method, different
+calls to the method can have different numbers of parameters.  For example,
+the formatted output method <span class="code">System.out.printf</span>, which was introduced
+in <a href="../c2/s4.html#basics.4.4">Subsection&nbsp;2.4.4</a>, is a variable arity method.  The first
+parameter of <span class="code">System.out.printf</span> must be a <span class="classname">String</span>,
+but it can have any number of additional parameters, of any types.</p>
+
+
+<p>Calling a variable arity method is no different from calling any other
+sort of method, but writing one requires some new syntax.  As an example,
+consider a method that can compute the average of any number of values of
+type <span class="ptype">double</span>.  The definition of such a method could begin
+with:</p>
+   
+
+<pre>public static double average( double...  numbers ) {</pre>
+   
+
+<p>Here, the <span class="code">...</span> after the type name, <span class="code">double</span>, indicates
+that any number of values of type <span class="ptype">double</span> can be provided when
+the subroutine is called, so that for example <span class="code">average(1,4,9,16)</span>, 
+<span class="code">average(3.14,2.17)</span>, <span class="code">average(0.375)</span>, and even
+<span class="code">average()</span> are all legal calls to this method.  Note that 
+actual parameters of type <span class="ptype">int</span> can be passed to <span class="code">average</span>.
+The integers will, as usual, be automatically converted to real numbers.</p>
+      
+
+<p>When the method is called, the values of all the actual parameters
+that correspond to the variable arity parameter are placed into an array,
+and it is this array that is actually passed to the method.  That is,
+in the body of a method, a variable arity parameter of type
+<span class="classname">T</span> actually looks like an ordinary parameter of type
+<span class="atype">T[]</span>.  The length of the array tells you how many actual parameters
+were provided in the method call.  In the <span class="code">average</span> example, the body
+of the method would see an array named <span class="code">numbers</span> of type <span class="atype">double[]</span>.
+The number of actual parameters in the method call would be <span class="code">numbers.length</span>,
+and the values of the actual parameters would be <span class="code">numbers[0]</span>,
+<span class="code">numbers[1]</span>, and so on.  A complete definition of the method would be:
+</p>
+   
+
+<pre>public static double average( double... numbers ) {
+   double sum;      // The sum of all the actual parameters.
+   double average;  // The average of all the actual parameters.
+   sum = 0;
+   for (int i = 0; i &lt; numbers.length; i++) {
+      sum = sum + numbers[i];  // Add one of the actual parameters to the sum.
+   }
+   average = sum / numbers.length;
+   return average;
+}</pre>
+
+
+<p>Note that the "<span class="code">...</span>" can be applied only to the <b>last</b> formal parameter
+in a method definition.  Note also that it is possible to pass an actual array
+to the method, instead of a list of individual values.  For example, if
+<span class="code">salesData</span> is a variable of type <span class="atype">double[]</span>, then
+it would be legal to call <span class="code">average(salesData)</span>, and this would compute
+the average of all the numbers in the array.</p>
+   
+
+<p>As another example, consider a method that can draw a polygon through
+any number of points.  The points are given as values of type <span class="classname">Point</span>,
+where an object of type <span class="classname">Point</span> has two instance variables,
+<span class="code">x</span> and <span class="code">y</span>, of type <span class="ptype">int</span>.
+In this case, the method has one ordinary parameter -- the
+graphics context that will be used to draw the polygon -- in addition to the
+variable arity parameter:</p>
+   
+
+<pre>public static void drawPolygon(Graphics g, Point... points) {
+    if (points.length &gt; 1) {  // (Need at least 2 points to draw anything.)
+       for (int i = 0; i &lt; points.length - 1; i++) {
+           // Draw a line from i-th point to (i+1)-th point
+           g.drawLine( points[i].x, points[i].y, points[i+1].x, points[i+1].y );
+       }
+       // Now, draw a line back to the starting point.
+       g.drawLine( points[points.length-1].x, points[points.length-1].y,
+                       points[0].x, points[0].y );
+    }
+}</pre>
+   
+
+<p>Because of automatic type conversion, a variable arity parameter of type
+"<span class="code">Object...</span>" can take actual parameters of any type whatsoever.
+Even primitive type values are allowed, because of autoboxing.  (A primitive
+type value belonging to a type such as <span class="ptype">int</span> is converted to
+an object belonging to a "wrapper" class such as <span class="classname">Integer</span>.
+See <a href="../c5/s3.html#OOP.3.2">Subsection&nbsp;5.3.2</a>.)  For example, the method definition for
+<span class="code">System.out.printf</span> could begin:</p>
+   
+
+<pre>public void printf(String format, Object... values) {</pre>
+
+
+<p>This allows the <span class="code">printf</span> method to output values of any type.
+Similarly, we could write a method that strings together the string representations
+of all its parameters into one long string:</p>
+
+
+<pre>public static String concat( Object... values ) {
+   StringBuffer buffer;  // Use a StringBuffer for more efficient concatenation.
+   buffer = new StringBuffer();  // Start with an empty buffer.
+   for ( Object obj : values ) { // A "for each" loop for processing the values.
+       buffer.append(obj); // Add string representation of obj to the buffer.
+   }
+   return buffer.toString(); // return the contents of the buffer
+}</pre>
+   
+
+
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s1.html">Previous Section</a> |
+           <a href="s3.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

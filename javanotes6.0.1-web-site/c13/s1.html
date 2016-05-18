@@ -1,0 +1,1076 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 13.1 -- Images and Resources</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s2.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#GUI2.1.1">Images and BufferedImages</a>
+<br>
+<a href="#GUI2.1.2">Working With Pixels</a>
+<br>
+<a href="#GUI2.1.3">Resources</a>
+<br>
+<a href="#GUI2.1.4">Cursors and Icons</a>
+<br>
+<a href="#GUI2.1.5">Image File I/O</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 13.1</h3>
+<h2 class="section_title">Images and Resources</h2>
+<hr class="break">
+   
+
+<p>
+<span class="start"><big>W</big>e have seen how to use</span> the <span class="classname">Graphics</span>
+class to draw on a GUI component that is visible on the computer's screen.  Often, however,
+it is useful to be able to create a drawing <b>off-screen</b>, in the computer's
+memory.  It is also important to be able to work with images that are stored
+in files.</p>
+   
+
+<p>To a computer, an image is just a set of numbers. The numbers specify the
+color of each pixel in the image. The numbers that represent the image on the
+computer's screen are stored in a part of memory called a <span class="newword">frame buffer</span>. 
+Many times each second, the computer's video
+card reads the data in the frame buffer and colors each pixel on the screen
+according to that data. Whenever the computer needs to make some change to the
+screen, it writes some new numbers to the frame buffer, and the change appears
+on the screen a fraction of a second later, the next time the screen is redrawn
+by the video card.</p>
+
+
+<p>Since it's just a set of numbers, the data for an image doesn't have to be
+stored in a frame buffer. It can be stored elsewhere in the computer's memory.
+It can be stored in a file on the computer's hard disk. Just like any other
+data file, an image file can be downloaded over the Internet. Java includes
+standard classes and subroutines that can be used to copy image data from one
+part of memory to another and to get data from an image file and use it to
+display the image on the screen.</p>
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="GUI2.1.1">13.1.1&nbsp;&nbsp;Images and BufferedImages</a>
+</h3>
+   
+
+<p>The class <span class="code">java.awt.Image</span> represents an image stored in
+the computer's memory.  There are two fundamentally different types of
+<span class="classname">Image</span>.  One kind represents an image read from
+a source outside the program, such as from a file on the computer's
+hard disk or over a network connection.  The second type is an image
+created by the program.  I refer to this second type as an
+<span class="newword">off-screen canvas</span>.  An off-screen canvas is a
+region of the computer's memory that can be used as a drawing surface.
+It is possible to draw to an off-screen image using the same <span class="classname">Graphics</span>
+class that is used for drawing on the screen.</p>
+
+
+<p>An <span class="classname">Image</span> of either type can be copied onto
+the screen (or onto an off-screen canvas) using methods that are defined
+in the <span class="classname">Graphics</span> class.  This is most commonly done
+in the <span class="code">paintComponent()</span> method of a <span class="classname">JComponent</span>.
+Suppose that <span class="code">g</span> is the <span class="classname">Graphics</span> object that is
+provided as a parameter to the <span class="code">paintComponent()</span> method, and that
+<span class="code">img</span> is of type <span class="classname">Image</span>.  Then the
+statement</p>
+
+
+<pre>g.drawImage(img, x, y, this);</pre>
+
+
+<p>will draw the image <span class="code">img</span> in a rectangular area in the component. The
+integer-valued parameters <span class="code">x</span> and <span class="code">y</span> give the position of the upper-left corner
+of the rectangle in which the image is displayed, and the rectangle is just
+large enough to hold the image. The fourth parameter, <span class="code">this</span>, is the
+special variable from <a href="../c5/s6.html#OOP.6.1">Subsection&nbsp;5.6.1</a> that refers to
+the <span class="classname">JComponent</span> itself. This parameter is there for technical reasons 
+having to do with the funny way Java treats image files.  For most applications,
+you don't need to understand this, but here is how it works:  <span class="code">g.drawImage()</span> does
+not actually draw the image in all cases.  It is possible that the complete image is not available 
+when this method is called; this can happen, for example, if the image has to be read from a file.
+In that case, <span class="code">g.drawImage()</span> merely <b>initiates</b> the drawing of the
+image and returns immediately.  Pieces of the image are drawn later, asynchronously,
+as they become available.  The question is, <b>how</b> do they get drawn?
+That's where the fourth parameter to the <span class="code">drawImage</span> method comes in. 
+The fourth parameter is something
+called an <span class="classname">ImageObserver</span>. When a piece of the image becomes available
+to be drawn, the system will inform the <span class="classname">ImageObserver</span>, and
+that piece of the image will appear on the screen.
+Any <span class="classname">JComponent</span> object can act as an
+<span class="classname">ImageObserver</span>.  The <span class="code">drawImage</span> method returns a
+<span class="ptype">boolean</span> value to indicate whether the image has actually been
+drawn or not when the method returns.  When drawing an image that you have created
+in the computer's memory, or one that you are sure has already been completely loaded,
+you can set the <span class="classname">ImageObserver</span> parameter 
+to <span class="code">null</span>.  This is true in particular for any <span class="classname">BufferedImage</span>
+</p>
+
+
+<p>There are a few useful variations of the <span class="code">drawImage()</span> method. For
+example, it is possible to scale the image as it is drawn to a specified width
+and height. This is done with the command</p>
+
+
+<pre>g.drawImage(img, x, y, width, height, imageObserver);</pre>
+
+
+<p>The parameters <span class="code">width</span> and <span class="code">height</span> give the size of the
+rectangle in which the image is displayed. Another version makes it possible to
+draw just part of the image. In the command:</p>
+
+
+<pre>g.drawImage(img, dest_x1, dest_y1, dest_x2, dest_y2,
+                 source_x1, source_y1, source_x2, source_y2, imageObserver);</pre>
+
+
+<p>the integers <span class="code">source_x1</span>, <span class="code">source_y1</span>, <span class="code">source_x2</span>, and
+<span class="code">source_y2</span> specify the top-left and bottom-right corners of a
+rectangular region in the source image. The integers <span class="code">dest_x1</span>,
+<span class="code">dest_y1</span>, <span class="code">dest_x2</span>, and <span class="code">dest_y2</span> specify the corners of
+a region in the destination graphics context. The specified rectangle in the
+image is drawn, with scaling if necessary, to the specified rectangle in the
+graphics context. For an example in which this is useful, consider a card game
+that needs to display 52 different cards. Dealing with 52 image files can be
+cumbersome and inefficient, especially for downloading over the Internet. So,
+all the cards might be put into a single image:</p>
+
+
+<p align="center">
+<img src="cards.png" width="513" height="307" alt="deck of cards"></p>
+
+
+<p>(This image is from the Gnome desktop project,
+<a href="http://www.gnome.org">http://www.gnome.org</a>, and is shown here much smaller
+than its actual size.)
+Now just one <span class="classname">Image</span> object is needed. Drawing one card means
+drawing a rectangular region from the image. This technique is used in a variation of
+the sample program <span class="sourceref"><a href="../source/HighLowGUI.java">HighLowGUI.java</a></span> from <a href="../c6/s7.html#GUI1.7.6">Subsection&nbsp;6.7.6</a>.
+In the original version, the cards are represented by textual descriptions such as
+"King of Hearts."  In the new version, <span class="sourceref"><a href="../source/HighLowWithImages.java">HighLowWithImages.java</a></span>,
+the cards are shown as images. Here is an applet version of the program:
+</p>
+ 
+  
+
+<p align="center">
+<applet code="HighLowWithImagesApplet.class" width="395" height="245" archive="HighLowWithImages.jar" alt="(Applet 'HighLowWithImages should be displayed here.)"></applet></p>
+
+   
+
+<p>In the program, the cards are drawn using the following method. The instance variable
+<span class="code">cardImages</span> is a variable of type <span class="classname">Image</span> that represents the
+image  that is shown above, containing 52 cards, plus two
+Jokers and a face-down card. Each card is 79 by 123 pixels. These
+numbers are used, together with the suit and value of the card, to compute the
+corners of the source rectangle for the <span class="code">drawImage()</span>
+command:</p>
+
+
+<pre>/**
+ * Draws a card in a 79x123 pixel rectangle with its
+ * upper left corner at a specified point (x,y).  Drawing the card 
+ * requires the image file "cards.png".
+ * @param g The graphics context used for drawing the card.
+ * @param card The card that is to be drawn.  If the value is null, then a
+ * face-down card is drawn.
+ * @param x the x-coord of the upper left corner of the card
+ * @param y the y-coord of the upper left corner of the card
+ */
+public void drawCard(Graphics g, Card card, int x, int y) {
+   int cx;    // x-coord of upper left corner of the card inside cardsImage
+   int cy;    // y-coord of upper left corner of the card inside cardsImage
+   if (card == null) {
+      cy = 4*123;   // coords for a face-down card.
+      cx = 2*79;
+   }
+   else {
+      cx = (card.getValue()-1)*79;
+      switch (card.getSuit()) {
+      case Card.CLUBS:    
+         cy = 0; 
+         break;
+      case Card.DIAMONDS: 
+         cy = 123; 
+         break;
+      case Card.HEARTS:   
+         cy = 2*123; 
+         break;
+      default:  // spades   
+         cy = 3*123; 
+         break;
+      }
+   }
+   g.drawImage(cardImages,x,y,x+79,y+123,cx,cy,cx+79,cy+123,this);
+}</pre>
+
+
+<p>I will tell you later in this section how the image file, <span class="code">cards.png</span>,
+can be loaded into the program.</p>
+   
+
+<hr class="break">
+   
+
+<p>In addition to images loaded from files, it is possible to create images by
+drawing to an off-screen canvas.  An off-screen canvas can be represented by
+an object belonging to the class <span class="classname">BufferedImage</span>, which
+is defined in the package <span class="code">java.awt.image</span>.  <span class="classname">BufferedImage</span>
+is a subclass of <span class="classname">Image</span>, so that once you have a <span class="classname">BufferedImage</span>,
+you can copy it into a graphics context <span class="code">g</span> using one of the <span class="code">g.drawImage()</span>
+methods, just as you would do with any other image.  A <span class="classname">BufferedImage</span>
+can be created using the constructor</p>
+   
+
+<pre>public BufferedImage(int width, int height, int imageType)</pre>
+   
+
+<p>where <span class="code">width</span> and <span class="code">height</span> specify the width and height of
+the image in pixels, and <span class="code">imageType</span> can be one of several constants
+that are defined in the <span class="classname">BufferedImage</span>.  The image type
+specifies how the color of each pixel is represented.  The most likely
+value for <span class="code">imageType</span> is <span class="code">BufferedImage.TYPE_INT_RGB</span>,
+which specifies that the color of each pixel is a usual RGB color, with red, green
+and blue components in the range 0 to 255.  The image type
+<span class="code">BufferedImage.TYPE_INT_ARGB</span> represents an RGB image with "transparency";
+see the <a href="../c13/s2.html">next section</a> for more information on this.
+The image type
+<span class="code">BufferedImage.TYPE_BYTE_GRAY</span> can be used to create a <span class="newword">grayscale</span>
+image in which the only possible colors are shades of gray.</p>
+   
+
+<p>To draw to a <span class="classname">BufferedImage</span>, you need a graphics context
+that is set up to do its drawing on the image.  If <span class="code">OSC</span> is of type
+<span class="classname">BufferedImage</span>, then the method</p>
+   
+
+<pre>OSC.getGraphics()</pre>
+   
+
+<p>returns an object of type <span class="classname">Graphics</span> that can be used
+for drawing on the image.</p>
+   
+
+<p>There are several reasons why a programmer might want to draw to an off-screen canvas.
+One is to simply keep a copy of an image that is shown on the screen.  Remember that
+a picture that is drawn on a component can be lost, for example when the component
+is covered by another window.  This means that you have to be able to redraw the
+picture on demand, and that in turn means keeping enough information around to enable
+you to redraw the picture.  One way to do this is to keep a copy of the picture in
+an off-screen canvas.  Whenever the on-screen picture needs to be redrawn, you just
+have to copy the contents of the off-screen canvas onto the screen.  Essentially,
+the off-screen canvas allows you to save a copy of the color of every individual
+pixel in the picture.  The sample program <span class="sourceref"><a href="../source/PaintWithOffScreenCanvas.java">PaintWithOffScreenCanvas.java</a></span> 
+is a little painting program that uses an off-screen canvas in this way.  In this
+program, the user can draw curves, lines, and various shapes; a "Tool" menu allows
+the user to select the thing to be drawn.  There is also an "Erase" tool and a
+"Smudge" tool that I will get to later.  A <span class="classname">BufferedImage</span> is
+used to store the user's picture.  When the user changes the picture, the
+changes are made to
+the image, and the changed image is then copied to the screen.  No record is kept
+of the shapes that the user draws; the only record is the color of the individual
+pixels in the off-screen image.  (You should contrast this with the program
+<span class="sourceref"><a href="../source/SimplePaint2.java">SimplePaint2.java</a></span> in <a href="../c7/s3.html#arrays.3.4">Subsection&nbsp;7.3.4</a>, where
+the user's drawing is recorded as a list of objects that represent the shapes
+that user drew.) Here is an applet version of the program for you to try:</p>
+   
+
+
+<p align="center">
+<applet code="PaintWithOffScreenCanvas$Applet.class" width="550" height="400" archive="PaintWithOffScreenCanvas.jar" alt="(PaintWithOffScreenCanvas applet should appear here.)"></applet></p>
+
+   
+
+<p>You should try the program.  Try drawing a Filled Rectangle on top of some other
+shapes.  As you drag the mouse, the rectangle stretches from the starting
+point of the mouse drag to the current mouse location.  As the mouse moves, the
+underlying picture seems to be unaffected -- parts of the picture can be covered up by the rectangle
+and later uncovered as the mouse moves, and <i>they are still there</i>.  What this means
+is that the rectangle that is shown as you drag the mouse can't actually be part of
+the off-screen canvas, since drawing something into an image means changing the
+color of some pixels in the image.  The previous colors of those pixels are not
+stored anywhere else and so are permanently lost.  In fact, when you draw a line,
+rectangle, or oval in <span class="code">PaintWithOffScreenCanvas</span>, the shape that is shown as you drag
+the mouse is not drawn to the off-screen canvas at all.  Instead, the <span class="code">paintComponent()</span>
+method draws the shape on top of the contents of the canvas.  Only when you release
+the mouse does the shape become a permanent part of the off-screen canvas.
+This illustrates the point that when an off-screen canvas is used, not everything
+that is visible on the screen has to be drawn on the canvas.  Some extra stuff
+can be drawn on top of the contents of the canvas by the <span class="code">paintComponent()</span>
+method.  The other tools are handled differently from the shape tools.  For the
+curve, erase, and smudge tools, the changes are made to the canvas immediately,
+as the mouse is being dragged.</p>
+   
+
+<p>Let's look at how an off-screen canvas is used in this program.  The canvas is
+represented by an instance variable, <span class="code">OSC</span>, of type
+<span class="classname">BufferedImage</span>.  The size of the canvas must be the
+same size as the panel on which the canvas is displayed.  The size
+can be determined by calling the <span class="code">getWidth()</span> and <span class="code">getHeight()</span>
+instance methods of the panel.  Furthermore, when the canvas is first created, it
+should be filled with the background color, which is represented in the
+program by an instance variable named <span class="code">fillColor</span>.  All this is done
+by the method:</p>
+   
+
+<pre>/**
+ * This method creates the off-screen canvas and fills it with the current
+ * fill color.
+ */
+private void createOSC() {
+   OSC = new BufferedImage(getWidth(),getHeight(),BufferedImage.TYPE_INT_RGB);
+   Graphics osg = OSC.getGraphics();
+   osg.setColor(fillColor);
+   osg.fillRect(0,0,getWidth(),getHeight());
+   osg.dispose();
+}</pre>
+   
+
+<p>Note how it uses <span class="code">OSC.getGraphics()</span> to obtain a graphics context
+for drawing to the image.  Also note that the graphics context is disposed at
+the end of the method.  It is good practice to dispose a graphics context when
+you are finished with it.  There still remains the problem of where to call
+this method.  The problem is that the width and height of the panel object
+are not set until some time after the panel object is constructed.  If
+<span class="code">createOSC()</span> is called in the constructor, <span class="code">getWidth()</span>
+and <span class="code">getHeight()</span> will return the value zero and we won't get
+an off-screen image of the correct size.  The approach that I take in
+<span class="code">PaintWithOffScreenCanvas</span> is to call <span class="code">createOSC()</span> in the
+<span class="code">paintComponent()</span> method, the first time the <span class="code">paintComponent()</span>
+method is called.  At that time, the size of the panel has definitely been set,
+but the user has not yet had a chance to draw anything.  With this in mind
+you are ready to understand the <span class="code">paintComponent()</span> method:</p> 
+   
+
+<pre>public void paintComponent(Graphics g) {
+
+   /* First create the off-screen canvas, if it does not already exist. */ 
+
+   if (OSC == null)
+      createOSC();
+
+   /* Copy the off-screen canvas to the panel.  Since we know that the
+      image is already completely available, the fourth "ImageObserver"
+      parameter to g.drawImage() can be null.  Since the canvas completely
+      fills the panel, there is no need to call super.paintComponent(g). */
+
+   g.drawImage(OSC,0,0,null);
+
+   /* If the user is currently dragging the mouse to draw a line, oval,
+      or rectangle, draw the shape on top of the image from the off-screen
+      canvas, using the current drawing color.  (This is not done if the
+      user is drawing a curve or using the smudge tool or the erase tool.) */
+
+   if (dragging &amp;&amp; SHAPE_TOOLS.contains(currentTool)) {
+      g.setColor(currentColor);
+      putCurrentShape(g);
+   }
+
+}</pre>
+
+
+<p>Here, <span class="code">dragging</span> is a <span class="ptype">boolean</span> instance variable that is
+set to true while the user is dragging the mouse, and <span class="code">currentTool</span>
+tells which tool is currently in use.  The possible tools are defined by
+an <span class="code">enum</span> named <span class="classname">Tool</span>, and <span class="code">SHAPE_TOOLS</span> 
+is a variable of type <span class="classname">EnumSet&lt;Tool&gt;</span>
+that contains the line, oval, rectangle, filled oval, and filled rectangle tools.
+(See <a href="../c10/s2.html#generics.2.4">Subsection&nbsp;10.2.4</a>.)</p>
+    
+
+<p>You might notice that there is a problem if the size of the panel
+is ever changed, since the size of the off-screen canvas will not be changed
+to match.  The <span class="code">PaintWithOffScreenCanvas</span> program does not allow the user
+to resize the program's window, so this is not an issue in that program.
+If we want to allow resizing, however, a new off-screen canvas must be
+created whenever the size of the panel changes.  One simple way to do
+this is to check the size of the canvas in the <span class="code">paintComponent()</span>
+method and to create a new canvas if the size of the canvas does not
+match the size of the panel:</p>
+   
+
+<pre>if (OSC == null || getWidth() != OSC.getWidth() || getHeight() != OSC.getHeight())
+   createOSC();</pre>
+   
+
+<p>Of course, this will discard the picture that was contained in
+the old canvas unless some arrangement is made to copy the picture
+from the old canvas to the new one before the old canvas is discarded.</p>
+
+
+<p>The other point in the program where the off-screen canvas is used is
+during a mouse-drag operation, which is handled in the <span class="code">mousePressed()</span>,
+<span class="code">mouseDragged()</span>, and <span class="code">mouseReleased()</span> methods.
+The strategy that is implemented was discussed above.
+Shapes are drawn to the off-screen canvas only at the end of the
+drag operation, in the <span class="code">mouseReleased()</span> method.  However,
+as the user drags the mouse, the part of the image over which the shape
+appears is re-copied from the canvas onto the screen each time the mouse is moved.  
+Then the <span class="code">paintComponent()</span> method draws the shape that the user is creating 
+on top of the image from the canvas.  
+For the non-shape (curve and smudge) tools, on the other hand,
+changes are made directly to the canvas,
+and the region that was changed is repainted so that the change will
+appear on the screen.  (By the way, the program uses a version of the
+<span class="code">repaint()</span> method that repaints just a part of a component.
+The command <span class="code">repaint(x,y,width,height)</span> tells the system to
+repaint the rectangle with upper left corner <span class="code">(x,y)</span> and with
+the specified width and height.  This can be substantially faster than
+repainting the entire component.) See the source code,
+<span class="sourceref"><a href="../source/PaintWithOffScreenCanvas.java">PaintWithOffScreenCanvas.java</a></span>, if you want to
+see how it's all done.</p>
+
+
+<hr class="break">
+   
+
+<p>One traditional use of off-screen canvasses is for <span class="newword">double buffering</span>.
+In double-buffering, the off-screen image is an exact copy of the image that
+appears on screen; whenever the on-screen picture needs 
+to be redrawn, the new picture is
+drawn step-by-step to an off-screen image. This can take some time. If all this
+drawing were done on screen, the user might see the image flicker as it is
+drawn. Instead, the long drawing process takes place off-screen and the completed image is
+then copied very quickly onto the screen.
+The user doesn't see all the steps involved in redrawing.  This
+technique can be used to implement smooth, flicker-free animation.</p>
+
+
+<p>The term "double buffering" comes from the term "frame buffer," which refers to the region in
+memory that holds the image on the screen. In fact, true double buffering uses
+two frame buffers. The video card can display either frame buffer on the screen
+and can switch instantaneously from one frame buffer to the other. One frame
+buffer is used to draw a new image for the screen. Then the video card is told
+to switch from one frame buffer to the other. No copying of memory is involved.
+Double-buffering as it is implemented in Java does require copying, which takes
+some time and is not perfectly flicker-free.</p>
+
+
+<p>In Java's older AWT graphical API, it was up to the programmer to do
+double buffering by hand.  In the Swing graphical API, double buffering is applied
+automatically by the system, and the programmer doesn't have to worry about it.  (It is
+possible to turn this automatic double buffering off in Swing, but there
+is seldom a good reason to do so.)</p>
+   
+
+<p>One final historical note about off-screen canvasses: There is an
+alternative way to create them.  The <span class="classname">Component</span> class
+defines the following instance method, which can be used in any GUI
+component object:</p>
+
+
+<pre>public Image createImage(int width, int height)</pre>
+   
+
+<p>This method creates an <span class="classname">Image</span> with a specified
+width and height.  You can use this image as an off-screen canvas in the
+same way that you would a <span class="classname">BufferedImage</span>. In fact,
+you can expect that in a modern version of Java, the image that is returned
+by this method is in fact a <span class="classname">BufferedImage</span>.
+The <span class="code">createImage()</span> method was part of Java from the beginning,
+before the <span class="classname">BufferedImage</span> class was introduced.</p>
+
+
+      
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="GUI2.1.2">13.1.2&nbsp;&nbsp;Working With Pixels</a>
+</h3>
+
+
+<p>One good reason to use a <span class="classname">BufferedImage</span> is that it
+allows easy access to the colors of individual pixels.  If <span class="code">image</span>
+is of type <span class="classname">BufferedImage</span>, then we have the
+methods:</p>
+   
+
+<ul>
+
+<li>
+<span class="codedef">image.getRGB(x,y)</span>  --  returns an <span class="ptype">int</span>
+that encodes the color of the pixel at coordinates <span class="code">(x,y)</span> in the
+image.  The values of the integers <span class="code">x</span> and <span class="code">y</span> must lie within
+the image. That is, it must be true that <span class="code">0&nbsp;&lt;=&nbsp;x&nbsp;&lt; image.getWidth()</span>
+and <span class="code">0&nbsp;&lt;=&nbsp;y&nbsp;&lt; image.getHeight()</span>; if not, then an
+exception is thrown.</li>
+
+<li>
+<span class="codedef">image.setRGB(x,y,rgb)</span>  --  sets the color of the pixel
+at coordinates <span class="code">(x,y)</span> to the color encoded by <span class="code">rgb</span>.  Again,
+<span class="code">x</span> and <span class="code">y</span> must be in the valid range.  The third parameter,
+<span class="code">rgb</span>, is  an integer that encodes the color.</li>
+
+</ul>
+   
+
+<p>These methods use integer codes for colors.  If <span class="code">c</span> is of type
+<span class="classname">Color</span>, the integer code for the color can be obtained by
+calling <span class="code">c.getRGB()</span>.  Conversely, if <span class="code">rgb</span> is an integer
+that encodes a color, the corresponding <span class="classname">Color</span> object
+can be obtained with the constructor call <span class="code">new&nbsp;Color(rgb)</span>.
+This means that you can use
+</p>
+   
+
+<pre>Color c = new Color( image.getRGB(x,y) )</pre>
+   
+
+<p>to get the color of a pixel as a value of type <span class="classname">Color</span>.  And
+if <span class="code">c</span> is of type <span class="classname">Color</span>, you can set a pixel
+to that color with</p>
+   
+
+<pre>image.setRGB( x, y, c.getRGB() );</pre>
+   
+
+<p>The red, green, and blue components of a color are represented as 8-bit integers,
+in the range 0 to 255.  When a color is encoded as a single <span class="ptype">int</span>,
+the blue component is contained in the eight low-order bits of the <span class="ptype">int</span>,
+the green component in the next lowest eight bits, and the red component in
+the next eight bits.  (The eight high order bits store the "alpha component" of
+the color, which we'll encounter in the next section.)  
+It is easy to translate between the two representations using the
+<span class="newword">shift operators</span> <span class="code">&lt;&lt;</span> and&nbsp;<span class="code">&gt;&gt;</span>
+and the <span class="newword">bitwise logical operators</span> <span class="code">&amp;</span> and&nbsp;<span class="code">|</span>.
+(I have not covered these operators previously in this book.  Briefly: If <span class="code">A</span> and
+<span class="code">B</span> are integers, then <span class="code">A&nbsp;&lt;&lt;&nbsp;B</span> is the integer
+obtained by shifting each bit of <span class="code">A</span>, <span class="code">B</span> bit positions to
+the left; <span class="code">A&nbsp;&gt;&gt;&nbsp;B</span> is the integer
+obtained by shifting each bit of <span class="code">A</span>, <span class="code">B</span> bit positions to
+the right; <span class="code">A&nbsp;&amp;&nbsp;B</span> is the integer obtained by applying the
+logical <b>and</b> operation to each pair of bits in <span class="code">A</span> and <span class="code">B</span>;
+and <span class="code">A&nbsp;|&nbsp;B</span> is obtained similarly, using the logical <b>or</b>
+operation.  For example, using 8-bit binary numbers, we have:
+<span class="code">01100101&nbsp;&amp;&nbsp;10100001</span> is <span class="code">00100001</span>,
+while <span class="code">01100101&nbsp;|&nbsp;10100001</span> is <span class="code">11100101</span>.)
+You don't necessarily need to understand these operators. Here
+are incantations that you can use to work with color codes:</p>
+
+
+<pre>/* Suppose that rgb is an int that encodes a color.
+   To get separate red, green, and blue color components: *;
+   
+int red = (rgb &gt;&gt; 16) &amp; 0xFF;
+int green = (rgb &gt;&gt; 8) &amp; 0xFF;
+int blue = rgb &amp; 0xFF;
+   
+/* Suppose that red, green, and blue are color components in
+   the range 0 to 255.  To combine them into a single int: */
+   
+int rgb = (red &lt;&lt; 16) | (green &lt;&lt; 8) | blue;</pre>
+   
+
+<hr class="break">
+
+
+<p>An example of using pixel colors in a <span class="classname">BufferedImage</span> is provided
+by the smudge tool in the sample program <span class="sourceref"><a href="../source/PaintWithOffScreenCanvas.java">PaintWithOffScreenCanvas.java</a></span>.
+The purpose of this tool is to smear the colors of an image, as if it were drawn in
+wet paint.  For example, if you rub the middle of a black rectangle with the
+smudge tool, you'll get something like this:
+</p>
+   
+
+<p align="center">
+<img src="smudgedRectangle.jpg" width="138" height="75" alt="Picture of smudged rectangle"></p>
+   
+
+<p>This is an effect that can only be achieved by manipulating the colors of
+individual pixels!  Here's how it works: when the user presses the mouse using
+the smudge tool, the color components of a 7-by-7 block of pixels are copied
+from the off-screen canvas into arrays named <span class="code">smudgeRed</span>,
+<span class="code">smudgeGreen</span> and <span class="code">smudgeBlue</span>.  This is done
+in the <span class="code">mousePressed()</span> routine with the following code:</p>
+
+
+<pre>int w = OSC.getWidth();
+int h = OSC.getHeight();
+int x = evt.getX();
+int y = evt.getY();
+for (int i = 0; i &lt; 7; i++)
+   for (int j = 0; j &lt; 7; j++) {
+      int r = y + j - 3;
+      int c = x + i - 3;
+      if (r &lt; 0 || r &gt;= h || c &lt; 0 || c &gt;= w) {
+            // A -1 in the smudgeRed array indicates that the
+            // corresponding pixel was outside the canvas.
+         smudgeRed[i][j] = -1;
+      }
+      else {
+         int color = OSC.getRGB(c,r);
+         smudgeRed[i][j] = (color &gt;&gt; 16) &amp; 0xFF;
+         smudgeGreen[i][j] = (color &gt;&gt; 8) &amp; 0xFF;
+         smudgeBlue[i][j] = color &amp; 0xFF;
+      }
+   }</pre>
+   
+
+<p>The arrays are of type <span class="atype">double[][]</span> because I am going to
+do some computations with them that require real numbers.  As the user
+moves the mouse, the colors in the array are blended with the colors in
+the image, just as if you were mixing wet paint by smudging it with your
+finger.  That is, the colors at the new mouse position in the image are replaced with a weighted average
+of the current colors in the image and the colors in the arrays.  This has
+the effect of moving some of the color from the previous mouse position to
+the new mouse position.  At the same time, the colors in the arrays are
+replaced by a weighted average of the old colors in the arrays and the colors
+from the image.  This has the effect of moving some color from the image
+into the arrays.  This is done using the following code for each pixel position,
+<span class="code">(c,r)</span>, in a 7-by-7 block around the new mouse location:</p>
+   
+
+<pre>int curCol = OSC.getRGB(c,r);
+int curRed = (curCol &gt;&gt; 16) &amp; 0xFF;
+int curGreen = (curCol &gt;&gt; 8) &amp; 0xFF;
+int curBlue = curCol &amp; 0xFF;
+int newRed = (int)(curRed*0.7 + smudgeRed[i][j]*0.3);
+int newGreen = (int)(curGreen*0.7 + smudgeGreen[i][j]*0.3);
+int newBlue = (int)(curBlue*0.7 + smudgeBlue[i][j]*0.3);
+int newCol = newRed &lt;&lt; 16 | newGreen &lt;&lt; 8 | newBlue;
+OSC.setRGB(c,r,newCol);
+smudgeRed[i][j] = curRed*0.3 + smudgeRed[i][j]*0.7;
+smudgeGreen[i][j] = curGreen*0.3 + smudgeGreen[i][j]*0.7;
+smudgeBlue[i][j] = curBlue*0.3 + smudgeBlue[i][j]*0.7;</pre>
+   
+
+      
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="GUI2.1.3">13.1.3&nbsp;&nbsp;Resources</a>
+</h3>
+
+
+<p>Throughout this textbook, up until now, we have been thinking of a program
+as made up entirely of Java code.  However, programs often use
+other types of data, including images, sounds, and text, as part of
+their basic structure.  These data are referred to as <span class="newword">resources</span>.
+An example is the image file, <span class="code">cards.png</span>, that was used in the
+<span class="sourceref"><a href="../source/HighLowWithImages.java">HighLowWithImages.java</a></span> program earlier in this section.  This file is
+part of the program.  The program needs it in order to run.  The user of
+the program doesn't need to know that this file exists or where it is
+located; as far as the user is concerned, it is just part of the program.
+The program of course, does need some way of locating the resource file and
+loading its data.</p>
+   
+
+<p>Resources are ordinarily stored in files that are in the same locations
+as the compiled class files for the program.  Class files are located
+and loaded by something called a <span class="newword">class loader</span>, which
+is represented in Java by an object of type <span class="classname">ClassLoader</span>.
+A class loader has a list of locations where it will look for class files.
+This list is called the <span class="newword">class path</span>.  It includes the
+location where Java's standard classes are stored.  It generally includes
+the current directory.  If the program is stored in a jar file, the jar
+file is included on the class path.  In addition to class files, a
+<span class="classname">ClassLoader</span> is capable of finding resource files
+that are located on the class path or in subdirectories of locations that
+are on the class path.</p>
+   
+
+<p>The first step in using a resource is to obtain a <span class="classname">ClassLoader</span>
+and to use it to locate the resource file.  In the <span class="code">HighLowWithImages</span> program,
+this is done with:</p>
+   
+
+<pre>ClassLoader cl = HighLowWithImages.class.getClassLoader();
+URL imageURL = cl.getResource("cards.png");</pre>
+   
+
+<p>The idea of the first line is that in order to get a class loader,
+you have to ask a class that was loaded by the class loader.  Here,
+<span class="code">HighLowWithImages.class</span> is a name for the object that
+represents the actual class, <span class="classname">HighLowWithImages</span>.
+In other programs, you would just substitute for "<span class="code">HighLowWithImages</span>"
+the name of the class that contains the call to <span class="code">getClassLoader()</span>.
+Alternatively, if <span class="code">obj</span> is any object, then you can obtain
+a class loader by calling <span class="code">obj.getClass().getClassLoader()</span>.</p>
+
+
+<p>The second line in the above code uses the class loader to locate the resource
+file named <span class="code">cards.png</span>.  The return value of <span class="code">cl.getResource()</span>
+is of type <span class="code">java.net.URL</span>, and it represents the location of
+the resource rather than the resource itself.  If the resource file
+cannot be found, then the return value is null.
+The class <span class="classname">URL</span> was discussed in <a href="../c11/s4.html#IO.4.1">Subsection&nbsp;11.4.1</a>.</p>
+   
+
+<p>Often, resources are stored not directly on the class path but in a
+subdirectory.  In that case, the parameter to <span class="code">getResource()</span>
+must be a path name that includes the directory path to the resource.
+For example, suppose that the image file "cards.png" were stored in
+a directory named <span class="code">images</span> inside a directory named
+<span class="code">resources</span>, where <span class="code">resources</span> is directly on
+the class path.  Then the path to the file is "resources/images/cards.png"
+and the command for locating the resource would be</p>
+   
+
+<pre>URL imageURL = cl.getResource("resources/images/cards.png");</pre>
+   
+
+<p>Once you have a <span class="classname">URL</span> that represents the location of
+a resource file, you could use a <span class="classname">URLConnection</span>,
+as discussed in <a href="../c11/s4.html#IO.4.1">Subsection&nbsp;11.4.1</a>, to read the contents of
+that file.  However, Java provides more convenient methods for loading
+several types of resources.  For loading image resources, a
+convenient method is available in the class <span class="code">java.awt.Toolkit</span>.
+It can be used as in the following line from <span class="code">HighLowWithImages</span>,
+where <span class="code">cardImages</span> is an instance variable of type
+<span class="classname">Image</span> and <span class="code">imageURL</span> is the
+<span class="classname">URL</span> that represents the location of the image
+file:</p>
+   
+
+<pre>cardImages = Toolkit.getDefaultToolkit().createImage(imageURL);</pre>
+   
+
+<p>This still does not load the image completely -- that will only be
+done later, for example when <span class="code">cardImages</span> is used in a
+<span class="code">drawImage</span> command.  Another technique, which does read
+the image completely, is to use the <span class="code">ImageIO.read()</span>
+method, which will be discussed in <a href="../c13/s1.html#GUI2.1.5">Subsection&nbsp;13.1.5</a>
+</p>
+   
+
+<hr class="break">
+   
+
+<p>The <span class="classname">Applet</span> and <span class="classname">JApplet</span> classes
+have an instance method that can be used to load an image from a
+given <span class="classname">URL</span>:</p>
+
+
+<pre>public Image getImage(URL imageURL)</pre>
+   
+
+<p>When you are writing an applet, this method can be used as yet another
+technique for loading an image resource.</p>
+   
+
+<p>More interesting is the fact that <span class="classname">Applet</span> and <span class="classname">JApplet</span>
+contain a <span class="code">static</span> method that can be used to load sound resources:</p>
+   
+
+<pre>public static AudioClip newAudioClip(URL soundURL)</pre>
+   
+
+<p>Since this is a <span class="code">static</span> method, it can be used in any
+program, not just in applets, simply by calling it as <span class="code">Applet.newAudioClip(soundURL)</span>
+or <span class="code">JApplet.newAudioClip(soundURL)</span>.  (This seems to be the only
+easy way to use sounds in a Java program; it's not clear why this capability
+is only in the applet classes.)  The return value is of type
+<span class="code">java.applet.AudioClip</span>.  Once you have an <span class="classname">AudioClip</span>,
+you can call its <span class="code">play()</span> method to play the audio clip from the
+beginning.</p>
+
+
+<p>Here is a method that puts all this together to load and play
+the sound from an audio resource file:</p>
+   
+
+<pre>private void playAudioResource(String audioResourceName) {
+   ClassLoader cl = SoundAndCursorDemo.class.getClassLoader();
+   URL resourceURL = cl.getResource(audioResourceName);
+   if (resourceURL != null) {
+      AudioClip sound = JApplet.newAudioClip(resourceURL);
+      sound.play();
+   }
+}</pre>
+   
+
+<p>This method is from a sample program <span class="code">SoundAndCursorDemo</span> that
+will be discussed in the next subsection.  Of course, if you plan to reuse
+the sound often, it would be better to load the sound once into an
+instance variable of type <span class="classname">AudioClip</span>, which could then
+be used to play the sound any number of times, without the need to reload
+it each time.</p>
+
+
+<p>The <span class="classname">AudioClip</span> class supports audio files in the
+common WAV, AIFF, and AU formats.</p>
+
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="GUI2.1.4">13.1.4&nbsp;&nbsp;Cursors and Icons</a>
+</h3>
+
+
+<p>The position of the mouse is represented on the computer's screen by
+a small image called a <span class="newword">cursor</span>.  In Java, the cursor
+is represented by an object of type <span class="code">java.awt.Cursor</span>.
+A <span class="classname">Cursor</span> has an associated image.  It also
+has a <span class="newword">hot spot</span>, which is a <span class="classname">Point</span>
+that specifies the pixel within the image that corresponds to the exact
+position on the screen where the mouse is pointing.  For example, for a
+typical "arrow" cursor, the hot spot is the tip of the arrow.  For
+a "crosshair" cursor, the hot spot is the center of the crosshairs.</p>
+
+
+<p>The <span class="classname">Cursor</span> class defines several standard
+cursors, which are identified by constants such as
+<span class="code">Cursor.CROSSHAIR_CURSOR</span> and <span class="code">Cursor.DEFAULT_CURSOR</span>.
+You can get a standard cursor by calling the <span class="code">static</span>
+method <span class="code">Cursor.getPredefinedCursor(code)</span>, where <span class="code">code</span>
+is one of the constants that identify the standard cursors.  It is
+also possible to create a custom cursor from an <span class="classname">Image</span>.
+The <span class="classname">Image</span> might be obtained as an image resource,
+as described in the previous subsection.  It could even be a <span class="classname">BufferedImage</span>
+that you create in your program.  It should be small, maybe 16-by-16 or
+24-by-24 pixels.  (Some platforms might only be able to handle certain
+cursor sizes; see the documentation for
+<span class="code">Toolkit.getBestCursorSize()</span> for more information.)
+A custom cursor can be created by calling the <span class="code">static</span> method
+<span class="code">createCustomCursor()</span> in the <span class="classname">Toolkit</span> class:</p>
+   
+
+<pre>Cursor c = Toolkit.getDefaultToolkit().createCustomCursor(image,hotSpot,name);</pre>
+
+
+<p>where <span class="code">hotSpot</span> is of type <span class="classname">Point</span> and
+<span class="code">name</span> is a <span class="classname">String</span> that will act as
+a name for the cursor (and which serves no real purpose that I know of).</p>
+   
+
+<p>Cursors are associated with GUI components.  When the mouse moves over a
+component, the cursor changes to whatever <span class="classname">Cursor</span> is associated with that
+component.  To associate a <span class="classname">Cursor</span> with a component,
+call the component's instance method <span class="code">setCursor(cursor)</span>.  For example,
+to set the cursor for a <span class="classname">JPanel</span>, <span class="code">panel</span>, to
+be the standard "wait" cursor:</p>
+
+
+<pre>panel.setCursor( Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR) );</pre>
+   
+
+<p>To reset the cursor to be the default cursor, you can use:</p>
+   
+
+<pre>panel.setCursor( Curser.getDefaultCursor() );</pre>
+
+
+<p>To set the cursor to be an image that is defined in an image resource
+file named <span class="code">imageResource</span>, you might use:</p>
+   
+
+<pre>ClassLoader cl = SoundAndCursorDemo.class.getClassLoader();
+URL resourceURL = cl.getResource(imageResource);
+if (resourceURL != null) {
+   Toolkit toolkit = Toolkit.getDefaultToolkit();
+   Image image = toolkit.createImage(resourceURL);
+   Point hotSpot = new Point(7,7);
+   Cursor cursor = toolkit.createCustomCursor(image, hotSpot, "mycursor");
+   panel.setCursor(cursor);
+}</pre>
+   
+
+<p>The sample program <span class="sourceref"><a href="../source/SoundAndCursorDemo.java">SoundAndCursorDemo.java</a></span> shows how
+to use predefined and custom cursors and how to play sounds from resource
+files.  The program has several buttons that you can click.  Some of the
+buttons change the cursor that is associated with the main panel of the
+program.  Some of the buttons play sounds.  When you play a sound, the
+cursor is reset to be the default cursor. Here is an applet version
+of the program for you to try:</p>
+   
+
+
+<p align="center">
+<applet code="SoundAndCursorDemo$Aplt.class" width="400" height="150" archive="SoundAndCursorDemo.jar" alt="SoundAndCursoDemo"></applet></p>
+
+   
+
+<p>Another standard use of images in GUI interfaces is for <span class="newword">icons</span>.
+An icon is simply a small picture.  As we'll see in <a href="../c13/s3.html">Section&nbsp;13.3</a>, icons can be used
+on Java's buttons, menu items, and labels; in fact, for our purposes, an icon is
+simply an image that can be used in this way.</p>
+   
+
+<p>An icon is represented by an object of type
+<span class="classname">Icon</span>, which is actually an <span class="code">interface</span> rather than a class.
+The class <span class="classname">ImageIcon</span>, which implements the <span class="classname">Icon</span>
+interface, is used to create icons from <span class="classname">Images</span>.
+If <span class="code">image</span> is a (rather small) <span class="classname">Image</span>, then
+the constructor call <span class="code">new&nbsp;ImageIcon(image)</span> creates an
+<span class="classname">ImageIcon</span> whose picture is the specified image.
+Often, the image comes from a resource file.  We will see examples of this
+later in this chapter</p>
+   
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="GUI2.1.5">13.1.5&nbsp;&nbsp;Image File I/O</a>
+</h3>
+   
+
+<p>The class <span class="code">javax.imageio.ImageIO</span> makes it easy to save images
+from a program into files and to read images from files into a program.
+This would be useful in a program such as <span class="code">PaintWithOffScreenCanvas</span>,
+so that the users would be able to save their work and to open and edit
+existing images. (See <a href="../c13/ex1-ans.html">Exercise&nbsp;13.1</a>.)</p>
+   
+
+<p>There are many ways that the data for an image could be stored in a file.
+Many standard formats have been created for doing this.  Java supports at
+least three standard image formats: PNG, JPEG, and GIF.
+(Individual implementations of Java might support more.)
+The JPEG format is "lossy," which means that the picture that you
+get when you read a JPEG file is only an approximation of the picture
+that was saved.  Some information in the picture has been lost.  Allowing some
+information to be lost makes it possible to compress the image into
+a lot fewer bits than would otherwise be necessary.  Usually, the
+approximation is quite good.  It works best for photographic images
+and worst for simple line drawings.  The PNG format, on the other
+hand is "lossless," meaning that the picture in the file is an exact
+duplicate of the picture that was saved.  A PNG file is compressed,
+but not in a way that loses information.  The compression works best
+for images made up mostly of large blocks of uniform color; it works
+<b>worst</b> for photographic images.  GIF is an older format that is limited
+to just 256 colors in an image; it has mostly been superseded by PNG.</p>
+   
+
+<p>Suppose that <span class="code">image</span> is a <span class="classname">BufferedImage</span>.
+The image can be saved to a file simply by calling</p>
+
+
+<pre>ImageIO.write( image, format, file )</pre>
+   
+
+<p>where <span class="code">format</span> is a <span class="classname">String</span> that specifies
+the image format of the file and <span class="code">file</span> is a <span class="classname">File</span>
+that specifies the file that is to be written. (See <a href="../c11/s2.html#IO.2.2">Subsection&nbsp;11.2.2</a> for
+information about the <span class="classname">File</span> class.)  The <span class="code">format</span>
+string should ordinarily be either <span class="code">"PNG"</span> or <span class="code">"JPEG"</span>,
+although other formats might be supported.</p>
+   
+
+<p>
+<span class="code">ImageIO.write()</span> is a <span class="code">static</span> method in the <span class="classname">ImageIO</span>
+class.  It returns a <span class="ptype">boolean</span> value that is <span class="code">false</span> if
+the image format is not supported.  That is, if the specified image format is
+not supported, then the image is <b>not</b> saved, but no exception is thrown.
+This means that you should always check the return value!  For example:</p>
+   
+
+<pre>boolean hasFormat = ImageIO.write(OSC,format,selectedFile);
+if ( ! hasFormat )
+   throw new Exception(format + " format is not available.");</pre>
+   
+
+<p>If the image format <b>is</b> recognized, it is still possible that
+an <span class="classname">IOException</span> might be thrown when the attempt is made
+to send the data to the file.</p>
+   
+
+<p>Usually, the file to be used in <span class="code">ImageIO.write()</span> will be selected by
+the user using a <span class="classname">JFileChooser</span>, as discussed in
+<a href="../c11/s2.html#IO.2.3">Subsection&nbsp;11.2.3</a>.  For example, here is a typical method for
+saving an image.  (The use of "this" as a parameter in several places
+assumes that this method is defined in a subclass of <span class="classname">JComponent</span>.)</p>
+
+
+<pre>/**
+ * Attempts to save an image to a file selected by the user. 
+ * @param image the BufferedImage to be saved to the file
+ * @param format the format of the image, probably either "PNG" or "JPEG"
+ */
+private void doSaveFile(BufferedImage image, String format) {
+   if (fileDialog == null)
+      fileDialog = new JFileChooser();
+   fileDialog.setSelectedFile(new File("image." + format.toLowerCase())); 
+   fileDialog.setDialogTitle("Select File to be Saved");
+   int option = fileDialog.showSaveDialog(this);
+   if (option != JFileChooser.APPROVE_OPTION)
+      return;  // User canceled or clicked the dialog's close box.
+   File selectedFile = fileDialog.getSelectedFile();
+   if (selectedFile.exists()) {  // Ask the user whether to replace the file.
+      int response = JOptionPane.showConfirmDialog( null,
+            "The file \"" + selectedFile.getName()
+            + "\" already exists.\nDo you want to replace it?", 
+            "Confirm Save",
+            JOptionPane.YES_NO_OPTION, 
+            JOptionPane.WARNING_MESSAGE );
+      if (response != JOptionPane.YES_OPTION)
+         return;  // User does not want to replace the file.
+   }
+   try {
+      boolean hasFormat = ImageIO.write(image,format,selectedFile);
+      if ( ! hasFormat )
+         throw new Exception(format + " format is not available.");
+   }
+   catch (Exception e) {
+      JOptionPane.showMessageDialog(this,
+                      "Sorry, an error occurred while trying to save image."));
+      e.printStackTrace();
+   }
+}</pre>   
+
+
+<hr class="break">
+   
+
+<p>The <span class="classname">ImageIO</span> class also has a <span class="code">static</span> <span class="code">read()</span>
+method for reading an image from a file into a program.  The method</p>
+   
+
+<pre>ImageIO.read( inputFile )</pre>
+   
+
+<p>takes a variable of type <span class="classname">File</span> as a parameter and returns
+a <span class="classname">BufferedImage</span>.  The return value is <span class="code">null</span> if
+the file does not contain an image that is stored in a supported format.  Again,
+no exception is thrown in this case, so you should always be careful to check the
+return value.  It is also possible for an <span class="classname">IOException</span> to
+occur when the attempt is made to read the file.  There is another version of the
+<span class="code">read()</span> method that takes an <span class="classname">InputStream</span> instead
+of a file as its parameter, and a third version that takes a <span class="classname">URL</span>.</p>
+   
+
+<p>Earlier in this section, we encountered another method for reading an image
+from a <span class="classname">URL</span>, the <span class="code">createImage()</span> method from
+the <span class="classname">Toolkit</span> class.  The difference is that <span class="code">ImageIO.read()</span>
+reads the image data completely and stores the result in a <span class="classname">BufferedImage</span>.
+On the other hand, <span class="code">createImage()</span> does not actually read the data;
+it really just stores the image location and the data won't be read until later,
+when the image is used.  This has the advantage that the <span class="code">createImage()</span> method
+itself can complete very quickly.  <span class="code">ImageIO.read()</span>, on the other hand,
+can take some time to execute.</p>
+   
+
+   
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s2.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

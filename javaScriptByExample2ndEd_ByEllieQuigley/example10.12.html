@@ -1,0 +1,27 @@
+<html><head><title>Timeout</title>
+<script type="text/javascript">
+	var today = new Date();
+	var year=today.getFullYear();
+	var future = new Date("December 25,"+ year);
+	var diff = future.getTime() - today.getTime();
+		                    // Number of milliseconds
+	var days =Math.floor(diff / (1000 * 60 * 60 * 24 ));
+		                    // Convert to days
+	var str="Only " + days + "  shopping days left until Christmas! ";
+	function startup(){
+			setInteral(scroller,500);
+	}
+	function scroller(){
+			str = str.substring(1, str.length) + str.substring(0,1);
+			document.title=str;
+			window.status=str;
+	}
+	</script>
+</head>
+	<body onLoad = "startup()">
+	<h3>
+	Get Dizzy. Watch the title bar and the status bar!!
+	</h3>
+	<image src="christmasscene.bmp">
+</body>
+</html>

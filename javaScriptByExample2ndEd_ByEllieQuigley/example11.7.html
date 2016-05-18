@@ -1,0 +1,33 @@
+<html>
+    <head><title>Naming Buttons</title>
+	</head>
+	<body bgcolor="cyan"><font face="arial">
+	<b>Naming Forms and Buttons<br />
+	<big>
+	<form name="myform">
+		<input type="button" name="button1" id="button1" value="red" /></input>
+		<input type="button" name="button2" id="button2" value="blue" /></input>
+	</form>
+	<script type="text/javascript">
+		document.write("<b><br />Form name is: </b><em>"
+		+document.myform.name + "</em>");
+		document.write("<b><br />Form name is: </b><em>"
+		+document["myform"].name+"</em>");
+		//document.write("</em><b><br />Name of first button is:</b></em> "
+		//+document.myform.button1.name +
+
+	    document.write("<b><br />Name of first button is:</b><em> "
+		+document["myform"]["button1"].name +
+		"</em>and its type is<em> "+ document.myform.button1.type);
+		//document.write("</em><b><br />Value of button1 field:</b><em> "
+		//+document.myform.button1.value);
+		document.write("</em><b><br />Value of button1 field:</b><em> "
+		+document["myform"]["button1"].value);
+		document.write("</em><b><br />Name of second button is:</b><em> "
+		+document["myform"].button2.name);
+		document.write("</em><b><br />Value of button2 field:</b><em> "
+		+document.myform.button2.value);
+	</script>
+	</big>
+	</body>'
+	</html>

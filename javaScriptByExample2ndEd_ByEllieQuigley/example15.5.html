@@ -1,0 +1,29 @@
+<html><head><title>innerHTML</title>
+   <style type="text/css">
+    body{ background-color:blue;}
+    p { background: white;
+      font-style: bold;
+      font-family: courier,arial;
+      text-indent: 5%;
+      margin-left:20%;
+      margin-right:20%
+    }
+    </style>
+   </head
+   <body>
+
+     <p id="para1">Today is Sunday and there is a sailing festival going on in the Ferry Park. The tall ships are docked in the bay for tourists to visit. The fog is rolling in.</p>
+
+     <p id="para2">I'm trying to figure out how to grab the text from this paragraph with JavaScript using the innerHTML property. I may take a break now and go to the park.</p>
+
+     <script type="text/javascript">
+        document.write("<p>Javascript's innerHTML property</p>");
+        ptxt1=document.getElementById("para1").innerHTML;
+        ptxt2=document.getElementById("para2").innerHTML;
+        document.write("<p style='background:yellow'>"+
+        ptxt1.toUpperCase()+ "</p>");
+        document.write("<p style='background:yellow'>" +         
+        ptxt2.toUpperCase()+ "</p>");
+     </script>
+ </body>
+ </html>

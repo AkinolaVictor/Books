@@ -1,0 +1,356 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 3.7 -- Introduction to Exceptions and try..catch</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s6.html">Previous Section</a> |
+           <a href="s8.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#control.7.1">Exceptions</a>
+<br>
+<a href="#control.7.2">try..catch</a>
+<br>
+<a href="#control.7.3">Exceptions in TextIO</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 3.7</h3>
+<h2 class="section_title">Introduction to Exceptions and try..catch</h2>
+<hr class="break">
+
+
+<p>
+<span class="start"><big>I</big>n addition to the control</span> structures that
+determine the normal flow of control in a program, Java has a way to deal
+with "exceptional" cases that throw the flow of control off its normal
+track.  When an error occurs during the execution of a program, the default
+behavior is to terminate the program and to print an error message.  However,
+Java makes it possible to "catch" such errors and program a response different
+from simply letting the program crash.  This is done with the
+<span class="newword">try..catch</span> statement.  In this section, we will
+take a preliminary, incomplete look at using <span class="code">try..catch</span> to handle errors.
+Error handling is a complex topic, which we will return to in
+<a href="../c8/index.html">Chapter&nbsp;8</a>.</p>
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="control.7.1">3.7.1&nbsp;&nbsp;Exceptions</a>
+</h3>
+
+
+<p>The term <span class="newword">exception</span> is used to refer to the type of
+error that one might want to handle with a <span class="code">try..catch</span>.  An
+exception is an exception to the normal flow of control in the program.
+The term is used in preference to "error" because in some cases,
+an exception might not be considered to be an error at all.  You can
+sometimes think of an exception as just another way to organize
+a program.</p>
+   
+
+<p>Exceptions in Java are represented as objects of type <span class="classname">Exception</span>.
+Actual exceptions are defined by subclasses of <span class="classname">Exception</span>.
+Different subclasses represent different types of exceptions.  We will look at only
+two types of exception in this section:  <span class="classname">NumberFormatException</span>
+and <span class="classname">IllegalArgumentException</span>.</p>
+   
+
+<p>A <span class="classname">NumberFormatException</span> can occur when an attempt
+is made to convert a string into a number.  Such conversions are done by
+the functions <span class="code">Integer.parseInt</span> and <span class="code">Double.parseDouble</span>.
+(See <a href="../c2/s5.html#basics.5.7">Subsection&nbsp;2.5.7</a>.)  Consider the function call <span class="code">Integer.parseInt(str)</span>
+where <span class="code">str</span> is a variable of type <span class="classname">String</span>.
+If the value of <span class="code">str</span> is the string <span class="code">"42"</span>, then the
+function call will correctly convert the string into the <span class="ptype">int</span>&nbsp;42.
+However, if the value of <span class="code">str</span> is, say, <span class="code">"fred"</span>, the function call 
+will fail because <span class="code">"fred"</span> is not a legal string representation of
+an <span class="ptype">int</span> value.  In this case, an exception of type
+<span class="classname">NumberFormatException</span> occurs.  If nothing is done
+to handle the exception, the program will crash.</p>
+
+
+<p>An <span class="classname">IllegalArgumentException</span> can occur when an illegal
+value is passed as a parameter to a subroutine.  For example, if a subroutine
+requires that a parameter be greater than or equal to zero, an <span class="classname">IllegalArgumentException</span>
+might occur when a negative value is passed to the subroutine.
+How to respond to the illegal value is up to the person who wrote the subroutine, 
+so we can't simply say that every illegal parameter value will result in an
+<span class="classname">IllegalArgumentException</span>.  However, it is a common response.</p>
+
+
+<p>One case where an <span class="classname">IllegalArgumentException</span> can occur is in
+the <span class="code">valueOf</span> function of an enumerated type.  Recall from <a href="../c2/s3.html#basics.3.3">Subsection&nbsp;2.3.3</a>
+that this function tries to convert a string into one of the values of the enumerated
+type.  If the string that is passed as a parameter to <span class="code">valueOf</span> is not
+the name of one of the enumerated type's values, then an <span class="classname">IllegalArgumentException</span>
+occurs.  For example, given the enumerated type</p>
+
+
+<pre>enum Toss { HEADS, TAILS }</pre>
+   
+
+<p>
+<span class="code">Toss.valueOf("HEADS")</span> correctly returns the value <span class="code">Toss.HEADS</span>,
+while <span class="code">Toss.valueOf("FEET")</span> results in an <span class="classname">IllegalArgumentException</span>.
+</p>
+
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="control.7.2">3.7.2&nbsp;&nbsp;try..catch</a>
+</h3>
+   
+
+<p>When an exception occurs, we say that the exception is "thrown".
+For example, we say that <span class="code">Integer.parseInt(str)</span> <span class="newword">throws</span>
+an exception of type <span class="classname">NumberFormatException</span> when the value of 
+<span class="code">str</span> is illegal.  When an exception is thrown, it is possible
+to "catch" the exception and prevent it from crashing the program.  This is
+done with a <span class="newword">try..catch</span> statement.  In somewhat simplified
+form, the syntax for a <span class="code">try..catch</span> is:</p>
+
+
+<pre>try {
+   <span class="bnf">statements-1</span>
+}
+catch ( <span class="bnf">exception-class-name</span>  <span class="bnf">variable-name</span> ) {
+   <span class="bnf">statements-2</span>
+}</pre>
+   
+
+<p>The <span class="bnf">exception-class-name</span> could be <span class="classname">NumberFormatException</span>,
+<span class="classname">IllegalArgumentException</span>, or some other exception class.
+When the computer executes this statement, it executes the statements in the <span class="code">try</span>
+part.  If no error occurs during the execution of <span class="bnf">statements-1</span>, then the computer
+just skips over the <span class="code">catch</span> part and proceeds with the rest of the program.
+However, if an exception of type <span class="bnf">exception-class-name</span> occurs during the
+execution of <span class="bnf">statements-1</span>, the computer immediately jumps to the
+<span class="code">catch</span> part and executes <span class="bnf">statements-2</span>, skipping any remaining statements in
+<span class="bnf">statements-1</span>.  During the execution of <span class="bnf">statements-2</span>, the
+<span class="bnf">variable-name</span> represents the exception object, so that you can, for example,
+print it out.  At the end of the
+<span class="code">catch</span> part, the computer proceeds with the rest of the program;
+the exception has been caught and handled and does not crash the program.
+Note that only one type of exception is caught; if some other type of exception occurs
+during the execution of <span class="bnf">statements-1</span>, it will crash the program as usual.
+</p>
+   
+
+<p>By the way, note that the braces, { and }, are part of the syntax of the
+<span class="code">try..catch</span> statement.  They are required even if there is only one
+statement between the braces.  This is different from the other statements we
+have seen, where the braces around a single statement are optional.</p>
+   
+
+<p>As an example, suppose that <span class="code">str</span> is a variable of type <span class="classname">String</span>
+whose value might or might not represent a legal real number.  Then we could say:</p>
+   
+
+<pre>try {
+   double x;
+   x = Double.parseDouble(str);
+   System.out.println( "The number is " + x );
+}
+catch ( NumberFormatException e ) {
+   System.out.println( "Not a legal number." );
+}</pre>
+   
+
+<p>If an error is thrown by the call to <span class="code">Double.parseDouble(str)</span>, then the
+output statement in the <span class="code">try</span> part is skipped, and the statement in the
+<span class="code">catch</span> part is executed.</p>
+   
+
+<p>It's not always a good idea to catch exceptions and continue with the program.  Often
+that can just lead to an even bigger mess later on, and it might be better just to let
+the exception crash the program at the point where it occurs.  However, sometimes it's
+possible to recover from an error.  For example, suppose that we have the enumerated
+type</p>
+   
+
+<pre>enum Day { MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY }</pre>
+   
+
+<p>and we want the user to input a value belonging to this type.  <span class="code">TextIO</span> does
+not know about this type, so we can only read the user's response as a string.  The
+function <span class="code">Day.valueOf</span> can be used to convert the user's response to
+a value of type <span class="classname">Day</span>.  This will throw an exception of 
+type <span class="classname">IllegalArgumentException</span> if the user's response
+is not the name of one of the values of type <span class="classname">Day</span>, but we
+can recover from the error easily enough by asking the user to enter another response.
+Here is a code segment that does this.  (Converting the user's response
+to upper case will allow responses such as "Monday" or "monday" in addition
+to "MONDAY".)</p>
+
+
+<pre>Day  weekday;  // User's response as a value of type Day.
+while ( true ) {
+   String response;  // User's response as a String.
+   System.out.print("Please enter a day of the week: ");
+   response = TextIO.getln();
+   response = response.toUpperCase();
+   try {
+      weekday = Day.valueOf(response);
+      break;
+   }
+   catch ( IllegalArgumentException e ) {
+      System.out.println( response + " is not the name of a day of the week." );
+   }
+}
+// At this point, a legal value has definitely been assigned to weekday.</pre>
+   
+
+<p>The <span class="code">break</span> statement will be reached only if the user's response is
+acceptable, and so the loop will end only when a legal value has been assigned
+to <span class="code">weekday</span>.</p>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="control.7.3">3.7.3&nbsp;&nbsp;Exceptions in TextIO</a>
+</h3>
+   
+
+<p>When <span class="code">TextIO</span> reads a numeric value from the user, it makes sure
+that the user's response is legal, using a technique similar to the <span class="code">while</span>
+loop and <span class="code">try..catch</span> in the previous example.  However, <span class="code">TextIO</span>
+can read data from other sources besides the user.  (See <a href="../c2/s4.html#basics.4.5">Subsection&nbsp;2.4.5</a>.)
+When it is reading from a file,
+there is no reasonable way for <span class="code">TextIO</span> to recover from an illegal
+value in the input, so it responds by throwing an exception.
+To keep things simple, <span class="code">TextIO</span> only throws exceptions of type
+<span class="classname">IllegalArgumentException</span>, no matter what type of error it
+encounters.  For example, an exception
+will occur if an attempt is made to read from a file after all the data in the
+file has already been read.  In <span class="code">TextIO</span>, the exception is of type
+<span class="classname">IllegalArgumentException</span>.
+If you have a better response to file errors than to let the
+program crash, you can use a <span class="code">try..catch</span> to catch exceptions of
+type <span class="classname">IllegalArgumentException</span>.  
+</p>
+   
+
+<p>For example, suppose that a file contains nothing but real numbers, and we
+want a program that will read the numbers and find their sum and their average.
+Since it is unknown how many numbers are in the
+file, there is the question of when to stop reading.  One approach is simply
+to try to keep reading indefinitely.  When the end of the file is reached,
+an exception occurs.  This exception is not really an error -- it's just
+a way of detecting the end of the data, so we can catch the exception and
+finish up the program.  We can read the data in a <span class="code">while&nbsp;(true)</span> loop
+and break out of the loop when an exception occurs.  This is an example
+of the somewhat unusual technique of using an exception as part of the 
+expected flow of control in a program.
+</p>
+   
+
+<p>To read from the file, we need to know the file's name.  To make the program
+more general, we can let the user enter the file name, instead of hard-coding
+a fixed file name in the program.  However, it is possible that the user will
+enter the name of a file that does not exist.  When we use <span class="code">TextIO.readfile</span>
+to open a file that does not exist, an exception of type 
+<span class="classname">IllegalArgumentException</span> occurs.  We can catch
+this exception and ask the user to enter a different file name.  Here is
+a complete program that uses all these ideas:</p>
+
+
+<pre>/**
+ * This program reads numbers from a file.  It computes the sum and 
+ * the average of the numbers that it reads.  The file should contain 
+ * nothing but numbers of type double; if this is not the case, the 
+ * output will be the sum and average of however many numbers were 
+ * successfully read from the file.  The name of the file will be
+ * input by the user.
+ */
+
+public class ReadNumbersFromFile {
+   
+   public static void main(String[] args) {
+            
+      while (true) {
+         String fileName;  // The name of the file, to be input by the user.
+         TextIO.put("Enter the name of the file: ");
+         fileName = TextIO.getln();
+         try {
+            TextIO.readFile( fileName );  // Try to open the file for input.
+            break;  // If that succeeds, break out of the loop.
+         }
+         catch ( IllegalArgumentException e ) {
+            TextIO.putln("Can't read from the file \"" + fileName + "\".");
+            TextIO.putln("Please try again.\n");
+         }
+      }
+      
+      // At this point, TextIO is reading from the file.
+      
+      double number;  // A number read from the data file.
+      double sum;     // The sum of all the numbers read so far.
+      int count;      // The number of numbers that were read.
+      
+      sum = 0;
+      count = 0;
+      
+      try {
+         while (true) { // Loop ends when an exception occurs.
+             number = TextIO.getDouble();
+             count++;  // This is skipped when the exception occurs
+             sum += number;
+         }
+      }
+      catch ( IllegalArgumentException e ) {
+         // We expect this to occur when the end-of-file is encountered.
+         // We don't consider this to be an error, so there is nothing to do
+         // in this catch clause.  Just proceed with the rest of the program.
+      }
+      
+      // At this point, we've read the entire file.
+      
+      TextIO.putln();
+      TextIO.putln("Number of data values read: " + count);
+      TextIO.putln("The sum of the data values: " + sum);
+      if ( count == 0 )
+         TextIO.putln("Can't compute an average of 0 values.");
+      else
+         TextIO.putln("The average of the values:  " + (sum/count));
+      
+   }
+
+}</pre>  
+
+
+   
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s6.html">Previous Section</a> |
+           <a href="s8.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

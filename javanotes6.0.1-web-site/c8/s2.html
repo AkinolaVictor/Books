@@ -1,0 +1,558 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 8.2 -- Writing Correct Programs</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s1.html">Previous Section</a> |
+           <a href="s3.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#robustness.2.1">Provably Correct Programs</a>
+<br>
+<a href="#robustness.2.2">Robust Handling of Input</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 8.2</h3>
+<h2 class="section_title">Writing Correct Programs</h2>
+<hr class="break">
+
+
+<p>
+<span class="start"><big>C</big>orrect programs don't</span> just happen. It takes
+planning and attention to detail to avoid errors in programs. There are some
+techniques that programmers can use to increase the likelihood that their
+programs are correct.</p>
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="robustness.2.1">8.2.1&nbsp;&nbsp;Provably Correct Programs</a>
+</h3>
+   
+
+<p>In some cases, it is possible to <b>prove</b> that a program is
+correct. That is, it is possible to demonstrate mathematically that the
+sequence of computations represented by the program will always produce the
+correct result. Rigorous proof is difficult enough that in practice it can only
+be applied to fairly small programs. Furthermore, it depends on the fact that
+the "correct result" has been specified correctly and completely. As I've
+already pointed out, a program that correctly meets its specification is not
+useful if its specification was wrong. Nevertheless, even in everyday
+programming, we can apply some of the ideas and techniques that are used in
+proving that programs are correct.</p>
+
+
+<p>The fundamental ideas are <span class="newword">process</span> and
+<span class="newword">state</span>. A state consists of all the information
+relevant to the execution of a program at a given moment during its execution.
+The state includes, for example, the values of all the
+variables in the program, the output that has been produced, any input that is
+waiting to be read, and a record of the position in the program where the
+computer is working. A process is the sequence of states that the computer goes
+through as it executes the program. From this point of view, the meaning of a
+statement in a program can be expressed in terms of the effect that the
+execution of that statement has on the computer's state. As a simple example,
+the meaning of the assignment statement "<span class="code">x&nbsp;=&nbsp;7;</span>" is that
+after this statement is executed, the value of the variable <span class="code">x</span> will be
+7. We can be absolutely sure of this fact, so it is something upon which we can
+build part of a mathematical proof.</p>
+
+
+<p>In fact, it is often possible to look at a program and deduce that some fact
+must be true at a given point during the execution of a program. For example,
+consider the <span class="code">do</span> loop:</p>
+
+
+<pre>do {
+   TextIO.put("Enter a positive integer: ");
+   N = TextIO.getlnInt();
+} while (N &lt;= 0);</pre>
+
+
+<p>After this loop ends, we can be absolutely sure that the value of the
+variable <span class="code">N</span> is greater than zero. The loop cannot end until this
+condition is satisfied. This fact is part of the meaning of the <span class="code">while</span>
+loop. More generally, if a <span class="code">while</span> loop uses the test "<span class="code">while
+(<span class="bnf">condition</span>)</span>", then after the loop ends, we can be
+sure that the <span class="code"><span class="bnf">condition</span></span> is false. We can then
+use this fact to draw further deductions about what happens as the execution of
+the program continues. (With a loop, by the way, we also have to worry about
+the question of whether the loop will ever end. This is something that has to
+be verified separately.)</p>
+
+
+<p>A fact that can be proven to be true after a given program segment has been
+executed is called a <span class="newword">postcondition</span> of that program
+segment. Postconditions are known facts upon which we can build further
+deductions about the behavior of the program. A postcondition of a program as a
+whole is simply a fact that can be proven to be true after the program has
+finished executing. A program can be proven to be correct by showing that the
+postconditions of the program meet the program's specification.</p>
+
+
+<p>Consider the following program segment, where all the variables are of type
+<span class="ptype">double</span>:</p>
+
+
+<pre>disc = B*B - 4*A*C;
+x = (-B + Math.sqrt(disc)) / (2*A);</pre>
+
+
+<p>The quadratic formula (from high-school mathematics) assures us that the
+value assigned to <span class="code">x</span> is a solution of the equation <span class="code">A*x<sup>2</sup> +
+B*x + C = 0</span>, provided that the value of <span class="code">disc</span> is greater than or equal
+to zero and the value of <span class="code">A</span> is not zero. <b>If</b> we can assume or
+guarantee that <span class="code">B*B-4*A*C&nbsp;&gt;=&nbsp;0</span> and that <span class="code">A&nbsp;!=&nbsp;0</span>, then the
+fact that <span class="code">x</span> is a solution of the equation becomes a postcondition of
+the program segment. We say that the condition, <span class="code">B*B-4*A*C&nbsp;&gt;=&nbsp;0</span> is a
+<span class="newword">precondition</span> of the program segment. The condition
+that <span class="code">A&nbsp;!=&nbsp;0</span> is another precondition. A precondition is defined to be a
+condition that must be true at a given point in the execution of a program in
+order for the program to continue correctly. A precondition is something that
+you want to be true. It's something that you have to check or force to be true,
+if you want your program to be correct.</p>
+
+
+<p>We've encountered preconditions and postconditions once before, in <a href="../c4/s6.html#subroutines.6.1">Subsection&nbsp;4.6.1</a>.
+That section introduced preconditions and
+postconditions as a way of specifying the contract of a subroutine. As the
+terms are being used here, a precondition of a subroutine is just a
+precondition of the code that makes up the definition of the subroutine, and
+the postcondition of a subroutine is a postcondition of the same code. In this
+section, we have generalized these terms to make them more useful in talking
+about program correctness.</p>
+
+
+<p>Let's see how this works by considering a longer program segment:</p>
+
+
+<pre>do {
+   TextIO.putln("Enter A, B, and C.  B*B-4*A*C must be &gt;= 0.");
+   TextIO.put("A = ");
+   A = TextIO.getlnDouble();
+   TextIO.put("B = ");
+   B = TextIO.getlnDouble();
+   TextIO.put("C = ");
+   C = TextIO.getlnDouble();
+   if (A == 0 || B*B - 4*A*C &lt; 0)
+      TextIO.putln("Your input is illegal.  Try again.");
+} while (A == 0 || B*B - 4*A*C &lt; 0);
+
+disc = B*B - 4*A*C;
+x = (-B + Math.sqrt(disc)) / (2*A);</pre>
+
+
+<p>After the loop ends, we can be sure that <span class="code">B*B-4*A*C&nbsp;&gt;=&nbsp;0</span> and that
+<span class="code">A&nbsp;!=&nbsp;0</span>. The preconditions for the last two lines are fulfilled, so the
+postcondition that <span class="code">x</span> is a solution of the equation <span class="code">A*x<sup>2</sup> +
+B*x + C = 0</span> is also valid. This program segment correctly and provably computes
+a solution to the equation. (Actually, because of problems with representing
+numbers on computers, this is not 100% true. The <b>algorithm</b> is correct,
+but the <b>program</b> is not a perfect implementation of the algorithm. See
+the discussion in <a href="../c8/s1.html#robustness.1.3">Subsection&nbsp;8.1.3</a>.)</p>
+
+
+<p>Here is another variation, in which the precondition is checked by an
+<span class="code">if</span> statement. In the first part of the <span class="code">if</span> statement, where a
+solution is computed and printed, we know that the preconditions are fulfilled.
+In the other parts, we know that one of the preconditions fails to hold. In any
+case, the program is correct.</p>
+
+
+<pre>TextIO.putln("Enter your values for A, B, and C.");
+TextIO.put("A = ");
+A = TextIO.getlnDouble();
+TextIO.put("B = ");
+B = TextIO.getlnDouble();
+TextIO.put("C = ");
+C = TextIO.getlnDouble();
+
+if (A != 0 &amp;&amp; B*B - 4*A*C &gt;= 0) {
+   disc = B*B - 4*A*C;
+   x = (-B + Math.sqrt(disc)) / (2*A);
+   TextIO.putln("A solution of A*X*X + B*X + C = 0 is " + x);
+}
+else if (A == 0) {
+   TextIO.putln("The value of A cannot be zero.");
+}
+else {
+   TextIO.putln("Since B*B - 4*A*C is less than zero, the");
+   TextIO.putln("equation A*X*X + B*X + C = 0 has no solution.");
+}</pre>
+
+
+<p>Whenever you write a program, it's a good idea to watch out for
+preconditions and think about how your program handles them. Often, a
+precondition can offer a clue about how to write the program.</p>
+
+
+<p>For example, every array reference, such as <span class="code">A[i]</span>, has a
+precondition: The index must be within the range of legal indices for the
+array. For <span class="code">A[i]</span>, the precondition is that <span class="code">0&nbsp;&lt;=&nbsp;i 
+&lt;&nbsp;A.length</span>. The computer will check this condition when it evaluates
+<span class="code">A[i]</span>, and if the condition is not satisfied, the program will be
+terminated. In order to avoid this, you need to make sure that the index has a
+legal value. (There is actually another precondition, namely that <span class="code">A</span> is
+not <span class="code">null</span>, but let's leave that aside for the moment.) Consider the
+following code, which searches for the number <span class="code">x</span> in the array
+<span class="code">A</span> and sets the value of <span class="code">i</span> to be the index of
+the array element that contains <span class="code">x</span>:</p>
+
+
+<pre>i = 0;
+while (A[i] != x) {
+   i++;
+}</pre>
+
+
+<p>As this program segment stands, it has a precondition, namely that
+<span class="code">x</span> is actually in the array. If this precondition is satisfied, then
+the loop will end when <span class="code">A[i]&nbsp;==&nbsp;x</span>. That is, the value of <span class="code">i</span>
+when the loop ends will be the position of <span class="code">x</span> in the array. However, if
+<span class="code">x</span> is not in the array, then the value of <span class="code">i</span> will just keep
+increasing until it is equal to <span class="code">A.length</span>. At that time, the reference
+to <span class="code">A[i]</span> is illegal and the program will be terminated. To avoid this,
+we can add a test to make sure that the precondition for referring to
+<span class="code">A[i]</span> is satisfied:</p>
+
+
+<pre>i = 0;
+while (<span class="newcode">i &lt; A.length</span> &amp;&amp; A[i] != x) {
+   i++;
+}</pre>
+
+
+<p>Now, the loop will definitely end. After it ends, <span class="code">i</span> will satisfy
+<b>either</b> <span class="code">i&nbsp;==&nbsp;A.length</span> or <span class="code">A[i]&nbsp;==&nbsp;x</span>. 
+An <span class="code">if</span> statement
+can be used after the loop to test which of these conditions caused the loop to
+end:</p>
+
+
+<pre>i = 0;
+while (i &lt; A.length &amp;&amp; A[i] != x) {
+   i++;
+}
+
+if (i == A.length)
+   System.out.println("x is not in the array");
+else
+   System.out.println("x is in position " + i);</pre>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="robustness.2.2">8.2.2&nbsp;&nbsp;Robust Handling of Input</a>
+</h3>
+
+
+<p>One place where correctness and robustness are important -- and especially
+difficult -- is in the processing of input data, whether that data is typed in
+by the user, read from a file, or received over a network. Files and networking
+will be covered in <a href="../c11/index.html">Chapter&nbsp;11</a>, which will
+make essential use of material that will be covered in the <a href="../c8/s3.html">next section</a> 
+of this chapter. For now, let's look at an example of processing user input.</p>
+
+
+<p>Examples in this textbook use my <span class="classname">TextIO</span> class for reading input
+from the user. This class has built-in error handling. For example, the
+function <span class="code">TextIO.getDouble()</span> is guaranteed to return a legal value of
+type <span class="ptype">double</span>. If the user types an illegal value, then
+<span class="classname">TextIO</span> will ask the user to re-enter their response; your
+program never sees the illegal value.  However, this approach can be
+clumsy and unsatisfactory, especially when the user is entering complex data.
+In the following example, I'll do my own error-checking.</p>
+
+
+<p>Sometimes, it's useful to be able to look ahead at what's coming up in the
+input without actually reading it. For example, a program might need to know
+whether the next item in the input is a number or a word. For this purpose, the
+<span class="classname">TextIO</span> class includes the function <span class="code">TextIO.peek()</span>. This
+function returns a <span class="ptype">char</span> which is the next character in the user's
+input, but it does not actually read that character. If the next thing in the
+input is an end-of-line, then <span class="code">TextIO.peek()</span> returns the new-line
+character, <span class="code">'\n'</span>.</p>
+
+
+<p>Often, what we really need to know is the next <b>non-blank</b>
+character in the user's input. Before we can test this, we need to skip past
+any spaces (and tabs). Here is a function that does this. It uses
+<span class="code">TextIO.peek()</span> to look ahead, and it reads characters until the next
+character in the input is either an end-of-line or some non-blank character.
+(The function <span class="code">TextIO.getAnyChar()</span> reads and returns the next character
+in the user's input, even if that character is a space. By contrast, the more
+common <span class="code">TextIO.getChar()</span> would skip any blanks and then read and return
+the next non-blank character. We can't use <span class="code">TextIO.getChar()</span> here since
+the object is to skip the blanks <b>without</b> reading the next
+non-blank character.)</p>
+
+
+<pre>/**
+ * Reads past any blanks and tabs in the input.
+ * Postcondition:  The next character in the input is an
+ *                 end-of-line or a non-blank character.
+ */
+static void skipBlanks() {
+   char ch;
+   ch = TextIO.peek();
+   while (ch == ' ' || ch == '\t') {
+         // Next character is a space or tab; read it
+         // and look at the character that follows it.
+      ch = TextIO.getAnyChar();
+      ch = TextIO.peek();
+   }
+} // end skipBlanks()</pre>
+   
+
+<p>(In fact, this operation is so common that it is built into the most
+recent version of <span class="code">TextIO</span>.  The method <span class="code">TextIO.skipBlanks()</span>
+does essentially the same thing as the <span class="code">skipBlanks()</span> method
+presented here.)</p>
+
+
+<p>An example in <a href="../c3/s5.html#control.5.3">Subsection&nbsp;3.5.3</a> allowed the user to
+enter length measurements such as "3 miles" or "1 foot". It would then convert
+the measurement into inches, feet, yards, and miles. But people commonly use
+combined measurements such as "3 feet 7 inches". Let's improve the program so
+that it allows inputs of this form.</p>
+
+
+<p>More specifically, the user will input lines containing one or more
+measurements such as "1 foot" or "3 miles 20 yards 2 feet". The legal units of
+measure are inch, foot, yard, and mile. The program will also recognize plurals
+(inches, feet, yards, miles) and abbreviations (in, ft, yd, mi). Let's write a
+subroutine that will read one line of input of this form and compute the
+equivalent number of inches. The main program uses the number of inches to
+compute the equivalent number of feet, yards, and miles. If there is any error
+in the input, the subroutine will print an error message and return the value
+<span class="code">-1</span>. The subroutine assumes that the input line is not empty. The main program
+tests for this before calling the subroutine and uses an empty line as a signal
+for ending the program.</p>
+
+
+<p>Ignoring the possibility of illegal inputs, a pseudocode algorithm for the
+subroutine is</p>
+
+
+<pre>inches = 0    // This will be the total number of inches
+while there is more input on the line:
+    read the numerical measurement
+    read the units of measure
+    add the measurement to inches
+return inches</pre>
+
+
+<p>We can test whether there is more input on the line by checking whether the
+next non-blank character is the end-of-line character. But this test has a
+precondition: Before we can test the next non-blank character, we have to skip
+over any blanks. So, the algorithm becomes</p>
+
+
+<pre>inches = 0
+skipBlanks()
+while TextIO.peek() is not '\n':
+    read the numerical measurement
+    read the unit of measure
+    add the measurement to inches
+    skipBlanks()
+return inches</pre>
+
+
+<p>Note the call to <span class="code">skipBlanks()</span> at the end of the <span class="code">while</span>
+loop. This subroutine must be executed before the computer returns to the test
+at the beginning of the loop. More generally, if the test in a <span class="code">while</span>
+loop has a precondition, then you have to make sure that this precondition
+holds at the <b>end</b> of the while loop, before the computer jumps
+back to re-evaluate the test, as well as before the start of the loop.</p>
+
+
+<p>What about error checking? Before reading the numerical measurement, we have
+to make sure that there is really a number there to read. Before reading the
+unit of measure, we have to test that there is something there to read. (The
+number might have been the last thing on the line. An input such as "3",
+without a unit of measure, is not acceptable.) Also, we have to check that the unit of
+measure is one of the valid units: inches, feet, yards, or miles. Here is an
+algorithm that includes error-checking:</p>
+
+
+<pre>inches = 0
+skipBlanks()
+
+while TextIO.peek() is not '\n':
+
+    if the next character is not a digit:
+       report an error and return -1
+    Let measurement = TextIO.getDouble();
+
+    skipBlanks()    // Precondition for the next test!!
+    if the next character is end-of-line:
+       report an error and return -1                   
+    Let units = TextIO.getWord()
+    
+    if the units are inches:
+        add measurement to inches
+    else if the units are feet:
+        add 12*measurement to inches
+    else if the units are yards:
+        add 36*measurement to inches
+    else if the units are miles:
+        add 12*5280*measurement to inches
+    else
+        report an error and return -1
+ 
+    skipBlanks()
+
+return inches</pre>
+
+
+<p>As you can see, error-testing adds significantly to the complexity of the
+algorithm. Yet this is still a fairly simple example, and it doesn't even
+handle all the possible errors. For example, if the user enters a numerical
+measurement such as <span class="code">1e400</span> that is outside the legal range of values of type
+<span class="ptype">double</span>, then the program will fall back on the default error-handling
+in <span class="classname">TextIO</span>. 
+Something even more interesting happens if the measurement is "1e308 miles".
+The number <span class="code">1e308</span> is legal, but the corresponding number of inches is outside
+the legal range of values for type <span class="ptype">double</span>. As mentioned in the 
+<a href="../c8/s1.html#robustness.1.3">previous section</a>, 
+the computer will get the value <span class="code">Double.POSITIVE_INFINITY</span>
+when it does the computation. You might try this in the applet version, below, to see
+what kind of output you get.</p>
+
+
+<p>Here is the subroutine written out in Java:</p>
+
+
+<pre>/**
+ * Reads the user's input measurement from one line of input.
+ * Precondition:   The input line is not empty.
+ * Postcondition:  If the user's input is legal, the measurement
+ *                 is converted to inches and returned.  If the
+ *                 input is not legal, the value -1 is returned.
+ *                 The end-of-line is NOT read by this routine.
+ */
+static double readMeasurement() {
+
+   double inches;  // Total number of inches in user's measurement.
+   
+   double measurement;  // One measurement, 
+                        //   such as the 12 in "12 miles"
+   String units;        // The units specified for the measurement,
+                        //   such as "miles"
+   
+   char ch;  // Used to peek at next character in the user's input.
+
+   inches = 0;  // No inches have yet been read.
+
+   skipBlanks();
+   ch = TextIO.peek();
+   
+   /* As long as there is more input on the line, read a measurement and
+      add the equivalent number of inches to the variable, inches.  If an
+      error is detected during the loop, end the subroutine immediately
+      by returning -1. */
+
+   while (ch != '\n') {
+   
+       /* Get the next measurement and the units.  Before reading
+          anything, make sure that a legal value is there to read. */
+   
+       if ( ! Character.isDigit(ch) ) {
+           TextIO.putln(
+                 "Error:  Expected to find a number, but found " + ch);
+           return -1;
+       }
+       measurement = TextIO.getDouble();
+       
+       skipBlanks();
+       if (TextIO.peek() == '\n') {
+           TextIO.putln(
+                 "Error:  Missing unit of measure at end of line.");
+           return -1;
+       }
+       units = TextIO.getWord();
+       units = units.toLowerCase();
+       
+       /* Convert the measurement to inches and add it to the total. */
+       
+       if (units.equals("inch") 
+               || units.equals("inches") || units.equals("in")) {
+           inches += measurement;
+       }
+       else if (units.equals("foot") 
+                  || units.equals("feet") || units.equals("ft")) {
+           inches += measurement * 12;
+       }
+       else if (units.equals("yard") 
+                  || units.equals("yards") || units.equals("yd")) {
+           inches += measurement * 36;
+       }
+       else if (units.equals("mile") 
+                  || units.equals("miles") || units.equals("mi")) {
+           inches += measurement * 12 * 5280;
+       }
+       else {
+           TextIO.putln("Error: \"" + units 
+                             + "\" is not a legal unit of measure.");
+           return -1;
+       }
+     
+       /* Look ahead to see whether the next thing on the line is 
+          the end-of-line. */
+      
+       skipBlanks();
+       ch = TextIO.peek();
+       
+   }  // end while
+   
+   return inches;
+   
+} // end readMeasurement()
+</pre>
+
+
+<p>The source code for the complete program can be found in the file 
+<span class="sourceref"><a href="../source/LengthConverter2.java">LengthConverter2.java</a></span>. Here is an applet
+that simulates the program:</p>
+
+
+
+<p align="center">
+<applet code="LengthConverter2Console.class" width="625" height="300" archive="LengthConverter2Applet.jar" alt="(Applet 'LengthConverter2Console' should be displayed here.)"></applet></p>
+
+   
+
+
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s1.html">Previous Section</a> |
+           <a href="s3.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

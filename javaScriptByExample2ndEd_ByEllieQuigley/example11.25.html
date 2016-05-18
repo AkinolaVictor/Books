@@ -1,0 +1,80 @@
+
+<html>
+<head><title>Checkboxes</title>
+<script type="text/javascript">
+    function check(f){
+	var str="";
+	for (var i = 0; i < f.topping.length;i++){
+		if(f.topping[i].checked){
+			str += f.topping[i].value + "\n";
+		}
+	}
+
+		f.order.value=str;      // Put str value into the text area
+    }
+
+    function OK(myForm){
+	var result= confirm("Are you sure you are ready to order?  ");
+	if(result == true){
+		document.myForm.submit();
+	}
+	else { return false;}
+    }
+</script>
+</head>
+<body bgColor="#CCFF33">
+  <font face="verdana">
+    <table border="2">
+         <tr><td><b>Checkboxes</b></td>
+         </tr>
+    </table>
+  <strong>
+  <form name="formchbox"
+		method="post"
+		action="http://localhost/pizza.php">
+		Pick your pizza toppings:<p></p>
+	<input type="checkbox"
+		name="topping"
+		value="tomatoes" />Tomatoes
+		<br />
+	<input type="checkbox"
+		name="topping"
+		value="salami" />Salami
+		<br />
+	<input type=checkbox
+		name="topping"
+		value="pineapple" />Pineapple
+		<br />
+	<input type=checkbox
+		name="topping"
+		value="Canadian bacon" />Canadian bacon
+		<br />
+
+	<input type=checkbox
+		name="topping"
+		value="anchovies" />Anchovies
+		<br />
+	<input type=checkbox
+		name="topping"
+		value="extra cheese" />Extra Cheese
+		<br />
+	<p><small>
+	Pizza Toppings
+	<br />
+	<textarea name="order" rows=6 cols=35
+           onFocus="javascript:check(this.form);">
+     Click here to check your order!!
+	</textarea>
+	<p></p>
+	Press the pizza man to order!
+	<br />
+	<input type=image src="pizzaguy.jpg"
+		onClick="javascript:return OK(this.form);">
+	<br />
+	<input type=reset value="Clear the form" />
+	</strong>
+  </form>
+   </small>
+</body>
+</html>
+

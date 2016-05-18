@@ -1,0 +1,28 @@
+
+</html> <head><title>Progress Bar</title>
+<script type="text/javascript">
+	function progress(){ 
+              // Set the width of the image every .5 second
+    		if(document.images["bar"].width < 300){
+             		document.images["bar"].width += 5;
+           		document.images["bar"].height = 10;  
+     // Setting the height keeps the bar from getting taller as the 
+     // image is widened.
+    		}
+      		else{
+              	   clearInterval(timer);
+     		}
+			}
+
+	var timer;
+	window.onload = function(){
+       	timer = setInterval("progress();",500);   
+		// Image is stretched every .5 seconds
+			}
+</script>
+</head>
+<body bgColor="aquamarine">
+	<img src="blackbar.bmp" height="10" name="bar"/>
+	<p>Watching your Progress</p>
+</body>
+</html>

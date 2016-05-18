@@ -1,0 +1,566 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 3.5 -- The if Statement</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s4.html">Previous Section</a> |
+           <a href="s6.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#control.5.1">The Dangling else Problem</a>
+<br>
+<a href="#control.5.2">The if...else if Construction</a>
+<br>
+<a href="#control.5.3">If Statement Examples</a>
+<br>
+<a href="#control.5.4">The Empty Statement</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 3.5</h3>
+<h2 class="section_title">The if Statement</h2>
+<hr class="break">
+
+
+<p>
+<span class="start"><big>T</big>he first of the two branching statements</span> in Java
+is the <span class="code">if</span> statement, which you have already seen in <a href="../c3/s1.html">Section&nbsp;3.1</a>. It takes the form</p>
+
+
+<pre>if (<span class="bnf">boolean-expression</span>)
+     <span class="bnf">statement-1</span>
+else
+     <span class="bnf">statement-2</span>
+</pre>
+
+
+<p>As usual, the statements inside an <span class="code">if</span> statement can be blocks. The
+<span class="code">if</span> statement represents a two-way branch. The <span class="code">else</span> part of an
+<span class="code">if</span> statement -- consisting of the word "else" and the statement that
+follows it -- can be omitted.</p>
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="control.5.1">3.5.1&nbsp;&nbsp;The Dangling else Problem</a>
+</h3>
+   
+
+<p>Now, an <span class="code">if</span> statement is, in particular, a statement. This means
+that either <span class="bnf">statement-1</span> or <span class="bnf">statement-2</span> in the above <span class="code">if</span> statement can itself
+be an <span class="code">if</span> statement. A problem arises, however, 
+if <span class="bnf">statement-1</span> is an <span class="code">if</span> statement that has no
+<span class="code">else</span> part. This special case is effectively forbidden by the syntax of
+Java. Suppose, for example, that you type</p>
+
+
+<pre>if ( x &gt; 0 )
+    if (y &gt; 0)
+       System.out.println("First case");
+else
+    System.out.println("Second case");</pre>
+
+
+<p>Now, remember that the way you've indented this doesn't mean anything at all
+to the computer. You might think that the <span class="code">else</span> part is the second half
+of your "<span class="code">if (x &gt; 0)</span>" statement, but the rule that the computer
+follows attaches the <span class="code">else</span> to "<span class="code">if (y &gt; 0)</span>", which is
+closer. That is, the computer reads your statement as if it were formatted:</p>
+
+
+<pre>if ( x &gt; 0 )
+    if (y &gt; 0)
+       System.out.println("First case");
+    else
+        System.out.println("Second case");</pre>
+
+
+<p>You can force the computer to use the other interpretation by enclosing the
+nested <span class="code">if</span> in a block:</p>
+
+
+<pre>if ( x &gt; 0 ) {
+    if (y &gt; 0)
+       System.out.println("First case");
+}
+else
+    System.out.println("Second case");</pre>
+
+
+<p>These two <span class="code">if</span> statements have different meanings: In the case when <span class="code">x&nbsp;&lt;=&nbsp;0</span>, the
+first statement doesn't print anything, but the second statement prints "Second
+case".</p>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="control.5.2">3.5.2&nbsp;&nbsp;The if...else if Construction</a>
+</h3>   
+   
+
+<p>Much more interesting than this technicality is the case where <span class="bnf">statement-2</span>, 
+the <span class="code">else</span> part of the <span class="code">if</span>
+statement, is itself an <span class="code">if</span> statement. The statement would look like
+this (perhaps without the final else part):</p>
+
+
+<pre>if (<span class="bnf">boolean-expression-1</span>)
+     <span class="bnf">statement-1</span>
+else
+     if (<span class="bnf">boolean-expression-2</span>)
+         <span class="bnf">statement-2</span>
+     else
+         <span class="bnf">statement-3</span>
+</pre>
+
+
+<p>However, since the computer doesn't care how a program is laid out on the
+page, this is almost always written in the format:</p>
+
+
+<pre>if (<span class="bnf">boolean-expression-1</span>)
+     <span class="bnf">statement-1</span>
+else if (<span class="bnf">boolean-expression-2</span>)
+     <span class="bnf">statement-2</span>
+else
+     <span class="bnf">statement-3</span>
+</pre>
+
+
+<p>You should think of this as a single statement representing a three-way
+branch. When the computer executes this, one and only one of the three
+statements -- <span class="bnf">statement-1</span>, <span class="bnf">statement-2</span>, or <span class="bnf">statement-3</span> -- will 
+be executed. The computer starts by evaluating <span class="bnf">boolean-expression-1</span>. If it is <span class="code">true</span>, the computer
+executes <span class="bnf">statement-1</span> and then jumps all the way
+to the end of the outer if statement, skipping the other two <span class="bnf">statement</span>s. If <span class="bnf">boolean-expression-1</span> 
+is <span class="code">false</span>, the computer skips
+<span class="bnf">statement-1</span> and executes the second, nested if
+statement. To do this, it tests the value of <span class="bnf">boolean-expression-2</span> and uses it to decide between
+<span class="bnf">statement-2</span> and <span class="bnf">statement-3</span>.</p>
+
+
+<p>Here is an example that will print out one of three different messages,
+depending on the value of a variable named <span class="code">temperature</span>:</p>
+
+
+<pre>if (temperature &lt; 50)
+   System.out.println("It's cold.");
+else if (temperature &lt; 80)
+   System.out.println("It's nice.");
+else
+   System.out.println("It's hot.");</pre>
+
+
+<p>If <span class="code">temperature</span> is, say, 42, the first test is <span class="code">true</span>. The
+computer prints out the message "It's cold", and skips the rest -- without even
+evaluating the second condition. For a temperature of 75, the first test is
+<span class="code">false</span>, so the computer goes on to the second test. This test is
+<span class="code">true</span>, so the computer prints "It's nice" and skips the rest. If the
+temperature is 173, both of the tests evaluate to <span class="code">false</span>, so the
+computer says "It's hot" (unless its circuits have been fried by the heat, that
+is).</p>
+
+
+<p>You can go on stringing together "else-if's" to make multi-way branches with
+any number of cases:</p>
+
+
+<pre>if (<span class="bnf">boolean-expression-1</span>)
+     <span class="bnf">statement-1</span>
+else if (<span class="bnf">boolean-expression-2</span>)
+     <span class="bnf">statement-2</span>
+else if (<span class="bnf">boolean-expression-3</span>)
+     <span class="bnf">statement-3</span>
+  .
+  . // (more cases)
+  .
+else if (<span class="bnf">boolean-expression-N</span>)
+     <span class="bnf">statement-N</span>
+else
+     <span class="bnf">statement-(N+1)</span>
+</pre>
+
+
+<p>The computer evaluates boolean expressions one after the other until it
+comes to one that is <span class="code">true</span>. It executes the associated statement and
+skips the rest. If none of the boolean expressions evaluate to <span class="code">true</span>,
+then the statement in the <span class="code">else</span> part is executed. This statement is
+called a multi-way branch because only one of the statements will be executed.
+The final <span class="code">else</span> part can be omitted. In that case, if all the boolean
+expressions are false, none of the statements are executed. Of course, each of
+the statements can be a block, consisting of a number of statements enclosed
+between { and }. (Admittedly, there is lot of syntax here; as you study and
+practice, you'll become comfortable with it.)</p>
+
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="control.5.3">3.5.3&nbsp;&nbsp;If Statement Examples</a>
+</h3>
+
+
+<p>As an example of using <span class="code">if</span> statements, lets suppose that <span class="code">x</span>,
+<span class="code">y</span>, and <span class="code">z</span> are variables of type <span class="ptype">int</span>, and that each
+variable has already been assigned a value. Consider the problem of printing
+out the values of the three variables in increasing order. For examples, if the
+values are 42, 17, and 20, then the output should be in the order 17, 20,
+42.</p>
+
+
+<p>One way to approach this is to ask, where does <span class="code">x</span> belong in the
+list? It comes first if it's less than both <span class="code">y</span> and <span class="code">z</span>. It comes
+last if it's greater than both <span class="code">y</span> and <span class="code">z</span>. Otherwise, it comes
+in the middle. We can express this with a 3-way <span class="code">if</span> statement, but we
+still have to worry about the order in which <span class="code">y</span> and <span class="code">z</span> should
+be printed. In pseudocode,</p>
+
+
+<pre>if (x &lt; y &amp;&amp; x &lt; z) {
+    output x, followed by y and z in their correct order
+}
+else if (x &gt; y &amp;&amp; x &gt; z) {
+    output y and z in their correct order, followed by x
+}
+else {
+    output x in between y and z in their correct order
+}</pre>
+
+
+<p>Determining the relative order of <span class="code">y</span> and <span class="code">z</span> requires another
+<span class="code">if</span> statement, so this becomes</p>
+
+
+<pre>if (x &lt; y &amp;&amp; x &lt; z) {        // x comes first
+    if (y &lt; z)
+       System.out.println( x + " " + y + " " + z );
+    else
+       System.out.println( x + " " + z + " " + y );
+}
+else if (x &gt; y &amp;&amp; x &gt; z) {   // x comes last
+    if (y &lt; z)
+       System.out.println( y + " " + z + " " + x );
+    else
+       System.out.println( z + " " + y + " " + x );
+}
+else {                       // x in the middle
+    if (y &lt; z)
+       System.out.println( y + " " + x + " " + z);
+    else
+       System.out.println( z + " " + x + " " + y);
+}</pre>
+
+
+<p>You might check that this code will work correctly even if some of the
+values are the same. If the values of two variables are the same, it doesn't
+matter which order you print them in.</p>
+
+
+<p>Note, by the way, that even though you can say in English "if x is less than
+y and z," you can't say in Java "<span class="code">if (x &lt; y &amp;&amp; z)</span>". The
+<span class="code">&amp;&amp;</span> operator can only be used between boolean values, so you
+have to make separate tests, <span class="code">x&lt;y</span> and <span class="code">x&lt;z</span>, and then
+combine the two tests with <span class="code">&amp;&amp;</span>.</p>
+
+
+<p>There is an alternative approach to this problem that begins by asking,
+"which order should <span class="code">x</span> and <span class="code">y</span> be printed in?" Once that's
+known, you only have to decide where to stick in <span class="code">z</span>. This line of
+thought leads to different Java code:</p>
+
+
+<pre>if ( x &lt; y ) {  // x comes before y
+   if ( z &lt; x )   // z comes first
+      System.out.println( z + " " + x + " " + y);
+   else if ( z &gt; y )   // z comes last
+      System.out.println( x + " " + y + " " + z);
+   else   // z is in the middle
+      System.out.println( x + " " + z + " " + y);
+}
+else {          // y comes before x
+   if ( z &lt; y )   // z comes first
+      System.out.println( z + " " + y + " " + x);
+   else if ( z &gt; x )  // z comes last
+      System.out.println( y + " " + x + " " + z);
+   else  // z is in the middle
+      System.out.println( y + " " + z + " " + x);
+}</pre>
+
+
+<p>Once again, we see how the same problem can be solved in many different
+ways. The two approaches to this problem have not exhausted all the
+possibilities. For example, you might start by testing whether <span class="code">x</span> is
+greater than <span class="code">y</span>. If so, you could swap their values. Once you've done
+that, you know that <span class="code">x</span> should be printed before <span class="code">y</span>.</p>
+
+
+<hr class="break">
+
+
+<p>Finally, let's write a complete program that uses an <span class="code">if</span> statement
+in an interesting way. I want a program that will convert measurements of
+length from one unit of measurement to another, such as miles to yards or
+inches to feet. So far, the problem is extremely under-specified. Let's say
+that the program will only deal with measurements in inches, feet, yards, and
+miles. It would be easy to extend it later to deal with other units. The user
+will type in a measurement in one of these units, such as "17 feet" or "2.73
+miles". The output will show the length in terms of <b>each</b> of
+the four units of measure. (This is easier than asking the user which units to
+use in the output.) An outline of the process is</p>
+
+
+<pre>Read the user's input measurement and units of measure
+Express the measurement in inches, feet, yards, and miles
+Display the four results</pre>
+
+
+<p>The program can read both parts of the user's input from the same line by
+using <span class="code">TextIO.getDouble()</span> to read the numerical measurement and
+<span class="code">TextIO.getlnWord()</span> to read the unit of measure. The conversion into
+different units of measure can be simplified by first converting the user's
+input into inches. From there, the number of inches can easily be converted into feet, yards, and miles.
+Before converting into inches, we have to test the input to determine which unit of measure the user has
+specified:</p>
+
+
+<pre>Let measurement = TextIO.getDouble()
+Let units = TextIO.getlnWord()
+if the units are inches
+   Let inches = measurement
+else if the units are feet
+   Let inches = measurement * 12         // 12 inches per foot
+else if the units are yards
+   Let inches = measurement * 36         // 36 inches per yard
+else if the units are miles
+   Let inches = measurement * 12 * 5280  // 5280 feet per mile
+else
+   The units are illegal!
+   Print an error message and stop processing
+Let feet = inches / 12.0
+Let yards = inches / 36.0
+Let miles = inches / (12.0 * 5280.0)
+Display the results</pre>
+
+
+<p>Since <span class="code">units</span> is a <span class="classname">String</span>, we can use
+<span class="code">units.equals("inches")</span> to check whether the specified unit of measure
+is "inches". However, it would be nice to allow the units to be specified as
+"inch" or abbreviated to "in". To allow these three possibilities, we can check
+<span class="code">if (units.equals("inches") || units.equals("inch") ||
+units.equals("in"))</span>. It would also be nice to allow upper case letters, as
+in "Inches" or "IN". We can do this by converting <span class="code">units</span> to lower case
+before testing it or by substituting the function
+<span class="code">units.equalsIgnoreCase</span> for <span class="code">units.equals</span>.</p>
+
+
+<p>In my final program, I decided to make things more interesting by allowing
+the user to repeat the process of entering a measurement and seeing the
+results of the conversion for each measurement.  The program will end only
+when the user inputs 0. To do this, I just have to wrap the above algorithm
+inside a <span class="code">while</span> loop, and make sure that the loop ends when the user
+inputs a&nbsp;0. Here's the complete program, followed by an applet that simulates
+it:</p>
+
+
+<pre>/**
+ * This program will convert measurements expressed in inches,
+ * feet, yards, or miles into each of the possible units of
+ * measure.  The measurement is input by the user, followed by
+ * the unit of measure.  For example:  "17 feet", "1 inch", or
+ * "2.73 mi".  Abbreviations in, ft, yd, and mi are accepted.
+ * The program will continue to read and convert measurements
+ * until the user enters an input of 0.
+ */
+ 
+ public class LengthConverter {
+ 
+    public static void main(String[] args) {
+       
+       double measurement;  // Numerical measurement, input by user.
+       String units;        // The unit of measure for the input, also
+                            //    specified by the user.
+       
+       double inches, feet, yards, miles;  // Measurement expressed in
+                                           //   each possible unit of
+                                           //   measure.
+       
+       TextIO.putln("Enter measurements in inches, feet, yards, or miles.");
+       TextIO.putln("For example:  1 inch    17 feet    2.73 miles");
+       TextIO.putln("You can use abbreviations:   in   ft  yd   mi");
+       TextIO.putln("I will convert your input into the other units");
+       TextIO.putln("of measure.");
+       TextIO.putln();
+       
+       while (true) {
+          
+          /* Get the user's input, and convert units to lower case. */
+          
+          TextIO.put("Enter your measurement, or 0 to end:  ");
+          measurement = TextIO.getDouble();
+          if (measurement == 0)
+             break;  // Terminate the while loop.
+          units = TextIO.getlnWord();            
+          units = units.toLowerCase();
+          
+          /* Convert the input measurement to inches. */
+          
+          if (units.equals("inch") || units.equals("inches") 
+                                          || units.equals("in")) {
+              inches = measurement;
+          }
+          else if (units.equals("foot") || units.equals("feet") 
+                                          || units.equals("ft")) {
+              inches = measurement * 12;
+          }
+          else if (units.equals("yard") || units.equals("yards") 
+                                           || units.equals("yd")) {
+              inches = measurement * 36;
+          }
+          else if (units.equals("mile") || units.equals("miles") 
+                                             || units.equals("mi")) {
+              inches = measurement * 12 * 5280;
+          }
+          else {
+              TextIO.putln("Sorry, but I don't understand \"" 
+                                                   + units + "\".");
+              continue;  // back to start of while loop
+          }
+          
+          /* Convert measurement in inches to feet, yards, and miles. */
+          
+          feet = inches / 12;
+          yards = inches / 36;
+          miles = inches / (12*5280);
+          
+          /* Output measurement in terms of each unit of measure. */
+          
+          TextIO.putln();
+          TextIO.putln("That's equivalent to:");
+          TextIO.putf("%12.5g", inches);
+          TextIO.putln(" inches");
+          TextIO.putf("%12.5g", feet);
+          TextIO.putln(" feet");
+          TextIO.putf("%12.5g", yards);
+          TextIO.putln(" yards");
+          TextIO.putf("%12.5g", miles);
+          TextIO.putln(" miles");
+          TextIO.putln();
+       
+       } // end while
+       
+       TextIO.putln();
+       TextIO.putln("OK!  Bye for now.");
+       
+    } // end main()
+    
+ } // end class LengthConverter
+</pre>
+
+
+<p align="center">
+<applet code="LengthConverterConsole" width="600" height="270" archive="LengthConverterApplet.jar" alt="(Applet 'LengthConverterConsole' should be displayed here.)"></applet></p>
+
+
+   
+
+<p>(Note that this program uses formatted output with the "g" format specifier.  In this program,
+we have no control over how large or how small the numbers might be.  It could easily make
+sense for the user to enter very large or very small measurements.  The "g" format will
+print a real number in exponential form if it is very large or very small, and in the usual decimal form
+otherwise.  Remember that in the format specification <span class="code">%12.5g</span>, the 5 is the total
+number of significant digits that are to be printed, so we will always get the same number of
+significant digits in the output, no matter what the size of the number.  If we had used an
+"f" format specifier such as <span class="code">%12.5f</span>, the output would be in decimal form with
+5 digits after the decimal point.  This would print the number 0.000000000745482 as <span class="code">0.00000</span>,
+with no <b>significant</b> digits at all!
+With the "g" format specifier, the output would be <span class="code">7.4549e-10</span>.)</p>
+   
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="control.5.4">3.5.4&nbsp;&nbsp;The Empty Statement</a>
+</h3>
+
+
+<p>As a final note in this section, I will mention one more type of statement
+in Java: the <span class="newword">empty statement</span>. This is a statement
+that consists simply of a semicolon and which tells the computer to
+do nothing. The existence of the empty statement makes
+the following legal, even though you would not ordinarily see a semicolon after
+a&nbsp;}&nbsp;:</p>
+
+
+<pre>if (x &lt; 0) {
+    x = -x;
+};</pre>
+
+
+<p>The semicolon is legal after the }, but the computer considers it to be an
+empty statement, not part of the <span class="code">if</span> statement. Occasionally, you might
+find yourself using the empty statement when what you mean is, in fact, "do
+nothing." For example, the rather contrived <span class="code">if</span> statement</p>
+   
+
+<pre>if ( done )
+   ;  // Empty statement
+else
+   System.out.println( "Not done yet.");</pre>
+   
+
+<p>does nothing when the <span class="ptype">boolean</span> variable <span class="code">done</span> is true,
+and prints out "Not done yet" when it is false. You can't just leave out the semicolon
+in this example, since Java syntax requires an actual statement between the <span class="code">if</span>
+and the <span class="code">else</span>.   I prefer, though, to use an empty block, consisting 
+of&nbsp;{&nbsp;and&nbsp;} with nothing between, for such cases.</p>
+
+
+<p>Occasionally, stray empty statements can cause annoying, hard-to-find errors
+in a program. For example, the following program segment prints out "Hello"
+just <b>once</b>, not ten times:</p>
+
+
+<pre>for (int i = 0; i &lt; 10; i++);
+    System.out.println("Hello");</pre>
+
+
+<p>Why? Because the ";" at the end of the first line is a statement, and it is
+this statement that is executed ten times. The <span class="code">System.out.println</span>
+statement is not really inside the <span class="code">for</span> statement at all, so it is
+executed just once, after the <span class="code">for</span> loop has completed.</p>
+
+
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s4.html">Previous Section</a> |
+           <a href="s6.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

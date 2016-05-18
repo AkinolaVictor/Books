@@ -1,0 +1,33 @@
+
+<html><title>Register Multiple Events</title>
+<head>
+<script type="text/javascript">
+   window.onload=function(){
+     var paraHandle1 = document.getElementById("para1");
+      var paraHandle2 = document.getElementById("para2");
+     paraHandle1.addEventListener('mouseover',highLight, false);
+     paraHandle2.addEventListener('click', function(){
+             this.style.fontSize="x-large"},false);
+     paraHandle2.addEventListener('mouseover', highLight,false);
+     paraHandle1.removeEventListener('mouseover',highLight,false);
+     function highLight(){  //Closure
+          this.style.backgroundColor ="tan";
+           this.style.fontFamily ="fantasy";
+           this.style.fontWeight ="bold";
+     }
+  }
+  </script>
+</head>
+<body>
+  <p id="para1">
+  There was an old lady who lived
+  in a shoe.</br>
+  She had so many children, she
+  didn't know what to do.</p
+  <p id="para2">She gave them some broth,</br>
+    without any bread,</br>
+   Whipped them all soundly </br>
+    and sent them to bed.
+</p>
+</body>
+</html>

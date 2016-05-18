@@ -1,0 +1,26 @@
+<html><head><title>Attributes and Nodes</title>
+<head>
+  <script type="text/javascript"> 
+    function stylePara(mode){
+       var p1 = document.getElementById("para1");
+       var p2 = document.getElementById("para2");
+       var p1Style=p1.getAttributeNode("style");
+       var cloneP1Style=p1Style.cloneNode(mode);
+       p2.setAttributeNode(cloneP1Style);
+     }
+   </script>
+   <body>
+   <p id="para1" style="font-family: cursive ;
+                         background-color: yellow;
+                         border-style:solid;
+                         border-width:2px;
+                         border-color:blue;">
+   The news is so fabulous, I need to shout it out again! You won the   
+   lottery!</br>
+   </p>
+   <p id="para2">I like your style, not what you say.
+   </p>
+    <input type="button" onClick="javascript:stylePara(false);"     
+             value="Clone me" />
+ </body>
+ </html>

@@ -1,0 +1,281 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Excercises for Chapter 5</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Programming Exercises for Chapter 5</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> several exercises for Chapter 5
+        in <a href="../index.html">Introduction to Programming Using Java</a>.  For each exercise, a link to
+        a possible solution is provided.   Each solution includes a discussion of how a programmer might approach the
+        problem and interesting points raised by the problem or its solution, as well as complete source
+        code of the solution.</p>
+<hr>
+<h3 class="exercise">Exercise 5.1:</h3>
+<p>In all versions of the
+<span class="classname">PairOfDice</span> class in <a href="../c5/s2.html">Section&nbsp;5.2</a>, the instance
+variables <span class="code">die1</span> and <span class="code">die2</span> are declared to be <span class="code">public</span>.
+They really should be private, so that they would be protected from being changed
+from outside the class. Write another version of the <span class="classname">PairOfDice</span> class
+in which the instance variables <span class="code">die1</span> and <span class="code">die2</span> are
+<span class="code">private</span>. Your class will need "getter" methods that can be used to find out the
+values of <span class="code">die1</span> and <span class="code">die2</span>. (The idea is to protect their values
+from being changed from outside the class, but still to allow the values to be
+read.) Include other improvements in the class, if you can think of any. Test
+your class with a short program that counts how many times a pair of dice is
+rolled, before the total of the two dice is equal to two.</p>
+
+<p align="right">
+<a href="ex1-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 5.2:</h3>
+<p>A common programming task
+is computing statistics of a set of numbers. (A statistic is a number that
+summarizes some property of a set of data.) Common statistics include the mean
+(also known as the average) and the standard deviation (which tells how spread
+out the data are from the mean). I have written a little class called
+<span class="classname">StatCalc</span> that can be used to compute these statistics, as well as the
+sum of the items in the dataset and the number of items in the dataset. You can
+read the source code for this class in the file <span class="sourceref"><a href="../source/StatCalc.java">StatCalc.java</a></span>.
+If <span class="code">calc</span> is a variable of
+type <span class="classname">StatCalc</span>, then the following methods are defined:</p>
+
+
+<ul>
+
+<li>
+<span class="code">calc.enter(item)&nbsp;</span> where
+<span class="code">item</span> is a number, adds the item to the dataset.</li>
+
+
+<li>
+<span class="code">calc.getCount()&nbsp;</span> is a function
+that returns the number of items that have been added to the dataset.</li>
+
+
+<li>
+<span class="code">calc.getSum()&nbsp;</span> is a function
+that returns the sum of all the items that have been added to the dataset.</li>
+
+
+<li>
+<span class="code">calc.getMean()&nbsp;</span> is a function
+that returns the average of all the items.</li>
+
+
+<li>
+<span class="code">calc.getStandardDeviation()&nbsp;</span> is
+a function that returns the standard deviation of the items.</li>
+
+</ul>
+
+
+<p>Typically, all the data are added one after the other by calling the
+<span class="code">enter()</span> method over and over, as the data become available. After all
+the data have been entered, any of the other methods can be called to get
+statistical information about the data. The methods <span class="code">getMean()</span> and
+<span class="code">getStandardDeviation()</span> should only be called if the number of items is
+greater than zero.</p>
+
+
+<p>Modify the current source code, <span class="sourceref"><a href="../source/StatCalc.java">StatCalc.java</a></span>, to add instance
+methods <span class="code">getMax()</span> and <span class="code">getMin()</span>. The <span class="code">getMax()</span> method
+should return the largest of all the items that have been added to the dataset,
+and <span class="code">getMin()</span> should return the smallest. You will need to add two new
+instance variables to keep track of the largest and smallest items that have
+been seen so far.</p>
+
+
+<p>Test your new class by using it in a program to compute statistics for a set
+of non-zero numbers entered by the user. Start by creating an object of type
+<span class="classname">StatCalc</span>:</p>
+
+
+<pre>StatCalc  calc;   // Object to be used to process the data.
+calc = new StatCalc();</pre>
+
+
+<p>Read numbers from the user and add them to the dataset. Use 0 as a sentinel
+value (that is, stop reading numbers when the user enters 0). After all the
+user's non-zero numbers have been entered, print out each of the six statistics
+that are available from <span class="code">calc</span>.</p>
+
+<p align="right">
+<a href="ex2-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 5.3:</h3>
+<p>This problem uses the
+<span class="classname">PairOfDice</span> class from <a href="../c5/ex1-ans.html">Exercise&nbsp;5.1</a>
+and the <span class="classname">StatCalc</span> class from <a href="../c5/ex2-ans.html">Exercise&nbsp;5.2</a>.</p>
+
+
+<p>The program in <a href="../c4/ex4-ans.html">Exercise&nbsp;4.4</a> performs
+the experiment of counting how many times a pair of dice is rolled before a
+given total comes up. It repeats this experiment 10000 times and then reports
+the average number of rolls. It does this whole process for each possible total
+(2, 3, ..., 12).</p>
+
+
+<p>Redo that exercise. But instead of just reporting the average number of
+rolls, you should also report the standard deviation and the maximum number of
+rolls. Use a <span class="classname">PairOfDice</span> object to represent the dice. Use a
+<span class="classname">StatCalc</span> object to compute the statistics. (You'll need a new
+<span class="classname">StatCalc</span> object for each possible total, 2, 3, ..., 12. You can use a
+new pair of dice if you want, but it's not necessary.)</p>
+
+<p align="right">
+<a href="ex3-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 5.4:</h3>
+<p>The <span class="classname">BlackjackHand</span>
+class from <a href="../c5/s5.html#OOP.5.1">Subsection&nbsp;5.5.1</a> is an extension of the
+<span class="classname">Hand</span> class from <a href="../c5/s4.html">Section&nbsp;5.4</a>. The instance
+methods in the <span class="classname">Hand</span> class are discussed in that section. In addition to
+those methods, <span class="classname">BlackjackHand</span> includes an instance method,
+<span class="code">getBlackjackValue()</span>, that returns the value of the hand for the game
+of Blackjack. For this exercise, you will also need the <span class="classname">Deck</span> and
+<span class="classname">Card</span> classes from <a href="../c5/s4.html">Section&nbsp;5.4</a>.</p>
+
+
+<p>A Blackjack hand typically contains from two to six cards. Write a program
+to test the <span class="classname">BlackjackHand</span> class. You should create a
+<span class="classname">BlackjackHand</span> object and a <span class="classname">Deck</span> object. Pick a random number
+between 2 and 6. Deal that many cards from the deck and add them to the hand.
+Print out all the cards in the hand, and then print out the value computed for
+the hand by <span class="code">getBlackjackValue()</span>. Repeat this as long as the user wants
+to continue.</p>
+
+
+<p>In addition to <span class="sourceref"><a href="../source/TextIO.java">TextIO.java</a></span>, your program will depend on 
+<span class="sourceref"><a href="../source/Card.java">Card.java</a></span>, <span class="sourceref"><a href="../source/Deck.java">Deck.java</a></span>, 
+<span class="sourceref"><a href="../source/Hand.java">Hand.java</a></span>, and <span class="sourceref"><a href="../source/BlackjackHand.java">BlackjackHand.java</a></span>.</p>
+
+<p align="right">
+<a href="ex4-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 5.5:</h3>
+<p>Write a program that lets
+the user play Blackjack. The game will be a simplified version of Blackjack as
+it is played in a casino. The computer will act as the dealer. As in the
+previous exercise, your program will need the classes defined in 
+<span class="sourceref"><a href="../source/Card.java">Card.java</a></span>, <span class="sourceref"><a href="../source/Deck.java">Deck.java</a></span>, 
+<span class="sourceref"><a href="../source/Hand.java">Hand.java</a></span>, and <span class="sourceref"><a href="../source/BlackjackHand.java">BlackjackHand.java</a></span>.
+(This is the longest and
+most complex program that has come up so far in the exercises.)</p>
+
+
+<p>You should first write a subroutine in which the user plays one game. The
+subroutine should return a <span class="ptype">boolean</span> value to indicate whether the user
+wins the game or not. Return <span class="code">true</span> if the user wins, <span class="code">false</span> if
+the dealer wins. The program needs an object of class <span class="classname">Deck</span> and two
+objects of type <span class="classname">BlackjackHand</span>, one for the dealer and one for the
+user. The general object in Blackjack is to get a hand of cards whose value is
+as close to 21 as possible, without going over. The game goes like this.</p>
+
+
+<ul>
+
+<li>First, two cards are dealt into each player's hand. If the dealer's hand has
+a value of 21 at this point, then the dealer wins. Otherwise, if the user has
+21, then the user wins. (This is called a "Blackjack".) Note that the dealer
+wins on a tie, so if both players have Blackjack, then the dealer wins.</li>
+
+
+<li>Now, if the game has not ended, the user gets a chance to add some cards to
+her hand. In this phase, the user sees her own cards and sees
+<b>one</b> of the dealer's two cards. (In a casino, the dealer deals
+himself one card face up and one card face down. All the user's cards are dealt
+face up.) The user makes a decision whether to "Hit", which means to add
+another card to her hand, or to "Stand", which means to stop taking cards.</li>
+
+
+<li>If the user Hits, there is a possibility that the user will go over 21. In
+that case, the game is over and the user loses. If not, then the process
+continues. The user gets to decide again whether to Hit or Stand.</li>
+
+
+<li>If the user Stands, the game will end, but first the dealer gets a chance to
+draw cards. The dealer only follows rules, without any choice. The rule is that
+as long as the value of the dealer's hand is less than or equal to 16, the
+dealer Hits (that is, takes another card). The user should see all the dealer's
+cards at this point. Now, the winner can be determined: If the dealer has gone
+over 21, the user wins. Otherwise, if the dealer's total is greater than or
+equal to the user's total, then the dealer wins. Otherwise, the user wins.</li>
+
+</ul>
+
+
+
+<p>Two notes on programming: At any point in the subroutine, as soon as you
+know who the winner is, you can say "<span class="code">return true</span>;" or "<span class="code">return
+false</span>;" to end the subroutine and return to the main program. To avoid
+having an overabundance of variables in your subroutine, remember that a
+function call such as <span class="code">userHand.getBlackjackValue()</span> can be used
+anywhere that a number could be used, including in an output statement or in
+the condition of an <span class="code">if</span> statement.</p>
+
+
+<p>Write a main program that lets the user play several games of Blackjack. To
+make things interesting, give the user 100 dollars, and let the user make bets
+on the game. If the user loses, subtract the bet from the user's money. If the
+user wins, add an amount equal to the bet to the user's money. End the program
+when the user wants to quit or when she runs out of money.</p>
+
+
+
+<p>Here is an applet that simulates the program you are supposed to write. It
+would probably be worthwhile to play it for a while to see how it works.</p>
+
+
+<p align="center">
+<applet code="BlackjackConsole.class" width="600" height="350" archive="BlackjackConsoleApplet.jar" alt=""></applet></p>
+   
+
+
+
+<p align="right">
+<a href="ex5-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 5.6:</h3>
+<p>
+<a href="../c5/s7.html#OOP.7.6">Subsection&nbsp;5.7.6</a> discusses the possibility of representing
+the suits and values of playing cards as enumerated types.  Rewrite the <span class="classname">Card</span>
+class from <a href="../c5/s4.html#OOP.4.2">Subsection&nbsp;5.4.2</a> to use these enumerated types.  Test your class with a program
+that prints out the 52 possible playing cards.  Suggestions:  You can modify the source code file
+<span class="sourceref"><a href="../source/Card.java">Card.java</a></span>, but you should leave out support for Jokers.
+In your main program, use nested <span class="code">for</span> loops to
+generated cards of all possible suits and values; the <span class="code">for</span> loops will be
+"for-each" loops of the type discussed in <a href="../c3/s4.html#control.4.4">Subsection&nbsp;3.4.4</a>.  It would be
+nice to add a <span class="code">toString()</span> method to the <span class="classname">Suit</span> class
+from <a href="../c5/s7.html#OOP.7.6">Subsection&nbsp;5.7.6</a>, so that a suit prints out as "Spades" or "Hearts" instead
+of "SPADES" or "HEARTS".
+</p>
+<p align="right">
+<a href="ex6-ans.html">See the Solution</a>
+</p>
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

@@ -1,0 +1,476 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 3, Chapter 10</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 10.3</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 10.3:</h3>
+<p>The fact that Java has a
+<span class="classname">HashMap</span> class means that no Java programmer has to write an
+implementation of hash tables from scratch -- unless, of course, that programmer is a
+computer science student.</p>
+
+<p>For this exercise, you should write a hash table in which both the keys and the values are of
+type <span class="classname">String</span>.  (This is not an exercise in generic programming;
+do not try to write a generic class.)
+Write an implementation of hash tables from scratch. Define the following
+methods: <span class="code">get(key)</span>, <span class="code">put(key,value)</span>, <span class="code">remove(key)</span>,
+<span class="code">containsKey(key)</span>, and <span class="code">size()</span>. 
+Remember that every object, <span class="code">obj</span>, has a method <span class="code">obj.hashCode()</span>
+that can be used for computing a hash code for the object,
+so at least you don't have to define your own hash function. 
+Do not use <b>any</b> of Java's built-in generic types; create your own linked
+lists using nodes as covered in <a href="../c9/s2.html#recursion.2.2">Subsection&nbsp;9.2.2</a>.  However,
+you do <b>not</b> have to worry about increasing the size of the table when
+it becomes too full.</p>
+
+<p>You should also write a short program to test your solution.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>Hash tables are discussed in <a href="../c10/s3.html#generics.3.3">Subsection&nbsp;10.3.3</a>.
+A hash table is just an array of linked lists. Each linked list holds all
+the items in the table that share the same hash code. Initially, all the lists
+are empty (represented as <span class="code">null</span> in the array). We need to be able to
+add and delete items in the list. Methods for inserting and deleting
+items can be found in <a href="../c9/s2.html#recursion.2.2">Subsection&nbsp;9.2.2</a>.
+In a hash table, the order of items in a particular
+list doesn't matter, so I simply insert each new item at the beginning of the
+list. This makes the insert operation fairly simple. Deletion, however, is more
+complicated, since we need to be able to delete an item no matter where it
+occurs in a list.</p>
+
+
+<p>A hash table really contains pairs of items, where each pair consists of a
+key and an associated value.  To implement this, I use linked lists in which
+each node contains both a key 
+and a value, as well as the pointer to the next node in the list. The
+end of a list is marked, as usual, by a <span class="code">null</span> pointer. The nodes are
+defined by a static nested class:</p>
+
+
+<pre>private static class ListNode {
+   String key;
+   String value;
+   ListNode next;
+}</pre>
+
+
+<p>The array of linked lists that stores all the data is of type
+<span class="atype">ListNode[]</span>. Each item in the array is either <span class="code">null</span> to indicate
+an empty list, or it is a pointer to the first node in a linked list.</p>
+
+
+<p>Given any key, we can find the linked list that should contain that key by
+looking at the hash code of the key. The code computed by calling
+<span class="code">key.hashCode()</span> is of type <span class="ptype">int</span>. We need a value that is in the
+range of legal indices for the array. As noted in <a href="../c10/s3.html#generics.3.3">Subsection&nbsp;10.3.3</a>,
+the value can be computed as <span class="code">Math.abs(key.hashCode()) %
+table.length</span>, where <span class="code">table</span> is the array.</p>
+
+
+<p>The hash code is used in all the methods that deal with keys, to decide which
+linked list to look at. Once a list has been selected, the operations on the
+list are pretty straightforward (given all the information and code in <a href="../c9/s2.html#recursion.2.2">Subsection&nbsp;9.2.2</a>), 
+so I will not discuss them further here. You can look at the solution, below.</p>
+
+
+<p>Although it is not required by the exercise, I defined a <span class="code">resize()</span>
+method that is used to increase the size of the table when the table becomes
+too full. I call this method in the <span class="code">put()</span> method when the table
+becomes more than 3/4 full.</p>
+
+
+<p>A major part of developing a class for general use is testing. It's
+important to design a testing procedure that will test all aspects of the
+class. For this problem, I wrote a testing program that would allow me to test
+each of the methods in the class. I also added a method <span class="code">dump()</span> to the
+class; this method displays the entire hash table. This method does not really belong
+in the class, since users of a hash table shouldn't care how the data is
+stored. But I needed it to make sure that my <span class="code">resize()</span> method is
+working properly and that I could delete items correctly from all positions in
+the lists (beginning, middle, and end).</p>
+   
+
+<p>By the way, you might be tempted to try to write a generic version of
+<span class="classname">HashTable</span> in which the types of the keys and values are
+given as type parameters in the definition of the class.  Unfortunately, you
+would run into problems as soon as you tried to use an array in your class.
+Generic classes don't work well with arrays, because arrays of generic type
+can't be created at run time, as noted in <a href="../c10/s1.html#generics.1.3">Subsection&nbsp;10.1.3</a>.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+<p>
+<b><u>The HashTable Class</u></b>
+</p>
+
+<pre class="exercisecode">/**
+ * This file defines a HashTable class.  Keys and values in the table are of 
+ * type String.  Keys cannot be null.  The default constructor creates a table 
+ * that initially has 64 locations, but a different initial size can be specified 
+ * as a parameter to the constructor.  The table increases in size if it 
+ * becomes more than 3/4 full; to help implement this, a count of the number
+ * of items in the hash table is kept in an instance variable.
+ */
+public class HashTable {
+
+   /**
+    * Keys that have the same hash code are placed together in a linked list.  
+    * This private nested class is used internally to implement linked lists.  
+    * A ListNode holds a (key,value) pair.  
+    */
+   private static class ListNode {
+      String key;
+      String value;
+      ListNode next;  // Pointer to next node in the list;
+                      // A null marks the end of the list.
+   }
+
+   private ListNode[] table;  // The hash table, represented as
+                              // an array of linked lists.
+
+   private int count;  // The number of (key,value) pairs in the
+                       // hash table.
+
+   
+   /**
+    * Create a hash table with an initial size of 64.
+    */
+   public HashTable() {
+      table = new ListNode[64];
+   }
+
+   
+   /**
+    * Create a hash table with a specified initial size.
+    * Precondition: initalSize &gt; 0.
+    */
+   public HashTable(int initialSize) {
+      table = new ListNode[initialSize];
+   }
+
+   
+   /**
+    * This method is NOT part of the usual interface for a hash table.  
+    * It is here only to be used for testing purposes, and should be 
+    * removed before the class is  released for general use.  This 
+    * lists the (key,value) pairs in each location of the table.
+    */
+   void dump() {
+      System.out.println();
+      for (int i = 0; i &lt; table.length; i++) {
+             // Print out the location number and the list of
+             // key/value pairs in this location.
+         System.out.print(i + ":");
+         ListNode list = table[i]; // For traversing linked list number i.
+         while (list != null) {
+            System.out.print("  (" + list.key + "," + list.value + ")");
+            list = list.next;
+         }
+         System.out.println();
+      }
+   } // end dump()
+
+   
+   /**
+    * Associate the specified value with the specified key.
+    * Precondition:  The key is not null.
+    */
+   public void put(String key, String value) {
+      
+      assert key != null : "The key must be non-null";
+      
+      int bucket = hash(key); // Which location should this key be in?
+      
+      ListNode list = table[bucket]; // For traversing the linked list
+                                     // at the appropriate location.
+      while (list != null) {
+            // Search the nodes in the list, to see if the key already exists.
+         if (list.key.equals(key))
+            break;
+         list = list.next;
+      }
+      
+      // At this point, either list is null, or list.key.equals(key).
+      
+      if (list != null) {
+            // Since list is not null, we have found the key.
+            // Just change the associated value.
+         list.value = value;
+      }
+      else {
+             // Since list == null, the key is not already in the list.
+             // Add a new node at the head of the list to contain the
+             // new key and its associated value.
+         if (count &gt;= 0.75*table.length) {
+               // The table is becoming too full.  Increase its size
+               // before adding the new node.
+            resize();
+         }
+         ListNode newNode = new ListNode();
+         newNode.key = key;
+         newNode.value = value;
+         newNode.next = table[bucket];
+         table[bucket] = newNode;
+         count++;  // Count the newly added key.
+      }
+   }
+
+   
+   /**
+    * Retrieve the value associated with the specified key in the table, 
+    * if there is any.  If not, the value null will be returned.
+    * @param key The key whose associated value we want to find
+    * @return the associated value, or null if there is no associated value
+    */
+   public String get(String key) {
+      
+      int bucket = hash(key);  // At what location should the key be?
+      
+      ListNode list = table[bucket];  // For traversing the list.
+      while (list != null) {
+            // Check if the specified key is in the node that
+            // list points to.  If so, return the associated value.
+         if (list.key.equals(key))
+            return list.value;
+         list = list.next;  // Move on to next node in the list.
+      }
+      
+      // If we get to this point, then we have looked at every
+      // node in the list without finding the key.  Return
+      // the value null to indicate that the key is not in the table.
+      
+      return null;  
+   }
+
+   
+   /**
+    * Remove the key and its associated value from the table,
+    * if the key occurs in the table.  If it does not occur,
+    * then nothing is done.
+    */
+   public void remove(String key) {  
+      
+      int bucket = hash(key);  // At what location should the key be?
+      
+      if (table[bucket] == null) {
+            // There are no keys in that location, so key does not
+            // occur in the table.  There is nothing to do, so return.
+         return; 
+      }
+      
+      if (table[bucket].key.equals(key)) {
+            // If the key is the first node on the list, then
+            // table[bucket] must be changed to eliminate the
+            // first node from the list.
+         table[bucket] = table[bucket].next;
+         count--; // Remove new number of items in the table.
+         return;
+      }
+      
+      // We have to remove a node from somewhere in the middle
+      // of the list, or at the end.  Use a pointer to traverse
+      // the list, looking for a node that contains the
+      // specified key, and remove it if it is found.
+      
+      ListNode prev = table[bucket];  // The node that precedes
+                                      // curr in the list.  Prev.next
+                                      // is always equal to curr.
+      ListNode curr = prev.next;  // For traversing the list,
+                                  // starting from the second node.
+      while (curr != null &amp;&amp; ! curr.key.equals(key)) {
+         curr = curr.next;
+         prev = curr;
+      }
+      
+      // If we get to this point, then either curr is null,
+      // or curr.key is equal to key.  In the later case,
+      // we have to remove curr from the list.  Do this
+      // by making prev.next point to the node after curr,
+      // instead of to curr.  If curr is null, it means that
+      // the key was not found in the table, so there is nothing
+      // to do.
+      
+      if (curr != null) {
+         prev.next = curr.next;
+         count--;  // Record new number of items in the table.
+      }
+   }
+
+   
+   /**
+    * Test whether the specified key has an associated value in the table.
+    * @param key The key that we want to search for.
+    * @return true if the key exists in the table, false if not
+    */
+   public boolean containsKey(String key) {
+      
+      int bucket = hash(key);  // In what location should key be?
+      
+      ListNode list = table[bucket];  // For traversing the list.
+      while (list != null) {
+            // If we find the key in this node, return true.
+         if (list.key.equals(key))
+            return true;
+         list = list.next;
+      }
+      
+      // If we get to this point, we know that the key does
+      // not exist in the table.
+      
+      return false;
+   }
+
+   
+   /**
+    * Return the number of key/value pairs in the table.
+    */
+   public int size() {
+      return count;
+   }
+
+
+   /**
+    * Compute a hash code for the key; key cannot be null.
+    * The hash code depends on the size of the table as
+    * well as on the value returned by key.hashCode().
+    */
+   private int hash(Object key) {
+      return (Math.abs(key.hashCode())) % table.length;
+   }
+
+   
+   /**
+    * Double the size of the table, and redistribute the
+    * key/value pairs to their proper locations in the
+    * new table.
+    */
+   private void resize() {
+      ListNode[] newtable = new ListNode[table.length*2];
+      for (int i = 0; i &lt; table.length; i++) {
+             // Move all the nodes in linked list number i into the new table.  
+             // No new ListNodes are created.  The existing ListNode for each
+             // key/value pair is moved to the newtable.  This is done by 
+             // changing the "next" pointer in the node and by making a pointer 
+             // in the new table point to the node.
+         ListNode list = table[i]; // For traversing linked list number i.
+         while (list != null) {
+               // Move the node pointed to by list to the new table.
+            ListNode next = list.next;  // The is the next node in the list.
+               // Remember it, before changing the value of list!
+            int hash = (Math.abs(list.key.hashCode())) % newtable.length;
+               // hash is the hash code of list.key that is 
+               // appropriate for the new table size.  The
+               // next two lines add the node pointed to by list
+               // onto the head of the linked list in the new table
+               // at position number hash.
+            list.next = newtable[hash];
+            newtable[hash] = list;
+            list = next;  // Move on to the next node in the OLD table.
+         }
+      }
+      table = newtable;  // Replace the table with the new table.
+   } // end resize()
+   
+
+} // end class HashTable
+</pre>
+
+<p>
+<b><u>A Class for Testing:</u></b>
+</p>
+
+<pre class="exercisecode">/**
+ * A little program to test the HashTable class.  Note that I
+ * start with a really small table so that I can easily test
+ * the resize() method.
+ */
+
+public class TestHashTable {
+
+   public static void main(String[] args){
+      HashTable table = new HashTable(2);  // Initial size of table is 2.
+      String key,value;
+      while (true) {
+         System.out.println("\nMenu:");
+         System.out.println("   1. test put(key,value)");
+         System.out.println("   2. test get(key)");
+         System.out.println("   3. test containsKey(key)");
+         System.out.println("   4. test remove(key)");
+         System.out.println("   5. show complete contents of hash table.");
+         System.out.println("   6. EXIT");
+         System.out.print("Enter your command:  ");
+         switch ( TextIO.getlnInt()) {
+         case 1:
+            System.out.print("\n   Key = ");
+            key = TextIO.getln();
+            System.out.print("   Value = ");
+            value = TextIO.getln();
+            table.put(key,value);
+            break;         
+         case 2:
+            System.out.print("\n   Key = ");
+            key = TextIO.getln();
+            System.out.println("   Value is " + table.get(key));
+            break;         
+         case 3:
+            System.out.print("\n   Key = ");
+            key = TextIO.getln();
+            System.out.println("   containsKey(" + key + ") is " 
+                  + table.containsKey(key));
+            break;         
+         case 4:
+            System.out.print("\n   Key = ");
+            key = TextIO.getln();
+            table.remove(key);
+            break;         
+         case 5:
+            table.dump();
+            break;
+         case 6:
+            return;  // End program by returning from main()         
+         default:
+            System.out.println("   Illegal command.");
+         break;
+         }
+         System.out.println("\nHash table size is " + table.size());
+      }
+   }
+
+}
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

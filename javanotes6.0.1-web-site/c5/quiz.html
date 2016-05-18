@@ -1,0 +1,149 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Quiz on Chapter 5</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="quiz_answers.html">Quiz Answers</a> | <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2 class="quiz_title">Quiz on Chapter 5</h2>
+<p>
+<span class="start"><big>T</big>his page contains</span> questions on Chapter 5 of
+           <a href="../index.html"><i>Introduction to Programming Using Java</i></a>.
+           You should be able to answer these questions after studying that chapter.
+           Sample answers to these questions can be found <a href="quiz_answers.html">here</a>.</p>
+<table border="1" align="center" cellpadding="8" width="95%">
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;1:</span></td><td>
+<p>Object-oriented programming
+uses <i>classes</i> and <i>objects</i>. What are classes and what are objects?
+What is the relationship between classes and objects?</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;2:</span></td><td>
+<p>Explain carefully what
+<i>null</i> means in Java, and why this special value is necessary.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;3:</span></td><td>
+<p>What is a
+<i>constructor?</i> What is the purpose of a constructor in a class?</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;4:</span></td><td>
+<p>Suppose that
+<span class="code">Kumquat</span> is the name of a class and that <span class="code">fruit</span> is a variable
+of type <span class="code">Kumquat.</span> What is the meaning of the statement "<span class="code">fruit = new
+Kumquat();</span>"? That is, what does the computer do when it executes this
+statement? (Try to give a complete answer. The computer does several
+things.)</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;5:</span></td><td>
+<p>What is meant by the terms
+<i>instance variable</i> and <i>instance method</i>?</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;6:</span></td><td>
+<p>Explain what is meant by the
+terms <i>subclass</i> and <i>superclass.</i>
+</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;7:</span></td><td>
+<p>Modify the following class so that the two instance variables are <span class="code">private</span>
+and there is a getter method and a setter method for each instance variable:</p>
+
+<pre>public class Player {
+   String name;
+   int score;
+}</pre>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;8:</span></td><td>
+<p>Explain why the class <span class="classname">Player</span> that is defined in the previous
+question has an instance method named <span class="code">toString()</span>, even though no definition
+of this method appears in the definition of the class.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;9:</span></td><td>
+<p>Explain the term
+<i>polymorphism.</i>
+</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;10:</span></td><td>
+<p>Java uses "garbage
+collection" for memory management. Explain what is meant here by garbage
+collection. What is the alternative to garbage collection?</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;11:</span></td><td>
+<p>For this problem, you should
+write a very simple but complete class. The class represents a counter that
+counts 0, 1, 2, 3, 4,&nbsp;.... The name of the class should be <span class="code">Counter</span>. It
+has one <span class="code">private</span> instance variable representing the value of the
+counter. It has two instance methods: <span class="code">increment()</span> adds one to the
+counter value, and <span class="code">getValue()</span> returns the current counter value. Write
+a complete definition for the class, <span class="code">Counter</span>.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;12:</span></td><td>
+<p>This problem uses the
+<span class="code">Counter</span> class from the previous question. The following program segment is meant
+to simulate tossing a coin 100 times. It should use two <span class="code">Counter</span>
+objects, <span class="code">headCount</span> and <span class="code">tailCount</span>, to count the number of
+heads and the number of tails. Fill in the blanks so that it will do so:</p>
+
+
+<pre>Counter headCount, tailCount;
+tailCount = new Counter();
+headCount = new Counter();
+for ( int flip = 0;  flip &lt; 100;  flip++ ) {
+   if (Math.random() &lt; 0.5)    // There's a 50/50 chance that this is true.
+   
+       ______________________ ;   // Count a "head".
+       
+   else
+   
+       ______________________ ;   // Count a "tail".
+}
+
+System.out.println("There were " + ___________________ + " heads.");
+
+System.out.println("There were " + ___________________ + " tails.");</pre>
+
+</td>
+</tr>
+</table>
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="quiz_answers.html">Quiz Answers</a> | <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

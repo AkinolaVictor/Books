@@ -1,0 +1,1012 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 6.4 -- Mouse Events</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s3.html">Previous Section</a> |
+           <a href="s5.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#GUI1.4.1">Event Handling</a>
+<br>
+<a href="#GUI1.4.2">MouseEvent and MouseListener</a>
+<br>
+<a href="#GUI1.4.3">Mouse Coordinates</a>
+<br>
+<a href="#GUI1.4.4">MouseMotionListeners and Dragging</a>
+<br>
+<a href="#GUI1.4.5">Anonymous Event Handlers and Adapter Classes</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 6.4</h3>
+<h2 class="section_title">Mouse Events</h2>
+<hr class="break">
+   
+
+<p>
+<span class="start"><big>E</big>vents are central</span> to programming for a graphical
+user interface. A GUI program doesn't have a <span class="code">main()</span> routine that
+outlines what will happen when the program is run, in a step-by-step process
+from beginning to end. Instead, the program must be prepared to respond to
+various kinds of events that can happen at unpredictable times and in an order
+that the program doesn't control. The most basic kinds of events are generated
+by the mouse and keyboard. The user can press any key on the keyboard, move the
+mouse, or press a button on the mouse. The user can do any of these things at
+any time, and the computer has to respond appropriately.</p>
+
+
+<p>In Java, events are represented by objects. When an event occurs, the system
+collects all the information relevant to the event and constructs an object to
+contain that information. Different types of events are represented by objects
+belonging to different classes. For example, when the user presses one of the
+buttons on a mouse, an object belonging to a class called <span class="classname">MouseEvent</span>
+is constructed. The object contains information such as the source of the event (that is, the component on
+which the user clicked), the <span class="code">(x,y)</span> coordinates of the point in the
+component where the click occurred, the exact time of the click, and which button on the mouse was pressed.
+When the user presses a key on the keyboard, a <span class="classname">KeyEvent</span> is created.
+After the event object is constructed, it is passed as a parameter to a
+designated method. By writing that method, the programmer says what
+should happen when the event occurs.</p>
+
+
+<p>As a Java programmer, you get a fairly high-level view of events. There is a
+lot of processing that goes on between the time that the user presses a key or
+moves the mouse and the time that a subroutine in your program is called to
+respond to the event. Fortunately, you don't need to know much about that
+processing. But you should understand this much: Even though your GUI program
+doesn't have a <span class="code">main()</span> routine, there is a sort of main routine running
+somewhere that executes a loop of the form</p>
+
+
+<pre>while the program is still running:
+    Wait for the next event to occur
+    Call a subroutine to handle the event</pre>
+
+
+<p>This loop is called an <span class="newword">event loop</span>. Every GUI
+program has an event loop. In Java, you don't have to write the loop. It's part
+of "the system." If you write a GUI program in some other language, you might
+have to provide a main routine that runs the event loop.</p>
+
+
+<p>In this section, we'll look at handling mouse events in Java, and we'll
+cover the framework for handling events in general. The <a href="../c6/s5.html">next
+section</a> will cover keyboard-related events and timer events. 
+Java also has other types of events, which are produced by GUI components.
+These will be introduced in <a href="../c6/s6.html">Section&nbsp;6.6</a>.</p>
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="GUI1.4.1">6.4.1&nbsp;&nbsp;Event Handling</a>
+</h3>
+
+
+<p>For an event to have any effect, a program must detect the event and react
+to it. In order to detect an event, the program must "listen" for it. Listening
+for events is something that is done by an object called an <span class="newword">event listener</span>. 
+An event listener object must contain instance
+methods for handling the events for which it listens. For example, if an object
+is to serve as a listener for events of type <span class="classname">MouseEvent</span>, then it must
+contain the following method (among several others):</p>
+
+
+<pre>public void mousePressed(MouseEvent evt) { . . . }</pre>
+
+
+<p>The body of the method defines how the object responds when it is notified
+that a mouse button has been pressed. The parameter, <span class="code">evt</span>, contains
+information about the event. This information can be used by the listener
+object to determine its response.</p>
+
+
+<p>The methods that are required in a mouse event listener are specified in an
+<span class="code">interface</span> named <span class="classname">MouseListener</span>. To be used as a listener for
+mouse events, an object must implement this <span class="classname">MouseListener</span> interface.
+Java <span class="code">interfaces</span> were covered in <a href="../c5/s7.html#OOP.7.1">Subsection&nbsp;5.7.1</a>. 
+(To review briefly: An <span class="code">interface</span> in Java is just a list of
+instance methods. A class can "implement" an interface by doing two things.
+First, the class must be declared to implement the interface, as in "<span class="code">class
+MouseHandler implements MouseListener</span>" or "<span class="code">class MyApplet extends
+JApplet implements MouseListener</span>". Second, the class must include a
+definition for each instance method specified in the interface. An
+<span class="code">interface</span> can be used as the type for a variable or formal parameter.
+We say that an object implements the <span class="classname">MouseListener</span> interface if it
+belongs to a class that implements the <span class="classname">MouseListener</span> interface. Note
+that it is not enough for the object to include the specified methods. It must
+also belong to a class that is specifically declared to implement the
+interface.)</p>
+
+
+<p>Many events in Java are associated with GUI components. For example, when
+the user presses a button on the mouse, the associated component is the one
+that the user clicked on. Before a listener object can "hear" events associated
+with a given component, the listener object must be registered with the
+component. If a <span class="classname">MouseListener</span> object, <span class="code">mListener</span>, needs to
+hear mouse events associated with a <span class="classname">Component</span> object, <span class="code">comp</span>, the
+listener must be <span class="newword">registered</span> with the component by
+calling</p>
+
+
+<pre>comp.addMouseListener(mListener);</pre> 
+
+
+<p>The <span class="code">addMouseListener()</span> method is an instance method in class
+<span class="classname">Component</span>, and so can be used with any GUI component object. In our
+first few examples, we will listen for events on a JPanel that is being used as
+a drawing surface.</p>
+
+
+<p>The event classes, such as <span class="classname">MouseEvent</span>, and the listener interfaces,
+such as <span class="classname">MouseListener</span>, are defined in the package
+<span class="code">java.awt.event</span>. This means that if you want to work with events, you
+should either include the line "<span class="code">import java.awt.event.*;</span>" at the beginning of
+your source code file or import the individual classes and interfaces.</p>
+
+
+<p>Admittedly, there is a large number of details to tend to when you want to
+use events. To summarize, you must</p>
+
+
+<ol>
+
+<li>Put the import specification "<span class="code">import java.awt.event.*;</span>" (or individual imports)
+at the beginning of your source code;</li>
+
+<li>Declare that some class implements the appropriate listener interface, such
+as <span class="classname">MouseListener</span>;</li>
+
+<li>Provide definitions in that class for the methods specified by the
+interface;</li>
+
+<li>Register the listener object with the component that will generate the
+events by calling a method such as <span class="code">addMouseListener()</span> in the
+component.</li>
+
+</ol>
+
+
+<p>Any object can act as an event listener, provided that it implements the
+appropriate interface. A component can listen for the events that it itself
+generates. A panel can listen for events from components that are contained
+in the panel. A special class can be created just for the purpose of defining
+a listening object. Many people consider it to be good form to use anonymous
+inner classes to define listening objects (see <a href="../c5/s7.html#OOP.7.3">Subsection&nbsp;5.7.3</a>).
+You will see all of these patterns in examples in this textbook.</p>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="GUI1.4.2">6.4.2&nbsp;&nbsp;MouseEvent and MouseListener</a>
+</h3>
+
+
+<p>The <span class="classname">MouseListener</span> interface specifies five different instance
+methods:</p>
+
+
+<pre>public void mousePressed(MouseEvent evt);
+public void mouseReleased(MouseEvent evt);
+public void mouseClicked(MouseEvent evt);
+public void mouseEntered(MouseEvent evt);
+public void mouseExited(MouseEvent evt);</pre>
+
+
+<p>The <span class="code">mousePressed</span> method is called as soon as the user presses down
+on one of the mouse buttons, and <span class="code">mouseReleased</span> is called when the user
+releases a button. These are the two methods that are most commonly used, but
+any mouse listener object must define all five methods; you can leave the body
+of a method empty if you don't want to define a response. The
+<span class="code">mouseClicked</span> method is called if the user presses a mouse button and
+then releases it, without moving the mouse. (When the user does this,
+all three routines -- <span class="code">mousePressed</span>, <span class="code">mouseReleased</span>, and
+<span class="code">mouseClicked</span> -- will be called in that order.) In most cases, you
+should define <span class="code">mousePressed</span> instead of <span class="code">mouseClicked</span>. The
+<span class="code">mouseEntered</span> and <span class="code">mouseExited</span> methods are called when the
+mouse cursor enters or leaves the component. For example, if you want the
+component to change appearance whenever the user moves the mouse over the
+component, you could define these two methods.</p>
+
+
+<p>As a first example, we will look at a small addition to the <span class="classname">RandomStringsPanel</span>
+example from the <a href="../c6/s3.html#GUI1.3.6">previous section</a>. In the new version,
+the panel will repaint itself when the user clicks on it.  In order for this to happen,
+a mouse listener should listen for mouse events on the panel, and when the listener
+detects a <span class="code">mousePressed</span> event, it should respond by calling the
+<span class="code">repaint()</span> method of the panel.  Here is an applet version of the
+<span class="code">ClickableRandomStrings</span> program for you to try; when you click the
+applet, a new set of random strings is displayed:</p>
+
+
+
+<p align="center">
+<applet code="ClickableRandomStringsApplet.class" width="350" height="150" archive="ClickableRandomStrings.jar" alt="(Applet 'ClickableRandomStringsAppelt' should be displayed here.)"></applet></p>
+
+   
+
+<p>For the new version of the program, we need an object that implements the
+<span class="classname">MouseListener</span> interface.  One way to create the
+object is to define a separate class, such as:</p>
+
+
+<pre>import java.awt.Component;
+import java.awt.event.*;
+
+/**
+ * An object of type RepaintOnClick is a MouseListener that
+ * will respond to a mousePressed event by calling the repaint()
+ * method of the source of the event.  That is, a RepaintOnClick
+ * object can be added as a mouse listener to any Component;
+ * when the user clicks that component, the component will be
+ * repainted.
+ */
+public class RepaintOnClick implements MouseListener {
+
+   public void mousePressed(MouseEvent evt) {
+      Component source = (Component)evt.getSource();
+      source.repaint();  // Call repaint() on the Component that was clicked.
+   }
+
+   public void mouseClicked(MouseEvent evt) { }
+   public void mouseReleased(MouseEvent evt) { }
+   public void mouseEntered(MouseEvent evt) { }
+   public void mouseExited(MouseEvent evt) { }
+
+}</pre>
+
+
+<p>This class does three of the four things that we need to do in order
+to handle mouse events:  First, it imports <span class="code">java.awt.event.*</span>
+for easy access to event-related classes.  Second, it is declared that
+the class "<span class="code">implements MouseListener</span>".  And third, it provides
+definitions for the five methods that are specified in the
+<span class="classname">MouseListener</span> interface.
+(Note that four of the five event-handling methods have empty definitions.
+We really only want to define a response to <span class="code">mousePressed</span> events,
+but in order to implement the <span class="classname">MouseListener</span> interface,
+a class <b>must</b> define all five methods.)</p>
+   
+
+<p>We must do one more thing to set up the event handling for this example:
+We must register an event-handling object as a listener with the component
+that will generate the events.  In this case, the mouse events that we are
+interested in will be generated by an object of type <span class="classname">RandomStringsPanel</span>.
+If <span class="code">panel</span> is a variable that refers to the panel object,
+we can create a mouse listener object and register it with the panel with
+the statements:</p>
+  
+
+<pre>RepaintOnClick listener = new RepaintOnClick();  // Create MouseListener object.
+panel.addMouseListener(listener);  // Register MouseListener with the panel.</pre>
+ 
+
+<p>Once this is done, the <span class="code">listener</span> object will be notified of
+mouse events on the panel.  When a <span class="code">mousePressed</span> event occurs, the
+<span class="code">mousePressed()</span> method in the <span class="code">listener</span> will be called.
+The code in this method calls the <span class="code">repaint()</span> method in the
+component that is the source of the event, that is, in the panel.  The result
+is that the <span class="code">RandomStringsPanel</span> is repainted with its strings
+in new random colors, fonts, and positions.</p>
+   
+
+<p>Although we have written the <span class="classname">RepaintOnClick</span> class for use
+with our <span class="classname">RandomStringsPanel</span> example, the event-handling
+class contains no reference at all to the <span class="classname">RandomStringsPanel</span>
+class.  How can this be?  The <span class="code">mousePressed()</span> method in
+class <span class="classname">RepaintOnClick</span> looks at the source of the event,
+and calls its <span class="code">repaint()</span> method.  If we have registered the
+<span class="classname">RepaintOnClick</span> object as a listener on a
+<span class="classname">RandomStringsPanel</span>, then it is that panel that is
+repainted.  But the listener object could be used with any type of component,
+and it would work in the same way.</p>
+   
+
+<p>Similarly, the <span class="classname">RandomStringsPanel</span> class contains no
+reference to the <span class="classname">RepaintOnClick</span> class -- in fact,
+<span class="classname">RandomStringsPanel</span> was written before we even knew
+anything about mouse events!  The panel will
+send mouse events to any object that has registered with it as a mouse listener.
+It does not need to know anything about that object except that it is capable
+of receiving mouse events.</p>
+   
+
+<p>The relationship between an object that generates an event and an object
+that responds to that event is rather loose.   The relationship is set up by
+registering one object to listen for events from the other object.  This is
+something that can potentially be done from outside both objects.  Each object
+can be developed independently, with no knowledge of the internal operation
+of the other object.  This is the essence of <span class="newword">modular design</span>:  Build a complex
+system out of modules that interact only in straightforward, easy to understand
+ways.  Then each module is a separate design problem that can be tackled independently.
+Java's event-handling framework is designed to offer strong support for
+modular design.
+</p>   
+   
+
+<p>To make this clearer, consider the application version of
+the <span class="code">ClickableRandomStrings</span> program.  I have included
+<span class="classname">RepaintOnClick</span> as a nested class, although
+it could just as easily be a separate class.  The main point is that
+this program uses the same <span class="classname">RandomStringsPanel</span>
+class that was used in the original program, which did not respond
+to mouse clicks.  The mouse handling has been "bolted on" to an
+existing class, without having to make any changes at all to that
+class:</p>
+   
+
+<pre>import java.awt.Component;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import javax.swing.JFrame;
+
+/**
+ * Displays a window that shows 25 copies of the string "Java!" in
+ * random colors, fonts, and positions.  The content of the window
+ * is an object of type RandomStringsPanel.  When the user clicks
+ * the window, the content of the window is repainted, with the 
+ * strings in newly selected random colors, fonts, and positions.
+ */
+public class ClickableRandomStringsApp {
+   
+   public static void main(String[] args) {
+      JFrame window = new JFrame("Random Strings");
+      RandomStringsPanel content = new RandomStringsPanel();
+      content.addMouseListener( new RepaintOnClick() );  <span class="newcode">// Register mouse listener.</span>
+      window.setContentPane(content);
+      window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      window.setLocation(100,75);
+      window.setSize(300,240);
+      window.setVisible(true);
+   }
+
+   private static class RepaintOnClick implements MouseListener {
+
+      public void mousePressed(MouseEvent evt) {
+         Component source = (Component)evt.getSource();
+         source.repaint();
+      }
+
+      public void mouseClicked(MouseEvent evt) { }
+      public void mouseReleased(MouseEvent evt) { }
+      public void mouseEntered(MouseEvent evt) { }
+      public void mouseExited(MouseEvent evt) { }
+
+   }
+}</pre>
+   
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="GUI1.4.3">6.4.3&nbsp;&nbsp;Mouse Coordinates</a>
+</h3>
+ 
+
+<p>Often, when a mouse event occurs, you want to know the location of the mouse
+cursor. This information is available from the <span class="classname">MouseEvent</span>
+parameter to the event-handling method, which
+contains instance methods that return information about the event. 
+If <span class="code">evt</span> is the parameter, then you can find out
+the coordinates of the mouse cursor by calling  <span class="code">evt.getX()</span> and
+<span class="code">evt.getY()</span>. These methods return integers which give the <span class="code">x</span>
+and <span class="code">y</span> coordinates where the mouse cursor was positioned at the time
+when the event occurred. The
+coordinates are expressed in the <a href="../c6/s3.html#GUI1.3.1">coordinate system</a> 
+of the component that
+generated the event, where the top left corner of the component is (0,0).</p>
+
+
+<p>The user can hold down certain <span class="newword">modifier keys</span>
+while using the mouse. The possible modifier keys include: the Shift key, the
+Control key, the Alt key (called the Option key on the Mac), and the Meta
+key (called the Command or Apple key on the Mac). 
+You might want to respond to a mouse event differently when the user
+is holding down a modifier key. The boolean-valued instance methods
+<span class="code">evt.isShiftDown()</span>, <span class="code">evt.isControlDown()</span>,
+<span class="code">evt.isAltDown()</span>, and <span class="code">evt.isMetaDown()</span> can be called to test
+whether the modifier keys are pressed.</p>
+
+
+<p>You might also want to have different responses depending on whether the
+user presses the left mouse button, the middle mouse button, or the right mouse
+button. Now, not every mouse has a middle button and a right button, so Java
+handles the information in a peculiar way. It treats pressing the right button
+as equivalent to holding down the Meta key while pressing the left mouse
+button. That is, if the right button is pressed, then the instance method
+<span class="code">evt.isMetaDown()</span> will return <span class="code">true</span> (even if the Meta key is
+not pressed). Similarly, pressing the middle mouse button is equivalent to
+holding down the Alt key. In practice, what this really means is that pressing
+the right mouse button under Windows or Linux is equivalent to holding down the Command
+key while pressing the mouse button on the Mac. A program tests for either of
+these by calling <span class="code">evt.isMetaDown()</span>.</p>
+
+
+<p>As an example, consider a <span class="classname">JPanel</span> that does the
+following:  Clicking on the panel with the
+left mouse button will place a red rectangle on the panel at the point
+where the mouse was clicked.  Clicking with the right
+mouse button (or holding down the Command key while clicking on a Mac) will place a
+blue oval on the applet. Holding down the Shift key while clicking will clear the
+panel by removing all the shapes that have been placed. Here is
+an applet version of the program:</p>
+
+
+
+<p align="center">
+<applet code="SimpleStamperApplet.class" width="350" height="200" archive="SimpleStamper.jar" alt="(Applet 'SimpleStamper' should be displayed here.)"></applet></p>
+
+
+
+
+<p>There are several ways to write this example. There could be a separate class to handle
+mouse events, as in the previous example.  However, in this case, I decided to let
+the panel itself respond to mouse events.  Any object can be a mouse listener, as long
+as it implements the <span class="classname">MouseListener</span> interface.  In this case,
+the panel class implements the <span class="classname">MouseListener</span> interface, 
+so the object that represents the main panel of the program can be the mouse
+listener for the program.  The constructor for the panel class contains the statement</p>
+
+
+<pre>addMouseListener(this);</pre>
+
+
+<p>which is equivalent to saying <span class="code">this.addMouseListener(this)</span>.  Now, the
+ordinary way to register a mouse listener is to say <span class="code">X.addMouseListener(Y)</span>
+where <span class="code">Y</span> is the listener and <span class="code">X</span> is the component that will
+generate the mouse events.  In the statement <span class="code">addMouseListener(this)</span>,
+both roles are played by <span class="code">this</span>; that is, "this object" (the panel) is
+generating mouse events and is also listening for those events.  Although this might
+seem a little strange, you should get used to seeing things like this.  In a large
+program, however, it's usually a better idea to write a separate class to do
+the listening in order to haver a more organized division of responsibilities.
+</p>
+
+
+
+
+<p>The source code for the panel class is shown below. You should check how the instance
+methods in the <span class="classname">MouseEvent</span> object are used. You can also check for the
+Four Steps of Event Handling ("<span class="code">import java.awt.event.*</span>",
+"<span class="code">implements MouseListener</span>",  definitions for the
+event-handling methods, and "<span class="code">addMouseListener</span>"):</p>
+
+
+<pre>import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+/**
+ * A simple demonstration of MouseEvents.  Shapes are drawn
+ * on a black background when the user clicks the panel.  If
+ * the user Shift-clicks, the applet is cleared.  If the user
+ * right-clicks the applet, a blue oval is drawn.  Otherwise,
+ * when the user clicks, a red rectangle is drawn.  The contents of
+ * the panel are not persistent.  For example, they might disappear 
+ * if the panel is resized or is covered and uncovered.
+ */
+public class SimpleStamperPanel extends JPanel implements MouseListener {
+   
+   /**
+    * This constructor simply sets the background color of the panel to be black
+    * and sets the panel to listen for mouse events on itself.
+    */
+   public SimpleStamperPanel() {
+      setBackground(Color.BLACK);
+      addMouseListener(this);
+   }
+   
+
+   /**
+    *  Since this panel has been set to listen for mouse events on itself, 
+    *  this method will be called when the user clicks the mouse on the panel.
+    *  This method is part of the MouseListener interface.
+    */
+   public void mousePressed(MouseEvent evt) {
+      
+      if ( evt.isShiftDown() ) {
+            // The user was holding down the Shift key.  Just repaint the panel.
+            // Since this class does not define a paintComponent() method, the 
+            // method from the superclass, JPanel, is called.  That  method simply
+            // fills the panel with its background color, which is black.  The 
+            // effect is to clear the panel.
+         repaint();
+         return;
+      }
+      
+      int x = evt.getX();  // x-coordinate where user clicked.
+      int y = evt.getY();  // y-coordinate where user clicked.
+      
+      Graphics g = getGraphics();  // Graphics context for drawing directly.
+                                   // <span class="code">NOTE:  This is considered to be bad style!</span>
+      
+      if ( evt.isMetaDown() ) {
+             // User right-clicked at the point (x,y). Draw a blue oval centered 
+             // at the point (x,y). (A black outline around the oval will make it 
+             // more distinct when shapes overlap.)
+         g.setColor(Color.BLUE);  // Blue interior.
+         g.fillOval( x - 30, y - 15, 60, 30 );
+         g.setColor(Color.BLACK); // Black outline.
+         g.drawOval( x - 30, y - 15, 60, 30 );
+      }
+      else {
+            // User left-clicked (or middle-clicked) at (x,y). 
+            // Draw a red rectangle centered at (x,y).
+         g.setColor(Color.RED);   // Red interior.
+         g.fillRect( x - 30, y - 15, 60, 30 );
+         g.setColor(Color.BLACK); // Black outline.
+         g.drawRect( x - 30, y - 15, 60, 30 );
+      }
+      
+      g.dispose();  // We are finished with the graphics context, so dispose of it.
+      
+   } // end mousePressed();
+   
+   
+   // The next four empty routines are required by the MouseListener interface.
+   // Since they don't do anything in this class, so their definitions are empty.
+   
+   public void mouseEntered(MouseEvent evt) { }
+   public void mouseExited(MouseEvent evt) { }
+   public void mouseClicked(MouseEvent evt) { }
+   public void mouseReleased(MouseEvent evt) { }
+   
+} // end class SimpleStamperPanel</pre>
+   
+   
+
+<p>Note, by the way, that this class violates the rule that all
+drawing should be done in a <span class="code">paintComponent()</span> method. The rectangles
+and ovals are drawn directly in the <span class="code">mousePressed()</span> routine. To make
+this possible, I need to obtain a graphics context by saying 
+"<span class="code">g&nbsp;=&nbsp;getGraphics()</span>". After using <span class="code">g</span> for drawing, I call
+<span class="code">g.dispose()</span> to inform the operating system that I will no longer be
+using <span class="code">g</span> for drawing. It is a good idea to do this to free the system
+resources that are used by the graphics context. I do not advise doing this
+type of direct drawing if it can be avoided, but you can see that it does work
+in this case, and at this point we really have no other way to write this
+example.</p>
+
+
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="GUI1.4.4">6.4.4&nbsp;&nbsp;MouseMotionListeners and Dragging</a>
+</h3>
+
+
+<p>Whenever the mouse is moved, it generates events. The operating system of
+the computer detects these events and uses them to move the mouse cursor on the
+screen. It is also possible for a program to listen for these "mouse motion"
+events and respond to them. The most common reason to do so is to implement
+<span class="newword">dragging</span>. Dragging occurs when the user moves the
+mouse while holding down a mouse button.</p>
+
+
+<p>The methods for responding to mouse motion events are defined in an
+interface named <span class="classname">MouseMotionListener</span>. This interface specifies two
+event-handling methods:</p>
+
+
+<pre>public void mouseDragged(MouseEvent evt);
+public void mouseMoved(MouseEvent evt);</pre>
+
+
+<p>The <span class="code">mouseDragged</span> method is called if the mouse is moved while a
+button on the mouse is pressed. If the mouse is moved while no mouse button is
+down, then <span class="code">mouseMoved</span> is called instead. The parameter, <span class="code">evt</span>,
+is an object of type <span class="classname">MouseEvent</span>. It contains the <span class="code">x</span> and
+<span class="code">y</span> coordinates of the mouse's location. As long as the user continues
+to move the mouse, one of these methods will be called over and over. (So many
+events are generated that it would be inefficient for a program to hear them
+all, if it doesn't want to do anything in response. This is why the mouse
+motion event-handlers are defined in a separate interface from the other mouse
+events: You can listen for the mouse events defined in <span class="classname">MouseListener</span>
+without automatically hearing all mouse motion events as well.)</p>
+
+
+<p>If you want your program to respond to mouse motion events, you must create
+an object that implements the <span class="classname">MouseMotionListener</span> interface, and you
+must register that object to listen for events. The registration is done by
+calling a component's <span class="code">addMouseMotionListener()</span> method. The object will
+then listen for <span class="code">mouseDragged</span> and <span class="code">mouseMoved</span> events associated
+with that component. In most cases, the listener object will also implement the
+<span class="classname">MouseListener</span> interface so that it can respond to the other mouse
+events as well.</p>
+
+
+
+<p>Here is a small sample applet that displays information about mouse events.
+It is programmed to respond to any of the seven different kinds of mouse events
+by displaying the coordinates of the mouse, the type of event, and a list of
+the modifier keys that are down (Shift, Control, Meta, and Alt). Experiment to
+see what happens when you use the mouse on the applet.</p>
+
+
+<p align="center">
+<applet code="SimpleTrackMouseApplet.class" width="350" height="200" archive="SimpleTrackMouse.jar" alt="(Applet 'SimpleTrackMouse' should be displayed here.)"></applet></p>
+
+
+   
+
+
+
+<p>The source code for the
+program can be found in <span class="sourceref"><a href="../source/SimpleTrackMousePanel.java">SimpleTrackMousePanel.java</a></span>, which
+defines the panel that is used as the content pane, and in
+<span class="sourceref"><a href="../source/SimpleTrackMouseApplet.java">SimpleTrackMouseApplet.java</a></span>, which defines the applet class.
+The panel class includes a nested class, <span class="classname">MouseHandler</span>, that
+defines the mouse-handling object.
+I encourage you to read the source code. You should now be familiar with all the
+techniques that it uses.</p>
+
+   
+
+<p>It is interesting to look at what a program needs to do in order to respond
+to dragging operations. In general, the response involves three methods:
+<span class="code">mousePressed()</span>, <span class="code">mouseDragged()</span>, and <span class="code">mouseReleased()</span>.
+The dragging gesture starts when the user presses a mouse button, it continues
+while the mouse is dragged, and it ends when the user releases the button. This
+means that the programming for the response to one dragging gesture must be
+spread out over the three methods! Furthermore, the <span class="code">mouseDragged()</span>
+method can be called many times as the mouse moves. To keep track of what is
+going on between one method call and the next, you need to set up some instance
+variables. In many applications, for example, in order to process a
+<span class="code">mouseDragged</span> event, you need to remember the previous coordinates of
+the mouse. You can store this information in two instance variables
+<span class="code">prevX</span> and <span class="code">prevY</span> of type <span class="ptype">int</span>.  It can also
+be useful to save the starting coordinates, where the original <span class="code">mousePressed</span> event
+occurred, in instance variables.   I also suggest having a
+<span class="ptype">boolean</span> variable, <span class="code">dragging</span>, which is set to <span class="code">true</span>
+while a dragging gesture is being processed. This is necessary because in many applications, not
+every <span class="code">mousePressed</span> event starts a dragging operation to which you want to respond. The
+<span class="code">mouseDragged</span> and <span class="code">mouseReleased</span> methods can use the value of
+<span class="code">dragging</span> to check whether a drag operation is actually in progress.
+You might need other instance variables as well, but in general outline, a class
+that handles mouse dragging looks like this:</p>
+
+
+<pre>import java.awt.event.*;
+   
+public class MouseDragHandler implements MouseListener, MouseMotionListener {
+
+   private int startX, startY; // Point where the original mousePress occurred. 
+   private int prevX, prevY;   // Most recently processed mouse coords.
+   private boolean dragging;   // Set to true when dragging is in process.
+   . . . // other instance variables for use in dragging
+   
+   public void mousePressed(MouseEvent evt) {
+      if ( <i>we-want-to-start-dragging</i> ) {
+          dragging = true;
+          startX = evt.getX();  // Remember starting position.
+          startY = evt.getY();
+          prevX = startX;       // Remember most recent coords.
+          prevY = startY;
+             . 
+             . // Other processing.
+             .
+      }
+   }
+   
+   public void mouseDragged(MouseEvent evt) {
+       if ( dragging == false )  // First, check if we are 
+           return;               //   processing a dragging gesture.
+       int x = evt.getX(); // Current position of Mouse.
+       int y = evt.getY();
+         .  
+         .  // Process a mouse movement from (prevX, prevY) to (x,y).
+         .
+       prevX = x;  // Remember the current position for the next call.
+       prevY = y;
+   }
+   
+   public void mouseReleased(MouseEvent evt) {
+       if ( dragging == false )  // First, check if we are 
+           return;               //   processing a dragging gesture.
+       dragging = false;  // We are done dragging.
+        .
+        .  // Other processing and clean-up.
+        .
+   }
+
+}</pre>
+
+
+<p>As an example, let's look at a typical use of dragging: allowing the user to
+sketch a curve by dragging the mouse. This example also shows many other
+features of graphics and mouse processing. In the program, you can
+draw a curve by dragging the mouse on a large white drawing area, and you can
+select a color for
+drawing by clicking on one of several colored rectangles to the right of the
+drawing area. The complete source code can be found in <span class="sourceref"><a href="../source/SimplePaint.java">SimplePaint.java</a></span>,
+which can be run as a stand-alone application. Here is an applet version
+of the program for you to try:</p>
+
+
+<p align="center">
+<applet code="SimplePaint.class" width="400" height="300" archive="SimplePaint.jar" alt="(Applet 'SimplePaint' should be displayed here.)"></applet></p>
+   
+
+<p>I will discuss a few aspects of the source code
+here, but I encourage you to read it carefully in its entirety. There are
+lots of informative comments in the source code.  (The source code uses one unusual
+technique:  It defines a subclass of <span class="classname">JApplet</span>, but it also
+includes a <span class="code">main()</span> routine.  The <span class="code">main()</span> routine has
+nothing to do with the class's use as an applet, but it makes it possible to run
+the class as a stand-alone application.  When this is done, the application opens
+a window that shows the same panel that would be shown in the applet version.
+This example thus shows how to write a single file that can be used either as
+a stand-alone application or as an applet.)</p>
+
+
+<p>The panel class for this example is designed to work for any reasonable
+size, that is, unless the panel is too small. This means that
+coordinates are computed in terms of the actual width and height of the panel.
+(The width and height are obtained by calling <span class="code">getWidth()</span> and
+<span class="code">getHeight()</span>.) This makes things quite a bit harder than they
+would be if we assumed some particular fixed size for the panel. Let's look at
+some of these computations in detail. For example, the large white drawing
+area extends from <span class="code">y = 3</span> to <span class="code"> y = height - 3</span> vertically and
+from <span class="code">x = 3</span> to <span class="code">x = width - 56</span> horizontally.  These numbers
+are needed in order to interpret the meaning of a mouse click.  They take into
+account a gray border around the panel and the color palette along the right
+edge of the panel. The gray border is 3 pixels wide.  The colored rectangles are 50
+pixels wide.  Together with the 3-pixel border around the panel and 
+a 3-pixel divider between the drawing area and the colored
+rectangles, this adds up to put the right edge of the drawing area 56
+pixels from the right edge of the panel.</p>
+
+
+<p>A white square labeled "<span class="code">CLEAR</span>" occupies a 50-by-50 pixel region
+beneath the colored rectangles on the right edge of the panel.
+Allowing for this square, we can figure out how
+much vertical space is available for the seven colored rectangles, and then
+divide that space by 7 to get the vertical space available for each rectangle.
+This quantity is represented by a variable, <span class="code">colorSpace</span>. Out of this
+space, 3 pixels are used as spacing between the rectangles, so the height of
+each rectangle is <span class="code">colorSpace&nbsp;-&nbsp;3</span>. The top of the <span class="code">N</span>-th
+rectangle is located <span class="code">(N*colorSpace + 3)</span> pixels down from the top of
+the panel, assuming that we count the rectangles starting with zero. This is because there are
+<span class="code">N</span> rectangles above the <span class="code">N</span>-th rectangle, each of which uses
+<span class="code">colorSpace</span> pixels. The extra 3 is for the border at the top of the
+panel. After all that, we can write down the command for drawing the
+<span class="code">N</span>-th rectangle:</p>
+
+
+<pre>g.fillRect(width - 53, N*colorSpace + 3, 50, colorSpace - 3);</pre>
+   
+
+<p>That was not easy! But it shows the kind of careful thinking and precision
+graphics that are sometimes necessary to get good results.</p>
+
+
+<p>The mouse in this program is used to do three different things: Select a
+color, clear the drawing, and draw a curve. Only the third of these involves
+dragging, so not every mouse click will start a dragging operation. The
+<span class="code">mousePressed()</span> method has to look at the <span class="code">(x,y)</span> coordinates
+where the mouse was clicked and decide how to respond. If the user clicked on
+the <span class="code">CLEAR</span> rectangle, the drawing area is cleared by calling
+<span class="code">repaint()</span>. If the user clicked somewhere in the strip of colored
+rectangles, the corresponding color is selected for drawing. This involves computing which color
+the user clicked on, which is done by dividing the <span class="code">y</span> coordinate by
+<span class="code">colorSpace</span>. Finally, if the user clicked on the drawing area, a drag
+operation is initiated. In this case, a boolean variable, <span class="code">dragging</span>, is set to
+<span class="code">true</span> so that the <span class="code">mouseDragged</span> and <span class="code">mouseReleased</span>
+methods will know that a curve is being drawn. The code for this follows the
+general form given above. The actual drawing of the curve is done in the
+<span class="code">mouseDragged()</span> method, which draws a line from the previous location of
+the mouse to its current location. Some effort is required to make sure that
+the line does not extend beyond the white drawing area of the panel. This is
+not automatic, since as far as the computer is concerned, the border and the
+color bar are part of the drawing surface. If the user drags the mouse outside
+the drawing area while drawing a line, the <span class="code">mouseDragged()</span> routine
+changes the <span class="code">x</span> and <span class="code">y</span> coordinates to make them lie within the
+drawing area.</p>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="GUI1.4.5">6.4.5&nbsp;&nbsp;Anonymous Event Handlers and Adapter Classes</a>
+</h3>
+
+
+<p>As I mentioned above, it is a fairly common practice to use anonymous inner
+classes to define listener objects. As discussed in <a href="../c5/s7.html#OOP.7.3">Subsection&nbsp;5.7.3</a>,
+a special form of the <span class="code">new</span> operator is
+used to create an object that belongs to an anonymous class. For example, a
+mouse listener object can be created with an expression of the form:</p>
+
+
+<pre>new MouseListener() {
+   public void mousePressed(MouseEvent evt) { . . . }
+   public void mouseReleased(MouseEvent evt) { . . . }
+   public void mouseClicked(MouseEvent evt) { . . . }
+   public void mouseEntered(MouseEvent evt) { . . . }
+   public void mouseExited(MouseEvent evt) { . . . }
+}</pre>
+
+
+<p>This is all just one long expression that both defines an unnamed class and
+creates an object that belongs to that class. To use the object as a mouse
+listener, it can be passed as the parameter to some component's
+<span class="code">addMouseListener()</span> method in a command of the form:</p>
+
+
+<pre>
+<span class="newcode">component.addMouseListener(</span> new MouseListener() {
+      public void mousePressed(MouseEvent evt) { . . . }
+      public void mouseReleased(MouseEvent evt) { . . . }
+      public void mouseClicked(MouseEvent evt) { . . . }
+      public void mouseEntered(MouseEvent evt) { . . . }
+      public void mouseExited(MouseEvent evt) { . . . }
+   } <span class="newcode">);</span>
+</pre>
+
+
+<p>Now, in a typical application, most of the method definitions in this class
+will be empty. A class that implements an <span class="code">interface</span> must provide
+definitions for all the methods in that interface, even if the definitions are
+empty. To avoid the tedium of writing empty method definitions in cases like
+this, Java provides <span class="newword">adapter classes</span>. An adapter
+class implements a listener interface by providing empty definitions for all
+the methods in the interface. An adapter class is useful only as a basis for
+making subclasses. In the subclass, you can define just those methods that you
+actually want to use. For the remaining methods, the empty definitions that are
+provided by the adapter class will be used. The adapter class for the
+<span class="classname">MouseListener</span> interface is named <span class="code">MouseAdapter</span>. For example,
+if you want a mouse listener that only responds to mouse-pressed events, you
+can use a command of the form:</p>
+
+
+<pre>component.addMouseListener( new <span class="newcode">MouseAdapter()</span> {
+      public void mousePressed(MouseEvent evt) { . . . }
+   } );</pre>
+
+
+<p>To see how this works in a real example, let's write another version of the
+<span class="classname">ClickableRandomStringsApp</span> application from <a href="../c6/s4.html#GUI1.4.2">Subsection&nbsp;6.4.2</a>.
+This version uses an anonymous class based on
+<span class="classname">MouseAdapter</span> to handle mouse events:</p>
+
+
+<pre>import java.awt.Component;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import javax.swing.JFrame;
+
+public class ClickableRandomStringsApp {
+   
+   public static void main(String[] args) {
+      JFrame window = new JFrame("Random Strings");
+      RandomStringsPanel content = new RandomStringsPanel();
+
+      <span class="newcode">content.addMouseListener( new MouseAdapter() { 
+            // Register a mouse listener that is defined by an anonymous subclass
+            // of MouseAdapter.  This replaces the RepaintOnClick class that was
+            // used in the original version.
+         public void mousePressed(MouseEvent evt) {
+            Component source = (Component)evt.getSource();
+            source.repaint();
+         }
+      } );</span>
+
+      window.setContentPane(content);
+      window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      window.setLocation(100,75);
+      window.setSize(300,240);
+      window.setVisible(true);
+   }
+
+}</pre>
+
+
+<p>There is also an adapter class for mouse motion listeners, <span class="classname">MouseMostionAdapter</span>,
+which implements <span class="classname">MouseMotionListener</span> and
+defines empty versions of <span class="code">mouseDragged()</span> and <span class="code">mouseMoved()</span>.
+In Java&nbsp;6 and later, the <span class="classname">MouseAdapter</span> class actually implements
+<span class="classname">MouseMostionListener</span> as well as <span class="classname">MouseListener</span>,
+so there is less use for <span class="classname">MouseMotionAdapter</span>.</p>
+   
+
+<p>Anonymous inner classes can be used for other purposes besides event handling.
+For example, suppose that you want to define a subclass of <span class="classname">JPanel</span>
+to represent a drawing surface.  The subclass will only be used once.  It will redefine
+the <span class="code">paintComponent()</span> method, but will make no other changes to
+<span class="classname">JPanel</span>.  It might make sense to define the subclass as
+an anonymous inner class.  As an example, I present <span class="sourceref"><a href="../source/HelloWorldGUI4.java">HelloWorldGUI4.java</a></span>.
+This version is a variation of <span class="sourceref"><a href="../source/HelloWorldGUI2.java">HelloWorldGUI2.java</a></span> that uses
+anonymous inner classes where the original program uses ordinary, named nested classes:</p>
+   
+
+<pre>import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+/**
+ * A simple GUI program that creates and opens a JFrame containing
+ * the message "Hello World" and an "OK" button.  When the user clicks
+ * the OK button, the program ends.  This version uses anonymous
+ * classes to define the message display panel and the action listener
+ * object.  Compare to HelloWorldGUI2, which uses nested classes.
+ */
+public class HelloWorldGUI4 {
+      
+   /**
+    * The main program creates a window containing a display panel
+    * and a button that will end the program when the user clicks it.
+    */
+   public static void main(String[] args) {
+      
+      <span class="newcode">JPanel displayPanel = new JPanel() {
+             // An anonymous subclass of JPanel that displays "Hello World!".
+         public void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            g.drawString( "Hello World!", 20, 30 );
+         }
+      };</span>
+
+      JButton okButton = new JButton("OK");
+
+      <span class="newcode">okButton.addActionListener( new ActionListener() {
+             // An anonymous class that defines the listener object.
+         public void actionPerformed(ActionEvent e) {
+            System.exit(0);
+         }
+      } );</span>
+
+      JPanel content = new JPanel();
+      content.setLayout(new BorderLayout());
+      content.add(displayPanel, BorderLayout.CENTER);
+      content.add(okButton, BorderLayout.SOUTH);
+
+      JFrame window = new JFrame("GUI Test");
+      window.setContentPane(content);
+      window.setSize(250,100);
+      window.setLocation(100,100);
+      window.setVisible(true);
+
+   }
+   
+}</pre>
+
+
+
+   
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s3.html">Previous Section</a> |
+           <a href="s5.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

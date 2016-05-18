@@ -1,0 +1,303 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 2, Chapter 12</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 12.2</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 12.2:</h3>
+<p>
+<a href="../c3/ex2-ans.html">Exercise&nbsp;3.2</a> asked
+you to find the integer in the range 1 to 10000 that has the largest
+number of divisors.  Now write a program that uses multiple threads to
+solve the same problem, but for the range 1 to 100000 (or less, if you
+don't have a fast computer).  By using threads, your program will take less time
+to do the computation when it is run on a multiprocessor computer.
+At the end of the program, output the elapsed time, the integer that
+has the largest number of divisors, and the number of divisors that it has.
+The program can be modeled on the sample prime-counting program 
+<span class="sourceref"><a href="../source/ThreadTest2.java">ThreadTest2.java</a></span> from <a href="../c12/s1.html#threads.1.3">Subsection&nbsp;12.1.3</a>.
+For this exercise, you should simply divide up the problem into parts
+and create one thread to do each part.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+
+<p>Pseudocode for solving this problem without using threads is:</p>
+
+<pre>maxDivisors = 0    // Maximum number of divisors seen so far
+for N from 1 to 100000:
+   Let count be the number of divisors of N
+   if (count &gt; maxDivisors):
+      maxDivisors = count  // New maximum number of divisors
+      whichInt = N         // The integer that gave the maximum</pre>
+
+<p>To turn this into a multithreaded program, we have to divide the
+integers between 1 and 100000 into groups and assign each group of integers
+to a thread.  In its run method, each thread finds the maximum number of
+divisors for integers in its assigned group.  This is very similar to what
+was done in the prime-counting program <span class="sourceref"><a href="../source/ThreadTest2.java">ThreadTest2.java</a></span>.
+The only problem is combining the final results of all the threads.
+In <span class="code">ThreadTest2.java</span>, each thread counted some primes and
+recorded its results by calling a method</p>
+
+<pre>synchronized private static void addToTotal(int x)</pre>
+
+<p>We can do something similar here.  The thread actually has two
+pieces of data to report, the maximum number of divisors that it
+found and the integer that had that many divisors.  The data from
+the thread has to be combined with the overall information about the
+maximum found by any thread so far.  So, the reporting method
+becomes:</p>
+
+<pre>/**
+ * This method is called by a thread when it has completed its computation,
+ * to report the largest number of divisors that it found in its assigned
+ * range of integers.  The information is used to update the variables
+ * maxDivisorCount and intWithMaxDivisorCount.
+ * @param maxCountFromThread largest divisor count in the thread's assigned
+ *          range
+ * @param intWithMaxFromThread the integer that had the maximum number
+ *          of divisors
+ */
+synchronized private static void report(int maxCountFromThread, 
+         int intWithMaxFromThread) {
+   if (maxCountFromThread &gt; maxDivisorCount) {
+      maxDivisorCount = maxCountFromThread;
+      intWithMaxDivisorCount = intWithMaxFromThread;
+   }
+}</pre>
+
+<p>The class that defines the threads, <span class="classname">CountDivisorsThread</span>,
+is very similar to the thread class from <span class="code">ThreadTest2.java</span>.  You can
+see it in the complete solution below.</p>
+
+<p>In the program <span class="code">ThreadTest2.java</span>, the number of integers to be
+processed was chosen to be evenly divisible by the number of threads.  This made
+it easier to divide the integers among the threads, since every thread can
+be assigned exactly the same number of integers to process.  For this program,
+I decided to drop the assumption that the number of integers is divisible by
+the number of threads.  This makes the program more general, but it's a little
+harder to decide how to assign the integers to the threads.</p>
+
+<p>If there are <span class="code">T</span> threads and <span class="code">N</span> integers, then
+each thread gets at least <span class="code">N/T</span> integers (where <span class="code">N/T</span>
+means the integer quotient, discarding any remainder).  But after assigning
+<span class="code">N/T</span> integers to each thread, there might still be a few integers
+left over.  (The number of leftovers is actually <span class="code">N&nbsp;%&nbsp;T</span>.)
+In my program, I just add these extra integers onto the group of integers
+assigned to the last thread, so the last thread might have more integers to
+process than the other threads.  I do this by making sure that the last number
+assigned to the last thread is 100000.)</p>
+
+<pre>int integersPerThread = 100000/numberOfThreads; 
+int start = 1;  // Starting point of the range of ints for first thread.
+int end = start + integersPerThread - 1;   // End point of the range of ints.
+for (int i = 0; i &lt; numberOfThreads; i++) {
+   if (i == numberOfThreads - 1) {
+      end = 100000;  // Make sure that the last thread's range goes all
+                     // the way up to 100000.  Because of rounding, this
+                     // is not automatic.
+   }
+   worker[i] = new CountDivisorsThread( start, end );
+   start = end+1;    // Determine the range of ints for the NEXT thread.
+   end = start + integersPerThread - 1;
+}</pre>
+
+<p>As one final change, instead of using the literal number 100000 as the number of
+integers to be processed in my program, I use a constant named <span class="code">MAX</span>
+to make it easier to change the range of integers that is considered.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">/**
+ * This program finds the number in the range 1 to some maximum that has the 
+ * largest number of divisors.  It prints that number and the number of divisors 
+ * that it has.  Note that there might be several numbers that have the maximum
+ * number of divisors.  Only one of them is output.
+ * 
+ * The program's work is divided among one to ten threads.  The number 
+ * of threads is chosen by the user.
+ */
+public class CountDivisorsUsingThreads {
+
+   /**
+    * The upper limit of the range of integers that is to be tested.
+    */
+   private final static int MAX = 100000;
+   
+   /**
+    * The largest number of divisors found so far.  (Note: This is
+    * volatile since it is referenced in unsynchronized code in the
+    * countDivisorsWithThreads() method.)
+    */
+   private volatile static int maxDivisorCount = 0;
+   
+   /**
+    * An integer that has the maximum number of divisors seen so far.
+    */
+   private volatile static int intWithMaxDivisorCount;
+   
+   /**
+    * This method is called by a thread when it has completed its computation,
+    * to report the largest number of divisors that it found in its assigned
+    * range of integers.  The information is used to update the variables
+    * maxDivisorCount and intWithMaxDivisorCount.
+    * @param maxCountFromThread largest divisor count in the thread's assigned
+    *          range
+    * @param intWithMaxFromThread the integer that had the maximum number
+    *          of divisors
+    */
+   synchronized private static void report(int maxCountFromThread, 
+         int intWithMaxFromThread) {
+      if (maxCountFromThread &gt; maxDivisorCount) {
+         maxDivisorCount = maxCountFromThread;
+         intWithMaxDivisorCount = intWithMaxFromThread;
+      }
+   }
+   
+   /**
+    * A thread belonging to this class counts the number of divisors for all
+    * the integers in an assigned range of integers.  The range is specified
+    * in the constructor.  The thread finds the integer in the range that 
+    * has the largest number of divisors, and a number that has that many
+    * divisors.  At the end of its computation, the thread reports its answer 
+    * by calling the report() method.
+    */
+   private static class CountDivisorsThread extends Thread {
+      int min, max;
+      public CountDivisorsThread(int min, int max) {
+         this.min = min;
+         this.max = max;
+      }
+      public void run() {
+//         System.out.println("Thread " + this + " testing range " +
+//               min + " to " + max);  // For testing.
+//         long startTime = System.currentTimeMillis();
+         int maxDivisors = 0;
+         int whichInt = 0;
+         for (int i = min; i &lt; max; i++) {
+            int divisors = countDivisors(i);
+            if (divisors &gt; maxDivisors) {
+               maxDivisors = divisors;
+               whichInt = i;
+            }
+         }
+//         long elapsedTime = System.currentTimeMillis() - startTime;
+//         System.out.println("Thread " + this + " used " +
+//               (elapsedTime/1000.0) + " seconds.");   // or testing.
+         report(maxDivisors,whichInt);
+      }
+   }
+   
+   /**
+    * Finds the number in the range 1 to MAX that has the largest number of
+    * divisors, dividing the work among a specified number of threads.
+    */
+   private static void countDivisorsWithThreads(int numberOfThreads) {
+      System.out.println("\nCounting divisors using " + 
+            numberOfThreads + " threads...");
+      long startTime = System.currentTimeMillis();
+      CountDivisorsThread[] worker = new CountDivisorsThread[numberOfThreads];
+      int integersPerThread = MAX/numberOfThreads; 
+      int start = 1;  // Starting point of the range of ints for first thread.
+      int end = start + integersPerThread - 1;   // End point of the range of ints.
+      for (int i = 0; i &lt; numberOfThreads; i++) {
+         if (i == numberOfThreads - 1) {
+            end = MAX;  // Make sure that the last thread's range goes all
+                        // the way up to MAX.  Because of rounding, this
+                        // is not automatic.
+         }
+         worker[i] = new CountDivisorsThread( start, end );
+         start = end+1;    // Determine the range of ints for the NEXT thread.
+         end = start + integersPerThread - 1;
+      }
+      maxDivisorCount = 0;
+      for (int i = 0; i &lt; numberOfThreads; i++)
+         worker[i].start();
+      for (int i = 0; i &lt; numberOfThreads; i++) {
+             // Wait for each worker thread to die, because the results
+             // are not complete until all threads have completed and
+             // reported their results.
+         while (worker[i].isAlive()) {
+            try {
+               worker[i].join();
+            }
+            catch (InterruptedException e) {
+            }
+         }
+      }
+      long elapsedTime = System.currentTimeMillis() - startTime;
+      System.out.println("\nThe largest number of divisors " + 
+            "for numbers between 1 and " + MAX + " is " + maxDivisorCount);
+      System.out.println("An integer with that many divisors is " + 
+            intWithMaxDivisorCount);
+      System.out.println("Total elapsed time:  " + 
+            (elapsedTime/1000.0) + " seconds.\n");
+   }
+   
+   /**
+    * Gets the number of threads from the user and calls countDivisorsWithThreads()
+    * to do the actual work.
+    */
+   public static void main(String[] args) {
+      int numberOfThreads = 0;
+      while (numberOfThreads &lt; 1 || numberOfThreads &gt; 10) {
+         System.out.print("How many threads do you want to use  (1 to 10) ?  ");
+         numberOfThreads = TextIO.getlnInt();
+         if (numberOfThreads &lt; 1 || numberOfThreads &gt; 10)
+            System.out.println("Please enter a number from 1 to 10 !");
+      }
+      countDivisorsWithThreads(numberOfThreads);
+   }
+   
+    /**
+     * Finds the number of divisors of the integer N.  Note that this method does
+     * the counting in a stupid way, since it tests every integer in the range
+     * 1 to N to see whether it evenly divides N.
+     */
+   public static int countDivisors(int N) {
+      int count = 0;
+      for (int i = 1; i &lt;= N ; i++) {
+         if ( N % i == 0 )
+            count ++;
+      }
+      return count;
+   }
+   
+}
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

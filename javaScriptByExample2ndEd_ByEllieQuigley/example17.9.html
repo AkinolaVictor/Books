@@ -1,0 +1,12 @@
+<html><head><title>The split() Method</title></head>
+<script type = "text/javascript">
+	var splitArray = new Array();
+	var myString="apples	pears,peaches:plums,oranges";
+	var regex = /[\t:,]/;  // Delimeter is a tab, colon, or comma
+	splitArray=myString.split(regex);
+	for(i=0; i < splitArray.length; i++){
+		document.write(splitArray[i] + "<br>");
+	}
+</script>
+</body>
+</html>

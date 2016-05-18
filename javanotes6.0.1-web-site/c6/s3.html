@@ -1,0 +1,875 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 6.3 -- Graphics and Painting</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s2.html">Previous Section</a> |
+           <a href="s4.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#GUI1.3.1">Coordinates</a>
+<br>
+<a href="#GUI1.3.2">Colors</a>
+<br>
+<a href="#GUI1.3.3">Fonts</a>
+<br>
+<a href="#GUI1.3.4">Shapes</a>
+<br>
+<a href="#GUI1.3.5">Graphics2D</a>
+<br>
+<a href="#GUI1.3.6">An Example</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 6.3</h3>
+<h2 class="section_title">Graphics and Painting</h2>
+<hr class="break">
+
+
+<p>
+<span class="start"><big>E</big>verything you see on a computer screen</span> has to be
+drawn there, even the text. The Java API includes a range of classes and
+methods that are devoted to drawing. In this section, I'll look at some of the
+most basic of these.</p>
+
+
+<p>The physical structure of a GUI is built of components. The term <span class="newword">component</span>
+refers to a visual element in a GUI, including buttons, menus, text-input boxes, scroll bars,
+check boxes, and so on. In Java,
+GUI components are represented by objects belonging to subclasses of the class
+<span class="code">java.awt.Component</span>. Most components in the Swing GUI -- although not
+top-level components like JApplet and JFrame -- belong to subclasses of the class
+<span class="code">javax.swing.JComponent</span>, which is itself a subclass of <span class="code">java.awt.Component</span>.
+Every component is responsible for drawing
+itself. If you want to use a standard component, you only have to
+add it to your applet or frame. You don't have to worry about painting it on the screen.
+That will happen automatically, since it already knows how to draw itself.</p>
+
+
+<p>Sometimes, however, you do want to draw on a component. You will have to do
+this whenever you want to display something that is not included among the
+standard, pre-defined component classes. When you want to do this, you have to
+define your own component class and provide a method in that class for drawing
+the component.  I will always use a subclass of <span class="classname">JPanel</span>
+when I need a drawing surface of this kind, as I did for the
+<span class="classname">MessageDisplay</span> class in the example
+<span class="sourceref"><a href="../source/HelloWorldApplet.java">HelloWorldApplet.java</a></span> in the 
+<a href="../c6/s2.html">previous section</a>.
+A JPanel, like any JComponent, draws its content in the method</p>
+
+
+<pre>public void paintComponent(Graphics g)</pre>
+
+
+<p>To create a drawing surface, you should define a subclass of <span class="code">JPanel</span>
+and provide a custom <span class="code">paintComponent()</span> method. Create an object
+belonging to this class and use it in your applet or frame. When the time comes
+for your component to be drawn on the screen, the system will call its
+<span class="code">paintComponent()</span> to do the drawing. That is, the code that you put
+into the <span class="code">paintComponent()</span> method will be executed whenever the
+panel needs to be drawn on the screen; by writing this method, you determine
+the picture that will be displayed in the panel.</p>
+
+
+<p>Note that the <span class="code">paintComponent()</span> method has a parameter of type
+<span class="classname">Graphics</span>. The <span class="classname">Graphics</span> object will be provided by the system
+when it calls your method. You need this object to do the actual drawing. To do
+any drawing at all in Java, you need a <span class="newword">graphics context</span>.
+A graphics context is an object belonging to the class
+<span class="code">java.awt.Graphics</span>.  Instance methods are provided in this class for
+drawing shapes, text, and images. Any given <span class="classname">Graphics</span> object can draw
+to only one location. In this chapter, that location will always be a GUI
+component belonging to some subclass of <span class="code">JPanel</span>. The
+<span class="classname">Graphics</span> class is an abstract class, which means that it is impossible
+to create a graphics context directly, with a constructor. There are actually
+two ways to get a graphics context for drawing on a component: First of all, of
+course, when the <span class="code">paintComponent()</span> method of a component is called by
+the system, the parameter to that method is a graphics context for drawing on
+the component. Second, every component has an instance method called
+<span class="code">getGraphics()</span>. This method is a function that returns a graphics
+context that can be used for drawing on the component outside its
+<span class="code">paintComponent()</span> method. The official line is that you should
+<b>not</b> do this, and I will almost always avoid it. But I have
+found it convenient to use <span class="code">getGraphics()</span> in a few examples.</p>
+   
+
+<p>The <span class="code">paintComponent()</span> method in the <span class="classname">JPanel</span>
+class simply fills the panel with the panel's background color.  When defining a
+subclass of <span class="classname">JPanel</span> for use as a drawing surface, you will
+usually want to fill the panel with the background color before drawing
+other content onto the panel (although it is not necessary to do this if the drawing
+commands in the method cover the background of the component completely).
+This is traditionally done with a call to
+<span class="code">super.paintComponent(g)</span>, so most <span class="code">paintComponent()</span>
+methods that you write will have the form:</p>
+   
+
+<pre>public void paintComponent(g) {
+   super.paintComponent(g);
+   . . . // Draw the content of the component.
+}</pre>
+   
+
+
+
+<hr class="break">
+
+
+<p>Most components do, in fact, do all drawing operations in their
+<span class="code">paintComponent()</span> methods. What happens if, in the middle of some other
+method, you realize that the content of the component needs to be changed? You
+should <b>not</b> call <span class="code">paintComponent()</span> directly to make the
+change; this method is meant to be called only by the system. Instead, you have
+to inform the system that the component needs to be redrawn, and let the system
+do its job by calling <span class="code">paintComponent()</span>. You do this by calling the
+component's <span class="code">repaint()</span> method. The method</p>
+
+
+<pre>public void repaint();</pre>
+
+
+<p>is defined in the <span class="code">Component</span> class, and so can be used with any
+component. You should call <span class="code">repaint()</span> to inform the system that the
+component needs to be redrawn. It is important to understand that the 
+<span class="code">repaint()</span> method returns
+immediately, without doing any painting itself. The system will call the
+component's <span class="code">paintComponent()</span> method <i>later</i>, as soon as it gets
+a chance to do so, after processing other pending events if there are any.</p>
+
+
+<p>Note that the system can also call <span class="code">paintComponent()</span> for other
+reasons. It is called when the component first appears on the screen. It will
+also be called if the size of the component changes, which can happen when
+the user resizes the window that contains the component.  In versions of Java
+earlier than Java&nbsp;6, <span class="code">paintComponent()</span> is also called if the 
+component is covered up and then uncovered, since the system did not 
+automatically save a copy of the content.  (And even in Java&nbsp;6, the content
+is not automatically saved if is drawn with a graphics context created by
+<span class="code">getGraphics()</span>, as I will do in some examples.)   In any case,
+<span class="code">paintComponent()</span> should be capable of redrawing the content
+of the component on demand.  As you will see, however, some of our early examples 
+will not be able to do this correctly.</p>
+
+
+<p>This means that, to work properly, the <span class="code">paintComponent()</span> method must
+be smart enough to correctly redraw the component at any time. To make this
+possible, a program should store data in its instance variables
+about the state of the component. These variables should contain all the information
+necessary to redraw the component completely. The <span class="code">paintComponent()</span>
+method should use the data in these variables to decide what to draw. When the
+program wants to change the content of the component, it should not simply draw
+the new content. It should change the values of the relevant variables and call
+<span class="code">repaint()</span>. When the system calls <span class="code">paintComponent()</span>, that
+method will use the new values of the variables and will draw the component
+with the desired modifications. This might seem a roundabout way of doing
+things. Why not just draw the modifications directly? There are at least two
+reasons. First of all, it really does turn out to be easier to get things right
+if all drawing is done in one method. Second, even if you do make
+modifications directly, you still have to make the
+<span class="code">paintComponent()</span> method aware of them in some way so that it will be
+able to <b>redraw</b> the component correctly on demand.</p>
+
+
+<p>You will see how all this works in practice as we work through examples in
+the rest of this chapter. For now, we will spend the rest of this section
+looking at how to get some actual drawing done.</p>
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="GUI1.3.1">6.3.1&nbsp;&nbsp;Coordinates</a>
+</h3>
+
+
+<p>The screen of a computer is a grid of little squares called <span class="newword">pixels</span>.
+The color of each pixel can be set individually, and
+drawing on the screen just means setting the colors of individual pixels.</p>
+
+
+<img src="gui_coordinates.png" width="326" height="184" align="right" alt="">
+
+<p>A graphics context draws in a rectangle made up of pixels. A position in the
+rectangle is specified by a pair of integer coordinates, <span class="code">(x,y)</span>. The
+upper left corner has coordinates <span class="code">(0,0)</span>. The <span class="code">x</span> coordinate
+increases from left to right, and the <span class="code">y</span> coordinate increases from top
+to bottom. The illustration shows a 16-by-10 pixel component (with
+very large pixels). A small line, rectangle, and oval are shown as they would
+be drawn by coloring individual pixels. (Note that, properly speaking, the
+coordinates don't belong to the pixels but to the grid lines between them.)</p>
+
+
+<p>For any component, you can find out the size of the rectangle that it
+occupies by calling the instance methods <span class="code">getWidth()</span> and
+<span class="code">getHeight()</span>, which return the number of pixels in the
+horizontal and vertical directions, respectively.  In general, it's not
+a good idea to assume that you know the size of a component, since the
+size is often set by a layout manager and can even change if the component
+is in a window and that window is resized by the user.   This means that it's good
+form to check the size of a component before doing any drawing on that
+component. For example, you can use a <span class="code">paintComponent()</span> method that
+looks like:</p>
+
+
+<pre>public void paintComponent(Graphics g) {
+   super.paintComponent(g);
+   int width =  getWidth();   // Find out the width of this component.
+   int height = getHeight();  // Find out its height.
+   . . .   // Draw the content of the component.
+}</pre>
+
+
+<p>Of course, your drawing commands will have to take the size into account.
+That is, they will have to use <span class="code">(x,y)</span> coordinates that are calculated
+based on the actual height and width of the component.</p>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="GUI1.3.2">6.3.2&nbsp;&nbsp;Colors</a>
+</h3>
+   
+
+<p>You will probably want to use some color when you draw.
+Java is designed to work with the <span class="newword">RGB color system</span>.
+An RGB color is specified by three numbers that give the level
+of red, green, and blue, respectively, in the color. A color in Java is an
+object of the class, <span class="code">java.awt.Color</span>. You can construct a new color by
+specifying its red, blue, and green components. For example,</p>
+
+
+<pre>Color myColor = new Color(r,g,b);</pre>
+
+
+<p>There are two constructors that you can call in this way. In the one that I
+almost always use, <span class="code">r</span>, <span class="code">g</span>, and <span class="code">b</span> are integers in the
+range 0 to 255. In the other, they are numbers of type <span class="ptype">float</span> in the
+range 0.0F to 1.0F. (Recall that a literal of type <span class="ptype">float</span> is
+written with an "F" to distinguish it from a <span class="ptype">double</span> number.) Often,
+you can avoid constructing new colors altogether, since the <span class="classname">Color</span>
+class defines several named constants representing common colors: <span class="code">Color.WHITE</span>,
+<span class="code">Color.BLACK</span>, <span class="code">Color.RED</span>, <span class="code">Color.GREEN</span>,
+<span class="code">Color.BLUE</span>, <span class="code">Color.CYAN</span>, <span class="code">Color.MAGENTA</span>,
+<span class="code">Color.YELLOW</span>, <span class="code">Color.PINK</span>, <span class="code">Color.ORANGE</span>,
+<span class="code">Color.LIGHT_GRAY</span>, <span class="code">Color.GRAY</span>, and <span class="code">Color.DARK_GRAY</span>.
+(There are older, alternative names for these constants that use lower case rather than
+upper case constants, such as <span class="code">Color.red</span> instead of <span class="code">Color.RED</span>,
+but the upper case versions are preferred because they follow the convention that
+constant names should be upper case.)</p>
+
+
+<p>An alternative to RGB is the <span class="newword">HSB color system</span>.
+In the HSB system, a color is specified by three numbers called the
+<span class="newword">hue</span>, the <span class="newword">saturation</span>,
+and the <span class="newword">brightness</span>. The hue is the basic color,
+ranging from red through orange through all the other colors of the rainbow.
+The brightness is pretty much what it sounds like. A fully saturated color is a
+pure color tone. Decreasing the saturation is like mixing white or gray paint
+into the pure color. In Java, the hue, saturation and brightness are always
+specified by values of type <span class="ptype">float</span> in the range from 0.0F to 1.0F. The
+<span class="classname">Color</span> class has a <span class="code">static</span> member function named
+<span class="code">getHSBColor</span> for creating HSB colors. To create the color with HSB
+values given by <span class="code">h</span>, <span class="code">s</span>, and <span class="code">b</span>, you can say:</p>
+
+
+<pre>Color myColor = Color.getHSBColor(h,s,b);</pre>
+
+
+<p>For example, to make a color with a random hue that is as bright and as
+saturated as possible, you could use:</p>
+
+
+<pre>Color randomColor = Color.getHSBColor( (float)Math.random(), 1.0F, 1.0F );</pre>
+
+
+<p>The type cast is necessary because the value returned by
+<span class="code">Math.random()</span> is of type <span class="ptype">double</span>, and
+<span class="code">Color.getHSBColor()</span> requires values of type <span class="ptype">float</span>. (By the
+way, you might ask why RGB colors are created using a constructor while HSB
+colors are created using a static member function. The problem is that we would
+need two different constructors, both of them with three parameters of type
+<span class="ptype">float</span>. Unfortunately, this is impossible. You can have two
+constructors only if the number of parameters or the parameter types differ.)</p>
+
+
+<p>The RGB system and the HSB system are just different ways of describing the
+same set of colors. It is possible to translate between one system and the
+other. The best way to understand the color systems is to experiment with them.
+   
+In the following applet, you can use the scroll bars to control the RGB and HSB
+values of a color. A sample of the color is shown on the right side of the
+applet.</p>
+
+
+
+<p align="center">
+<applet code="ColorChooserApplet.class" width="530" height="199" alt="(Applet 'ColorChooserApplet' should be displayed here.)"></applet></p>
+
+
+
+<p>One of the properties of a <span class="classname">Graphics</span> object is the current
+drawing color, which is used for all drawing of shapes and text. If <span class="code">g</span>
+is a graphics context, you can change the current drawing color for <span class="code">g</span>
+using the method <span class="code">g.setColor(c)</span>, where <span class="code">c</span> is a <span class="classname">Color</span>.
+For example, if you want to draw in green, you would just say
+<span class="code">g.setColor(Color.GREEN)</span> before doing the drawing. The graphics context
+continues to use the color until you explicitly change it with another
+<span class="code">setColor()</span> command. If you want to know what the current drawing color
+is, you can call the function <span class="code">g.getColor()</span>, which returns an object of
+type <span class="classname">Color</span>. This can be useful if you want to change to another
+drawing color temporarily and then restore the previous drawing color.</p>
+
+
+<p>Every component has an associated <span class="newword">foreground color</span> and 
+<span class="newword">background color</span>. Generally, the
+component is filled with the background color before anything else is drawn
+(although some components are "transparent," meaning that the background color
+is ignored). When a new graphics context is created for a component, the
+current drawing color is set to the foreground color. Note that the foreground
+color and background color are properties of the component, not of a graphics
+context.</p>
+
+
+<p>The foreground and background colors can be set by instance methods
+<span class="code">setForeground(c)</span> and <span class="code">setBackground(c)</span>, which are defined in
+the <span class="code">Component</span> class and therefore are available for use with any
+component.  This can be useful even for standard components, if you want them
+to use colors that are different from the defaults.</p>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="GUI1.3.3">6.3.3&nbsp;&nbsp;Fonts</a>
+</h3>
+   
+
+<p>A <span class="newword">font</span> represents a particular size and style
+of text. The same character will appear different in different fonts. In Java,
+a font is characterized by a font name, a style, and a size. The available font
+names are system dependent, but you can always use the following four strings
+as font names: "Serif", "SansSerif", "Monospaced", and "Dialog".  (A "serif" is a
+little decoration on a character, such as a short horizontal line at the bottom
+of the letter i. "SansSerif" means "without serifs." "Monospaced" means that
+all the characters in the font have the same width. The "Dialog" font is the
+one that is typically used in dialog boxes.)</p>
+
+
+<p>The style of a font is specified using named constants that are defined in
+the <span class="classname">Font</span> class. You can specify the style as one of the four
+values:</p>
+
+
+<ul>
+
+<li>
+<span class="code">Font.PLAIN</span>,</li>
+
+<li>
+<span class="code">Font.ITALIC</span>,</li>
+
+<li>
+<span class="code">Font.BOLD</span>, or</li>
+
+<li>
+<span class="code">Font.BOLD + Font.ITALIC</span>.</li>
+
+</ul>
+
+
+<p>The size of a font is an integer. Size typically ranges from about 10 to 36,
+although larger sizes can also be used. The size of a font is usually about
+equal to the height of the largest characters in the font, in pixels, but this
+is not an exact rule. The size of the default font is 12.</p>
+
+
+<p>Java uses the class named <span class="code">java.awt.Font</span> for representing fonts. You
+can construct a new font by specifying its font name, style, and size in a
+constructor:</p>
+
+
+<pre>Font plainFont = new Font("Serif", Font.PLAIN, 12);
+Font bigBoldFont = new Font("SansSerif", Font.BOLD, 24);</pre>
+
+
+<p>Every graphics context has a current font, which is used for drawing text.
+You can change the current font with the <span class="code">setFont()</span> method. For
+example, if <span class="code">g</span> is a graphics context and <span class="code">bigBoldFont</span> is a
+font, then the command <span class="code">g.setFont(bigBoldFont)</span> will set the current
+font of <span class="code">g</span> to <span class="code">bigBoldFont</span>. The new font will be used
+for any text that is drawn <i>after</i> the <span class="code">setFont()</span> command is given.
+You can find out the current font
+of <span class="code">g</span> by calling the method <span class="code">g.getFont()</span>, which returns an
+object of type <span class="classname">Font</span>.</p>
+
+
+<p>Every component has an associated font. It can be set with the instance
+method <span class="code">setFont(font)</span>, which is defined in the <span class="code">Component</span>
+class. When a graphics context is created for drawing on a component, the
+graphic context's current font is set equal to the font of the component.</p>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="GUI1.3.4">6.3.4&nbsp;&nbsp;Shapes</a>
+</h3>
+
+
+<p>The <span class="classname">Graphics</span> class includes a large number of instance methods for
+drawing various shapes, such as lines, rectangles, and ovals. The shapes are
+specified using the <span class="code">(x,y)</span> coordinate system described above. They are
+drawn in the current drawing color of the graphics context. The current drawing
+color is set to the foreground color of the component when the graphics context
+is created, but it can be changed at any time using the <span class="code">setColor()</span>
+method.</p>
+
+
+<p>Here is a list of some of the most important drawing methods. With all these
+commands, any drawing that is done outside the boundaries of the component is
+ignored. Note that all these methods are in the <span class="classname">Graphics</span> class, so
+they all must be called through an object of type <span class="classname">Graphics</span>.</p>
+
+
+<ul>
+
+<li>
+<span class="codedef">drawString(String str, int x, int y)</span>  --  Draws
+the text given by the string <span class="code">str</span>. The string is drawn using
+the current color and font of the graphics context. <span class="code">x</span> specifies the
+position of the left end of the string. <span class="code">y</span> is the y-coordinate of the
+baseline of the string. The baseline is a horizontal line on which the
+characters rest. Some parts of the characters, such as the tail on a y or g,
+extend below the baseline.</li>
+
+
+<li>
+<span class="codedef">drawLine(int x1, int y1, int x2, int y2)</span>  --  Draws 
+a line from the point <span class="code">(x1,y1)</span> to the point
+<span class="code">(x2,y2)</span>. The line is drawn as if with a pen that hangs one pixel to
+the right and one pixel down from the <span class="code">(x,y)</span> point where the pen is
+located. For example, if <span class="code">g</span> refers to an object of type
+<span class="classname">Graphics</span>, then the command <span class="code">g.drawLine(x,y,x,y)</span>, which
+corresponds to putting the pen down at a point, colors the single pixel with upper left corner
+at the point <span class="code">(x,y)</span>.</li>
+
+
+<li>
+<span class="codedef">drawRect(int x, int y, int width, int height)</span>  --  Draws 
+the outline of a rectangle. The upper left corner
+is at <span class="code">(x,y)</span>, and the width and height of the rectangle are as
+specified. If <span class="code">width</span> equals <span class="code">height</span>, then the rectangle is a
+square. If the <span class="code">width</span> or the <span class="code">height</span> is negative, then nothing
+is drawn. The rectangle is drawn with the same pen that is used for
+<span class="code">drawLine()</span>. This means that the actual width of the rectangle as drawn
+is <span class="code">width+1</span>, and similarly for the height. There is an extra pixel
+along the right edge and the bottom edge. For example, if you want to draw a
+rectangle around the edges of the component, you can say "<span class="code">g.drawRect(0, 0,
+getWidth()-1, getHeight()-1);</span>", where <span class="code">g</span> is a graphics
+context for the component.  If you use "<span class="code">g.drawRect(0, 0,
+getWidth(), getHeight());</span>", then the right and bottom edges of the
+rectangle will be drawn <i>outside</i> the component and will not appear
+on the screen.</li>
+
+
+<li>
+<span class="codedef">drawOval(int x, int y, int width, int height)</span>  --  Draws
+the outline of an oval. The oval is one that just
+fits inside the rectangle specified by <span class="code">x</span>, <span class="code">y</span>, <span class="code">width</span>,
+and <span class="code">height</span>. If <span class="code">width</span> equals <span class="code">height</span>, the oval is a
+circle.</li>
+
+
+<li>
+<span class="codedef">drawRoundRect(int x, int y, int width, int height,
+int xdiam, int ydiam)</span>  --  Draws the outline of a rectangle with
+rounded corners. The basic rectangle is specified by <span class="code">x</span>, <span class="code">y</span>,
+<span class="code">width</span>, and <span class="code">height</span>, but the corners are rounded. The degree of
+rounding is given by <span class="code">xdiam</span> and <span class="code">ydiam</span>. The corners are arcs of
+an ellipse with horizontal diameter <span class="code">xdiam</span> and vertical diameter
+<span class="code">ydiam</span>. A typical value for <span class="code">xdiam</span> and <span class="code">ydiam</span> is 16,
+but the value used should really depend on how big the rectangle is.</li>
+
+
+<li>
+<span class="codedef">draw3DRect(int x, int y, int width, int height,
+boolean raised)</span>  --  Draws the outline of a rectangle that is
+supposed to have a three-dimensional effect, as if it is raised from the screen
+or pushed into the screen. The basic rectangle is specified by <span class="code">x</span>,
+<span class="code">y</span>, <span class="code">width</span>, and <span class="code">height</span>. The <span class="code">raised</span> parameter
+tells whether the rectangle seems to be raised from the screen or pushed into
+it. The 3D effect is achieved by using brighter and darker versions of the
+drawing color for different edges of the rectangle. The documentation
+recommends setting the drawing color equal to the background color before using
+this method. The effect won't work well for some colors.</li>
+
+
+<li>
+<span class="codedef">drawArc(int x, int y, int width, int height, int
+startAngle, int arcAngle)</span>  --  Draws part of the oval that just fits
+inside the rectangle specified by <span class="code">x</span>, <span class="code">y</span>, <span class="code">width</span>, and
+<span class="code">height</span>. The part drawn is an arc that extends <span class="code">arcAngle</span>
+degrees from a starting angle at <span class="code">startAngle</span> degrees. Angles are
+measured with 0 degrees at the 3 o'clock position (the positive direction of
+the horizontal axis). Positive angles are measured counterclockwise from zero,
+and negative angles are measured clockwise. To get an arc of a circle, make
+sure that <span class="code">width</span> is equal to <span class="code">height</span>.</li>
+
+
+<li>
+<span class="codedef">fillRect(int x, int y, int width, int
+height)</span>  --  Draws a filled-in rectangle. This fills in the interior
+of the rectangle that would be drawn by <span class="code">drawRect(x,y,width,height)</span>.
+The extra pixel along the bottom and right edges is not included. The
+<span class="code">width</span> and <span class="code">height</span> parameters give the exact width and height
+of the rectangle. For example, if you wanted to fill in the entire component,
+you could say "<span class="code">g.fillRect(0, 0, getWidth(),
+getHeight());</span>"</li>
+
+
+<li>
+<span class="codedef">fillOval(int x, int y, int width, int
+height)</span>  --  Draws a filled-in oval.</li>
+
+
+<li>
+<span class="codedef">fillRoundRect(int x, int y, int width, int height,
+int xdiam, int ydiam)</span>  --  Draws a filled-in rounded rectangle.</li>
+
+
+<li>
+<span class="codedef">fill3DRect(int x, int y, int width, int height,
+boolean raised)</span>  --  Draws a filled-in three-dimensional
+rectangle.</li>
+
+
+<li>
+<span class="codedef">fillArc(int x, int y, int width, int height, int
+startAngle, int arcAngle)</span>  --  Draw a filled-in arc. This looks like
+a wedge of pie, whose crust is the arc that would be drawn by the
+<span class="code">drawArc</span> method.</li>
+
+
+</ul>
+   
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="GUI1.3.5">6.3.5&nbsp;&nbsp;Graphics2D</a>
+</h3>
+
+
+<p>All drawing in Java is done through an object of type <span class="classname">Graphics</span>. The
+<span class="classname">Graphics</span> class provides basic commands for such things as drawing
+shapes and text and  for selecting a drawing color. These commands are adequate in many cases, but
+they fall far short of what's needed in a serious computer graphics program.
+Java has another class, <span class="classname">Graphics2D</span>, that provides a larger
+set of drawing operations. <span class="classname">Graphics2D</span> is a sub-class of
+<span class="classname">Graphics</span>, so all the methods from the <span class="classname">Graphics</span> class are
+also available in a <span class="classname">Graphics2D</span>.</p>
+
+
+<p>The <span class="code">paintComponent()</span> method of a <span class="code">JComponent</span> gives you a
+graphics context of type <span class="classname">Graphics</span> that you can use for drawing on the
+component. In fact, the graphics context actually belongs to the sub-class
+<span class="classname">Graphics2D</span> (in Java version 1.2 and later), and can be type-cast to
+gain access to the advanced <span class="classname">Graphics2D</span> drawing methods:</p>
+
+
+<pre>public void paintComponent(Graphics g) {
+   super.paintComponent(g);
+   Graphics2D g2;
+   g2 = (Graphics2D)g;
+    .
+    . // Draw on the component using g2.
+    .
+}</pre>
+
+
+<p>Drawing in <span class="classname">Graphics2D</span> is based on shapes, which are objects that
+implement an interface named <span class="classname">Shape</span>. Shape classes include
+<span class="classname">Line2D</span>, <span class="classname">Rectangle2D</span>, 
+<span class="classname">Ellipse2D</span>, <span class="classname">Arc2D</span>, and
+<span class="classname">GeneralPath</span>, among others; all these classes are defined in the
+package <span class="code">java.awt.geom</span>.  <span class="classname">Graphics2D</span>
+has methods <span class="code">draw(Shape)</span> and <span class="code">fill(Shape)</span> for drawing the
+outline of a shape and for filling its interior. Advanced capabilities include:
+lines that are more than one pixel thick, dotted and dashed lines, filling a
+shape with a texture (that is, with a repeated image), filling a shape with a
+gradient, and so-called "anti-aliased" drawing (which cuts down on the jagged
+appearance along a slanted line or curve).</p>
+
+
+<p>In the <span class="classname">Graphics</span> class, coordinates are specified as integers and
+are based on pixels. The shapes that are used with <span class="classname">Graphics2D</span> use real
+numbers for coordinates, and they are not necessarily bound to pixels. In fact,
+you can change the coordinate system and use any coordinates that are
+convenient to your application. In computer graphics terms, you can apply a
+"transformation" to the coordinate system. The transformation can be any
+combination of translation, scaling, and rotation.</p>
+   
+
+<p>I mention <span class="classname">Graphics2D</span> here for completeness.
+I will not use any of the advanced capabilities of <span class="classname">Graphics2D</span> in
+this chapter, but I will cover a few of them in <a href="../c13/s2.html">Section&nbsp;13.2</a>.</p>
+
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="GUI1.3.6">6.3.6&nbsp;&nbsp;An Example</a>
+</h3>
+   
+
+<p>Let's use some of the material covered in this section to write a subclass
+of <span class="classname">JPanel</span> for use as a drawing surface.  The panel can then be used in either an
+applet or a frame, as discussed in <a href="../c6/s2.html#GUI1.2.2">Subsection&nbsp;6.2.2</a>.
+All the drawing will be done in the
+<span class="code">paintComponent()</span> method of the panel class.
+The panel will draw multiple copies of a message on a black background.
+Each copy of the message is in a random color. Five different fonts are used,
+with different sizes and styles. The message can be specified in the constructor;
+if the default constructor is used, the message is the string "Java!". The
+panel works OK no matter what  its size.  Here's an applet
+that uses the panel as its content pane:</p>
+
+
+<p align="center">
+<applet code="RandomStringsApplet.class" width="300" height="180" archive="RandomStrings.jar" alt="(Applet 'RandomStrings' should be displayed here.)"></applet></p>
+
+
+<p>There is one problem with the way this class works. When the panel's
+<span class="code">paintComponent()</span> method is called, it chooses random colors, fonts,
+and locations for the messages. The information about which colors, fonts, and
+locations are used is not stored anywhere. The next time
+<span class="code">paintComponent()</span> is called, it will make different random choices and
+will draw a different picture. A better approach would be to compute the contents of
+the picture elsewhere, outside the <span class="code">paintComponent()</span> method.
+Information about the picture would be stored in instance variables, and the
+<span class="code">paintComponent()</span> method would use that information to draw the
+picture. If <span class="code">paintComponent()</span> is called twice, it should draw the same
+picture twice, unless the data has changed in the meantime. Unfortunately, to
+store the data for the picture in this applet, we would need to use either
+arrays, which will not be covered until <a href="../c7/index.html">Chapter&nbsp;7</a>, or off-screen images, 
+which will not be covered until <a href="../c13/index.html">Chapter&nbsp;13</a>. Other examples in this chapter will suffer from
+the same problem.</p>
+
+
+<p>The source for the panel class is shown below. I use an instance variable called
+<span class="code">message</span> to hold the message that the panel will display. There are
+five instance variables of type <span class="classname">Font</span> that represent different sizes
+and styles of text. These variables are initialized in the constructor
+and are used in the <span class="code">paintComponent()</span> method.</p>
+
+
+<p>The <span class="code">paintComponent()</span> method for the panel simply draws 25
+copies of the message. For each copy, it chooses one of the five fonts at
+random, and it calls <span class="code">g.setFont()</span> to select that font for drawing the
+text. It creates a random HSB color and uses <span class="code">g.setColor()</span> to select
+that color for drawing. It then chooses random <span class="code">(x,y)</span> coordinates for
+the location of the message. The <span class="code">x</span> coordinate gives the horizontal
+position of the left end of the string. The formula used for the <span class="code">x</span>
+coordinate, "<span class="code">-50 + (int)(Math.random() * (width+40))</span>" gives a random
+integer in the range from <span class="code">-50</span> to <span class="code">width-10</span>. This makes it
+possible for the string to extend beyond the left edge or the right edge of the
+panel. Similarly, the formula for <span class="code">y</span> allows the string to extend
+beyond the top and bottom of the applet.</p>
+
+
+
+<p>Here is the complete source code for the <span class="code">RandomStringsPanel</span>:</p>
+
+
+<pre>import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import javax.swing.JPanel;
+
+/**
+ * This panel displays 25 copies of a message.  The color and 
+ * position of each message is selected at random.  The font
+ * of each message is randomly chosen from among five possible
+ * fonts.  The messages are displayed on a black background.
+ * &lt;p&gt;Note:  The style of drawing used here is poor, because every
+ * time the paintComponent() method is called, new random values are
+ * used.  This means that a different picture will be drawn each time.  
+ * &lt;p&gt;This panel is meant to be used as the content pane in
+ * either an applet or a frame.
+ */
+public class RandomStringsPanel extends JPanel {
+
+   private String message;  // The message to be displayed.  This can be set in
+                            // the constructor.  If no value is provided in the
+                            // constructor, then the string "Java!" is used.
+   
+   private Font font1, font2, font3, font4, font5;  // The five fonts.
+   
+   /**
+    * Default constructor creates a panel that displays the message "Java!".
+    */
+   public RandomStringsPanel() {
+      this(null);  // Call the other constructor, with parameter null.
+   }
+   
+   /**
+    * Constructor creates a panel to display 25 copies of a specified message.
+    * @param messageString The message to be displayed.  If this is null,
+    * then the default message "Java!" is displayed.
+    */
+   public RandomStringsPanel(String messageString) {
+   
+      message = messageString;
+      if (message == null)
+          message = "Java!";
+         
+      font1 = new Font("Serif", Font.BOLD, 14);
+      font2 = new Font("SansSerif", Font.BOLD + Font.ITALIC, 24);
+      font3 = new Font("Monospaced", Font.PLAIN, 30);
+      font4 = new Font("Dialog", Font.PLAIN, 36);
+      font5 = new Font("Serif", Font.ITALIC, 48);
+      
+      setBackground(Color.BLACK);
+      
+   }
+   
+   /**
+    * The paintComponent method is responsible for drawing the content of the panel.
+    * It draws 25 copies of the message string, using a random color, font, and
+    * position for each string.
+    */
+   public void paintComponent(Graphics g) {
+   
+      super.paintComponent(g);  // Call the paintComponent method from the 
+                                // superclass, JPanel.  This simply fills the 
+                                // entire panel with the background color, black.
+      
+      int width = getWidth();
+      int height = getHeight();
+     
+      for (int i = 0; i &lt; 25; i++) {
+
+          // Draw one string.  First, set the font to be one of the five
+          // available fonts, at random.  
+
+          int fontNum = (int)(5*Math.random()) + 1;
+          switch (fontNum) {
+             case 1:
+                g.setFont(font1);
+                break;
+             case 2:
+                g.setFont(font2);
+                break;
+             case 3:
+                g.setFont(font3);
+                break;
+             case 4:
+                g.setFont(font4);
+                break;
+             case 5:
+                g.setFont(font5);
+                break;
+           } // end switch
+
+           // Set the color to a bright, saturated color, with random hue.
+
+           float hue = (float)Math.random();
+           g.setColor( Color.getHSBColor(hue, 1.0F, 1.0F) );
+
+           // Select the position of the string, at random.
+
+           int x,y;
+           x = -50 + (int)(Math.random()*(width+40));
+           y = (int)(Math.random()*(height+20));
+
+           // Draw the message.
+
+           g.drawString(message,x,y);
+
+      } // end for
+  
+   } // end paintComponent()
+   
+
+}  // end class RandomStringsPanel</pre>
+  
+ 
+
+<p>This class defines a panel, which is not something that can stand on its
+own.  To see it on the screen, we have to use it in an applet or a frame.
+Here is a simple applet class that uses a <span class="classname">RandomStringsPanel</span>
+as its content pane:</p>
+   
+   
+
+<pre>
+import javax.swing.JApplet;
+
+/**
+ * A RandomStringsApplet displays 25 copies of a string, using random colors,
+ * fonts, and positions for the copies.  The message can be specified as the
+ * value of an applet param with name "message."  If no param with name
+ * "message" is present, then the default message "Java!" is displayed.
+ * The actual content of the applet is an object of type RandomStringsPanel.
+ */
+public class RandomStringsApplet extends JApplet {
+   
+   public void init() {
+      String message = getParameter("message");  // If null, "Java" is used.
+      RandomStringsPanel content = new RandomStringsPanel(message);
+      setContentPane(content);
+   }
+
+}</pre>
+   
+
+<p>Note that the message to be displayed in the applet can be set using an
+applet parameter when the applet is added to an HTML document.
+Using applets on Web pages was discussed in <a href="../c6/s2.html#GUI1.2.4">Subsection&nbsp;6.2.4</a>.
+Remember that to use the applet on a Web page, you must include both the
+panel class file, <span class="code">RandomStringsPanel.class</span>, and the applet
+class file, <span class="code">RandomStringsApplet.class</span>, in the same directory
+as the HTML document (or, alternatively, bundle the two class files
+into a jar file, and put the jar file in the document directory).</p>
+   
+
+<p>Instead of writing an applet, of course, we could use the panel in the window of a
+stand-alone application.  You can find the source code for a main program
+that does this in the file <span class="sourceref"><a href="../source/RandomStringsApp.java">RandomStringsApp.java</a></span>.</p>
+   
+
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s2.html">Previous Section</a> |
+           <a href="s4.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

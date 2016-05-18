@@ -1,0 +1,236 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 2, Chapter 7</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 7.2</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 7.2:</h3>
+<p>Write a program that will
+read a sequence of positive real numbers entered by the user and will print the
+same numbers in sorted order from smallest to largest. The user will input a
+zero to mark the end of the input. Assume that at most 100 positive numbers
+will be entered.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>The sample program 
+<span class="sourceref"><a href="../source/ReverseWithDynamicArray.java">ReverseWithDynamicArray.java</a></span> from
+<a href="../c7/s3.html#arrays.3.2">Subsection&nbsp;7.3.2</a> reads in up to 100 positive integers from the
+user and outputs them in the reverse of the order in which the user entered
+them. This is similar to what we have to do for this exercise, except that the
+numbers we have to read are real numbers (of type <span class="ptype">double</span>) and they
+have to be output in sorted order.</p>
+
+
+<p>There are two basic approaches to this problem. The first is to store all
+the numbers in an array in the order in which they are input. After all the
+numbers have been input, the array can be sorted, and then the contents of the
+array can be output. The second approach is to always keep the array in sorted
+order as numbers are added to it. When a new number is input, that number must
+be inserted into its correct location in the array, in order to keep the array
+sorted. After all the numbers have been input, the contents of the array are
+ready to be printed.</p>
+
+
+<p>Two solutions to the exercise, based on these two approaches, are shown
+below. They use techniques for sorting and inserting that were covered in
+<a href="../c7/s4.html">Section&nbsp;7.4</a>. In my first program, I've chosen to use
+Selection Sort to sort the array. Insertion Sort would work just as well. The
+Selection Sort subroutine is taken from <a href="../c7/s4.html">Section&nbsp;7.4</a> with two changes: It sorts
+an array of <span class="ptype">double</span> values instead of an array of <span class="code">ints</span>, and it
+has been modified to work with a "partially full" array. In order to make the
+subroutine work with a partially full array, it is necessary to add a parameter
+that tells the subroutine how many entries in the array are in use. The
+modified Selection Sort routine is as follows, with changes from the original
+version shown in red</p>
+
+
+<pre>static void selectionSort(<span class="newcode">double</span>[] A, <span class="newword">int count</span>) {
+      // Sort the numbers in A[0], A[1], ..., A[count-1] into
+      // increasing order using Selection Sort.
+   for ( int lastPlace = <span class="newcode">count</span> - 1; lastPlace &gt; 0; lastPlace-- ) {
+      int maxLoc = 0;
+      for (int j = 1; j &lt;= lastPlace; j++) {
+         if (A[j] &gt; A[maxLoc]) {
+            maxLoc = j;
+         }
+      }
+      <span class="newcode">double</span> temp = A[maxLoc];
+      A[maxLoc] = A[lastPlace];
+      A[lastPlace] = temp;
+   }
+} // end selectionSort</pre>
+
+
+<p>In the first version of the program, this subroutine is called just after
+all the numbers have been input from the user.</p>
+
+
+<p>The second version of the program is straightforward. It uses the
+<span class="code">insert()</span> subroutine from <a href="../c7/s4.html">Section&nbsp;7.4</a>, modified to work with an array
+of <span class="code">doubles</span> instead of an array of <span class="code">ints</span>.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+<p>
+<b>First solution, with Selection Sort:</b>
+
+</p>
+
+
+<pre class="exercisecode">
+    /**
+     * This program reads up to 100 positive integers from the user and 
+     * prints them in sorted order.  Input ends when the user enters a 
+     * non-positive integer.  The numbers are read and stored in an array.
+     * That array is sorted using selection sort, and then the array is
+     * printed.
+     */
+    
+    public class Test {
+    
+       public static void main(String[] args) {
+      
+          double[] numbers;  // An array for storing the input values.
+          int numCt;         // The number of numbers saved in the array.
+          double num;        // One of the numbers input by the user.
+        
+          numbers = new double[100];   // Space for 100 numbers.
+          numCt = 0;                   // No numbers have been saved yet.
+        
+          TextIO.putln("Enter up to 100 positive numbers; Enter 0 to end");
+        
+          while (true) {   // Get the numbers and put them in the array.
+             TextIO.put("? ");
+             num = TextIO.getlnDouble();
+             if (num &lt;= 0)
+                break;
+             numbers[numCt] = num;
+             numCt++;
+          }
+          
+          selectionSort(numbers, numCt);  // Sort the numbers.
+        
+          TextIO.putln("\nYour numbers in sorted order are:\n");
+        
+          for (int i = 0; i &lt; numCt; i++) {
+              TextIO.putln( numbers[i] );
+          }
+        
+       } // end main();
+       
+       /**
+        * Sort the numbers in A[0], A[1], ..., A[count-1] into
+        * increasing order using Selection Sort.
+        */
+       static void selectionSort(double[] A, int count) {
+          for ( int lastPlace = count - 1; lastPlace &gt; 0; lastPlace-- ) {
+             int maxLoc = 0;
+             for (int j = 1; j &lt;= lastPlace; j++) {
+                if (A[j] &gt; A[maxLoc]) {
+                   maxLoc = j;
+                }
+             }
+             double temp = A[maxLoc];
+             A[maxLoc] = A[lastPlace];
+             A[lastPlace] = temp;
+          }
+       } // end selectionSort
+      
+    }  // end class SortInputNumbers
+</pre>
+
+
+<p>
+<b>Second solution, with Insert:</b>
+
+</p>
+
+
+<pre class="exercisecode">/**
+ * This program reads up to 100 positive integers from the user and 
+ * prints them in sorted order.  Input ends when the user enters a
+ * non-positive integer.  The numbers are read and inserted into
+ * an array.  The array is maintained at all times in sorted order.
+ */
+
+public class Test {
+
+   public static void main(String[] args) {
+  
+      double[] numbers;  // An array for storing the input values.
+      int numCt;         // The number of numbers saved in the array.
+      double num;        // One of the numbers input by the user.
+    
+      numbers = new double[100];   // Space for 100 numbers.
+      numCt = 0;                   // No numbers have been saved yet.
+    
+      TextIO.putln("Enter up to 100 positive numbers; Enter 0 to end");
+    
+      while (true) {   // Get the numbers and insert them into the array.
+         TextIO.put("? ");
+         num = TextIO.getlnDouble();
+         if (num &lt;= 0)
+            break;
+         <span class="newcode">insert(numbers, numCt, num);</span>
+         numCt++;
+      }
+      
+      TextIO.putln("\nYour numbers in sorted order are:\n");
+    
+      for (int i = 0; i &lt; numCt; i++) {
+          TextIO.putln( numbers[i] );
+      }
+    
+   } // end main();
+   
+   /**
+    * Assume that A contains itemsInArray in increasing order.
+    * Insert newItem into its correct position in the sorted array.
+    */
+   static void insert(double[] A, int itemsInArray, double newItem) {
+      int loc = itemsInArray - 1;
+      while (loc &gt;= 0 &amp;&amp; A[loc] &gt; newItem) {
+             // Move the item from A[loc] up one space.
+         A[loc + 1] = A[loc];
+         loc = loc - 1;
+      }
+      A[loc + 1] = newItem;  // Put newItem in the last vacated space.
+   } // end insert
+  
+}  // end class SortInputNumbers
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

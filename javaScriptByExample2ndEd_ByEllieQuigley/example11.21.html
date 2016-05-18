@@ -1,0 +1,29 @@
+<html><head><title>Drop Down Menus</title></head>
+<body bgcolor=lightgreen>
+<font face="arial">
+<strong>Select a Course
+<form name="form1">
+	<select name="menu1" size="4" >
+		<option name="choice1" value="Perl1">Intro to Perl</option>
+		<option name="choice2" value="Perl2">Advanced Perl</option>
+		<option name="choice3" value="Unix1">Intro to Unix</option>
+		<option name="choice4" value="Shell1">Shell
+			   Programming</option>
+	</select>
+       <br /><br />
+</form>
+<script type="text/javascript">
+	document.write("The name of the selection list is ",
+	document.form1.menu1.name);
+	document.write("<br />The number of items in the selection"+
+		"list 	is ", document.form1.menu1.length);
+	document.write("<br />The item currently selected is option["+
+	document.form1.menu1.selectedIndex + "]");
+	document.write("<br />The text in the first selection is "+
+	document.form1.menu1.options[0].text);
+	document.write("<br />The text in the second selection is "+
+	document.form1.menu1.options[1].text);
+</script>
+ </strong>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<html><title>Bubbling Cancelled</title><head>
+  <script type="text/javascript">
+
+       var d1,p1,p2,a1;
+       window.onload=function(){
+       	b1=document.getElementById('bdy1');
+       	d1=document.getElementById('div1');
+       	p1=document.getElementById('para1');
+       	p2=document.getElementById('para2');
+       	a1=document.getElementById('link1');
+
+       	b1.onclick=iam;
+       	d1.onclick=iam;
+       	p1.onclick=iam;
+       	p2.onclick=iam;
+       	a1.onclick=iam;
+     }
+     function iam(event){
+
+      /* if (! event){
+             e = window.event;
+             e.cancelBubble = true; /* Microsoft IE* /
+         }
+        else{ */
+        	alert(this.id);
+             event.stopPropagation(); /* W3C */
+
+
+        //  stop all other targets with event listeners from
+	    // triggering this event
+   }
+   </script>
+   </head>
+   <body id="bdy1">
+     <h2>Bubble bubble...</h2>
+     <div id="div1">
+        <p id="para1">Some text in a paragraph element.</p>
+        <p id="para2">Another paragraph element with text.
+        <a id="link1" href="#">link</a>
+        </p>
+     </div>
+  </body>
+</html>

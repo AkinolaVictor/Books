@@ -1,0 +1,28 @@
+
+ <html><head><title>Array Properties</title>
+   <h2>Array Properties</h2>
+   <script type="text/javascript">
+    var book = new Array();   // Create an Array object
+     book[0] = "War and Peace"; // Assign values to elements
+     book[1] = "Huckleberry Finn";
+     book[2] = "The Return of the Native";
+     book[3] = "A Christmas Carol";
+     book[4] = "The Yearling";
+     book[5] = "Exodus";
+  </script>
+  </head>
+  <body bgcolor="lightblue">
+  <big>
+  <script type="text/javascript">
+	document.write("The book array has "  + book.length +
+			               " elements<br/>");
+	document.write("The book's constructor is: "+ 
+        book.constructor + "<br />");
+   book.length=0;
+    document.write("The book has been trashed! The first book is " +   
+   book[0] );
+   document.write("<br />The size is now "+ book.length);
+  </script>
+</big>
+</body>
+</html>

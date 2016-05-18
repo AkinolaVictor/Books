@@ -1,0 +1,286 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 6, Chapter 5</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 5.6</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 5.6:</h3>
+<p>
+<a href="../c5/s7.html#OOP.7.6">Subsection&nbsp;5.7.6</a> discusses the possibility of representing
+the suits and values of playing cards as enumerated types.  Rewrite the <span class="classname">Card</span>
+class from <a href="../c5/s4.html#OOP.4.2">Subsection&nbsp;5.4.2</a> to use these enumerated types.  Test your class with a program
+that prints out the 52 possible playing cards.  Suggestions:  You can modify the source code file
+<span class="sourceref"><a href="../source/Card.java">Card.java</a></span>, but you should leave out support for Jokers.
+In your main program, use nested <span class="code">for</span> loops to
+generated cards of all possible suits and values; the <span class="code">for</span> loops will be
+"for-each" loops of the type discussed in <a href="../c3/s4.html#control.4.4">Subsection&nbsp;3.4.4</a>.  It would be
+nice to add a <span class="code">toString()</span> method to the <span class="classname">Suit</span> class
+from <a href="../c5/s7.html#OOP.7.6">Subsection&nbsp;5.7.6</a>, so that a suit prints out as "Spades" or "Hearts" instead
+of "SPADES" or "HEARTS".
+</p>
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>
+<span class="classname">CardValue</span> is defined in <a href="../c5/s7.html#OOP.7.6">Subsection&nbsp;5.7.6</a>,
+and is repeated below just as given there.  I've added a <span class="code">toString()</span>
+method to the definition of <span class="classname">Suit</span> from the same section.
+Given the two enumerated types, we can now represent the suit and the value
+of a playing card using values of type <span class="classname">Suit</span> and <span class="classname">CardValue</span>,
+instead of coding the suit and value as integers.
+In the <span class="classname">Card</span> class, the <span class="ptype">int</span> variables
+<span class="code">suit</span> and <span class="code">value</span> should be replaced with variables of
+type <span class="classname">Suit</span> and <span class="classname">CardValue</span>.  The
+named constants such as HEARTS and ACE in the <span class="classname">Card</span> class,
+which were used to represent suits and card values, should be deleted; they
+have been replaced by the constants from the enumerated types.
+The original <span class="classname">Card</span> class included instance methods
+<span class="code">getSuitAsString()</span> and <span class="code">getValueAsString()</span> to convert the
+suit and value of a card into an appropriate string representation.  These methods
+are no longer necessary, since each enumerated types has its own <span class="code">toString()</span>
+method that will automatically be used to do the conversion to string.</p>
+
+<p>Class <span class="classname">Card</span> becomes much shorter in this version.
+(Most of the missing code has been moved into the enumerated types.) We just
+need the two instance variables to represent the suit and value of a card,
+getter methods to return the values of these two methods, a <span class="code">toString()</span>
+method to do the <span class="classname">Card</span>-to-<span class="classname">String</span>
+conversion, and a constructor that specifies the suit and value of the card
+that is being constructed:</p>
+
+<pre>public class Card {
+   Suit suit;        // The suit of this card.
+   CardValue value;  // The value of this card.
+   public Card( Suit theSuit, CardValue theValue ) {   // Constructor.
+      suit = theSuit;
+      value = theValue;
+   }
+   public Suit getSuit() {
+      return suit;
+   }
+   public CardValue getValue() {
+      return value;
+   }
+   public String toString() {
+      return value + " of " + suit;  // A string such as "Ace of Spades"
+   }
+}</pre>
+
+<p>I've made just one addition (besides comments) in the version given below.
+Since enumerated type values are objects, the value of a variable of type
+<span class="classname">Suit</span> or <span class="classname">CardValue</span> can be <span class="code">null</span>.
+However, it doesn't make sense for the suit or value of a <span class="classname">Card</span>
+to be <span class="code">null</span>.  As the class stands, there is nothing to stop someone
+from passing <span class="code">null</span> as the value of one of the actual parameters in the
+constructor, and that would result in an invalid <span class="classname">Card</span> object.
+To prevent this, I check the parameters in the constructor and throw a
+<span class="classname">NullPointerException</span> if an actual parameter is <span class="code">null</span>.</p>
+
+<p>The main program simply constructs each of the 52 possible cards, and prints out
+each card.  The algorithm uses "for-each" loops to loop through all the possible
+suits and all the possible card values:</p>
+
+<pre>for each Suit:
+   for each CardValue:
+      Let c be a new Card with given suit and value
+      print c
+</pre>
+
+<p>Using the <span class="code">for</span> loop syntax from <a href="../c3/s4.html#control.4.4">Subsection&nbsp;3.4.4</a>, 
+a loop such as "<span class="code">for each Suit</span>" becomes "<span class="code">for (Suit suit : Suit.values())</span>",
+and this leads to the <span class="code">main()</span> routine shown below.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">
+<b>The Main Program:</b>
+
+   
+     /**
+       * This program tests the Card class by creating and printing
+       * out each possible card.
+       */
+      public class TestCardEnums {
+         
+         public static void main(String[] args) {
+            System.out.println("The 52 cards are:\n");
+            for ( Suit suit : Suit.values() )
+               for ( CardValue value : CardValue.values() ) {
+                  Card c = new Card(value, suit);
+                  System.out.println("   " + c);
+               }
+         }
+      
+      }
+      
+      
+
+<b>The Enumerated Type "Suit"</b> 
+   
+       
+      /**
+       * A value of type Suit represents one of the four possible
+       * suits of an ordinary playing card.
+       */
+      public enum Suit {
+         
+         SPADES, HEARTS, DIAMONDS, CLUBS;
+         
+         public String toString() {
+            switch (this) {
+            case SPADES:   return "Spades";
+            case HEARTS:   return "Hearts";
+            case DIAMONDS: return "Diamonds";
+            default:       return "Clubs";    // (CLUBS is the only other possibility.)
+            } 
+         }
+      
+      } // end enum Suit
+      
+ 
+
+<b>The Enumerated Type CardValue:</b>
+   
+           
+      /**
+       * Values of type CardValue represent the 13 possible values of
+       * an ordinary playing card.
+       */
+      public enum CardValue {
+         
+         ACE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT,
+         NINE, TEN, JACK, QUEEN, KING;
+         
+         /**
+          * Return the value of this CardValue in the game of Blackjack.
+          * Note that the value returned for an ace is 1.
+          */
+         public int blackJackValue() {
+            if (this == JACK || this == QUEEN || this == KING)
+               return 10;
+            else
+               return 1 + ordinal();
+         }
+         
+         /**
+          * Return a String representation of this CardValue, using numbers
+          * for the numerical cards and names for the ace and face cards.
+          */
+         public String toString() {
+            switch (this) {       // "this" is one of the enumerated type values
+            case ACE:             // ordinal number of ACE
+               return "Ace";
+            case JACK:            // ordinal number of JACK
+               return "Jack";
+            case QUEEN:            // ordinal number of QUEEN
+               return "Queen";
+            case KING:            // ordinal number of KING
+               return "King";
+            default:            // it's a numeric card value
+               int numericValue = 1 + ordinal();
+            return "" + numericValue;     
+            }
+         }
+         
+      } // end enum CardValue
+      
+
+
+<b>The Class "Card":</b>
+   
+   
+         
+      /**
+       * An object of type Card represents a playing card from a standard Poker
+       * deck without the Joker.  The card has a suit, which can be one of the enumerated
+       * type values from enum Suit.  A card has one of the 13 enumerated type values
+       * from enum CardValue.  Note that "ace" is considered to be the smallest value.
+       */
+      public class Card {
+         
+         /**
+          * This card's suit.  The suit cannot be changed after the card is
+          * constructed.
+          */
+         private final Suit suit; 
+         
+         /**
+          * The card's value.  The value cannot be changed after the card
+          * is constructed.
+          */
+         private final CardValue value;
+            
+         /**
+          * Creates a card with a specified suit and value.
+          * @param theValue the non-null value of the new card.
+          * @param theSuit the non-null suit of the new card. 
+          * @throws NullPointerException if a parameter value is null.
+          */
+         public Card(CardValue theValue, Suit theSuit) {
+            if (theValue == null || theSuit == null)
+               throw new NullPointerException("Card suit and value cannot be null.");
+            value = theValue;
+            suit = theSuit;
+         }
+      
+         /**
+          * Returns the suit of this card.
+          */
+         public Suit getSuit() {
+            return suit;
+         }
+         
+         /**
+          * Returns the value of this card.
+          */
+         public CardValue getValue() {
+            return value;
+         }
+         
+         
+         /**
+          * Returns a string representation of this card, including both
+          * its suit and its value.  Sample return values are:
+          * "Queen of Hearts", "10 of Diamonds", "Ace of Spades".
+          */
+         public String toString() {
+            return value + " of " + suit;
+         }
+         
+      
+      } // end class Card
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

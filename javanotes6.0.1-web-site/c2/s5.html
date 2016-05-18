@@ -1,0 +1,631 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 2.5 -- Details of Expressions</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s4.html">Previous Section</a> |
+           <a href="s6.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#basics.5.1">Arithmetic Operators</a>
+<br>
+<a href="#basics.5.2">Increment and Decrement</a>
+<br>
+<a href="#basics.5.3">Relational Operators</a>
+<br>
+<a href="#basics.5.4">Boolean Operators</a>
+<br>
+<a href="#basics.5.5">Conditional Operator</a>
+<br>
+<a href="#basics.5.6">Assignment Operators and Type-Casts</a>
+<br>
+<a href="#basics.5.7">Type Conversion of Strings</a>
+<br>
+<a href="#basics.5.8">Precedence Rules</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 2.5</h3>
+<h2 class="section_title">Details of Expressions</h2>
+<hr class="break">
+
+
+<p>
+<span class="start"><big>T</big>his section takes a closer look</span> at expressions.
+Recall that an expression is a piece of program code that represents or
+computes a value. An expression can be a literal, a variable, a function call,
+or several of these things combined with operators such as <span class="code">+</span> and
+<span class="code">&gt;</span>. The value of an expression can be assigned to a variable, used
+as a parameter in a  subroutine call, or combined with other values into a
+more complicated expression. (The value can even, in some cases, be ignored, if
+that's what you want to do; this is more common than you might think.)
+Expressions are an essential part of programming. So far, these notes have
+dealt only informally with expressions. This section tells you the more-or-less
+complete story (leaving out some of the less commonly used operators).</p>
+
+
+<p>The basic building blocks of expressions are literals (such as <span class="code">674</span>,
+<span class="code">3.14</span>, <span class="code">true</span>, and <span class="code">'X'</span>), variables, and function calls.
+Recall that a function is a subroutine that returns a value. You've already
+seen some examples of functions, such as the input routines from the <span class="classname">TextIO</span>
+class and the mathematical functions from the <span class="classname">Math</span> class.
+</p>
+   
+
+<p>The <span class="classname">Math</span> class also contains a couple of mathematical constants
+that are useful in mathematical expressions:  <span class="code">Math.PI</span> represents
+π (the ratio of the circumference of a circle to its
+diameter), and <span class="code">Math.E</span> represents <i>e</i> (the base of the natural
+logarithms).  These "constants" are actually member variables in 
+<span class="classname">Math</span> of type <span class="ptype">double</span>.  They are only
+approximations for the mathematical constants, which would require an infinite
+number of digits to specify exactly.</p>
+
+
+<p>Literals, variables, and function calls are simple expressions. More complex
+expressions can be built up by using <span class="newword">operators</span> to
+combine simpler expressions. Operators include <span class="code">+</span> for adding two
+numbers, <span class="code">&gt;</span> for comparing two values, and so on. When several
+operators appear in an expression, there is a question of <span class="newword">precedence</span>, 
+which determines how the operators are grouped for
+evaluation. For example, in the expression "<span class="code">A + B * C</span>", <span class="code">B*C</span>
+is computed first and then the result is added to <span class="code">A</span>. We say that
+multiplication (<span class="code">*</span>) has <span class="newword">higher precedence</span>
+than addition (<span class="code">+</span>). If the default precedence is not what you want, you
+can use parentheses to explicitly specify the grouping you want. For example,
+you could use "<span class="code">(A + B) * C</span>" if you want to add <span class="code">A</span> to
+<span class="code">B</span> first and then multiply the result by <span class="code">C</span>.</p>
+
+
+<p>The rest of this section gives details of operators in Java. The number of
+operators in Java is quite large, and I will not cover them all here. Most of
+the important ones are here; a few will be covered in later chapters as they
+become relevant.</p>
+
+ 
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="basics.5.1">2.5.1&nbsp;&nbsp;Arithmetic Operators</a>
+</h3>
+
+
+<p>Arithmetic operators include addition, subtraction, multiplication, and
+division. They are indicated by <span class="code">+</span>, <span class="code">-</span>, <span class="code">*</span>, and
+<span class="code">/</span>. These operations can be used on values of any numeric type:
+<span class="ptype">byte</span>, <span class="ptype">short</span>, <span class="ptype">int</span>, <span class="ptype">long</span>, <span class="ptype">float</span>, or
+<span class="ptype">double</span>.  (They can also be used with values of type <span class="ptype">char</span>, which
+are treated as integers in this context;
+a <span class="ptype">char</span> is converted into its Unicode code number when it is used with an
+arithmetic operator.)  When the computer actually calculates one of these operations,
+the two values that it combines must be of the same type. If your program tells
+the computer to combine two values of different types, the computer will
+convert one of the values from one type to another. For example, to compute
+37.4 + 10, the computer will convert the integer 10 to a real number 10.0 and
+will then compute 37.4 + 10.0.  This is called a <span class="newword">type conversion</span>.
+Ordinarily, you don't have to worry about type conversion in expressions,
+because the computer does it automatically.</p>
+
+
+<p>When two numerical values are combined (after doing type conversion on one
+of them, if necessary), the answer will be of the same type. If you multiply
+two <span class="ptype">int</span>s, you get an <span class="ptype">int</span>; if you multiply two
+<span class="ptype">double</span>s, you get a <span class="ptype">double</span>. This is what you would expect, but
+you have to be very careful when you use the division operator <span class="code">/</span>. When
+you divide two integers, the answer will always be an integer; if the quotient
+has a fractional part, it is discarded. For example, the value of <span class="code">7/2</span>
+is <span class="code">3</span>, not <span class="code">3.5</span>. If <span class="code">N</span> is an integer variable, then
+<span class="code">N/100</span> is an integer, and <span class="code">1/N</span> is equal to zero for any
+<span class="code">N</span> greater than one! This fact is a common source of programming
+errors. You can force the computer to compute a real number as the answer by
+making one of the operands real: For example, when the computer evaluates
+<span class="code">1.0/N</span>, it first converts <span class="code">N</span> to a real number in order to match
+the type of <span class="code">1.0</span>, so you get a real number as the answer.
+</p>
+
+
+<p>Java also has an operator for computing the remainder when one integer is
+divided by another. This operator is indicated by <span class="code">%</span>. If <span class="code">A</span> and
+<span class="code">B</span> are integers, then <span class="code">A&nbsp;%&nbsp;B</span> represents the remainder when
+<span class="code">A</span> is divided by <span class="code">B</span>.  (However, for negative operands, <span class="code">%</span> is not quite the
+same as the usual mathematical "modulus" operator, since if one of <span class="code">A</span> or
+<span class="code">B</span> is negative, then the value of <span class="code">A&nbsp;%&nbsp;B</span> will be negative.)
+For example, <span class="code">7&nbsp;%&nbsp;2</span> is <span class="code">1</span>,
+while <span class="code">34577&nbsp;%&nbsp;100</span> is <span class="code">77</span>, and <span class="code">50&nbsp;%&nbsp;8</span> is <span class="code">2</span>. A
+common use of <span class="code">%</span> is to test whether a given integer is even or odd:
+<span class="code">N</span> is even if <span class="code">N&nbsp;%&nbsp;2</span> is zero, and it is odd if <span class="code">N&nbsp;%&nbsp;2</span>
+is <span class="code">1</span>. More generally, you can check whether an integer <span class="code">N</span> is
+evenly divisible by an integer <span class="code">M</span> by checking whether
+<span class="code">N&nbsp;%&nbsp;M</span> is zero.</p>
+
+
+<p>Finally, you might need the <span class="newword">unary minus</span>
+operator, which takes the negative of a number. For example, <span class="code">-X</span> has
+the same value as <span class="code">(-1)*X</span>. For completeness, Java also has a unary plus
+operator, as in <span class="code">+X</span>, even though it doesn't really do anything.</p>
+
+
+<p>By the way, recall that the <span class="code">+</span> operator can also be used to concatenate
+a value of any type onto a <span class="classname">String</span>.  This is another example of
+type conversion.  In Java, any type can be automatically converted into type
+<span class="classname">String</span>.</p>
+   
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="basics.5.2">2.5.2&nbsp;&nbsp;Increment and Decrement</a>
+</h3>
+
+
+<p>You'll find that adding <span class="code">1</span> to a variable is an extremely common
+operation in programming. Subtracting <span class="code">1</span> from a variable is also pretty
+common. You might perform the operation of adding <span class="code">1</span> to a variable with
+assignment statements such as:</p>
+
+
+<pre>counter  =  counter + 1;
+goalsScored  =  goalsScored + 1;</pre>
+
+
+<p>The effect of the assignment statement <span class="code">x = x + 1</span> is to take the old
+value of the variable <span class="code">x</span>, compute the result of adding <span class="code">1</span> to
+that value, and store the answer as the new value of <span class="code">x</span>. The same
+operation can be accomplished by writing <span class="code">x++</span> (or, if you prefer,
+<span class="code">++x</span>). This actually changes the value of <span class="code">x</span>, so that it has
+the same effect as writing "<span class="code">x&nbsp;=&nbsp;x&nbsp;+&nbsp;1</span>". The two statements above could
+be written</p>
+
+
+<pre>counter++;
+goalsScored++;</pre>
+
+
+<p>Similarly, you could write <span class="code">x--</span> (or <span class="code">--x</span>) to subtract
+<span class="code">1</span> from <span class="code">x</span>. That is, <span class="code">x--</span> performs the same computation
+as <span class="code">x&nbsp;=&nbsp;x&nbsp;-&nbsp;1</span>. Adding <span class="code">1</span> to a variable is called 
+<span class="newword">incrementing</span> that variable, and subtracting <span class="code">1</span> is
+called <span class="newword">decrementing</span>. The operators <span class="code">++</span> and
+<span class="code">--</span> are called the increment operator and the decrement operator,
+respectively. These operators can be used on variables belonging to any of the
+numerical types and also on variables of type <span class="ptype">char</span>.</p>
+
+
+<p>Usually, the operators <span class="code">++</span> or <span class="code">--</span> are used in statements
+like "<span class="code">x++</span>;" or "<span class="code">x--</span>;". These statements are commands to
+change the value of <span class="code">x</span>. However, it is also legal to use <span class="code">x++</span>,
+<span class="code">++x</span>, <span class="code">x--</span>, or <span class="code">--x</span> as expressions, or as parts of
+larger expressions. That is, you can write things like:</p>
+
+
+<pre>y = x++;
+y = ++x;
+TextIO.putln(--x);
+z = (++x) * (y--);</pre>
+
+
+<p>The statement "<span class="code">y = x++</span>;" has the effects of adding <span class="code">1</span> to
+the value of <span class="code">x</span> and, in addition, assigning some value to <span class="code">y</span>.
+The value assigned to <span class="code">y</span> is the value of the expression <span class="code">x++</span>,
+which is defined to be the <b>old</b> value of <span class="code">x</span>, before the
+<span class="code">1</span> is added. Thus, if the value of <span class="code">x</span> is <span class="code">6</span>, the
+statement "<span class="code">y = x++</span>;" will change the value of <span class="code">x</span> to
+<span class="code">7</span>, but it will change the value of <span class="code">y</span> to <span class="code">6</span> since the
+value assigned to <span class="code">y</span> is the <b>old</b> value of <span class="code">x</span>. On the
+other hand, the value of <span class="code">++x</span> is defined to be the <b>new</b>
+value of <span class="code">x</span>, after the <span class="code">1</span> is added. So if <span class="code">x</span> is
+<span class="code">6</span>, then the statement "<span class="code">y = ++x</span>;" changes the values of both
+<span class="code">x</span> and <span class="code">y</span> to <span class="code">7</span>. The decrement operator, <span class="code">--</span>,
+works in a similar way.</p>
+
+
+<p>This can be confusing. My advice is: Don't be confused. Use <span class="code">++</span> and
+<span class="code">--</span> only in stand-alone statements, not in expressions. I will follow
+this advice in almost all examples in these notes.</p>
+
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="basics.5.3">2.5.3&nbsp;&nbsp;Relational Operators</a>
+</h3>
+
+
+<p>Java has boolean variables and boolean-valued expressions that can be used
+to express conditions that can be either <span class="code">true</span> or <span class="code">false</span>. One
+way to form a boolean-valued expression is to compare two values using a
+<span class="newword">relational operator</span>. Relational operators are used
+to test whether two values are equal, whether one value is greater than
+another, and so forth. The relational operators in Java are: <span class="code">==</span>,
+<span class="code">!=</span>, <span class="code">&lt;</span>, <span class="code">&gt;</span>, <span class="code">&lt;=</span>, and <span class="code">&gt;=</span>.
+The meanings of these operators are:</p>
+
+
+<pre>A == B       Is A "equal to" B?
+A != B       Is A "not equal to" B?
+A &lt; B        Is A "less than" B?
+A &gt; B        Is A "greater than" B?
+A &lt;= B       Is A "less than or equal to" B?
+A &gt;= B       Is A "greater than or equal to" B?</pre>
+
+
+<p>These operators can be used to compare values of any of the numeric types.
+They can also be used to compare values of type <span class="ptype">char</span>. For characters,
+<span class="code">&lt;</span> and <span class="code">&gt;</span> are defined according the numeric Unicode
+values of the characters. (This might not always be what you want. It is not
+the same as alphabetical order because all the upper case letters come before
+all the lower case letters.)</p>
+
+
+<p>When using boolean expressions, you should remember that as far as the
+computer is concerned, there is nothing special about boolean values. In the
+next chapter, you will see how to use them in loop and branch statements. But
+you can also assign boolean-valued expressions to boolean variables, just as
+you can assign numeric values to numeric variables.</p>
+
+
+<p>By the way, the operators <span class="code">==</span> and <span class="code">!=</span> can be used to compare boolean values.
+This is occasionally useful. For example, can you figure out what this
+does:</p>
+
+
+<pre>boolean sameSign;
+sameSign = ((x &gt; 0) == (y &gt; 0));</pre>
+
+
+<p>One thing that you <b>cannot</b> do with the relational operators
+<span class="code">&lt;</span>, <span class="code">&gt;</span>, <span class="code">&lt;=</span>, and <span class="code">&lt;=</span> is to use them
+to compare values of type <span class="classname">String</span>. You can legally use <span class="code">==</span> and
+<span class="code">!=</span> to compare <span class="code">Strings</span>, but because of peculiarities in the
+way objects behave, they might not give the results you want. (The <span class="code">==</span>
+operator checks whether two objects are stored in the same memory location,
+rather than whether they contain the same value. Occasionally, for some
+objects, you do want to make such a check -- but rarely for strings. I'll get
+back to this in a later chapter.) Instead, you should use the subroutines
+<span class="code">equals()</span>, <span class="code">equalsIgnoreCase()</span>, and <span class="code">compareTo()</span>, which
+were described in <a href="../c2/s3.html">Section&nbsp;2.3</a>, to compare two
+<span class="code">Strings</span>.</p>
+
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="basics.5.4">2.5.4&nbsp;&nbsp;Boolean Operators</a>
+</h3>
+
+
+<p>In English, complicated conditions can be formed using the words "and",
+"or", and "not." For example, "If there is a test <b>and</b> you did <b>not</b>
+study for it...". "And", "or", and "not" are <span class="newword">boolean operators</span>, and they exist
+in Java as well as in English.</p>
+
+
+<p>In Java, the boolean operator "and" is represented by <span class="code">&amp;&amp;</span>.
+The <span class="code">&amp;&amp;</span> operator is used to combine two boolean values. The
+result is also a boolean value. The result is <span class="code">true</span> if <b>both</b> of
+the combined values are <span class="code">true</span>, and the result is <span class="code">false</span> if
+<b>either</b> of the combined values is <span class="code">false</span>. For example, 
+"<span class="code">(x&nbsp;==&nbsp;0) &amp;&amp; (y&nbsp;==&nbsp;0)</span>" is <span class="code">true</span> if and only if both <span class="code">x</span> is
+equal to 0 and <span class="code">y</span> is equal to&nbsp;0.</p>
+
+
+<p>The boolean operator "or" is represented by <span class="code">||</span>. (That's supposed to
+be two of the vertical line characters, <span class="code">|</span>.) The expression 
+"<span class="code">A&nbsp;||&nbsp;B</span>" is <span class="code">true</span> if either <span class="code">A</span> is <span class="code">true</span> or <span class="code">B</span> is
+<span class="code">true</span>, or if both are true. "<span class="code">A&nbsp;||&nbsp;B</span>" is <span class="code">false</span> only if
+both <span class="code">A</span> and <span class="code">B</span> are false.</p>
+
+
+<p>The operators <span class="code">&amp;&amp;</span> and <span class="code">||</span> are said to be
+<span class="newword">short-circuited</span> versions of the boolean operators.
+This means that the second operand of <span class="code">&amp;&amp;</span> or <span class="code">||</span> is not
+necessarily evaluated. Consider the test</p>
+
+
+<pre>(x != 0) &amp;&amp; (y/x &gt; 1)</pre>
+
+
+<p>Suppose that the value of <span class="code">x</span> is in fact zero. In that case, the
+division <span class="code">y/x</span> is undefined mathematically.
+However, the computer will never perform the division, since when the computer
+evaluates <span class="code">(x&nbsp;!=&nbsp;0)</span>, it finds that the result is <span class="code">false</span>, and so
+it knows that (<span class="code">(x&nbsp;!=&nbsp;0)&nbsp;&amp;&amp;</span>&nbsp;<b>anything</b>) has to
+be false. Therefore, it doesn't bother to evaluate the second operand, <span class="code">(y/x&nbsp;&gt;&nbsp;1)</span>.
+The evaluation has been short-circuited and the division by zero
+is avoided. Without the short-circuiting, there would have been a
+division by zero. (This may seem like a technicality, and it is. But at
+times, it will make your programming life a little easier.)</p>
+
+
+<p>The boolean operator "not" is a unary operator. In Java, it is indicated by
+<span class="code">!</span> and is written in front of its single operand. For example, if
+<span class="code">test</span> is a boolean variable, then</p>
+
+
+<pre>test = ! test;</pre>
+
+
+<p>will reverse the value of test, changing it from <span class="code">true</span> to
+<span class="code">false</span>, or from <span class="code">false</span> to <span class="code">true</span>.</p>
+
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="basics.5.5">2.5.5&nbsp;&nbsp;Conditional Operator</a>
+</h3>
+
+
+<p>Any good programming language has some nifty little features that aren't
+really necessary but that let you feel cool when you use them. Java has the
+conditional operator. It's a ternary operator -- that is, it has three operands -- and
+it comes in two pieces, ? and :, that have to be used together. It takes
+the form</p>
+
+
+<pre>
+<span class="bnf"><b>boolean-expression</b></span> ? <span class="bnf"><b>expression1</b></span> : <span class="bnf"><b>expression2</b></span>
+</pre>
+
+
+<p>The computer tests the value of <span class="bnf"><b>boolean-expression</b></span>. If the value is <span class="code">true</span>, it
+evaluates <span class="bnf"><b>expression1</b></span>; otherwise, it evaluates
+<span class="bnf"><b>expression2</b></span>. For example:</p>
+
+
+<pre>next = (N % 2 == 0) ? (N/2) : (3*N+1);</pre>
+
+
+<p>will assign the value <span class="code">N/2</span> to <span class="code">next</span> if <span class="code">N</span> is even
+(that is, if <span class="code">N&nbsp;%&nbsp;2&nbsp;==&nbsp;0</span> is <span class="code">true</span>), and it will assign the
+value <span class="code">(3*N+1)</span> to <span class="code">next</span> if <span class="code">N</span> is odd.  (The parentheses
+in this example are not required, but they do make the expression easier to read.)</p>
+
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="basics.5.6">2.5.6&nbsp;&nbsp;Assignment Operators and Type-Casts</a>
+</h3>
+
+
+<p>You are already familiar with the assignment statement, which uses the
+symbol "=" to assign the value of an expression to a variable. In fact, = is
+really an operator in the sense that an assignment can itself be used as an
+expression or as part of a more complex expression. The value of an assignment
+such as <span class="code">A=B</span> is the same as the value that is assigned to <span class="code">A</span>.
+So, if you want to assign the value of <span class="code">B</span> to <span class="code">A</span> and test at the
+same time whether that value is zero, you could say:</p>
+
+
+<pre>if ( (A=B) == 0 )...</pre>
+
+
+<p>Usually, I would say, <b>don't do things like that</b>!</p>
+
+
+<p>In general, the type of the expression on the right-hand side of an
+assignment statement must be the same as the type of the variable on the
+left-hand side. However, in some cases, the computer will automatically convert
+the value computed by the expression to match the type of the variable.
+Consider the list of numeric types: <span class="ptype">byte</span>, <span class="ptype">short</span>,
+<span class="ptype">int</span>, <span class="ptype">long</span>, <span class="ptype">float</span>, <span class="ptype">double</span>. A value of a type
+that occurs earlier in this list can be converted automatically to a value that
+occurs later. For example:</p>
+
+
+<pre>int A;
+double X;
+short B;
+A = 17;
+X = A;    // OK; A is converted to a double
+B = A;    // illegal; no automatic conversion
+          //       from int to short</pre>
+
+
+<p>The idea is that conversion should only be done automatically when it can be
+done without changing the semantics of the value. Any <span class="ptype">int</span> can be
+converted to a <span class="ptype">double</span> with the same numeric value. However, there are
+<span class="ptype">int</span> values that lie outside the legal range of <span class="ptype">shorts</span>. There
+is simply no way to represent the <span class="ptype">int</span> 100000 as a <span class="ptype">short</span>, for
+example, since the largest value of type <span class="ptype">short</span> is 32767.</p>
+
+
+<p>In some cases, you might want to force a conversion that wouldn't be done
+automatically. For this, you can use what is called a <span class="newword">type cast</span>. 
+A type cast is indicated by putting a type name, in
+parentheses, in front of the value you want to convert. For example,</p>
+
+
+<pre>int A;
+short B;
+A = 17;
+B = (short)A;  // OK; A is explicitly type cast
+               //      to a value of type short</pre>
+
+
+<p>You can do type casts from any numeric type to any other numeric type.
+However, you should note that you might change the numeric value of a number by
+type-casting it. For example, <span class="code">(short)100000</span> is -31072. (The -31072 is
+obtained by taking the 4-byte <span class="ptype">int</span> 100000 and throwing away two of
+those bytes to obtain a <span class="ptype">short</span> -- you've lost the real information that
+was in those two bytes.)</p>
+
+
+<p>As another example of type casts, consider the problem of getting a random
+integer between 1 and 6. The function <span class="code">Math.random()</span> gives a real
+number between 0.0 and 0.9999..., and so <span class="code">6*Math.random()</span> is between
+0.0 and 5.999.... The type-cast operator, <span class="code">(int)</span>, can be used to
+convert this to an integer: <span class="code">(int)(6*Math.random())</span>. A real number is
+cast to an integer by discarding the fractional part. Thus,
+<span class="code">(int)(6*Math.random())</span> is one of the integers 0, 1, 2, 3, 4, and 5. To
+get a number between 1 and 6, we can add 1: "<span class="code">(int)(6*Math.random())&nbsp;+&nbsp;1</span>".
+(The parentheses around <span class="code">6*Math.random()</span> are necessary because of precedence
+rules; without the parentheses, the type cast operator would apply only to the <span class="code">6</span>.)</p>
+
+
+<p>You can also type-cast between the type <span class="ptype">char</span> and the numeric types.
+The numeric value of a <span class="ptype">char</span> is its Unicode code number. For example,
+<span class="code">(char)97</span> is <span class="code">'a'</span>, and <span class="code">(int)'+'</span> is <span class="code">43</span>.
+(However, a type conversion from <span class="ptype">char</span> to <span class="ptype">int</span> is automatic
+and does not have to be indicated with an explicit type cast.)</p>
+
+
+<p>Java has several variations on the assignment operator, which exist to save
+typing. For example, "<span class="code">A&nbsp;+=&nbsp;B</span>" is defined 
+to be the same as "<span class="code">A&nbsp;=&nbsp;A&nbsp;+&nbsp;B</span>". 
+Every operator in Java that applies to two operands gives rise to a
+similar assignment operator. For example:</p>
+
+
+<pre>x -= y;     // same as:   x = x - y;
+x *= y;     // same as:   x = x * y;
+x /= y;     // same as:   x = x / y;
+x %= y;     // same as:   x = x % y;   (for integers x and y)
+q &amp;&amp;= p;    // same as:   q = q &amp;&amp; p;  (for booleans q and p)</pre>
+
+
+<p>The combined assignment operator <span class="code">+=</span> even works with strings. Recall that when the <span class="code">+</span>
+operator is used with a string as one of the operands, it represents
+concatenation. Since <span class="code">str += x</span> is equivalent to <span class="code">str&nbsp;=&nbsp;str&nbsp;+&nbsp;x</span>,
+when <span class="code">+=</span> is used with a string on the left-hand side, it appends the
+value on the right-hand side onto the string. For example, if <span class="code">str</span> has
+the value "tire", then the statement <span class="code">str&nbsp;+=&nbsp;'d';</span> changes the value of
+<span class="code">str</span> to "tired".</p>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="basics.5.7">2.5.7&nbsp;&nbsp;Type Conversion of Strings</a>
+</h3>
+   
+
+<p>In addition to automatic type conversions and explicit type casts, there are
+some other cases where you might want to convert a value of one type into a
+value of a different type.  One common example is the conversion of a <span class="classname">String</span>
+value into some other type, such as converting the string <span class="code">"10"</span> into the
+<span class="ptype">int</span> value 10 or the string <span class="code">"17.42e-2"</span> into
+the <span class="ptype">double</span> value 0.1742.  In Java, these conversions
+are handled by built-in functions.</p>
+   
+
+<p>There is a standard class named <span class="classname">Integer</span> that contains
+several subroutines and variables related to the <span class="ptype">int</span> data type.  (Recall that
+since <span class="ptype">int</span> is not a class, <span class="ptype">int</span> itself can't contain any subroutines or
+variables.)  In particular, if <span class="code">str</span> is any expression of type <span class="classname">String</span>,
+then  <span class="code">Integer.parseInt(str)</span> is a function call that attempts to convert the
+value of <span class="code">str</span> into a value of type <span class="ptype">int</span>.  For example,
+the value of <span class="code">Integer.parseInt("10")</span> is the <span class="ptype">int</span> value 10.
+If the parameter to <span class="code">Integer.parseInt</span> does not represent a legal <span class="ptype">int</span>
+value, then an error occurs.
+</p>
+   
+
+<p>Similarly, the standard class named <span class="classname">Double</span> includes
+a function <span class="code">Double.parseDouble</span> that tries to convert a parameter of type
+<span class="classname">String</span> into a value of type <span class="ptype">double</span>.  For example,
+the value of the function call <span class="code">Double.parseDouble("3.14")</span> is the
+<span class="ptype">double</span> value 3.14.  (Of course, in practice, the parameter used in
+<span class="code">Double.parseDouble</span> or <span class="code">Integer.parseInt</span> would be a variable
+or expression rather than a constant string.)</p>
+
+
+<p>Type conversion functions also exist for converting strings into enumerated
+type values.  (Enumerated types, or enums, were introduced in <a href="../c2/s3.html#basics.3.3">Subsection&nbsp;2.3.3</a>.)
+For any enum type, a predefined function named <span class="code">valueOf</span> is automatically
+defined for that type.  This is a function that takes a string as parameter and tries
+to convert it to a value belonging to the enum.  The <span class="code">valueOf</span> function
+is part of the enum type, so the name of the enum is part of the full name of the
+function.  For example, if an enum <span class="classname">Suit</span> is defined
+as</p>
+   
+
+<pre>enum Suit { SPADE, DIAMOND, CLUB, HEART }</pre>
+
+
+<p>then the name of the type conversion function would be <span class="code">Suit.valueOf</span>.
+The value of the function call <span class="code">Suit.valueOf("CLUB")</span> would be the
+enumerated type value <span class="code">Suit.CLUB</span>.  For the conversion to succeed,
+the string must exactly match the simple name of one of the enumerated type
+constants (<b>without</b> the "Suit." in front).</p>
+      
+
+  
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="basics.5.8">2.5.8&nbsp;&nbsp;Precedence Rules</a>
+</h3>
+
+
+<p>If you use several operators in one expression, and if you don't use
+parentheses to explicitly indicate the order of evaluation, then you have to
+worry about the precedence rules that determine the order of evaluation.
+(Advice: don't confuse yourself or the reader of your program; use parentheses
+liberally.)</p>
+
+
+<p>Here is a listing of the operators discussed in this section, listed in
+order from highest precedence (evaluated first) to lowest precedence (evaluated
+last):</p>
+
+
+<pre>Unary operators:              ++, --, !, unary - and +, type-cast
+Multiplication and division:  *,  /,  %
+Addition and subtraction:     +,  -
+Relational operators:         &lt;,  &gt;,  &lt;=,  &gt;=
+Equality and inequality:      ==,  !=
+Boolean and:                  &amp;&amp;
+Boolean or:                   ||
+Conditional operator:         ?:
+Assignment operators:         =,  +=,  -=,  *=,  /=,  %=</pre>
+
+
+<p>Operators on the same line have the same precedence. When operators of the same precedence are strung
+together in the absence of parentheses, unary operators and assignment operators are evaluated right-to-left,
+while the remaining operators are evaluated left-to-right. For example,
+<span class="code">A*B/C</span> means <span class="code">(A*B)/C</span>, while <span class="code">A=B=C</span> means
+<span class="code">A=(B=C)</span>. (Can you see how the expression <span class="code">A=B=C</span> might be
+useful, given that the value of <span class="code">B=C</span> as an expression is the same as
+the value that is assigned to <span class="code">B</span>?)</p>
+   
+
+
+   
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s4.html">Previous Section</a> |
+           <a href="s6.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

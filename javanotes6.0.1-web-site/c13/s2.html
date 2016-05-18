@@ -1,0 +1,949 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 13.2 -- Fancier Graphics</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s1.html">Previous Section</a> |
+           <a href="s3.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#GUI2.2.1">Measuring Text</a>
+<br>
+<a href="#GUI2.2.2">Transparency</a>
+<br>
+<a href="#GUI2.2.3">Antialiasing</a>
+<br>
+<a href="#GUI2.2.4">Strokes and Paints</a>
+<br>
+<a href="#GUI2.2.5">Transforms</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 13.2</h3>
+<h2 class="section_title">Fancier Graphics</h2>
+<hr class="break">
+
+
+<p>
+<span class="start"><big>T</big>he graphics commands</span> provided by the <span class="classname">Graphics</span>
+class are sufficient for many purposes.  However, recent versions of Java provide a much
+larger and richer graphical toolbox in the form of the class <span class="code">java.awt.Graphics2D</span>.
+I mentioned <span class="classname">Graphics2D</span> in <a href="../c6/s3.html#GUI1.3.5">Subsection&nbsp;6.3.5</a> and promised
+to discuss it further in this chapter.</p>
+   
+
+<p>
+<span class="classname">Graphics2D</span> is a subclass of <span class="classname">Graphics</span>, so
+all of the graphics commands that you already know can be used with a <span class="classname">Graphics2D</span>
+object.  In fact, when you obtain a <span class="classname">Graphics</span> context for drawing
+on a Swing component or on a <span class="classname">BufferedImage</span>, the graphics object is
+actually of type <span class="classname">Graphics2D</span> and can be type-cast to gain access to
+the advanced <span class="classname">Graphics2D</span> graphics commands.  Furthermore, <span class="classname">BufferedImage</span>
+has an instance method, <span class="code">createGraphics()</span>, that returns a graphics context of
+type <span class="classname">Graphics2D</span>.  For example, if <span class="code">image</span>
+is of type <span class="classname">BufferedImage</span>, then you can get a <span class="classname">Graphics2D</span>
+for drawing on the image using:</p>
+   
+
+<pre>Graphics2D g2 = image.createGraphics();</pre>
+
+
+<p>And, as mentioned in <a href="../c6/s3.html#GUI1.3.5">Subsection&nbsp;6.3.5</a>,
+to use <span class="classname">Graphics2D</span> commands in the <span class="code">paintComponent()</span> method
+of a Swing component, you can write a <span class="code">paintComponent()</span> method of the form:</p>
+
+
+<pre>
+public void paintComponent(Graphics g) {
+   super.paintComponent(g);
+   Graphics g2 = (Graphics2D)g;
+      .
+      .   // Draw to the component using g2 (and g).
+      .
+}</pre>
+   
+
+<p>Note that when you do this, <span class="code">g</span> and <span class="code">g2</span> are just two variables
+that refer to the same object, so they both draw to the same drawing surface; <span class="code">g2</span>
+just gives you access to methods that are defined in <span class="classname">Graphics2D</span> but
+not in <span class="classname">Graphics</span>.  When properties of <span class="code">g2</span>, such as
+drawing color, are changed, the changes also apply to <span class="code">g</span>.  By saying</p>
+   
+
+<pre>Graphics2D g2 = (Graphics2D)g.create()</pre>
+   
+
+<p>you can obtain a newly created graphics context.  The object created by <span class="code">g.create()</span>
+is a graphics context that draws to the same drawing surface as <span class="code">g</span> and that initially
+has all the same properties as <span class="code">g</span>.  However, it is a separate object, so that
+changing properties in <span class="code">g2</span> has no effect on <span class="code">g</span>.  This can be useful
+if you want to keep an unmodified copy of the original graphics context around for some
+drawing operations.  (In this case, it is good practice to call <span class="code">g2.dispose()</span>
+to dispose of the new graphics context when you are finished using it.)</p>
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="GUI2.2.1">13.2.1&nbsp;&nbsp;Measuring Text</a>
+</h3>
+   
+
+<p>Although this section is mostly about <span class="classname">Graphics2D</span>, we start
+with a topic that has nothing to do with it.</p>
+
+
+<p>Often, when drawing a string, it's important to know how big the image of
+the string will be. For example, you need this information if you want to center a string in
+a component.  Or if you want to know how much space to leave between two lines of
+text, when you draw them one above the other. Or if the user is typing the
+string and you want to position a cursor at the end of the string. In Java,
+questions about the size of a string can be answered by an object belonging to the
+standard class <span class="code">java.awt.FontMetrics</span>.</p>
+
+
+<p>There are several lengths associated with any given font. Some of them are
+shown in this illustration:</p>
+
+
+<p align="center">
+<img src="MeasuringStrings.png" width="554" height="156" alt="Measuring Strings"></p>
+   
+
+<p>The dashed red lines in the illustration are the <span class="newword">baselines</span> 
+of the two lines of text.   The baseline of a string is the line on which the bases
+of the characters rest.  The suggested distance
+between two baselines, for single-spaced text, is known as the 
+<span class="newword">lineheight</span> of the font. The <span class="newword">ascent</span> 
+is the distance that tall characters can rise above the
+baseline, and the <span class="newword">descent</span> is the distance that
+tails like the one on the letter "g" can descend below the baseline. The ascent
+and descent do not add up to the lineheight, because there should be some extra
+space between the tops of characters in one line and the tails of characters on
+the line above. The extra space is called <span class="newword">leading</span>.
+(The term comes from the time when lead blocks were used for printing. Characters
+were formed on blocks of lead that were lined up to make up the text of a page, 
+covered with ink, and pressed onto paper to print the page. 
+Extra, blank "leading" was used to separate the lines of characters.)
+All these quantities can be determined by calling instance methods in a
+<span class="classname">FontMetrics</span> object. There are also methods for determining the width
+of a character and the total width of a string of characters.</p>
+
+
+<p>Recall that a font in Java is represented by the class <span class="classname">Font</span>.
+A <span class="classname">FontMetrics</span> object is associated with a given font and
+is used to measure characters and strings in that font.
+If <span class="code">font</span> is of type <span class="classname">Font</span>
+and <span class="code">g</span> is a graphics context, you can get a
+<span class="classname">FontMetrics</span> object for the font  by calling
+<span class="code">g.getFontMetrics(font)</span>.  If <span class="code">fm</span> is the variable that refers to the
+<span class="classname">FontMetrics</span> object, then the ascent, descent, leading, and lineheight
+of the font can be obtained by calling <span class="code">fm.getAscent()</span>,
+<span class="code">fm.getDescent()</span>, <span class="code">fm.getLeading()</span>, and
+<span class="code">fm.getHeight()</span>. If <span class="code">ch</span> is a character, then
+<span class="code">fm.charWidth(ch)</span> is the width of the character when it is drawn in
+that font. If <span class="code">str</span> is a string, then <span class="code">fm.stringWidth(str)</span> is
+the width of the string when drawn in that font. 
+For example, here is a <span class="code">paintComponent()</span> method that shows the message 
+"Hello World" in the exact center of the component:</p>
+
+
+<pre>public void paintComponent(Graphics g) {
+   super.paintComponent(g);
+   
+   int strWidth, strHeight; // Width and height of the string.
+   int centerX, centerY;    // Coordinates of the center of the component.
+   int baseX, baseY;        // Coordinates of the basepoint of the string.
+   int topOfString;         // y-coordinate of the top of the string.
+   
+   centerX = getWidth() / 2;
+   centerY = getHeight() / 2;        
+   
+   Font font = g.getFont();  // What font will g draw in?
+   FontMetrics fm = g.getFontMetrics(font);
+   strWidth = fm.stringWidth("Hello World");
+   strHeight = fm.getAscent();  // Note: There are no tails on 
+                                //   any of the chars in the string!
+ 
+   baseX = centerX - (strWidth/2);  // Move back from center by half the
+                                    //    width of the string.
+   
+   topOfString = centerY - (strHeight/2);  // Move up from center by half
+                                           //   the height of the string.
+   
+   baseY = topOfString + fm.getAscent();  // Baseline is fm.getAscent() pixels
+                                          //   below the top of the string.
+    
+   g.drawString("Hello World", baseX, baseY); // Draw the string.
+}</pre>
+   
+
+<p>You can change the font that is used for drawing strings as described
+in <a href="../c6/s3.html#GUI1.3.3">Subsection&nbsp;6.3.3</a>.  For the height of
+the string in this method, I use <span class="code">fm.getAscent()</span>.  If I were
+drawing "Goodbye World" instead of "Hello World," I would have used
+<span class="code">fm.getAscent() + fm.getDescent()</span>, where the descent is
+added to the height in order to take into account the tail on the
+"y" in "Goodbye".  The value of <span class="code">baseX</span> is computed
+to be the amount of space between the left edge of the component and
+the start of the string. It is obtained by subtracting half the width
+of the string from the horizontal center of the component.  This will
+center the string horizontally in the component.  The next line computes
+the position of the top of the string in the same way.  However, to draw the
+string, we need the y-coordinate of the baseline, not the y-coordinate of
+the top of the string.  The baseline of the string is below the top of the 
+string by an amount equal to the ascent of the font.  </p>
+   
+
+<p>There is an example of centering a two-line block of text in the
+sample program <span class="sourceref"><a href="../source/TransparencyDemo.java">TransparencyDemo.java</a></span>, which is discussed in
+the next subsection.</p>
+      
+
+   
+      
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="GUI2.2.2">13.2.2&nbsp;&nbsp;Transparency</a>
+</h3>
+   
+
+<p>A color is represented by red, blue, and green components.  In Java's usual representation,
+each component is an eight-bit number in the range 0 to 255.  The three color components can
+be packed into a 32-bit integer, but that only accounts for 24 bits in the integer.  What
+about the other eight bits?  They don't have to be wasted.  They can be used as a fourth
+component of the color, the <span class="newword">alpha component</span>.  The alpha component can
+be used in several ways, but it is most commonly associated with <span class="newword">transparency</span>.
+When you draw with a transparent color, it's like laying down a sheet of colored glass. It
+doesn't completely obscure the part of the image that is colored over.  Instead, the
+background image is <span class="newword">blended</span> with the transparent color that is
+used for drawing -- as if you were looking at the background through colored glass.
+This type of drawing is properly referred to as <span class="newword">alpha blending</span>, and
+it is not equivalent to true transparency; nevertheless, most people refer to it as
+transparency.</p>
+   
+
+<p>The value of the alpha component determines how transparent that color is.  Actually,
+the alpha component gives the <span class="newword">opaqueness</span> of the color.  Opaqueness is
+the opposite of transparency.  If something is fully opaque, you can't see through it at all;
+if something is almost fully opaque, then it is just a little transparent; and so on.
+When the alpha component of a color has the maximum possible value, the color is fully
+opaque.  When you draw with a fully opaque color, that color simply replaces the
+color of the background over which you draw.  This is the only type of color that we have
+used up until now.  If the alpha component of a color is zero, then the color is
+perfectly transparent, and drawing with that color has no effect at all.  Intermediate
+values of the alpha component give partially opaque colors that will blend with the
+background when they are used for drawing.</p>
+   
+
+
+<p>Here is an applet that can help you to understand transparency.  It shows a triangle,
+an oval, a rectangle, and some text.  Sliders at the bottom of the applet allow you to control 
+the degree of transparency of each shape.  When a slider is moved all the way to the
+right, the corresponding shape is fully opaque; all the way to the left, and the shape
+is fully transparent.  The source code for this program is <span class="sourceref"><a href="../source/TransparencyDemo.java">TransparencyDemo.java</a></span>.</p>
+
+<p align="center">
+<applet code="TransparencyDemo$Applet.class" width="375" height="425" archive="TransparencyDemo.jar" alt="An applet that demonstrates transparency."></applet></p>
+
+
+   
+
+<hr class="break">
+
+
+<p>Colors with alpha components were introduced in Java along with <span class="classname">Graphics2D</span>,
+but they can be used with ordinary <span class="classname">Graphics</span> objects as well.
+To specify the alpha component of a color, you can create the <span class="classname">Color</span> object
+using one of the following constructors from the <span class="classname">Color</span> class:</p>
+   
+
+<pre>public Color(int red, int green, int blue, int alpha);
+   
+public Color(float red, float green, float blue, float alpha);</pre>
+   
+
+<p>In the first constructor, all the parameters must be integers in the
+range 0 to 255.  In the second, the parameters must be in the range
+0.0 to 1.0.  For example,</p>
+   
+
+<pre>Color transparentRed = new Color( 255, 0, 0, 200 );</pre>
+   
+
+<p>makes a slightly transparent red, while</p>
+   
+
+<pre>Color tranparentCyan = new Color( 0.0F, 1.0F, 1.0F, 0.5F);</pre>
+   
+
+<p>makes a blue-green color that is 50% opaque.  (The advantage of
+the constructor that takes parameters of type <span class="ptype">float</span> is
+that it lets you think in terms of percentages.)  When you create
+an ordinary RGB color, as in <span class="code">new&nbsp;Color(255,0,0)</span>,
+you just get a fully opaque color.</p>
+   
+
+<p>Once you have a transparent color, you can use it in the same way
+as any other color.  That is, if you want to use a <span class="classname">Color</span>
+<span class="code">c</span> to draw in a graphics context <span class="code">g</span>, you just
+say <span class="code">g.setColor(c)</span>, and subsequent drawing operations
+will use that color.  As you can see, transparent colors are very
+easy to use.</p>
+
+
+<hr class="break">
+   
+
+<p>A <span class="classname">BufferedImage</span> with image type <span class="code">BufferedImage.TYPE_INT_ARGB</span>
+can use transparency.  The color of each pixel in the image can have its own
+alpha component, which tells how transparent that pixel will be when the image is
+drawn over some background.  A pixel whose alpha component is zero is perfectly transparent,
+and has no effect at all when the image is drawn; in effect, it's not part of the image at all.
+It is also possible for pixels to be partly transparent.  When an image is saved to a file,
+information about transparency might be lost, depending on the file format.  The PNG
+image format supports transparency; JPEG does not.  (If you look at the images of playing
+cards that are used in the program <span class="code">HighLowWithImages</span> in
+<a href="../c13/s1.html#GUI2.1.1">Subsection&nbsp;13.1.1</a>, you might notice that the tips of the corners of the cards are fully
+transparent.  The card images are from a PNG file, <span class="sourceref"><a href="../source/cards.png">cards.png</a></span>.)</p>
+   
+
+<p>An ARGB <span class="classname">BufferedImage</span> should be fully transparent when it is 
+first created, but if you want to make sure, here is one way of doing so:  
+The <span class="classname">Graphics2D</span>
+class has a method <span class="code">setBackground()</span> that can be used to set a background
+color for the graphics context, and it has a <span class="code">clearRect()</span> method that
+fills a rectangle with the current background color.  To create a fully transparent
+image with width <span class="code">w</span> and height <span class="code">h</span>, you can use:</p>
+
+
+<pre>BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+Graphics2D g2 = (Graphics2D)image.getGraphics();
+g2.setBackground(new Color(0,0,0,0));  // (The R, G, and B values don't matter.)
+g2.clearRect(0, 0, w, h);</pre>
+
+
+<p>(Note that simply drawing with a transparent color will not make pixels in the
+image transparent. The alpha component of a <span class="classname">Color</span> makes
+the color transparent when it is used for drawing; it does not change the 
+transparency of the pixels that are modified by the drawing operation.)</p>
+      
+
+<p>As an example, just for fun, here is a method that will set the cursor of a component
+to be a red square with a transparent interior:</p>
+   
+
+<pre>private void useRedSquareCursor() {
+   BufferedImage image = new BufferedImage(24,24,BufferedImage.TYPE_INT_ARGB);
+   Graphics2D g2 = (Graphics2D)image.getGraphics();
+   g2.setBackground(new Color(0,0,0,0));
+   g2.clearRect(0, 0, 24, 24);  // (should not be necessary in a new image)
+   g2.setColor(Color.RED);
+   g2.drawRect(0,0,23,23);
+   g2.drawRect(1,1,21,21);
+   g2.dispose();
+   Point hotSpot = new Point(12,12);
+   Toolkit tk = Toolkit.getDefaultToolkit();
+   Cursor cursor = tk.createCustomCursor(image,hotSpot,"square");
+   setCursor(cursor);
+}</pre>
+
+
+   
+      
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="GUI2.2.3">13.2.3&nbsp;&nbsp;Antialiasing</a>
+</h3>
+   
+
+<p>To draw a geometric figure such as a line or circle, you just have to
+color the pixels that are part of the figure, right?  Actually, there is
+a problem with this.  Pixels are little squares.  Geometric figures, on
+the other hand, are made of geometric points that have no size at all.
+Think about drawing a circle, and think about a pixel on the boundary
+of that circle.  The infinitely thin geometric boundary of the circle
+cuts through the pixel.  Part of the pixel lies inside the circle,
+part lies outside.  So, when we are filling the circle with color,
+do we color that pixel or not?  A possible solution is to color
+the pixel if the geometric circle covers 50% or more of the pixel.
+Following this procedure, however, leads to a visual defect
+known as <span class="newword">aliasing</span>.  It is visible in images
+as a jaggedness or "staircasing" effect along the borders of curved
+shapes.  Lines that are not horizontal or vertical also have a jagged,
+aliased appearance.  (The term "aliasing" seems to refer to the fact
+that many different geometric points map to the same pixel.  If you
+think of the real-number coordinates of a geometric point as a "name" for
+the pixel that contains that point, then each pixel has many different 
+names or "aliases.")</p>
+   
+
+<p>It's not possible to build a circle out of squares, but there is
+a technique that can eliminate some of the jaggedness of aliased images.  The
+technique is called <span class="newword">antialiasing</span>.  Antialiasing is
+based on transparency.  The idea is simple:  If 50% of a pixel is
+covered by the geometric figure that you are trying to draw, then
+color that pixel with a color that is 50% transparent.  If 25% of the
+pixel is covered, use a color that is 75% transparent (25% opaque).
+If the entire pixel is covered by the figure, of course, use a color
+that is 100% opaque -- antialiasing only affects pixels that are only
+partly covered by the geometric shape.</p>
+   
+
+<p>In antialiasing, the color that you are drawing
+with is blended with the original color of the pixel, and the amount
+of blending depends on the fraction of the pixel that is covered by
+the geometric shape.  (The fraction is difficult to compute exactly,
+so in practice, various methods are used to approximate it.)  Of course, 
+you still don't get a picture of the exact geometric shape, but antialiased
+images do tend to look better than jagged, aliased images.</p>
+   
+
+<p>For an example, look at the applet in the
+next subsection.  Antialiasing is used to draw the panels in the second
+and third row of the applet, but it is not
+used in the top row.  You should note the jagged appearance of the lines
+and rectangles in the top row.  (By the way, when antialiasing is applied
+to a line, the line is treated as a geometric rectangle whose width
+is equal to the size of one pixel.)</p>
+
+
+<p>Antialiasing is supported in <span class="classname">Graphics2D</span>.  By
+default, antialiasing is turned off.  If <span class="code">g2</span> is a graphics
+context of type <span class="classname">Graphics2D</span>, you can turn on
+antialiasing in <span class="code">g2</span> by saying:</p>
+   
+
+<pre>g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                                  RenderingHints.VALUE_ANTIALIAS_ON);</pre>
+
+
+<p>As you can see, this is only a "hint" that you would like to use
+antialiasing, and it is even possible that the hint will be ignored.
+However, it is likely that subsequent drawing operations in <span class="code">g2</span>
+will be antialiased.  If you want to turn antialiasing off in
+<span class="code">g2</span>, you should say:</p>
+   
+
+<pre>g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                                  RenderingHints.VALUE_ANTIALIAS_OFF);</pre>
+      
+
+   
+      
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="GUI2.2.4">13.2.4&nbsp;&nbsp;Strokes and Paints</a>
+</h3>
+   
+
+<p>When using the <span class="classname">Graphics</span> class, any line that you
+draw will be a solid line that is one pixel thick.  The <span class="classname">Graphics2D</span>
+class makes it possible to draw a much greater variety of lines.  You can draw
+lines of any thickness, and you can draw lines that are dotted or dashed instead
+of solid.</p>
+   
+
+<p>An object of type <span class="classname">Stroke</span> contains information about how
+lines should be drawn, including how thick the line should be and what pattern of
+dashes and dots, if any, should be used.  Every <span class="classname">Graphics2D</span>
+has an associated <span class="classname">Stroke</span> object.  The default <span class="classname">Stroke</span>
+draws a solid line of thickness one.  To get lines with different properties, you
+just have to install a different stroke into the graphics context.</p>
+   
+
+<p>
+<span class="classname">Stroke</span> is an <span class="code">interface</span>, not a class.  The class
+<span class="classname">BasicStroke</span>, which implements the <span class="code">Stroke</span> interface,
+is the one that is actually used to create stroke objects.  For example, to
+create a stroke that draws solid lines with thickness equal to 3, use:</p>
+   
+
+<pre>BasicStroke line3 = new BasicStroke(3);</pre>
+   
+
+<p>If <span class="code">g2</span> is of type <span class="classname">Graphics2D</span>, the stroke can be
+installed in <span class="code">g2</span> by calling its <span class="code">setStroke()</span> command:</p>
+
+
+<pre>g2.setStroke(line3)</pre>
+   
+
+<p>After calling this method, subsequent drawing operations will use lines that are
+three times as wide as the usual thickness.
+The thickness of a line can be given by a value of type <span class="ptype">float</span>,
+not just by an <span class="ptype">int</span>.  For example, to use lines of thickness
+2.5 in the graphics context <span class="code">g2</span>, you can say:</p>
+   
+
+<pre>g2.setStroke( new BasicStroke(2.5F) );</pre>
+   
+
+<p>(Fractional widths make more sense if antialiasing is turned on.)</p>
+   
+
+<p>When you have a thick line, the question comes up, what to do at the ends
+of the line.  If you draw a physical line with a large, round piece of chalk, the
+ends of the line will be rounded.  When you draw a line on the computer
+screen, should the ends be rounded, or should the line simply be cut off
+flat?  With the <span class="classname">BasicStroke</span> class, the choice is up to you.
+Maybe it's time to look at examples.  This applet
+shows fifteen lines, drawn using different <span class="classname">BasicStrokes</span>.
+Lines in the middle row have rounded ends; lines in the other two rows are
+simply cut off at their endpoints.  Lines of various thicknesses are shown,
+and the bottom row shows dashed lines.  (And, as mentioned above, only the
+bottom two rows are antialiased.)</p>
+
+
+<p align="center">
+<applet code="StrokeDemo$Applet.class" width="518" height="312" archive="StrokeDemo.jar" alt=""></applet></p>
+   
+
+<p>This applet is an applet version of the sample program <span class="sourceref"><a href="../source/StrokeDemo.java">StrokeDemo.java</a></span>.
+In this program, you can click and drag
+in any of the small panels, and the lines in all the panels will be redrawn
+as you move the mouse.  In addition, if you right-click and drag, then
+rectangles will be drawn instead of lines; this shows that strokes are used
+for drawing the outlines of shapes and not just for straight lines.
+If you look at the corners of the rectangles that are drawn by the program,
+you'll see that there are several ways of drawing a corner where two wide
+line segments meet.</p>
+   
+
+<p>All the options that you want for a <span class="classname">BasicStroke</span> have
+to be specified in the constructor.  Once the stroke object is created, there
+is no way to change the options.  There is one constructor that lets you specify
+all possible options:</p>
+   
+
+<pre>public BasicStroke( float width, int capType, int joinType, float miterlimit,
+                                         float[] dashPattern, float dashPhase )</pre>
+   
+
+<p>I don't want to cover all the options in detail, but here's some basic
+info:</p>
+   
+
+<ul>
+
+<li>
+<span class="code">width</span> specifies the thickness of the line</li>
+
+<li>
+<span class="code">capType</span> specifies how the ends of a line are "capped."  The
+possible values are <span class="code">BasicStroke.CAP_SQUARE</span>, <span class="code">BasicStroke.CAP_ROUND</span>
+and <span class="code">BasicStroke.CAP_BUTT</span>.  These values are used, respectively, in the
+first, second, and third rows of the above applet.
+The default is <span class="code">BasicStroke.CAP_SQUARE</span>.</li>
+
+<li>
+<span class="code">joinType</span> specifies how two line segments are joined together at
+corners.  Possible values are <span class="code">BasicStroke.JOIN_MITER</span>,
+<span class="code">BasicStroke.JOIN_ROUND</span>, and <span class="code">BasicStroke.JOIN_BEVEL</span>.
+Again, these are used in the three rows of panels in the above applet;
+the effect is only seen in the applet when drawing rectangles.
+The default is <span class="code">BasicStroke.JOIN_MITER</span>.</li>
+
+<li>
+<span class="code">miterLimit</span> is used only if the value of <span class="code">joinType</span> is
+<span class="code">JOIN_MITER</span>; just use the default value, <span class="code">10.0F</span>.</li>
+
+<li>
+<span class="code">dashPattern</span> is used to specify dotted and dashed lines.  The
+values in the array specify lengths in the dot/dash pattern.  The numbers in the
+array represent the length of a solid
+piece, followed by the length of a transparent piece, followed by the length of
+a solid piece, and so on.  At the end of the array, the pattern wraps back to the
+beginning of the array.  If you want a solid line, use a different
+constructor that has fewer parameters.</li>
+
+<li>
+<span class="code">dashPhase</span> tells the computer where to start in the <span class="code">dashPattern</span>
+array, for the first segment of the line.  Use 0 for this parameter in most cases.</li>
+
+</ul>
+   
+
+<p>For the third row in the above applet, the
+<span class="code">dashPattern</span> is set to <span class="code">new&nbsp;float[]&nbsp;{5,5}</span>.
+This means that the lines are drawn starting with a solid segment of length 5,
+followed by a transparent section of length 5, and then repeating the same pattern.
+A simple dotted line would have thickness 1 and <span class="code">dashPattern</span>
+<span class="code">new&nbsp;float[]&nbsp;{1,1}</span>.  A pattern of short and long dashes
+could be made by using <span class="code">new&nbsp;float[]&nbsp;{10,4,4,4}</span>.
+For more information, see the Java documentation, or try experimenting
+with the source code for the sample program.</p>
+   
+
+<hr class="break">
+   
+
+<p>So now we can draw fancier lines.  But any drawing operation is still
+restricted to drawing with a single color.  We can get around that restriction
+by using <span class="classname">Paint</span>.  An object of type <span class="classname">Paint</span>
+is used to assign color to each pixel that is "hit" by a drawing operation.
+<span class="classname">Paint</span> is an <span class="code">interface</span>, and the <span class="classname">Color</span>
+class implements the <span class="classname">Paint</span> interface.  When a color is used
+for painting, it applies the same color to every pixel that is hit.
+However, there are other types of paint where the color that is applied to
+a pixel depends on the coordinates of that pixel.  Standard Java includes two
+classes that define paint with this property: <span class="classname">GradientPaint</span>
+and <span class="classname">TexturePaint</span>.  In a <span class="newword">gradient</span>,
+the color that is applied to pixels changes gradually from one color to a second
+color as you move from point to point.  In a <span class="newword">texture</span>,
+the pixel colors come from an image, which is repeated, if necessary, like a wallpaper pattern
+to cover the entire xy-plane.</p>
+   
+
+
+<p>It will be helpful to look at some examples.  Here is an applet that uses
+<span class="classname">Paint</span> objects to fill a polygon.  This is an applet
+version of the sample program <span class="sourceref"><a href="../source/PaintDemo.java">PaintDemo.java</a></span>.  You can select
+among two <span class="classname">GradientPaints</span> and two <span class="classname">TexturePaints</span>
+using four buttons at the bottom of the applet.  The sliders control properties
+of the paint.  You can drag the vertices of the polygon, to see what it looks when
+its shape changes.  Note that in this applet, the paint is used only for filling
+the polygon.  The outline of the polygon is drawn in a plain black color.  However,
+<span class="classname">Paint</span> objects can be used for drawing lines as well as
+for filling shapes.  Try it!</p>
+
+
+      
+
+<p align="center">
+<applet code="PaintDemo$Applet.java" width="400" height="450" archive="PaintDemo.jar" alt="Demo of GradientPaint and TexturePaint"></applet></p>
+   
+
+<p>Basic gradient paints are created using the constructor</p>
+
+
+<pre>public GradientPaint(float x1, float y1, Color c1,
+                             float x2, float y2, Color c2, boolean cyclic)</pre>
+   
+
+<p>This constructs a gradient that has color <span class="code">c1</span> at the
+point with coordinates <span class="code">(x1,y1)</span> and color <span class="code">c2</span> at the point
+<span class="code">(x2,y2)</span>.  As you move along the line between the two points,
+the color of the gradient changes from <span class="code">c1</span> to <span class="code">c2</span>;
+along lines perpendicular to this line, the color is constant.  The
+last parameter, <span class="code">cyclic</span>, tells what happens if you move past the
+point <span class="code">(x2,y2)</span> on the line from <span class="code">(x1,y1)</span> to <span class="code">(x2,y2)</span>.
+If <span class="code">cyclic</span> is <span class="code">false</span>, the color stops changing and any point beyond
+<span class="code">(x2,y2)</span> has color <span class="code">c2</span>.  If <span class="code">cyclic</span> is <span class="code">true</span>,
+then the colors continue to change in a cyclic pattern after you move past
+<span class="code">(x2,y2)</span>.  (It works the same way if you move past the other
+endpoint, <span class="code">(x1,y1)</span>.)  In most cases, you will set <span class="code">cyclic</span>
+to <span class="code">true</span>.  Note that you can vary the points <span class="code">(x1,y1)</span>
+and <span class="code">(x2,y2)</span> to change the width and direction of the gradient.
+For example, to create a cyclic gradient that varies from black to light gray along the line
+from <span class="code">(0,0)</span> to <span class="code">(100,100)</span>, use:</p>
+   
+
+<pre>new GradientPaint( 0, 0, Color.BLACK, 100, 100, Color.LIGHT_GRAY, true)</pre> 
+
+
+<p>Java 6 introduced two new gradient paint classes, <span class="classname">LinearGradientPaint</span>
+and <span class="classname">RadialGradientPaint</span>.  Linear gradient paints are similar to
+<span class="classname">GradientPaint</span> but can be based on more than two colors.  Radial gradients
+color pixels based on their distance from a central point, which produces rings of constant
+color instead of lines of constant color.  See the API documentation for details.</p>
+   
+
+<p>To construct a <span class="classname">TexturePaint</span>, you need a <span class="classname">BufferedImage</span>
+that contains the image that will be used for the texture.  You also specify a rectangle
+in which the image will be drawn.  The image will be scaled, if necessary, to exactly fill
+the rectangle.  Outside the specified rectangle, the image will be repeated horizontally
+and vertically to fill the plane.  You can vary the size and position of the rectangle
+to change the scale of the texture and its positioning on the plane.  Ordinarily, however
+the upper left corner of the rectangle is placed at <span class="code">(0,0)</span>, and the size of the rectangle
+is the same as the actual size of the image.  The constructor for <span class="classname">TexturePaint</span>
+is defined as</p>
+   
+
+<pre>public TexturePaint( BufferedImage textureImage, Rectangle2D anchorRect)</pre>
+   
+
+<p>The <span class="classname">Rectangle2D</span> is part of the <span class="classname">Graphics2D</span>
+framework and will be discussed at the end of this section.  Often, a call to the
+constructor takes the form:</p>
+   
+
+<pre>new TexturePaint( image, 
+            new Rectangle2D.Double(0,0,image.getWidth(),image.getHeight() )</pre>
+   
+
+<p>Once you have a <span class="classname">Paint</span> object, you can use the
+<span class="code">setPaint()</span> method of a <span class="classname">Graphics2D</span> object
+to install the paint in a graphics context.  For example, if <span class="code">g2</span>
+is of type <span class="classname">Graphics2D</span>, then the command</p>
+
+
+<pre>g2.setPaint( new GradientPaint(0,0,Color.BLUE,100,100,Color.GREEN,true) );</pre>
+   
+
+<p>sets up <span class="code">g2</span> to use a gradient paint.  Subsequent drawing operations
+with <span class="code">g2</span> will draw using a blue/green gradient.</p>
+   
+
+   
+      
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="GUI2.2.5">13.2.5&nbsp;&nbsp;Transforms</a>
+</h3>
+   
+
+<p>In the standard drawing coordinates on a component, the upper left corner
+of the component has coordinates <span class="code">(0,0)</span>.  Coordinates are integers, and the
+coordinates <span class="code">(x,y)</span> refer to the point that is <span class="code">x</span> pixels
+over from the left edge of the component and <span class="code">y</span> pixels down from
+the top.  With <span class="classname">Graphics2D</span>, however, you are not
+restricted to using these coordinates.  In fact, you can can set up
+a <span class="classname">Graphics2D</span> graphics context to use any system
+of coordinates that you like.  You can use this capability to select the
+coordinate system that is most appropriate for the things that you want to
+draw.  For example, if you are drawing architectural blueprints, you might
+use coordinates in which one unit represents an actual distance of one foot.
+</p>
+
+
+<p>Changes to a coordinate system are referred to as <span class="newword">transforms</span>.
+There are three basic types of transform.  A <span class="newword">translate</span> transform
+changes the position of the origin, <span class="code">(0,0)</span>.  A <span class="newword">scale</span> transform changes
+the scale, that is, the unit of distance.  And a <span class="newword">rotation</span> transform
+applies a rotation about some point.  You can make more complex transforms by
+combining transforms of the three basic types.  For example, you can apply a
+rotation, followed by a scale, followed by a translation, followed by another
+rotation.  When you apply several transforms in a row, their effects are cumulative.
+It takes a fair amount of study to fully understand complex transforms.
+I will limit myself here to discussing a few of the most simple cases, just to
+give you an idea of what transforms can do.</p>
+   
+
+<p>Suppose that <span class="code">g2</span> is of type <span class="classname">Graphics2D</span>.
+Then <span class="code">g2.translate(x,y)</span> moves the origin, <span class="code">(0,0)</span>, to the point <span class="code">(x,y)</span>.
+This means that if you use coordinates <span class="code">(0,0)</span> <i>after</i> saying <span class="code">g2.translate(x,y)</span>,
+then you are referring to the point that <i>used to be</i> <span class="code">(x,y)</span>, before
+the translation was applied.  All other coordinate pairs are moved by the same amount.
+For example saying</p>
+   
+
+<pre>g.translate(x,y);
+g.drawLine( 0, 0, 100, 200 );</pre>
+   
+
+<p>draws the same line as</p>
+   
+
+<pre>g.drawLine( x, y, 100+x, 200+y );</pre>
+
+
+<p>In the second case, you are just doing the same translation "by hand."
+A translation (like all transforms) affects all subsequent drawing operations.
+Instead of thinking in terms of coordinate systems, you might find it clearer
+to think of what happens to the objects that are drawn.  After you say
+<span class="code">g2.translate(x,y)</span>, any objects that you draw are displaced <span class="code">x</span>
+units vertically and <span class="code">y</span> units horizontally.
+Note that the parameters <span class="code">x</span> and <span class="code">y</span> can be real numbers.</p>
+   
+
+<p>As an example, perhaps you would prefer to have <span class="code">(0,0)</span> at the center of a
+component, instead of at its upper left corner.  To do this, just use the
+following command in the <span class="code">paintComponent()</span> method of the  component:</p>
+   
+
+<pre>g2.translate( getWidth()/2, getHeight()/2 );</pre>
+   
+
+<p>To apply a scale transform to a <span class="classname">Graphics2D</span> <span class="code">g2</span>,
+use <span class="code">g2.scale(s,s)</span>, where <span class="code">s</span> is the real number that specifies
+the scaling factor.  If <span class="code">s</span> is greater than 1, everything is magnified
+by a factor of <span class="code">s</span>, while if <span class="code">s</span> is between 0 and 1,
+everything is shrunk by a factor of <span class="code">s</span>.  The center of scaling is
+<span class="code">(0,0)</span>.  That is, the point <span class="code">(0,0)</span> is unaffected by the scaling, and other points
+more towards or away from <span class="code">(0,0)</span> by a factor of&nbsp;<span class="code">s</span>.  Again,
+it can be clearer to think of the effect on objects that are drawn after a
+scale transform is applied.  Those objects will be magnified or shrunk by
+a factor of&nbsp;<span class="code">s</span>. Note that scaling affects <b>everything</b>, 
+including thickness of lines and size of fonts.  It is possible to use different scale
+factors in the horizontal and vertical direction with a command of the form
+<span class="code">g2.scale(sx,sy)</span>, although that will distort the shapes of objects.
+By the way,  it is even possible to use scale factors that are less than&nbsp;0,
+which results in reflections.  For example, after calling <span class="code">g2.scale(-1,1)</span>,
+objects will be reflected horizontally through the line <span class="code">x=0</span>.
+</p>
+   
+
+<p>The third type of basic transform is rotation.  The command <span class="code">g2.rotate(r)</span>
+rotates all subsequently drawn objects through an angle of <span class="code">r</span> about the
+point <span class="code">(0,0)</span>.  You can rotate instead about the point <span class="code">(x,y)</span>
+with the command <span class="code">g2.rotate(r,x,y)</span>.  All the parameters can be real
+numbers.  Angles are measured in radians, where one radian is equal to 180 degrees.
+To rotate through an angle of <span class="code">d</span> degrees, use</p>
+
+
+<pre>g2.rotate( d * Math.PI / 180 );</pre>
+   
+
+<p>Positive angles are clockwise rotations, while negative angles are
+counterclockwise (unless you have applied a negative scale factor,
+which reverses the orientation).</p>
+   
+
+<p>Rotation is not as common as translation or scaling, but there are a few things
+that you can do with it that can't be done any other way.  For example, you can
+use it to draw an image "on the slant."  Rotation also makes it possible to draw text 
+that is rotated so that its baseline is slanted or even vertical.  To draw the
+string "Hello World" with its basepoint at <span class="code">(x,y)</span> and rising at
+an angle of 30 degrees, use:</p>
+   
+
+<pre>g2.rotate( -30 * Math.PI / 180, x, y );
+g2.drawString( "Hello World", x, y );</pre>
+   
+
+<p>To draw the message vertically, with the <b>center</b> of its baseline
+at the point <span class="code">(x,y)</span>, we can use <span class="classname">FontMetrics</span>
+to measure the string, and say:</p>
+   
+
+<pre>FontMetrics fm = g2.getFontMetrics( g2.getFont() );
+int baselineLength = fm.stringWidth("Hello World");
+g2.rotate( -90 * Math.PI / 180, x, y);
+g2.drawString( "Hello World", x - baselineLength/2, y );</pre>
+   
+
+<hr class="break">
+
+
+<p>The drawing operations in the <span class="classname">Graphics</span> class use
+integer coordinates only.  <span class="classname">Graphics2D</span> makes it
+possible to use real numbers as coordinates.  This becomes particularly important
+once you start using transforms, since after you apply a scale, a square of size
+one might cover many pixels instead of just a single pixel.  Unfortunately, the
+designers of Java couldn't decide whether to use numbers of type <span class="ptype">float</span>
+or <span class="ptype">double</span> as coordinates, and their indecision makes things a
+little more complicated than they need to be.  (My guess is that they really
+wanted to use <span class="ptype">float</span>, since values of type float have enough
+accuracy for graphics and are probably used in the underlying graphical computations
+of the computer.  However, in Java programming, it's easier to use <span class="ptype">double</span>
+than <span class="ptype">float</span>, so they wanted to make it possible to use
+<span class="ptype">double</span> values too.)</p>
+
+
+<p>To use real number coordinates, you have to use classes defined in the
+package <span class="code">java.awt.geom</span>.  Among the classes in this package are classes that
+represent geometric shapes such as lines and rectangles.  For example,
+the class <span class="classname">Line2D</span> represents a line whose endpoints
+are given as real number coordinates.  The unfortunate thing is that
+<span class="classname">Line2D</span> is an abstract class, which means that you can't
+create objects of type <span class="classname">Line2D</span> directly.  However,
+<span class="classname">Line2D</span> has two concrete subclasses that can be
+used to create objects.  One subclass uses coordinates of type <span class="ptype">float</span>,
+and one uses coordinates of type <span class="ptype">double</span>.  The most peculiar part is
+that these subclasses are defined as static nested classes inside <span class="classname">Line2D</span>.
+Their names are <span class="classname">Line2D.Float</span> and <span class="classname">Line2D.Double</span>.
+This means that <span class="classname">Line2D</span> objects can be created, for example, with:</p>
+   
+
+<pre>Line2D line1 = new Line2D.Float( 0.17F, 1.3F, -2.7F, 5.21F );
+Line2D line2 = new Line2D.Double( 0, 0, 1, 0);
+Line2D line3 = new Line2D.Double( x1, y1, x2, y2 );</pre>
+   
+
+<p>where <span class="code">x1</span>, <span class="code">y1</span>, <span class="code">x2</span>, <span class="code">y2</span> are
+any numeric variables.  In my own code, I generally use <span class="classname">Line2D.Double</span>
+rather than <span class="classname">Line2D.Float</span>.</p>
+
+
+<p>Other shape classes in <span class="code">java.awt.geom</span> are similar.  The class that
+represents rectangles is <span class="classname">Rectangle2D</span>.  To create a rectangle
+object, you have to use either <span class="classname">Rectangle2D.Float</span> or
+<span class="classname">Rectangle2D.Double</span>.  For example,</p>
+   
+
+<pre>Rectangle2D rect = new Rectangle2D.Double( -0.5, -0.5, 1.0, 1.0 );</pre>
+   
+
+<p>creates a rectangle with a corner at <span class="code">(-0.5,-0.5)</span> and with
+width and height both equal to&nbsp;1.  Other classes include <span class="classname">Point2D</span>,
+which represents a single point; <span class="classname">Ellipse2D</span>, which represents
+an oval; and <span class="classname">Arc2D</span>, which represents an arc of a circle.</p>
+   
+
+<p>If <span class="code">g2</span> is of type <span class="classname">Graphics2D</span> and <span class="code">shape</span>
+is an object belonging to one of the 2D shape classes, then the command</p>
+   
+
+<pre>g2.draw(shape);</pre>
+   
+
+<p>draws the shape.  For a shape such as a rectangle or ellipse that has an interior,
+only the outline is drawn.  To fill in the interior of such a shape, use</p>
+
+
+<pre>g2.fill(shape)</pre>
+   
+
+<p>For example, to draw a line from <span class="code">(x1,y1)</span> to <span class="code">(x2,y2)</span>,
+use</p>
+   
+
+<pre>g2.draw( new Line2D.Double(x1,y1,x2,y2) );</pre>
+   
+
+<p>and to draw a filled rectangle with a corner at <span class="code">(3.5,7)</span>, with width 5
+and height 3, use</p>
+   
+
+<pre>g2.fill( new Rectangle2D.Double(3.5, 7, 5, 3) );</pre>
+   
+
+<p>The package <span class="code">java.awt.geom</span> also has a very nice class <span class="classname">GeneralPath</span>
+that can be used to draw polygons and curves defined by any number of points.  See the
+Java documentation if you want to find out how to use it.  In Java&nbsp;6, <span class="classname">GeneralPath</span>
+has been largely superseded by <span class="classname">Path2D</span> which provides the
+same functionality but more closely follows the
+conventions used by other shape classes.</p>
+
+
+<p>This section has introduced you to many of the interesting features of <span class="classname">Graphics2D</span>,
+but there is still a large part of the <span class="classname">Graphics2D</span> framework for you to explore.</p>
+   
+
+   
+   
+      
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s1.html">Previous Section</a> |
+           <a href="s3.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

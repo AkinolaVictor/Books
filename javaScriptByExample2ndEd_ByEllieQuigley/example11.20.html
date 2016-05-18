@@ -1,0 +1,26 @@
+<html>
+<head><title>Text Area Boxes</title></head>
+<font face=verdana>
+<body bgcolor="lightgreen">
+ <form name="form1">
+    <strong>
+     Finish the story
+     </strong><br />
+   <textarea name="story" rows="8" cols="60" >
+      Once upon a time, there were three little ...
+    </textarea>
+  </form>
+  <script type="text/javascript">
+     document.write( "The type of the input device is:<em> "+
+			document.form1.story.type);
+      document.write( "<br /></em>The text area is named:<em> "+
+			document.form1.story.name);
+      document.write("<br /></em>The number of rows in the "+
+        "text area is:<em> "+document.form1.story.rows);
+     document.write("<br /></em>The value in the text area is:<em> "+
+			document.form1.story.value);
+      document.write( "<br /></em>The number of cols in the text " + 
+         "area is:<em>"+ document.form1.story.cols);
+ </script>
+ </body>
+</html>

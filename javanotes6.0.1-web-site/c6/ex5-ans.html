@@ -1,0 +1,302 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 5, Chapter 6</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 6.5</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 6.5:</h3>
+<p>In <a href="../c3/ex6-ans.html">Exercise&nbsp;3.6</a>, you drew a checkerboard. For this
+exercise, write a checkerboard applet where the user can select a square by
+clicking on it. Highlight the selected square by drawing a colored border around
+it. When the applet is first created, no square is selected. When the user
+clicks on a square that is not currently selected, it becomes selected (and the
+previously selected square, if any, is unselected). If the
+user clicks the square that is selected, it becomes unselected. Assume that the
+size of the applet is exactly 160 by 160 pixels, so that each square on the
+checkerboard is 20 by 20 pixels. 
+Here is a working version of the applet:</p>
+
+<p align="center">
+<applet code="ClickableCheckerboard.class" width="160" height="160" archive="ClickableCheckerboard.jar" alt=""></applet></p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>See the solution to <a href="../c3/ex6-ans.html">Exercise&nbsp;3.6</a> for
+a discussion of how to draw the checkerboard. In that exercise, the code for
+drawing the board was in the <span class="code">drawFrame()</span> method of a subclass of
+<span class="classname">AnimationBase</span>.  Now, we can use a <span class="classname">JPanel</span>
+as a drawing surface for the checkerboard, with the drawing code in the panel's
+<span class="code">paintComponent()</span> method.  The code for drawing the checkerboard
+is the same.</p>
+
+
+<p>As always, there are many ways to organize the program.  In this case, I
+decided to put all the programming into the drawing surface class, which is named
+<span class="classname">Board</span>. Besides this nested class, there is nothing in the main applet
+class but an <span class="code">init()</span> method. The <span class="code">init()</span> method simply creates
+a <span class="classname">Board</span> and uses if for the content pane of the <span class="classname">JApplet</span> This can be
+done in a single line:</p>
+
+
+<pre>setContentPane( new Board() );</pre>
+
+
+<p>The rest of this discussion concerns the <span class="classname">Board</span> class. This drawing
+surface class is a subclass of <span class="classname">JPanel</span> and will also be used to respond
+to mouse clicks, so its definition begins</p>
+
+
+<pre>class Board extends JPanel implements MouseListener {</pre>
+
+
+<p>To keep track of which square is selected, if any, the <span class="classname">Board</span> class
+contains instance variables, <span class="code">selectedRow</span> and <span class="code">selectedCol</span>.
+When no square is selected, <span class="code">selectedRow</span> is -1 (and I don't care what
+<span class="code">selectedCol</span> is). When a square is selected, <span class="code">selectedRow</span> is
+the number of the row that contains that square and <span class="code">selectedCol</span> is the
+number of the column that contains the selected square. Remember that rows and
+columns are numbered from 0 to 7. This makes some of the calculations easier
+than numbering them from 1 to 8.</p>
+
+
+<p>After drawing the checkerboard, the <span class="code">paintComponent()</span> 
+method has to highlight the selected square, if there is one. I do
+this by drawing a cyan border around the inside of the selected square. This is
+the new code that is added to the checkerboard-drawing code:</p>
+
+
+<pre>if (selectedRow &gt;= 0) {
+      // Since there is a selected square, draw a cyan
+      // border around it.
+   g.setColor(Color.cyan);
+   y = selectedRow * 20;
+   x = selectedCol * 20;
+   g.drawRect(x, y, 19, 19);
+   g.drawRect(x+1, y+1, 17, 17);
+}</pre>
+
+
+<p>Since the squares are 20 pixels on each side, you might wonder why the first
+<span class="code">drawRect()</span> command specifies a width and height of 19 instead of 20.
+In the <span class="code">fillRect()</span> method that is used earlier in the <span class="code">paintComponent()</span>
+method to fill in the square, a width and height of 20 is used. Remember that
+the <span class="code">drawRect()</span> method actually draws a rectangle whose width and
+height are one more than the values specified in the parameters. (Remember the
+bit about the pen that hangs one pixel outside the rectangle?)</p>
+
+
+<p>To respond to user mouse clicks, the board must implement the
+<span class="classname">MouseListener</span> interface. The constructor in the <span class="classname">Board</span> class calls
+<span class="code">addMouseListener(this)</span> to register the board to listen for mouse
+events on itself. (Remember that calling <span class="code">addMouseListener(this)</span> is the
+same as calling <span class="code">this.addMouseListener(this)</span>.) Of the five methods
+specified in the <span class="classname">MouseListener</span> interface, only <span class="code">mousePressed</span>
+has a non-empty definition. This method must figure out which square the user
+clicked and adjust the values of the instance variables <span class="code">selectedRow</span>
+and <span class="code">selectedCol</span> accordingly.</p>
+
+
+<p>Let's say that the user clicked at the point <span class="code">(x,y)</span>. The problem is
+to determine which square on the checkerboard contains that point. The column
+number of the square is obtained by dividing the <span class="code">x</span> coordinate by the
+width of the squares. Since the squares are 20 pixels wide, the row number of
+the clicked square is <span class="code">x/20</span>. For values of <span class="code">x</span> between 0 and 19,
+this gives a column number of 0, which is correct. For the next 20 pixels, from
+20 to 39, <span class="code">x/20</span> is 1, which is the correct column number. For the next
+strip of pixels, from 40 to 59, the answer is 2. And so on. Similarly,
+<span class="code">y/20</span> gives the row number of the square where the user clicked.</p>
+
+
+<p>Once we know the row and column where the user clicked, we can compare them
+to <span class="code">selectedRow</span> and <span class="code">selectedCol</span>. If the values are the same,
+then the user clicked in a square that was already selected. We want to remove
+the hiliting. That can be done by setting <span class="code">selectedRow = -1</span>, the value
+that indicates that no square is selected. Otherwise, the values of
+<span class="code">selectedRow</span> and <span class="code">selectedCol</span> are set to the row and column
+that the user clicked.</p>
+
+
+<p>All this explains the reasoning behind the <span class="code">mousePressed()</span> routine,
+which you can see below.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+/**  
+ *  This applet draws a red-and-black checkerboard.
+ *  It is assumed that the size of the applet is 160
+ *  by 160 pixels.  When the user clicks a square, that
+ *  square is selected, unless it is already selected.
+ *  When the user clicks the selected square, it is
+ *  unselected.  If there is a selected square, it is
+ *  highlighted with a cyan border.
+ */
+public class ClickableCheckerboard extends JApplet{
+   
+   /**
+    * Note:  I have added a main() routine to the program, although it is
+    * not required by the exercise.  This has nothing at all to do with
+    * the function of the class as an applet, but it does use the nested
+    * Board class.  When this class is run as a stand-alone application,
+    * this main() routine opens a window that shows a Board as its content
+    * pane.  The window is sized by calling its pack() routine.  For this
+    * to work, the preferred size of the Board must be set correctly;
+    * this is done in the constructor of the Board class, which sets 
+    * the preferred size to 160-by-160.
+    */
+   public static void main(String[] args) {
+      JFrame window = new JFrame("Clickable Checkerboard");
+      Board content = new Board();
+      window.setContentPane(content);
+      window.pack(); // Size the window to the preferred size of its content.
+      window.setLocation(100,100);
+      window.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+      window.setResizable(false);  // User can't change the window's size.
+      window.setVisible(true);
+   }
+
+   /**
+    * This does nothing but make an object belonging
+    * to the nested class, Board, and add set it
+    * to be the content pane of the applet.
+    */
+   public void init() {
+       setContentPane( new Board() );
+   }
+   
+
+   /**
+    *  This nested class represents the checkerboard.  Besides drawing
+    *  the board, it listens for mouse events on itself so that it
+    *  can select or unselect the square that the user clicks.
+    */   
+   private static class Board extends JPanel implements MouseListener {
+
+      int selectedRow; // Row and column of selected square.  If no
+      int selectedCol; //      square is selected, selectedRow is -1.
+       
+      /**
+       * Constructor.  Set selectedRow to -1 to indicate that
+       * no square is selected.  And set the board object
+       * to listen for mouse events on itself.
+       */
+      Board() {
+         selectedRow = -1;     
+         addMouseListener(this);
+         setPreferredSize( new Dimension(160,160) );
+      }
+
+     /**
+      * Draw the checkerboard and highlight selected square, if any.
+      * (Note: super.paintComponent(g) is not necessary, since this
+      * method already paints the entire surface of the object.
+      * This assumes that the object is exactly 160-by-160 pixels.
+      */
+      public void paintComponent(Graphics g) {
+
+         int row;   // Row number, from 0 to 7
+         int col;   // Column number, from 0 to 7
+         int x,y;   // Top-left corner of square
+
+         for ( row = 0;  row &lt; 8;  row++ ) {
+
+            for ( col = 0;  col &lt; 8;  col++) {
+                x = col * 20;
+                y = row * 20;
+                if ( (row % 2) == (col % 2) )
+                   g.setColor(Color.red);
+                else
+                   g.setColor(Color.black);
+                g.fillRect(x, y, 20, 20);
+            } 
+
+         } // end for row
+       
+         if (selectedRow &gt;= 0) {
+               // Since there is a selected square, draw a cyan
+               // border around it.  (If selectedRow &lt; 0, then
+               // no square is selected and no border is drawn.)
+            g.setColor(Color.cyan);
+            y = selectedRow * 20;
+            x = selectedCol * 20;
+            g.drawRect(x, y, 19, 19);
+            g.drawRect(x+1, y+1, 17, 17);
+         }
+
+      }  // end paint()
+
+      /**
+       * When the user clicks on the applet, figure out which
+       * row and column the click was in and change the
+       * selected square accordingly.
+       */
+      public void mousePressed(MouseEvent evt) {
+
+         int col = evt.getX() / 20;   // Column where user clicked.
+         int row = evt.getY() / 20;   // Row where user clicked.
+
+         if (selectedRow == row &amp;&amp; selectedCol == col) {
+              // User clicked on the currently selected square.
+              // Turn off the selection by setting selectedRow to -1.
+            selectedRow = -1;
+         }
+         else {
+               // Change the selection to the square the user clicked on.
+            selectedRow = row;
+            selectedCol = col;
+         }
+         repaint();
+
+      }  // end mouseDown()
+
+
+      public void mouseReleased(MouseEvent evt) { }
+      public void mouseClicked(MouseEvent evt) { }
+      public void mouseEntered(MouseEvent evt) { }
+      public void mouseExited(MouseEvent evt) { }
+
+
+   }   // end nested class Board
+   
+
+} // end class ClickableCheckerboard
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

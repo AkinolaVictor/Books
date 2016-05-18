@@ -1,0 +1,43 @@
+
+<html><head><title>HTML Images</title>
+    <script type="text/javascript">
+	var myImages=new Array("baby1.jpg", "baby2.jpg", "baby3.jpg","baby4.jpg");
+		index_val=0;
+		function next_image(){
+			index_val++;
+			if (index_val < myImages.length){
+			   document.images["babypic"].src = myImages[index_val];
+			   // could say document.babypic.src or
+			   // document.images[0].src
+			}
+	 		else{
+			   index_val=0;
+			   document.images["babypic"].src = myImages[index_val];
+			}
+		}
+		function previous_image(){
+			index_val--;
+			if (index_val >= 0){
+				   document.images["babypic"].src = myImages[index_val];
+			}
+			else{
+			   index_val=myImages.length - 1;
+			   document.images["babypic"].src = myImages[index_val];
+			}
+		}
+	</script>
+</head>
+<body>
+    <div align="center">
+	  <h2>Baby Gallery</h2>
+	  <img name="babypic" id="babypic" src="baby1.jpg" width="329" height="440" >
+	  <br />
+	  <a href="javascript:next_image()">
+	  View next baby<br />
+	  </a>
+	  <a href="javascript:previous_image()">
+	       View previous baby<br />
+	  </a>
+    </div>
+</body>
+</html>

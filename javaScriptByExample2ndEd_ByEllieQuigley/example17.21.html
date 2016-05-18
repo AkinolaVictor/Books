@@ -1,0 +1,19 @@
+<html><head><title></title>
+</head>
+<body>
+<script type="text/javascript">
+	var reg_expression = /abc\d{1,3}\.\d/;
+	var textString=prompt("Type a string of text","");
+	var result=reg_expression.test(textString);  // Returns true 
+		                                             // or false
+	document.write(result+"<br />");
+	if (result){
+		document.write("<b>The regular expression /abc\\d{1,3}\\.\\d/ matched the string\""+ 
+			textString +"\".<br>");
+		}
+	else{
+			alert("No Match!");
+	}
+</script>
+</body>
+</html>

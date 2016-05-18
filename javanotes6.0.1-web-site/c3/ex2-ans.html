@@ -1,0 +1,190 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 2, Chapter 3</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 3.2</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 3.2:</h3>
+<p>Which integer between 1
+and 10000 has the largest number of divisors, and how many divisors does it
+have? Write a program to find the answers and print out the results. It is
+possible that several integers in this range have the same, maximum number of
+divisors. Your program only has to print out one of them.  An example in
+<a href="../c3/s4.html#control.4.2">Subsection&nbsp;3.4.2</a> discussed divisors. The source code for
+that example is <span class="sourceref"><a href="../source/CountDivisors.java">CountDivisors.java</a></span>.</p>
+
+
+<p>You might need some hints about how to find a maximum value. The basic idea
+is to go through all the integers, keeping track of the largest number of
+divisors that you've seen <i>so far</i>. Also, keep track of the integer that
+had that number of divisors.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+
+<p>Let's use a variable named <span class="code">maxDivisors</span> to keep track of the largest
+number of divisors we have seen so far and use <span class="code">numWithMax</span> to store the
+number that had that many divisors. We have to compute the number of divisors
+of each integer from 1 to 10000. Whenever we find a larger number of divisors
+than <span class="code">maxDivisors</span>, we have to make note of that fact by changing the
+values of <span class="code">maxDivisors</span> and <span class="code">numWithMax</span>. At the end of the
+process, <span class="code">maxDivisors</span> will be the absolute maximum number of divisors
+and <span class="code">numWithMax</span> will be a number that had that many divisors. These are
+the values we want to print out. We can express this with a pseudocode
+algorithm</p>
+
+
+<pre>for each integer N from 1 to 10000:
+   Count the number of divisors of N
+   If that number is greater than maxDivisors:
+       Let maxDivisors = the number of divisors of N
+       Let numWithMax = N
+Output maxDivisors and numWithMax</pre>
+
+
+<p>However, there is a problem here: The very first time <span class="code">maxDivisors</span>
+is used in the test "If that number is greater than maxDivisors," the variable
+<span class="code">maxDivisors</span> hasn't yet been assigned a value. The computer will report
+this as an error. This can be fixed by assigning a value to
+<span class="code">maxDivisors</span> before the beginning of the <span class="code">for</span> loop. One way to
+do this is to handle <span class="code">N=1</span> as a special case before the loop and then to
+let <span class="code">N</span> go from 2 to 10000 in the for loop. We know that <span class="code">N=1</span>
+has just 1 divisor:</p>
+
+
+<pre>Let maxDivisors = 1  // number of divisors of 1
+Let numWithMax = 1
+for each integer N from 2 to 10000:
+   Count the number of divisors of N
+   If that number is greater than maxDivisors:
+       Let maxDivisors = the number of divisors of N
+       Let numWithMax = N
+Output maxDivisors and numWithMax</pre>
+
+
+<p>Here's a curious thing: If you leave out the line "<span class="code">numWithMax = 1</span>"
+from the program, the computer will report a syntax error where you try to
+output the value of <span class="code">numWithMax</span>. It will say that the variable
+<span class="code">numWithMax</span> might not have been initialized. That is, it might never
+have been assigned a value. Now, <b>you</b> know that it will be
+assigned a value (since when <span class="code">N=2</span> is processed, <span class="code">numWithMax</span>
+will become 2). However, when the computer compiles the program,
+<b>it</b> doesn't know whether the body of the <span class="code">if</span> statement
+will ever be executed, so it doesn't know whether <span class="code">numWithMax</span> will ever
+be assigned a value. The syntax rule is that every variable must be "definitely
+assigned" before its value is used. This means that it is assigned a value on
+every possible execution path through the program.</p>
+
+
+<p>We still have to expand the step "Count the number of divisors of N." This
+was already done in <a href="../c3/s4.html#control.4.2">Subsection&nbsp;3.4.2</a> for the example program
+<span class="code">CountDivisors.java</span>. This step requires another <span class="code">for</span> loop, so
+we have here an example of one <span class="code">for</span> loop nested inside another. Here is
+a complete algorithm, which can be translated into a program:</p>
+
+
+<pre>Let maxDivisors = 1  // number of divisors of 1
+Let numWithMax = 1
+for each integer N from 2 to 10000:
+    Let divisorCount = 0
+    for each D from 1 to N:
+        if D is a divisor of N:
+            add 1 to divisorCount
+    If divisorCount is greater than maxDivisors:
+        Let maxDivisors = the number of divisors of N
+        Let numWithMax = N
+Output maxDivisors and numWithMax</pre>
+
+
+<p>This can be translated pretty much directly into a program. By the way, the
+maximum number of divisors is 64. There are two numbers between 1 and 10000
+that have 64 divisors, 7560 and 9240. The program will output the first of
+these. (It would output the second if the test "<span class="code">if (divisorCount &gt;
+maxDivisors)</span>" were changed to "<span class="code">if (divisorCount &gt;=
+maxDivisors)</span>". Do you see why?)</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">public class MostDivisors {
+
+   /* This program finds an integer between 1 and 10000 that has
+      the largest number of divisors.  It prints out the maximum
+      number of divisors and an integer that has that many divisors.
+   */
+
+   public static void main(String[] args) {
+   
+       int N;            // One of the integers whose divisors we have to count.
+       int maxDivisors;  // Maximum number of divisors seen so far.
+       int numWithMax;   // A value of N that had the given number of divisors.
+       
+       maxDivisors = 1;  // Start with the fact that 1 has 1 divisor.
+       numWithMax = 1;
+
+       /* Process all the remaining values of N from 2 to 10000, and
+          update the values of maxDivisors and numWithMax whenever we
+          find a value of N that has more divisors than the current value
+          of maxDivisors.
+       */
+       
+       for ( N = 2;  N &lt;= 10000;  N++ ) {
+       
+           int D;  // A number to be tested to see if its a divisor of N.
+           int divisorCount;  // Number of divisors of N.
+           
+           divisorCount = 0;
+           
+           for ( D = 1;  D &lt;= N;  D++ ) {  // Count the divisors of N.
+              if ( N % D == 0 )
+                 divisorCount++;
+           }
+           
+           if (divisorCount &gt; maxDivisors) {
+              maxDivisors = divisorCount;
+              numWithMax = N;
+           }
+       
+       }
+       
+       System.out.println("Among integers between 1 and 10000,");
+       System.out.println("The maximum number of divisors is " + maxDivisors);
+       System.out.println("A number with " + maxDivisors + " divisors is " + numWithMax);
+   
+   } // end main()
+
+}</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

@@ -1,0 +1,16 @@
+<html><head><title>onChange Event Handler</title></head>
+<body>
+  <form>
+	Please enter your grade:
+	<input type="text" onChange="
+			grade=parseInt(this.value);  //Convert to integer
+	 		if(grade < 0 || grade > 100){
+			   alert('Please enter a grade between 0 and 100');
+			}
+			else{
+			   confirm('Is '+ grade + ' correct?');
+			}
+		" >
+  </form>
+</body>
+</html>

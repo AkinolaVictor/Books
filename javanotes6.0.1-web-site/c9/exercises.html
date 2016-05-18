@@ -1,0 +1,288 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Excercises for Chapter 9</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Programming Exercises for Chapter 9</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> several exercises for Chapter 9
+        in <a href="../index.html">Introduction to Programming Using Java</a>.  For each exercise, a link to
+        a possible solution is provided.   Each solution includes a discussion of how a programmer might approach the
+        problem and interesting points raised by the problem or its solution, as well as complete source
+        code of the solution.</p>
+<hr>
+<h3 class="exercise">Exercise 9.1:</h3>
+<p>In many textbooks, the first examples of recursion are
+the mathematical functions <i>factorial</i> and <i>fibonacci</i>.  These functions
+are defined for non-negative integers using the following recursive formulas:</p>
+
+<pre>factorial(0)  =  1
+factorial(N)  =  N*factorial(N-1)   for N &gt; 0
+
+fibonacci(0)  =  1
+fibonacci(1)  =  1
+fibonacci(N)  =  fibonacci(N-1) + fibonacci(N-2)   for N &gt; 1</pre>
+
+<p>Write recursive functions to compute <span class="code">factorial(N)</span> and
+<span class="code">fibonacci(N)</span> for a given non-negative integer&nbsp;<span class="code">N</span>,
+and write a <span class="code">main()</span> routine to test your functions.</p>
+
+<p>(In fact, <i>factorial</i> and <i>fibonacci</i> are really not very good
+examples of recursion, since the most natural way to compute them is to use
+simple <span class="code">for</span> loops.  Furthermore, <i>fibonacci</i> is a particularly
+bad example, since the natural recursive approach to computing this function
+is extremely inefficient.)</p>
+
+<p align="right">
+<a href="ex1-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 9.2:</h3>
+<p>
+<a href="../c7/ex6-ans.html">Exercise&nbsp;7.6</a> asked you to read a file, make an 
+alphabetical list of all the words that occur in the file, and write the list to another
+file.  In that exercise, you were asked to use an <span class="atype">ArrayList&lt;String&gt;</span> to
+store the words.  Write a new version of the same program that stores the words
+in a binary sort tree instead of in an arraylist.  You can use the binary sort tree
+routines from <span class="sourceref"><a href="../source/SortTreeDemo.java">SortTreeDemo.java</a></span>, which was discussed in 
+<a href="../c9/s4.html#recursion.4.2">Subsection&nbsp;9.4.2</a>.</p>
+
+<p align="right">
+<a href="ex2-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 9.3:</h3>
+<p>Suppose that linked lists
+of integers are made from objects belonging to the class</p>
+
+
+<pre>class ListNode {
+   int item;       // An item in the list.
+   ListNode next;  // Pointer to the next node in the list.
+}</pre>
+
+
+<p>Write a subroutine that will make a copy of a list, with the order of the
+items of the list reversed. The subroutine should have a parameter of type
+<span class="classname">ListNode</span>, and it should return a value of type <span class="classname">ListNode</span>. The
+original list should not be modified.</p>
+
+
+<p>You should also write a <span class="code">main()</span> routine to test your subroutine.</p>
+
+<p align="right">
+<a href="ex3-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 9.4:</h3>
+<p>
+<a href="../c9/s4.html#recursion.4.1">Subsection&nbsp;9.4.1</a> 
+explains how to use recursion to print out the items in a binary tree
+in various orders. That section also notes that a non-recursive subroutine can
+be used to print the items, provided that a stack or queue is used as an
+auxiliary data structure. Assuming that a queue is used, here is an algorithm
+for such a subroutine:</p>
+
+<pre>Add the root node to an empty queue
+while the queue is not empty:
+   Get a node from the queue
+   Print the item in the node
+   if node.left is not null:
+      add it to the queue
+   if node.right is not null:
+      add it to the queue</pre>
+
+<p>Write a subroutine that implements this algorithm, and write a program to
+test the subroutine. Note that you will need a queue of <span class="classname">TreeNodes</span>, so
+you will need to write a class to represent such queues.</p>
+
+<p>(Note that the order in which items are printed by this algorithm is different
+from all three of the orders considered in <a href="../c9/s4.html#recursion.4.1">Subsection&nbsp;9.4.1</a>.)</p>
+
+<p align="right">
+<a href="ex4-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 9.5:</h3>
+<p>In <a href="../c9/s4.html#recursion.4.2">Subsection&nbsp;9.4.2</a>, I say that "if the
+[binary sort] tree is created by 
+inserting items in a random order, there is a high probability that the tree 
+is approximately balanced."
+For this exercise, you will do an experiment to test whether that is true.</p>
+
+<p>The <span class="newword">depth</span> of a node in a binary tree is the
+length of the path from the root of the tree to that node. That is, the root
+has depth 0, its children have depth 1, its grandchildren have depth 2, and so
+on. In a balanced tree, all the leaves in the tree are about the same depth.
+For example, in a perfectly balanced tree with 1023 nodes, all the leaves are
+at depth 9. In an approximately balanced tree with 1023 nodes, the average
+depth of all the leaves should be not too much bigger than 9.</p>
+
+<p>On the other hand, even if the tree is approximately balanced, there might
+be a few leaves that have much larger depth than the average, so we might also
+want to look at the maximum depth among all the leaves in a tree.</p>
+
+<p>For this exercise, you should create a random binary sort tree with 1023
+nodes. The items in the tree can be real numbers, and you can create the tree
+by generating 1023 random real numbers and inserting them into the tree, using
+the usual <span class="code">treeInsert()</span> method for binary sort trees. Once you have the
+tree, you should compute and output the average depth of all the leaves in the
+tree and the maximum depth of all the leaves. To do this, you will need three
+recursive subroutines: one to count the leaves, one to find the sum of the
+depths of all the leaves, and one to find the maximum depth. The latter two
+subroutines should have an <span class="ptype">int</span>-valued parameter, <span class="code">depth</span>, that
+tells how deep in the tree you've gone. When you call this routine from the main
+program, the <span class="code">depth</span> parameter is 0; when you call the routine recursively,
+the parameter increases by 1.</p>
+
+<p align="right">
+<a href="ex5-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 9.6:</h3>
+<p> The parsing programs in
+<a href="../c9/s5.html">Section&nbsp;9.5</a> work with expressions made up of numbers and operators. We can
+make things a little more interesting by allowing the variable "x" to occur.
+This would allow expression such as "<span class="code">3*(x-1)*(x+1)</span>", for example. Make
+a new version of the sample program <span class="sourceref"><a href="../source/SimpleParser3.java">SimpleParser3.java</a></span> that can work with such
+expressions. In your program, the <span class="code">main()</span> routine can't simply print
+the value of the expression, since the value of the expression now depends on
+the value of <span class="code">x</span>. Instead, it should print the value of the expression
+for <span class="code">x=0</span>, <span class="code">x=1</span>, <span class="code">x=2</span>, and <span class="code">x=3</span>.</p>
+
+<p>The original program will have to be modified in several other ways.
+Currently, the program uses classes <span class="classname">ConstNode</span>, <span class="classname">BinOpNode</span>, and
+<span class="classname">UnaryMinusNode</span> to represent nodes in an expression tree. Since
+expressions can now include&nbsp;<span class="code">x</span>, you will need a new class,
+<span class="classname">VariableNode</span>, to represent an occurrence of <span class="code">x</span> in the
+expression.</p>
+
+<p>In the original program, each of the node classes has an instance method,
+"<span class="code">double&nbsp;value()</span>", which returns the value of the node. But in your
+program, the value can depend on <span class="code">x</span>, so you should replace this method
+with one of the form "<span class="code">double&nbsp;value(double&nbsp;xValue)</span>", where the
+parameter <span class="code">xValue</span> is the value of&nbsp;<span class="code">x</span>.</p>
+
+<p>Finally, the parsing subroutines in your program will have to take into
+account the fact that expressions can contain <span class="code">x</span>. There is just one
+small change in the BNF rules for the expressions: A <span class="code">&lt;factor&gt;</span> is
+allowed to be the variable <span class="code">x</span>:</p>
+
+<pre>&lt;factor&gt;  ::=  &lt;number&gt;  |  &lt;x-variable&gt;  |  "(" &lt;expression&gt; ")"</pre>
+
+<p>where <span class="code">&lt;x-variable&gt;</span> can be either a lower case or an upper
+case "X". This change in the BNF requires a change in the <span class="code">factorTree()</span>
+subroutine.</p>
+
+<p align="right">
+<a href="ex6-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 9.7:</h3>
+<p>This exercise builds on
+the previous exercise, <a href="../c9/ex6-ans.html">Exercise&nbsp;9.6</a>. To
+understand it, you should have some background in Calculus. The derivative of
+an expression that involves the variable <span class="code">x</span> can be defined by a few
+recursive rules:</p>
+
+
+<ul>
+
+<li>The derivative of a constant is 0.</li>
+
+
+<li>The derivative of <span class="code">x</span> is 1.</li>
+
+
+<li>If <span class="code">A</span> is an expression, let <span class="code">dA</span> be the derivative of
+<span class="code">A</span>. Then the derivative of <span class="code">-A</span> is <span class="code">-dA</span>.</li>
+
+
+<li>If <span class="code">A</span> and <span class="code">B</span> are expressions, let <span class="code">dA</span> be the
+derivative of <span class="code">A</span> and let <span class="code">dB</span> be the derivative of <span class="code">B</span>.
+Then the derivative of <span class="code">A+B</span> is <span class="code">dA+dB</span>.</li>
+
+
+<li>The derivative of <span class="code">A-B</span> is <span class="code">dA-dB</span>.</li>
+
+
+<li>The derivative of <span class="code">A*B</span> is <span class="code">A*dB + B*dA</span>.</li>
+
+
+<li>The derivative of <span class="code">A/B</span> is <span class="code">(B*dA - A*dB) / (B*B)</span>.</li>
+
+</ul>
+
+
+<p>For this exercise, you should modify your program from the previous exercise
+so that it can compute the derivative of an expression. You can do this by
+adding a derivative-computing method to each of the node classes. First, add
+another abstract method to the <span class="classname">ExpNode</span> class:</p>
+
+
+<pre>abstract ExpNode derivative();</pre>
+
+
+<p>Then implement this method in each of the four subclasses of
+<span class="classname">ExpNode</span>. All the information that you need is in the rules given
+above. In your main program, instead of printing the stack operations for the original 
+expression, you should print out the stack operations that define the derivative.
+Note that the formula that you get for the derivative can be much more
+complicated than it needs to be. For example, the derivative of <span class="code">3*x+1</span>
+will be computed as <span class="code">(3*1+0*x)+0</span>. This is correct, even though it's
+kind of ugly, and it would be nice for it to be simplified.  However, simplifying
+expressions is not easy.</p>
+
+
+<p>As an alternative to printing out stack operations, you might want to print
+the derivative as a fully parenthesized expression. You can do this by adding a
+<span class="code">printInfix()</span> routine to each node class. It would be nice to leave
+out unnecessary parentheses, but again, the problem of deciding which
+parentheses can be left out without altering the meaning of the expression is a
+fairly difficult one, which I don't advise you to attempt.</p>
+
+
+<p>(There is one curious thing that happens here: If you apply the rules, as
+given, to an expression tree, the result is no longer a tree, since the same
+subexpression can occur at multiple points in the derivative. For example, if
+you build a node to represent <span class="code">B*B</span> by saying "<span class="code">new
+BinOpNode('*',B,B)</span>", then the left and right children of the new node are
+actually the same node! This is not allowed in a tree. However, the difference
+is harmless in this case since, like a tree, the structure that you get has no
+loops in it. Loops, on the other hand, would be a disaster in most of the
+recursive tree-processing subroutines that we have written, since it would
+lead to infinite recursion.  The type of structure that is built by the
+derivative functions is technically referred to as a <span class="newword">directed acyclic graph</span>.)</p>
+
+
+<p>here is an applet version of my program for you to try:</p>
+
+<p align="center">
+<applet code="SimpleParser5Console.class" width="600" height="350" archive="SimpleParser5.jar" alt=""></applet></p>
+
+
+
+<p align="right">
+<a href="ex7-ans.html">See the Solution</a>
+</p>
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

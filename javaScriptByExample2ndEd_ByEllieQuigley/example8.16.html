@@ -1,0 +1,42 @@
+  <html><head><title>Creating a subclass</title>
+   <script type="text/javascript">
+     function Pet(){   // Base Class
+        var owner = "Mrs. Jones";
+         var gender = undefined;
+         this.setOwner = function(who) { owner=who;};
+	     this.getOwner = function(){ return owner; }
+	     this.setGender = function(sex) { gender=sex; }
+	     this.getGender = function(){ return gender; }
+	 }
+
+    function Cat(){}  //subclass constructor
+    Cat.prototype = new Pet();
+    Cat.prototype.constructor=Cat;
+    Cat.prototype.speak=function speak(){
+                             return("Meow");
+                         };
+    function Dog(){};  //subclass construtor
+   Dog.prototype= new Pet();
+     Dog.prototype.constructor=Dog;
+
+     Dog.prototype.speak = function speak(){
+                             return("Woof");
+                         };
+   </script>
+   </head>
+   <body><big>
+   <script>
+   var cat = new Cat;
+     var dog = new Dog;
+     cat.setOwner("John Doe");
+     cat.setGender("Female");
+   dog.setGender("Male");
+   document.write("The cat is a "+ cat.getGender()+ " owned by " +
+     cat.getOwner() +" and it says " + cat.speak());
+      document.write("<br/>The dog is a "+ dog.getGender() + " " +
+    " owned by " + dog.getOwner() + " and it says " + dog.speak());
+
+   </script>
+   </big>
+  </body>
+  </html>

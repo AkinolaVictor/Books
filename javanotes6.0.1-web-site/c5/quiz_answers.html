@@ -1,0 +1,357 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Answers for Quiz on Chapter 5</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2 class="quiz_title">Answers for Quiz on Chapter 5</h2>
+<p>
+<span class="start"><big>T</big>his page contains</span> sample answers to the quiz on Chapter 5 of
+           <a href="../index.html"><i>Introduction to Programming Using Java</i></a>.
+           Note that generally, there are lots of correct answers to a given question.</p>
+<table border="1" align="center" cellpadding="8" width="95%">
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;1:</span></td><td>
+<p>Object-oriented programming
+uses <i>classes</i> and <i>objects</i>. What are classes and what are objects?
+What is the relationship between classes and objects?</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>When used in object-oriented
+programming, a class is a factory for creating objects. (We are talking here
+about the non-static part of the class.) An object is a collection of data and
+behaviors that represent some entity (real or abstract). A class defines the
+structure and behaviors of all entities of a given type. An object is one
+particular "instance" of that type of entity. For example, if <i>Dog</i> is a
+class, than <i>Lassie</i> would be an object of type <i>Dog</i>.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;2:</span></td><td>
+<p>Explain carefully what
+<i>null</i> means in Java, and why this special value is necessary.</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>When a variable is of object
+type (that is, declared with a class or interface as its type rather than one of Java's
+primitive types), the value stored in the variable is not an object. Objects
+exist in a part of memory called the heap, and the variable holds a
+<i>pointer</i> or <i>reference</i> to the object. Null is a special value that
+can be stored in a variable to indicate that it does not actually point to any
+object.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;3:</span></td><td>
+<p>What is a
+<i>constructor?</i> What is the purpose of a constructor in a class?</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>A constructor is a special kind
+of subroutine in a class. It has the same name as the name of the class, and it
+has no return type, not even <span class="code">void.</span> A constructor is called with the
+<span class="code">new</span> operator in order to create a new object. Its main purpose is to
+initialize the newly created object, but in fact, it can do anything that the
+programmer wants it to do.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;4:</span></td><td>
+<p>Suppose that
+<span class="code">Kumquat</span> is the name of a class and that <span class="code">fruit</span> is a variable
+of type <span class="code">Kumquat.</span> What is the meaning of the statement "<span class="code">fruit = new
+Kumquat();</span>"? That is, what does the computer do when it executes this
+statement? (Try to give a complete answer. The computer does several
+things.)</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>This statement creates a new
+object belonging to the class <span class="code">Kumquat</span>, and it stores a reference to
+that object in the variable <span class="code">fruit.</span> More specifically, when the
+computer executes this statement, it allocates memory to hold a new object of
+type <span class="code">Kumquat</span>. It calls a constructor, which can initialize the
+instance variables of the object as well as perform other tasks. A reference to
+the new object is returned as the value of the expression "<span class="code">new
+Kumquat()</span>". Finally, the assignment statement stores the reference in the
+variable, <span class="code">fruit</span>. So, <span class="code">fruit</span> can now be used to access the new
+object.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;5:</span></td><td>
+<p>What is meant by the terms
+<i>instance variable</i> and <i>instance method</i>?</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>Instance variables and instance
+methods are non-static variables and methods in a class. This means that they
+do not belong to the class itself. Instead, they specify what variables and
+methods are in an object that belongs to that class. That is, the class
+contains the source code that defines instance variables and instance methods,
+but actual instance variables and instance methods are contained in objects.
+(Such objects are called "instances" of the class.) Thus, instance variables
+and instance methods are the data and the behaviors of objects.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;6:</span></td><td>
+<p>Explain what is meant by the
+terms <i>subclass</i> and <i>superclass.</i>
+</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>In object oriented programming,
+one class can inherit all the properties and behaviors from another class. It
+can then add to and modify what it inherits. The class that inherits is called
+a subclass, and the class that it inherits from is said to be its superclass.
+In Java, the fact that <span class="code">ClassA</span> is a subclass of <span class="code">ClassB</span> is
+indicated in the definition of <span class="code">ClassA</span> as follows:</p>
+
+<pre>class ClassA extends ClassB {...}</pre>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;7:</span></td><td>
+<p>Modify the following class so that the two instance variables are <span class="code">private</span>
+and there is a getter method and a setter method for each instance variable:</p>
+
+<pre>public class Player {
+   String name;
+   int score;
+}</pre>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>To make a variable private, just add the word "private" in front of each
+declaration.  We need two methods for each variable.  One of them returns the value
+of the variable.  The other provides a new value for the variable.
+The names for these methods should follow the usual naming convention for
+getter and setter methods.  (Note that my setter methods use the special
+variable <span class="code">this</span> so that I can use the same name for the parameter
+of the method as is used for the instance variable. This is a very common pattern.)</p>
+
+<pre>public class Player {
+   private String name;
+   private int score;
+   public String getName() {
+      return name;
+   }
+   public void setName(String name) {
+      this.name = name;  // ("this.name" refers to the instance variable)
+   }
+   public int getScore() {
+      return score;
+   }
+   public void setScore(int score) {
+      this.score = score;
+   }
+}</pre>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;8:</span></td><td>
+<p>Explain why the class <span class="classname">Player</span> that is defined in the previous
+question has an instance method named <span class="code">toString()</span>, even though no definition
+of this method appears in the definition of the class.</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>If a class is not declared to <span class="code">extend</span> any class, then it automatically
+extends the class <span class="classname">Object</span>, which is one of the built-in classes of
+Java.  So in this case, <span class="classname">Player</span> is a direct subclass of
+<span class="classname">Object</span>.  The <span class="classname">Object</span> class defines
+a <span class="code">toString()</span> method, and the <span class="classname">Player</span> class inherits
+this <span class="code">toString()</span> method from <span class="classname">Object</span>.  The methods and
+member variables in a class include not just those defined in the class but also those
+inherited from its superclass.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;9:</span></td><td>
+<p>Explain the term
+<i>polymorphism.</i>
+</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>Polymorphism refers to the fact
+that different objects can respond to the same method in different ways,
+depending on the actual type of the object. This can occur because a method can
+be overridden in a subclass. In that case, objects belonging to the subclass
+will respond to the method differently from objects belonging to the
+superclass.</p>
+
+
+<p>(Note: If B is a subclass of A, then a variable of type A can refer to
+either an object of type A or an object of type B. Let's say that <span class="code">var</span>
+is such a variable and that <span class="code">action()</span> is a method in class A that is
+redefined in class B. Consider the statement "var.action()". Does this execute
+the method from class A or the method from class B? The answer is that there is
+no way to tell! The answer depends on what type of object <span class="code">var</span> refers
+to, a class A object or a class B object. The method executed by
+<span class="code">var.action()</span> depends on the actual type of the object that
+<span class="code">var</span> refers to, not on the type of the variable <span class="code">var</span>. This is
+the real meaning of polymorphism.)</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;10:</span></td><td>
+<p>Java uses "garbage
+collection" for memory management. Explain what is meant here by garbage
+collection. What is the alternative to garbage collection?</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>The purpose of garbage
+collection is to identify objects that can no longer be used, and to dispose of
+such objects and reclaim the memory space that they occupy. If garbage
+collection is not used, then the programmer must be responsible for keeping
+track of which objects are still in use and disposing of objects when they are
+no longer needed. If the programmer makes a mistake, then there is a "memory
+leak," which might gradually fill up memory with useless objects until the
+program crashes for lack of memory.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;11:</span></td><td>
+<p>For this problem, you should
+write a very simple but complete class. The class represents a counter that
+counts 0, 1, 2, 3, 4,&nbsp;.... The name of the class should be <span class="code">Counter</span>. It
+has one <span class="code">private</span> instance variable representing the value of the
+counter. It has two instance methods: <span class="code">increment()</span> adds one to the
+counter value, and <span class="code">getValue()</span> returns the current counter value. Write
+a complete definition for the class, <span class="code">Counter</span>.</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>Here is a possible answer. (Note
+that the initialization of the instance variable, value, to zero is not really
+necessary, since it would be initialized to zero anyway if no explicit
+initialization were provided.)</p>
+
+
+<pre>
+/**
+ * An object of this class represents a counter that counts up from zero.
+ */
+public class Counter {
+
+   private int value = 0;  // Current value of the counter.
+
+   /**
+    * Add one to the value of the counter.
+    */
+   public void increment() {  
+      value++;
+   }
+
+   /**
+    * Returns the current value of the counter.
+    */
+   public int getValue() {    
+      return value;
+   }
+
+} // end of class Counter</pre>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;12:</span></td><td>
+<p>This problem uses the
+<span class="code">Counter</span> class from the previous question. The following program segment is meant
+to simulate tossing a coin 100 times. It should use two <span class="code">Counter</span>
+objects, <span class="code">headCount</span> and <span class="code">tailCount</span>, to count the number of
+heads and the number of tails. Fill in the blanks so that it will do so:</p>
+
+
+<pre>Counter headCount, tailCount;
+tailCount = new Counter();
+headCount = new Counter();
+for ( int flip = 0;  flip &lt; 100;  flip++ ) {
+   if (Math.random() &lt; 0.5)    // There's a 50/50 chance that this is true.
+   
+       ______________________ ;   // Count a "head".
+       
+   else
+   
+       ______________________ ;   // Count a "tail".
+}
+
+System.out.println("There were " + ___________________ + " heads.");
+
+System.out.println("There were " + ___________________ + " tails.");</pre>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>The variable <span class="code">headCount</span>
+is a variable of type <span class="code">Counter</span>, so the only thing that you can do with
+it is call the instance methods <span class="code">headCount.increment()</span> and
+<span class="code">headCount.getValue()</span>. Call <span class="code">headCount.increment()</span> to add one
+to the counter. Call <span class="code">headCount.getValue()</span> to discover the current
+value of the counter. Note that you can't get at the value of the counter
+directly, since the variable that holds the value is a <span class="code">private</span>
+instance variable in the <span class="code">Counter</span> object. Similarly for
+<span class="code">tailCount</span>. Here is the program with calls to these instance methods
+filled in:</p>
+
+
+<pre>Counter headCount, tailCount;
+tailCount = new Counter();
+headCount = new Counter();
+for ( int flip = 0;  flip &lt; 100;  flip++ ) {
+   if (Math.random() &lt; 0.5)    // There's a 50/50 chance that this is true.
+       <span class="newcode">headCount.increment()</span> ;   // Count a "head", using headCount
+   else
+       <span class="newcode">tailCount.increment()</span> ;   // Count a "tail", using tailCount
+}
+System.out.println(("There were " + <span class="newcode">headCount.getValue()</span> + " heads.");
+System.out.println(("There were " + <span class="newcode">tailCount.getValue()</span> + " tails.");</pre>
+
+</td>
+</tr>
+</table>
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

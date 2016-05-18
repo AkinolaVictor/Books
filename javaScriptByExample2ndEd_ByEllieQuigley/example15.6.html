@@ -1,0 +1,29 @@
+<html>
+<head><title>Modify Text</title>
+ <style type="text/css">
+    body{background-color:aliceblue;}
+   .divStyle {
+ 	   background-color:green;
+	   margin-left:20%
+	   margin-right:20%
+ 	   border-style:solid;
+ 	   color:white;
+ 	   font-size:150%
+	}
+ </style>
+
+  <script type="text/javascript">
+   	window.onload=function(){
+  		var divObj = document.getElementById("divtest");
+     		alert(divObj);
+		divObj.innerHTML="Inserting new text in the div container.";
+	}  
+
+  </script>
+  </head>
+<body>
+	<div id="divtest" class="divStyle">
+   		Original text in div container.
+	</div>
+</body>
+</html>

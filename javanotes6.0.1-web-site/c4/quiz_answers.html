@@ -1,0 +1,298 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Answers for Quiz on Chapter 4</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2 class="quiz_title">Answers for Quiz on Chapter 4</h2>
+<p>
+<span class="start"><big>T</big>his page contains</span> sample answers to the quiz on Chapter 4 of
+           <a href="../index.html"><i>Introduction to Programming Using Java</i></a>.
+           Note that generally, there are lots of correct answers to a given question.</p>
+<table border="1" align="center" cellpadding="8" width="95%">
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;1:</span></td><td>
+<p>A "black box" has an
+interface and an implementation. Explain what is meant by the terms
+<i>interface</i> and <i>implementation</i>.</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>The interface of a black box is
+its connection with the rest of the world, such as the name and parameters of a
+subroutine or the dial for setting the temperature on a thermostat. The
+implementation refers to internal workings of the black box. To use the black
+box, you need to understand its interface, but you don't need to know anything
+about the implementation.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;2:</span></td><td>
+<p>A subroutine is said to have
+a <i>contract</i>. What is meant by the contract of a subroutine? When you want
+to use a subroutine, why is it important to understand its contract? The
+contract has both "syntactic" and "semantic" aspects. What is the syntactic
+aspect? What is the semantic aspect?</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>The contract of a subroutine
+says what must be done to call the subroutine correctly and what it will do
+when it is called. It is, in short, everything a programmer needs to know about
+the subroutine in order to use it correctly. (It does not include the
+"insides," or implementation, of the subroutine.)</p>
+
+<p>The syntactic component of a subroutine's contract includes the name of the
+subroutine, the number of parameters, and the type of each parameter. This is
+the information needed to write a subroutine call statement that can be
+successfully compiled. The semantic component of the contract specifies the
+meaning of the subroutine, that is, the task that the subroutine performs. It
+might also specify limitations on what parameter values the subroutine can
+process correctly. The semantic component is not part of the program. It is
+generally expressed in comments.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;3:</span></td><td>
+<p>Briefly explain how
+subroutines can be useful in the top-down design of programs.</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>Top-down refers to starting from
+the overall problem to be solved, and breaking it up into smaller problems that
+can be solved separately. When designing a program to solve the problem, you
+can simply make up a subroutine to solve each of the smaller problems. Then you
+can separately design and test each subroutine.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;4:</span></td><td>
+<p>Discuss the concept of
+<i>parameters.</i> What are parameters for? What is the difference between
+<i>formal parameters</i> and <i>actual parameters</i>?</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>Parameters are used for
+communication between a subroutine and the part of the program that calls the
+subroutine. If a subroutine is thought of as a black box, then parameters are
+part of the interface to that black box. Formal parameters are found in the
+subroutine definition. Actual parameters are found in subroutine call
+statements. When the subroutine is called, the values of the actual parameters
+are assigned to the formal parameters before the body of the subroutine is
+executed.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;5:</span></td><td>
+<p>Give two different reasons
+for using named constants (declared with the <span class="code">final</span> modifier).</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>A constant has a meaningful
+name, which makes the program easier to read. It's easier to understand what a
+name like <span class="code">INTEREST_RATE</span> is for than it is to figure out how a literal
+number like 0.07 is being used.</p>
+
+<p>A second reason for using named constants is that it's easy to modify the
+value of the constant if that becomes necessary. If a literal value is used
+throughout the program, the programmer has to track down each occurrence of the
+value and change it. When a constant is used correctly, it is only necessary to
+change the value assigned to the constant at one point in the program.</p>
+
+<p>A third reason is that using the <span class="code">final</span> modifier protects the value
+of a variable from being changed. This is especially important for member
+variables that are accessible from outside the class where they are
+declared.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;6:</span></td><td>
+<p>What is an API? Give an example.</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>An API is an Applications
+Programming Interface. It is the interface to a "toolbox" of subroutines that
+someone has written. It tells you what routines are available, how to call
+them, and what they do, but it does not tell you how the subroutines are
+implemented. An example is the standard Java API which describes the interfaces
+of all the subroutines in all the classes that are available in such packages
+as <span class="code">java.lang</span> and <span class="code">java.awt</span>.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;7:</span></td><td>
+<p>Write a subroutine named
+"stars" that will output a line of stars to standard output. (A star is the
+character "*".) The number of stars should be given as a parameter to the
+subroutine. Use a <i>for</i> loop. For example, the command "stars(20)" would
+output</p>
+
+<pre>********************</pre>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>The subroutine could be written as follows:</p>
+
+<pre>static void stars(int numberOfStars) {
+     // output a line containing the specified number of stars
+   for (int i = 0; i &lt; numberOfStars; i++) {
+       System.out.print('*');
+   }
+   System.out.println();  // output carriage return after the *'s
+}</pre>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;8:</span></td><td>
+<p>Write a <span class="code">main()</span>
+routine that uses the subroutine that you wrote for Question 7 to output 10
+lines of stars with 1 star in the first line, 2 stars in the second line, and
+so on, as shown below.</p>
+
+<pre>*
+**
+***
+****
+*****
+******
+*******
+********
+*********
+**********</pre>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>The <span class="code">main()</span> routine can
+use a <span class="code">for</span> loop that calls the <span class="code">stars()</span> subroutine ten times,
+once to produce each line of output. (An occasional beginner's mistake in this
+problem is to rewrite the body of the subroutine inside the <span class="code">main()</span>
+routine, instead of just calling it by name.) Here is the main routine -- which
+would, of course, have to be put together with the subroutine in a class in
+order to be used.</p>
+
+<pre>public static void main(String[] args) {
+    int line;  // Line number, and also the number of stars on that line.
+    for ( line = 1;  line &lt;= 10;  line++ ) {
+        stars( line );
+    }
+}</pre>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;9:</span></td><td>
+<p>Write a function named
+<span class="code">countChars</span> that has a <span class="classname">String</span> and a <span class="ptype">char</span> as
+parameters. The function should count the number of times the character occurs
+in the string, and it should return the result as the value of the
+function.</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>The returned value will be of
+type <span class="ptype">int</span>. The function simply uses a <span class="code">for</span> loop to look at each
+character in the string. When the character in the string matches the parameter
+value, it is counted.</p>
+
+<pre>static int countChars( String str, char searchChar ) {
+      // Count the number of times searchChar occurs in
+      // str and return the result.
+    int i;     // A position in the string, str.
+    char ch;   // A character in the string.
+    int count; // Number of times searchChar has been found in str.
+    count = 0;
+    for ( i = 0;  i &lt; str.length();  i++ ) {
+        ch = str.charAt(i);  // Get the i-th character in str.
+        if ( ch == searchChar )
+           count++;
+    }
+    return count;
+}</pre>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;10:</span></td><td>
+<p>Write a subroutine with
+three parameters of type <i>int.</i> The subroutine should determine which of
+its parameters is smallest. The value of the smallest parameter should be
+returned as the value of the subroutine.</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>I'll call the subroutine
+<span class="code">smallest</span> and the three parameters <span class="code">x</span>, <span class="code">y</span>, and
+<span class="code">z</span>. The value returned by the subroutine has to be either <span class="code">x</span> or
+<span class="code">y</span> or <span class="code">z</span>. The answer will be <span class="code">x</span> if <span class="code">x</span> is less
+than or equal to both <span class="code">y</span> and <span class="code">z</span>. The correct syntax for
+checking this is "<span class="code">if&nbsp;(x&nbsp;&lt;=&nbsp;y&nbsp;&amp;&amp;&nbsp;x&nbsp;&lt;= z)</span>". Similarly for
+<span class="code">y</span>. The only other remaining possibility is <span class="code">z</span>, so there is no
+necessity for making any further test before returning <span class="code">z</span>.  (In fact, doing so would
+be an error in Java, since with no "else" clause in the <span class="code">if</span> statement, 
+the compiler cannot determine that the function definitely returns a value in all possible
+cases.)</p>
+
+<pre>static int smallest(int x, int y, int z) {
+   if (x &lt;= y &amp;&amp; x &lt;= z) {
+      return x;
+   }
+   else if (y &lt;= x &amp;&amp; y &lt;= z) {
+      return y;
+   }
+   else
+      return z;
+}</pre>
+
+<p>Note: Since a return statement causes the computer to terminate the
+execution of a subroutine anyway, this could also be written as follows,
+without the <span class="code">elses</span>:</p>
+
+<pre>static int smallest(int x, int y, int z) {
+   if (x &lt;= y &amp;&amp; x &lt;= z) {
+      return x;
+   }
+   if (y &lt;= x &amp;&amp; y &lt;= z) {
+      return y;
+   }
+   return z;
+}</pre>
+
+</td>
+</tr>
+</table>
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

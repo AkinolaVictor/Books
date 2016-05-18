@@ -1,0 +1,125 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Quiz on Chapter 12</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="quiz_answers.html">Quiz Answers</a> | <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2 class="quiz_title">Quiz on Chapter 12</h2>
+<p>
+<span class="start"><big>T</big>his page contains</span> questions on Chapter 12 of
+           <a href="../index.html"><i>Introduction to Programming Using Java</i></a>.
+           You should be able to answer these questions after studying that chapter.
+           Sample answers to these questions can be found <a href="quiz_answers.html">here</a>.</p>
+<table border="1" align="center" cellpadding="8" width="95%">
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;1:</span></td><td>
+<p>Write a complete subclass of <span class="classname">Thread</span> to represent
+a thread that writes out the numbers from 1 to 10.  Then write some code that
+would create and start a thread belonging to that class.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;2:</span></td><td>
+<p>Suppose that <span class="code">thrd</span> is an object of type <span class="classname">Thread</span>.
+Explain the difference between calling <span class="code">thrd.start()</span> and calling <span class="code">thrd.run()</span>.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;3:</span></td><td>
+<p>What is a <i>race condition</i>?</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;4:</span></td><td>
+<p>How does synchronization prevent race conditions, and what does it mean to say
+that synchronization only provides <i>mutual</i> exclusion?</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;5:</span></td><td>
+<p>Suppose that a program uses a single thread that takes 4 seconds to run.
+Now suppose that the program creates two threads and divides the same work between the
+two threads.  What can be said about the expected execution time of the program
+that uses two threads?</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;6:</span></td><td>
+<p>What is an <span class="classname">ArrayBlockingQueue</span>  and how does it
+solve the producer/consumer problem?</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;7:</span></td><td>
+<p>What is a <i>thread pool</i>?</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;8:</span></td><td>
+<p>Network server programs are
+often <i>multithreaded.</i> Explain what this means and why it is true.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;9:</span></td><td>
+<p>Why does a multithreaded network server program often use 
+many times more threads than the number of available processors?</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;10:</span></td><td>
+<p>Consider the <span class="classname">ThreadSafeCounter</span> example from
+<a href="../c12/s1.html#threads.1.3">Subsection&nbsp;12.1.3</a>:</p>
+
+<pre>public class ThreadSafeCounter {
+   
+   private int count = 0;  // The value of the counter.
+   
+   synchronized public void increment() {
+      count = count + 1;
+   }
+   
+   synchronized public int getValue() {
+      return count;
+   }
+   
+}</pre>
+
+<p>The <span class="code">increment()</span> method is synchronized so that the caller of the method can
+complete the three steps of the operation "Get value of count," "Add 1 to value,"
+"Store new value in count" without being interrupted by another thread. 
+But <span class="code">getValue()</span> consists of a single,
+simple step.  Why is <span class="code">getValue()</span> synchronized?  (This is a deep and
+tricky question.)</p>
+
+</td>
+</tr>
+</table>
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="quiz_answers.html">Quiz Answers</a> | <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<html>
+<head><title>The Array Object</title>
+<h2>An Array of Books</h2>
+<script type="text/javascript">
+var book = new Array(6);   // Create an Array object
+book[0] = "War and Peace"; // Assign values to its elements
+book[1] = "Huckleberry Finn";
+book[2] = "The Return of the Native";
+book[3] = "A Christmas Carol";
+book[4] = "The Yearling";
+book[5] = "Exodus";
+book[7]="Going Rogue";
+</script>
+</head>
+<body bgcolor="lavender">
+  <p style="font-size:150%">
+		<script type="text/javascript">
+			for(var i in book){
+			   document.write("book[" + i + "] "+ book[i]  + "<br/>");
+			}
+		</script>
+ </p>
+	</body>
+	</html>

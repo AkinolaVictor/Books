@@ -1,0 +1,11 @@
+<script type="text/javascript">
+     // No plugins for Windows IE. Firefox uses this program.
+    var num_of_plugins = navigator.plugins.length;
+    for (var i=0; i < num_of_plugins; i++) {
+        var number=i+1;
+        document.write("<font color=red>Plug-in No." +
+           number + "- </font>"+navigator.plugins[i].name+
+          "<br>[Location: " + navigator.plugins[i].filename + "]<p>");
+      }
+    alert("\nYou have " + number + " plug-ins installed!")
+</script>

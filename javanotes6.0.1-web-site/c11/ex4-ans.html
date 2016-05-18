@@ -1,0 +1,293 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 4, Chapter 11</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 11.4</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 11.4:</h3>
+<p>Write a client program
+for the server from <a href="../c11/ex3-ans.html">Exercise&nbsp;11.3</a>. Design a
+user interface that will let the user do at least two things: (1)&nbsp;Get a list of
+files that are available on the server and display the list on standard output; and
+(2)&nbsp;Get a copy of a specified file from the server and save it to a local file (on
+the computer where the client is running).</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>One possible user interface would be to present the
+user with a menu of actions that the program can perform. For variety,
+however, I decided on an interface based entirely on the command line. The
+first command line argument must be the name or IP address of the computer
+where a copy of the <span class="classname">FileServer</span> program from 
+<a href="../c11/ex3-ans.html">Exercise&nbsp;11.3</a> is running. If that is the only
+command-line argument, then the client will contact the server and send an
+"index" command to the server. The server responds with a list of file names.
+The client reads these names and displays them on the screen. The program then
+ends. (If you want to give another command, you have to run the client program
+again with a new command line.)</p>
+
+
+<p>If there are two command-line arguments, then the second argument must be
+the name of a file on the server. The client contacts the server and sends a
+"get" command. The server responds with a one-line message, either "error" or
+"ok". The client reads this message. If the message is "error", indicating that
+the requested file can't be sent, then the client just displays an error
+message to the user. If the message is "ok", then the server also sends the
+contents of the file. The client tries to create a local file of the same name.
+It reads the data from the server and saves it to that file. However, for
+safety, the client will not create a new file if a local file of the same name
+already exists. This is considered to be an error. (An alternative would be
+to ask the user whether to replace the existing file.)</p>
+
+
+<p>Finally, I wanted to make it possible to save a downloaded file in a local
+file with a different name. For this, three command line arguments are used.
+The first is the server, the second is the name of the file on the server, and
+the third is the name of the local file where the downloaded file is to be
+saved. In this case, the program is willing to overwrite an existing file of
+the same name, so the command must be used with some care.</p>
+
+
+<p>If the server program is running on the same computer as the client (for
+demonstration purposes), the following command lines can be used to run the
+client:</p>
+
+
+<pre>java FileClient  localhost
+java FileClient  localhost  datafile.txt
+java FileClient  localhost  datafile.txt  mycopy.dat
+java FileClient  localhost  datafile.txt  datafile.txt</pre>
+
+
+<p>The first command shows a list of files that are available on the server.
+The other three all try to get a file named "datafile.txt" from the server.
+The second command would refuse the save the file, if a file named datafile.txt
+already exists.  The last command would replace an existing datafile.txt with the file
+retrieved from the server.</p>
+
+
+<p>The actual programming of the client is fairly straightforward. The example
+program <span class="sourceref"><a href="../source/DateClient.java">DateClient.java</a></span>, from <a href="../c11/s4.html#IO.4.4">Subsection&nbsp;11.4.4</a> provides a
+model for opening a connection to the server and for sending and receiving data
+over the connection. You should be able to follow the solution, given
+below.</p>
+   
+
+<p>Note that the client program must know the protocol that is used to communicate
+with the server.  The <b>user</b> of the program, however, does't need to know
+anything about the protocol.  The user only has to know how to use the program,
+and the user interface does not reflect or depend on the details of the protocol.</p>
+
+
+<p>By the way, once you understand how the <span class="classname">FileClient</span> and
+<span class="classname">FileServer</span> examples work, it's not a big conceptual leap to
+understanding how the World Wide Web works. A Web server program is just a
+greatly souped-up version of the <span class="classname">FileServer</span> program. It has access to
+a collection of files. It receives and responds to requests for those files
+from client programs. To get a file, the client program -- a Web browser -- needs
+to know the computer on which the server is running and the name of the
+file. This information is encoded in the url address of a Web page -- just like
+it's given on the command line of the <span class="classname">FileClient</span> program. A Web page,
+of course, can contain links to other Web pages. The link includes a url with
+the necessary information for finding the page. To get the page, the Web
+browser just goes through the same process of contacting the specified server
+and requesting the specified file. (One big complication is that not all the
+files on a Web server are text files, so the client needs some way of knowing
+what type of data is stored in the file, and it needs to know how to handle
+data of that type.)</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">import java.net.*;
+import java.io.*;
+   
+/**
+ * This program is a client for the FileServer server.  The 
+ * server has a list of available text files that can be
+ * downloaded by the client.  The client can also download
+ * the list of files.  When the connection is opened, the
+ * client sends one of two possible commands to the server:
+ * "index" or "get &lt;file-name&gt;".  The server replies to
+ * the first command by sending the list of available files.
+ * It responds to the second with a one-line message,
+ * either "ok" or "error".  If the message is "ok", it is
+ * followed by the contents of the file with the specified
+ * name.  The "error" message indicates that the specified
+ * file does not exist on the server.  (The server can also
+ * respond with the message "unsupported command" if the command
+ * it reads is not one of the two possible legal commands.)
+ * 
+ * The client program works with command-line arguments.
+ * The first argument must be the name or IP address of the
+ * computer where the server is running.  If that is the
+ * only argument on the command line, then the client
+ * gets the list of files from the server and displays
+ * it on standard output.  If there are two parameters,
+ * the second parameter is interpreted as the name of a
+ * file to be downloaded.  A copy of the file is saved
+ * as a local file of the same name, unless a file of
+ * the same name already exists.  If there are three
+ * arguments, the second is the name of the file to be
+ * downloaded and the third is the name under which the
+ * local copy of the file is to be saved.  This will
+ * work even if a file of the same name already exists.
+ */
+public class FileClient {
+
+   static final int LISTENING_PORT = 3210;
+
+
+   public static void main(String[] args) {
+   
+      String computer;          // Name or IP address of server.
+      Socket connection;        // Socket for communicating with that computer.
+      PrintWriter outgoing;     // Stream for sending a command to the server.
+      BufferedReader incoming;  // Stream for reading data from the connection.
+      String command;           // Command to send to the server.
+      
+
+      /* Check that the number of command-line arguments is legal.
+         If not, print a usage message and end. */
+      
+      if (args.length == 0 || args.length &gt; 3) {
+         System.out.println("Usage:  java FileClient &lt;server&gt;");
+         System.out.println("    or  java FileClient &lt;server&gt; &lt;file&gt;");
+         System.out.println(
+               "    or  java FileClient &lt;server&gt; &lt;file&gt; &lt;local-file&gt;");
+         return;
+      }
+      
+      /* Get the server name and the message to send to the server. */
+      
+      computer = args[0];
+      
+      if (args.length == 1)
+         command = "index";
+      else
+         command = "get " + args[1];
+      
+      /* Make the connection and open streams for communication.
+         Send the command to the server.  If something fails
+         during this process, print an error message and end. */
+      
+      try {
+         connection = new Socket( computer, LISTENING_PORT );
+         incoming = new BufferedReader( 
+                           new InputStreamReader(connection.getInputStream()) );
+         outgoing = new PrintWriter( connection.getOutputStream() );
+         outgoing.println(command);
+         outgoing.flush();
+      }
+      catch (Exception e) {
+         System.out.println(
+              "Can't make connection to server at \"" + args[0] + "\".");
+         System.out.println("Error:  " + e);
+         return;
+      }
+      
+      /* Read and process the server's response to the command. */
+      
+      try {
+         if (args.length == 1) {
+               // The command was "index".  Read and display lines
+               // from the server until the end-of-stream is reached.
+            System.out.println("File list from server:");
+            while (true) {
+               String line = incoming.readLine();
+               if (line == null)
+                   break;
+               System.out.println("   " + line);
+            }
+         }
+         else {
+               // The command was "get &lt;file-name&gt;".  Read the server's
+               // response message.  If the message is "ok", get the file.
+            String message = incoming.readLine();
+            if (! message.equals("ok")) {
+               System.out.println("File not found on server.");
+               return;
+            }
+            PrintWriter fileOut;  // For writing the received data to a file.
+            if (args.length == 3) {
+                  // Use the third parameter as a file name.
+                fileOut = new PrintWriter( new FileWriter(args[2]) );
+            }
+            else {
+                  // Use the second parameter as a file name,
+                  // but don't replace an existing file.
+                File file = new File(args[1]);
+                if (file.exists()) {
+                   System.out.println("A file with that name already exists.");
+                   System.out.println("To replace it, use the three-argument");
+                   System.out.println("version of the command.");
+                   return;
+                }
+                fileOut = new PrintWriter( new FileWriter(args[1]) );
+            }
+            while (true) {
+                   // Copy lines from incoming to the file until
+                   // the end of the incoming stream is encountered.
+                String line = incoming.readLine();
+                if (line == null)
+                    break;
+                fileOut.println(line);
+            }
+            if (fileOut.checkError()) {
+               System.out.println("Some error occurred while writing the file.");
+               System.out.println("Output file might be empty or incomplete.");
+            }
+         }
+      }
+      catch (Exception e) {
+         System.out.println(
+                 "Sorry, an error occurred while reading data from the server.");
+         System.out.println("Error: " + e);
+      }
+      finally {
+         try {
+            connection.close();
+         }
+         catch (IOException e) {
+         }
+      }
+      
+   }  // end main()
+   
+
+} //end class FileClient
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

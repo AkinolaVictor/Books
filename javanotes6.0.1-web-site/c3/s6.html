@@ -1,0 +1,406 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 3.6 -- The switch Statement</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s5.html">Previous Section</a> |
+           <a href="s7.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#control.6.1">The Basic switch Statement</a>
+<br>
+<a href="#control.6.2">Menus and switch Statements</a>
+<br>
+<a href="#control.6.3">Enums in switch Statements</a>
+<br>
+<a href="#control.6.4">Definite Assignment</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 3.6</h3>
+<h2 class="section_title">The switch Statement</h2>
+<hr class="break">
+   
+
+<p>
+<span class="start"><big>T</big>he second branching statement</span> in Java is the
+<span class="code">switch</span> statement, which is introduced in this section. The
+<span class="code">switch</span> statement is used far less often than the <span class="code">if</span> statement, but it
+is sometimes useful for expressing a certain type of multi-way branch.</p>
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="control.6.1">3.6.1&nbsp;&nbsp;The Basic switch Statement</a>
+</h3>
+
+
+<p>A switch statement allows you to test the value of an expression and,
+depending on that value, to jump directly to some location within the switch statement.
+Only expressions of certain types can be used.  The value of the expression
+can be one of the primitive integer types <span class="ptype">int</span>,
+<span class="ptype">short</span>, or <span class="ptype">byte</span>.
+It can be the primitive <span class="ptype">char</span> type.  Or, as we will see
+later in this section, it can be an enumerated type. 
+In Java&nbsp;7, <span class="classname">Strings</span> are also allowed.
+In particular, the expression <b>cannot</b> be a real number, and prior to Java&nbsp;7,
+it <b>cannot</b> be a <span class="classname">String</span>. The positions
+that you can jump to are marked with <span class="newword">case labels</span> that take the form: 
+"case&nbsp;<span class="bnf">constant</span>:". This marks the position the
+computer jumps to when the expression evaluates to the given <span class="bnf">constant</span>. 
+As the final case in a switch statement you can,
+optionally, use the label "default:", which provides a default jump point that
+is used when the value of the expression is not listed in any case label.</p>
+
+
+<p>A <span class="code">switch</span> statement, as it is most often used, has the form:</p>
+
+
+<pre>switch (<span class="bnf">expression</span>) {
+   case <span class="bnf">constant-1</span>:
+      <span class="bnf">statements-1</span>
+      break;
+   case <span class="bnf">constant-2</span>:
+      <span class="bnf">statements-2</span>
+      break;
+      .
+      .   // (more cases)
+      .
+   case <span class="bnf">constant-N</span>:
+      <span class="bnf">statements-N</span>
+      break;
+   default:  // optional default case
+      <span class="bnf">statements-(N+1)</span>
+} // end of switch statement</pre>
+
+
+<p>The <span class="code">break</span> statements are technically optional. The effect of a
+<span class="code">break</span> is to make the computer jump to the end of the switch statement.
+If you leave out the break statement, the computer will just forge ahead after
+completing one case and will execute the statements associated with the next
+case label. This is rarely what you want, but it is legal. (I will note here -- although 
+you won't understand it until you get to the next chapter -- that
+inside a subroutine, the <span class="code">break</span> statement is sometimes replaced by a
+<span class="code">return</span> statement.)</p>
+
+
+<p>Note that you can leave out one of the groups of statements entirely
+(including the <span class="code">break</span>). You then have two case labels in a row,
+containing two different constants. This just means that the computer will jump
+to the same place and perform the same action for each of the two
+constants.</p>
+
+
+<p>Here is an example of a switch statement. This is not a useful example, but
+it should be easy for you to follow. Note, by the way, that the constants in
+the case labels don't have to be in any particular order, as long as they are
+all different:</p>
+
+
+<pre>switch ( N ) {   // (Assume N is an integer variable.)
+   case 1:
+      System.out.println("The number is 1.");
+      break;
+   case 2:
+   case 4:
+   case 8:
+      System.out.println("The number is 2, 4, or 8.");
+      System.out.println("(That's a power of 2!)");
+      break;
+   case 3:
+   case 6:
+   case 9:
+      System.out.println("The number is 3, 6, or 9.");
+      System.out.println("(That's a multiple of 3!)");
+      break;
+   case 5:
+      System.out.println("The number is 5.");
+      break;
+   default:
+      System.out.println("The number is 7 or is outside the range 1 to 9.");
+}</pre>
+
+   
+
+<p>The switch statement is pretty primitive as control structures go, and it's
+easy to make mistakes when you use it. Java takes all its control structures
+directly from the older programming languages C and C++. The switch statement
+is certainly one place where the designers of Java should have introduced some
+improvements.</p>
+
+   
+   
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="control.6.2">3.6.2&nbsp;&nbsp;Menus and switch Statements</a>
+</h3>
+
+
+<p>One application of <span class="code">switch</span> statements is in processing menus. A menu
+is a list of options. The user selects one of the options. The computer has to
+respond to each possible choice in a different way. If the options are numbered
+1, 2,&nbsp;..., then the number of the chosen option can be used in a
+<span class="code">switch</span> statement to select the proper response.</p>
+
+
+<p>In a <span class="classname">TextIO</span>-based program, the menu can be presented as a numbered
+list of options, and the user can choose an option by typing in its number.
+Here is an example that could be used in a variation of the
+<span class="code">LengthConverter</span> example from the <a href="../c3/s5.html">previous
+section</a>:</p>
+
+
+<pre>int optionNumber;   // Option number from menu, selected by user.
+double measurement; // A numerical measurement, input by the user.
+                    //    The unit of measurement depends on which
+                    //    option the user has selected.
+double inches;      // The same measurement, converted into inches.
+
+/* Display menu and get user's selected option number. */
+
+TextIO.putln("What unit of measurement does your input use?");
+TextIO.putln();
+TextIO.putln("         1.  inches");
+TextIO.putln("         2.  feet");
+TextIO.putln("         3.  yards");
+TextIO.putln("         4.  miles");
+TextIO.putln();
+TextIO.putln("Enter the number of your choice: ");
+optionNumber = TextIO.getlnInt();
+
+/* Read user's measurement and convert to inches. */
+
+switch ( optionNumber ) {
+   case 1:
+       TextIO.putln("Enter the number of inches: ");
+       measurement = TextIO.getlnDouble();
+       inches = measurement;
+       break;          
+   case 2:
+       TextIO.putln("Enter the number of feet: ");
+       measurement = TextIO.getlnDouble();
+       inches = measurement * 12;
+       break;          
+   case 3:
+       TextIO.putln("Enter the number of yards: ");
+       measurement = TextIO.getlnDouble();
+       inches = measurement * 36;
+       break;          
+   case 4:
+       TextIO.putln("Enter the number of miles: ");
+       measurement = TextIO.getlnDouble();
+       inches = measurement * 12 * 5280;
+       break;
+   default:
+       TextIO.putln("Error!  Illegal option number!  I quit!");
+       System.exit(1);          
+} // end switch
+
+/* Now go on to convert inches to feet, yards, and miles... */</pre>
+
+
+<p>In Java&nbsp;7, this example might be rewritten using a <span class="classname">String</span>
+in the <span class="code">switch</span> statement:</p>
+
+
+<pre>String units;       // Unit of measurement, entered by user.
+double measurement; // A numerical measurement, input by the user.
+double inches;      // The same measurement, converted into inches.
+
+/* Read the user's unit of measurement. */
+
+TextIO.putln("What unit of measurement does your input use?");
+TextIO.put("inches, feet, yards, or miles ?");
+units = TextIO.getln().toLowerCase();
+
+/* Read user's measurement and convert to inches. */
+
+TextIO.put("Enter the number of " + units + ":  ");
+measurement = TextIO.getlnDouble();
+
+switch ( units ) {  <span class="newcode">// Requires Java 7 or higher!</span>
+   case "inches":
+       inches = measurement;
+       break;          
+   case "feet":
+       inches = measurement * 12;
+       break;          
+   case "yards":
+       inches = measurement * 36;
+       break;          
+   case "miles":
+       inches = measurement * 12 * 5280;
+       break;
+   default:
+       TextIO.putln("Wait a minute!  Illegal unit of measure!  I quit!");
+       System.exit(1);          
+} // end switch</pre>
+
+   
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="control.6.3">3.6.3&nbsp;&nbsp;Enums in switch Statements</a>
+</h3>
+   
+
+<p>The type of the expression in a <span class="code">switch</span> can be an enumerated
+type.  In that case, the constants in the <span class="code">case</span> labels must
+be values from the enumerated type.  For example, if the type of
+the expression is the enumerated type <span class="classname">Season</span>
+defined by</p>
+
+
+<pre>enum Season { SPRING, SUMMER, FALL, WINTER }</pre>
+
+
+<p>then the constants in the case label must be chosen from among
+the values <span class="code">Season.SPRING</span>, <span class="code">Season.SUMMER</span>, <span class="code">Season.FALL</span>, or
+<span class="code">Season.WINTER</span>.  However, there is another quirk in the syntax:
+when an enum constant is used in a <span class="code">case</span> label, only the simple name,
+such as "<span class="code">SPRING</span>" can be used, not the full name "<span class="code">Season.SPRING</span>".
+Of course, the computer already knows that the value in the <span class="code">case</span> label
+must belong to the enumerated type, since it can tell that from the type of expression
+used, so there is really no need to specify the type name in the constant.  As an
+example, suppose that <span class="code">currentSeason</span> is a variable of type
+<span class="classname">Season</span>.  Then we could have the <span class="code">switch</span> statement:</p>
+  
+
+<pre>switch ( currentSeason ) {
+   case WINTER:    // ( NOT Season.WINTER ! )
+      System.out.println("December, January, February");
+      break;
+   case SPRING:
+      System.out.println("March, April, May");
+      break;
+   case SUMMER:
+      System.out.println("June, July, August");
+      break;
+   case FALL:
+      System.out.println("September, October, November");
+      break;
+}</pre>
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="control.6.4">3.6.4&nbsp;&nbsp;Definite Assignment</a>
+</h3>
+   
+
+<p>As a somewhat more realistic example, the following <span class="code">switch</span> statement
+makes a random choice among three possible alternatives.  Recall that the
+value of the expression <span class="code">(int)(3*Math.random())</span> is one of the
+integers 0, 1, or 2, selected at random with equal probability, so the
+<span class="code">switch</span> statement below will assign one of the values
+<span class="code">"Rock"</span>, <span class="code">"Scissors"</span>, <span class="code">"Paper"</span> to <span class="code">computerMove</span>,
+with probability 1/3 for each case.   Although
+the switch statement in this example is correct, this code segment as a
+whole illustrates a subtle syntax error that sometimes comes up:</p>
+
+
+<pre>String computerMove;
+switch ( (int)(3*Math.random()) ) {
+   case 0:
+      computerMove = "Rock";
+      break;
+   case 1:
+      computerMove = "Scissors";
+      break;
+   case 2:
+      computerMove = "Paper";
+      break;
+}
+System.out.println("Computer's move is " + computerMove);   // ERROR!</pre>
+   
+
+<p>You probably haven't spotted the error, since it's not an error
+from a human point of view.  The computer reports the last line to be
+an error, because the variable <span class="code">computerMove</span> might not have
+been assigned a value.  In Java, it is only legal to use the value
+of a variable if a value has already been <span class="newword">definitely assigned</span>
+to that variable.  This means that the computer must be able to prove, just
+from looking at the code when the program is compiled, that the variable
+must have been assigned a value.  Unfortunately, the computer only
+has a few simple rules that it can apply to make the determination.
+In this case, it sees a <span class="code">switch</span> statement in which the
+type of expression is <span class="ptype">int</span> and in which the cases that
+are covered are 0, 1, and 2.  For other values of the expression,
+<span class="code">computerMove</span> is never assigned a value.  So, the computer
+thinks <span class="code">computerMove</span> might still be undefined after
+the <span class="code">switch</span> statement.  Now, in fact, this isn't true:
+0, 1, and 2 are actually the only possible values of the expression
+<span class="code">(int)(3*Math.random())</span>, but the computer isn't smart
+enough to figure that out.  The easiest way to fix the problem
+is to replace the case label <span class="code">case&nbsp;2</span> with
+<span class="code">default</span>.  The computer can then see that a value
+is assigned to <span class="code">computerMove</span> in all cases.</p>
+
+
+<p>More generally, we say that a value has been definitely assigned
+to a variable at a given point in a program if every execution
+path leading from the declaration of the variable to that point in the
+code includes an assignment to the variable.  This rule takes into
+account loops and <span class="code">if</span> statements as well as <span class="code">switch</span>
+statements.  For example, the following two <span class="code">if</span> statements
+both do the same thing as the <span class="code">switch</span> statement given
+above, but only the one on the right definitely assigns a value
+to <span class="code">computerMove</span>:</p>
+
+
+<pre>String computerMove;                     String computerMove;
+int rand;                                int rand;
+rand = (int)(3*Math.random());           rand = (int)(3*Math.random());
+if ( rand == 0 )                         if ( rand == 0 )
+   computerMove = "Rock";                   computerMove = "Rock";
+else if ( rand == 1 )                    else if ( rand == 1 )
+   computerMove = "Scissors";               computerMove = "Scissors";
+else <span class="newcode">if ( rand == 2 )</span>                    else
+   computerMove = "Paper";                  computerMove = "Paper";</pre>
+   
+
+<p>In the code on the left, the test "<span class="code">if&nbsp;(&nbsp;rand&nbsp;==&nbsp;2&nbsp;)</span>" 
+in the final <span class="code">else</span> clause
+is unnecessary because if <span class="code">rand</span> is not 0 or 1, the only remaining
+possibility is that <span class="code">rand&nbsp;==&nbsp;2</span>.  The computer, however, can't
+figure that out.</p>
+
+
+   
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s5.html">Previous Section</a> |
+           <a href="s7.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

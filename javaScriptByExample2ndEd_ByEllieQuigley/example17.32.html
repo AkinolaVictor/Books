@@ -1,0 +1,19 @@
+
+<html><head><title>Grouping or Clustering</title></head>
+<body>
+<script type="text/javascript">
+	// Grouping with parentheses
+	var reg_expression = /^(Sam|Dan|Tom) Robbins/;
+	var textString=prompt("Type a string of text","");
+	var result=reg_expression.test(textString);  // Returns true 
+		                                             // or false
+        document.write(result+"<br>");
+	if (result){
+		document.write("<b>The regular expression /^(Sam|Dan|Tom) Robbins/ matched the string\""+ textString +"\".<br>");
+		}
+	else{
+		alert("No Match!");
+	}
+</script>
+</body>
+</html>

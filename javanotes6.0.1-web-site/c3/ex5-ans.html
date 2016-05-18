@@ -1,0 +1,234 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 5, Chapter 3</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 3.5</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 3.5:</h3>
+<p>Suppose that a file contains information about sales figures for a company in various cities.
+Each line of the file contains a city name, followed by a colon&nbsp;(:) followed by the data for that
+city.  The data is a number of type <span class="ptype">double.</span>
+However, for some cities, no data was available.  In these lines, the data is replaced by
+a comment explaining why the data is missing.  For example, several lines from the file might
+look like:</p>
+
+<pre>San Francisco:  19887.32
+Chicago:  no report received
+New York: 298734.12</pre>
+
+<p>Write a program that will compute and print the total sales from all the cities together. The
+program should also report the number of cities for which data was not available.  The name of the
+file is "sales.dat".</p>
+
+<p>To complete this program, you'll need one fact about file input with <span class="classname">TextIO</span>
+that was not covered in <a href="../c2/s4.html#basics.4.5">Subsection&nbsp;2.4.5</a>.  Since you don't know in advance how many
+lines there are in the file, you need a way to tell when you have gotten to the end of the file.
+When <span class="classname">TextIO</span> is reading from a file, the function <span class="code">TextIO.eof()</span>
+can be used to test for <span class="newword">end of file</span>.  This <span class="ptype">boolean</span>-valued
+function returns <span class="code">true</span> if the file has been entirely read and returns <span class="code">false</span>
+if there is more data to read in the file.  This means that you can read the lines of the
+file in a loop <span class="code">while&nbsp;(TextIO.eof()&nbsp;==&nbsp;false)...</span>. The loop will end
+when all the lines of the file have been read.</p>
+
+<p>Suggestion:  For each line, read and ignore characters up to the colon.  Then read the rest
+of the line into a variable of type <span class="classname">String</span>.  Try to convert the string
+into a number, and use <span class="code">try..catch</span> to test whether the conversion succeeds.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+
+<p>The statement <span class="code">TextIO.readFile("sales.dat")</span> can be used at the beginning of
+the program to make <span class="classname">TextIO</span> read from the file instead of from the user's input.
+This statement throws an <span class="classname">IllegalArgumentException</span> if the file can't be
+found.  Although it's not required by the statement of the problem, it would be nice to detect
+the exception and print an error message about the missing file.  This can be done as follows,
+using <span class="code">System.exit</span> to end the program if the error occurs:</p>
+   
+
+<pre>try {
+   TextIO.readFile("sales.dat");
+}
+catch (IllegalArgumentException e) {
+   System.out.println("Can't open file \"sales.dat\" for reading!");
+   System.out.println("Please make sure the file is present before");
+   System.out.println("running the program.");
+   System.exit(1);  // Terminates the program.
+}</pre>
+   
+
+<p>We have two main quantities to keep track of in the program:  The total amount of sales and
+the number of cities for which data is missing.  These quantities can be represented by
+two variables, <span class="code">salesTotal</span> of type <span class="ptype">double</span> and <span class="code">missingCount</span>
+of type <span class="ptype">int</span>.  These variables are initialized to zero before processing any data
+from the file, and their values are output at the end of the program, after reading the
+entire file.</p>
+   
+
+<p>The main processing loop of the program is the <span class="code">while</span> loop mentioned in the
+statement of the exercise, which begins <span class="code">while&nbsp;(TextIO.eof()&nbsp;==&nbsp;false)</span>.  
+(In my program, I've chosen to use the equivalent but more elegant test
+<span class="code">while&nbsp;(&nbsp;!&nbsp;TextIO.eof()&nbsp;)</span>; you should try to understand why
+this is equivalent -- and why it is more elegant!)  In pseudocode form, we want a loop
+that does the following:</p>
+
+
+<pre>while there are more lines in the file:
+   read the name of the city and the colon that follows it
+   read the rest of the line into a string
+   try to convert the string into a number
+      if the conversion succeeds, add the number to the total sales
+      otherwise add 1 to the count of missing data</pre>
+   
+
+<p>To read past the name of the city, we can simply read characters using
+<span class="code">TextIO.getChar()</span> until we get to the colon:</p>
+   
+
+<pre>do {  // Read past characters up to the ':'.
+   ch = TextIO.getChar();
+} while (ch != ':');</pre>
+   
+
+<p>where <span class="code">ch</span> is a variable of type <span class="ptype">char</span>.  We can read the rest
+of the line using <span class="code">TextIO.getln()</span>.  (As a side note, it's important here
+that we read the entire line, including the carriage return at the end.  <span class="code">TextIO.getln()</span>
+does this.  If we neglected to read the carriage return at the end of the line,
+<span class="code">TextIO.eof()</span> would not detect the end of the file correctly.  After the
+data from the last line is read, the carriage return character would still be there in
+the file waiting to be read; since there is still something left to read in the file,
+<span class="code">TextIO.eof()</span> would be false <span class="code">false</span> and the while loop would
+continue, even though all the cities have already been processed.  In fact, the program
+would crash while looking for the next&nbsp;':', which is not there.  Text processing
+can be surprisingly subtle!)</p>
+   
+
+<p>Once we have the information in the form of a <span class="classname">String</span>, we can try to
+convert the string into a number with <span class="code">Double.parseDouble</span>.  If the string is
+not a number, this will throw an exception of type <span class="classname">NumberFormatException</span>.
+We can catch the error in a <span class="code">try..catch</span> statement.  The "missing data"
+processing is done in the <span class="code">catch</span> part of this statement.  In the program,
+this takes the form:</p>
+
+<pre>try {
+   sales = Double.parseDouble(dataString);
+   salesTotal += sales;  // This is skipped if the conversion fails.
+}
+catch (NumberFormatException e) {
+       // The dataString is not a number, so it counts as
+       // missing data.  Add 1 to the missing data count.
+   missingCount++;
+}</pre>
+   
+
+<p>(Note that my solution assumes that the data file (if it exists at all) has exactly the
+format that is specified in the problem.  The problem would be more difficult if we had
+to check the format of the file, to see whether it conforms to the specification.)</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">/**
+ * This program reads from a file named "sales.dat".  Each line of the
+ * file contains the name of a city, followed by a colon, followed by
+ * either a number giving the amount of sales in that city or by a
+ * message saying why the sales figure is not available.  The program
+ * prints the total sales for all cities and the number of cites for
+ * which the figure was not available.
+ */
+   
+public class SalesFigures {
+   
+   public static void main( String[] args ) {
+      
+      /* Open file for reading; if it can't be opened, end the program */
+      
+      try {
+         TextIO.readFile("sales.dat");
+      }
+      catch (IllegalArgumentException e) {
+         System.out.println("Can't open file \"sales.dat\" for reading!");
+         System.out.println("Please make sure the file is present before");
+         System.out.println("running the program.");
+         System.exit(1);  // Terminates the program.
+      }
+      
+      /* Read the file, keeping track of total sales and missing data. */
+      
+      double salesTotal;  // Total of all sales figures seen so far.
+      int missingCount;   // Number of cities for which data is missing.
+      
+      salesTotal = 0;
+      missingCount = 0;
+      
+      while ( ! TextIO.eof() ) {  // process one line of data.
+         
+         char ch;  // For reading past the name of the city.
+         String dataString;  // Contents of line, after the city name.
+         double sales;  // The sales figure for the city.
+         
+         do {  // Read past characters up to the ':'.
+            ch = TextIO.getChar();
+         } while (ch != ':');
+         
+         dataString = TextIO.getln();  // Get the rest of the line.
+         
+         try {
+            sales = Double.parseDouble(dataString);
+            salesTotal += sales;  // This is skipped if the conversion fails.
+         }
+         catch (NumberFormatException e) {
+                // The dataString is not a number, so it counts as
+                // missing data.  Add 1 to the missing data count.
+            missingCount++;
+         }
+   
+      } // end while
+      
+      /* Report the results. */
+      
+      System.out.printf("Total sales recorded from all cities: $%1.2f\n\n", salesTotal);
+      if (missingCount == 0)
+         System.out.println("Data was received from all cities.");
+      else if (missingCount == 1)
+         System.out.println("Data was missing from 1 city.");
+      else
+         System.out.printf("Data was missing from %d cities.\n", missingCount);
+      
+   } // end main()
+   
+} // end class SalesFigures
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

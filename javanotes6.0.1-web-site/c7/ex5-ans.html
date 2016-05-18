@@ -1,0 +1,427 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 5, Chapter 7</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 7.5</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 7.5:</h3>
+<p>The sample program <span class="sourceref"><a href="../source/RandomArtPanel.java">RandomArtPanel.java</a></span> from
+<a href="../c6/s5.html#GUI1.5.1">Subsection&nbsp;6.5.1</a> shows a different random "artwork" every four seconds.  There
+are three types of "art", one made from lines, one from circles, and one from filled
+squares.  However, the program does not save the data for the picture that is shown
+on the screen.  As a result, the picture cannot be redrawn when necessary.  In fact, 
+every time <span class="code">paintComponent()</span> is called, a new picture is drawn.</p>
+
+<p>Write a new version of <span class="sourceref"><a href="../source/RandomArtPanel.java">RandomArtPanel.java</a></span> that saves the
+data needed to redraw its pictures.   The <span class="code">paintComponent()</span> method
+should simply use the data to draw the picture.  New data should be recomputed
+only every four seconds, in response to an event from the timer that drives the
+program.</p>
+
+<p>To make this interesting, write a separate class for each of the three different
+types of art.  Also write an abstract class to serve as the common base class for
+the three classes.  Since all three types of art use a random gray background, 
+the background color can be defined in their superclass.  The superclass also
+contains a <span class="code">draw()</span> method that draws the picture; this is an abstract
+method because its implementation depends on the particular type of art that
+is being drawn.  The abstract class can be defined as:</p>
+
+<pre>
+private abstract class ArtData {
+   Color backgroundColor;  // The background color for the art.
+   ArtData() {  // Constructor sets background color to be a random gray.
+      int x = (int)(256*Math.random());
+      backgroundColor = new Color( x, x, x, );
+   }
+   abstract void draw(Graphics g);  // Draws this artwork.
+}</pre>
+
+<p>Each of the three subclasses of <span class="code">ArtData</span> must define its own <span class="code">draw()</span>
+method.  It must also define instance variables to hold the data necessary to draw the
+picture.  I suggest that you should create random data for the picture in the constructor
+of the class, so that  constructing the object will automatically create the data for the random
+artwork. (One problem with this is that you can't create the data until you know the
+size of the panel, so you can't create an artdata object in the constructor of the panel.
+One solution is to create an artdata object at the beginning of the <span class="code">paintComponent()</span>
+method, if the object has not already been created.)
+In all three subclasses, you will need to use several arrays 
+to store the data.</p>
+
+<p>The file <span class="sourceref"><a href="../source/RandomArtPanel.java">RandomArtPanel.java</a></span> only defines a panel class.  A
+main program that uses this panel can be found in <span class="sourceref"><a href="../source/RandomArt.java">RandomArt.java</a></span>,
+and an applet that uses it can be found in <span class="sourceref"><a href="../source/RandomArtApplet.java">RandomArtApplet.java</a></span>.
+You only need to modify <span class="classname">RandomArtPanel</span>.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>In my solution, I defined subclasses <span class="classname">LineArtData</span>,
+<span class="classname">CircleArtData</span>, and <span class="classname">SquareArtData</span> of
+the basic abstract <span class="classname">ArtData</span> class.  An instance variable named
+<span class="code">artData</span>, of type <span class="classname">ArtData</span>, points to the object that
+holds the data for the current picture.  When it's time to create a new artwork,
+I call the following method, which changes the value of <span class="code">artData</span>.  Note
+that this method has an equal chance of producing each of the three types of art:</p>
+
+<pre>/**
+ * Creates an object belonging to one of the three subclasses of
+ * ArtData, and assigns that object to the instance variable, artData.
+ * The subclass to use (that is, the type of art) is chosen at random.
+ */
+private void createArtData() {
+   switch ( (int)(3*Math.random()) ) {
+   case 0:
+      artData = new LineArtData();
+      break;
+   case 1:
+      artData = new CircleArtData();
+      break;
+   case 2:
+      artData = new SquareArtData();
+      break;
+   }
+}</pre>
+
+<p>This method is called by the action listener that responds to events from the timer,
+so a new artwork is created every time the timer generates an event, that is, every four seconds.</p>
+
+<p>The <span class="code">paintComponent()</span> method uses the background color from <span class="code">artData</span>
+to fill the drawing area.  It then tells <span class="code">artData</span> to draw itself by calling
+its <span class="code">draw()</span> method.  As suggested in the exercise, it first makes sure
+that an art data object has been created by calling <span class="code">createArtData()</span> if
+<span class="code">artData</span> is still null; this can only be true the first time <span class="code">paintComponent()</span>
+is called.  So, the <span class="code">paintComponent()</span> method is quite simple:</p>
+
+
+<pre>public void paintComponent(Graphics g) {
+
+   if (artData == null)  // If no artdata has yet been created, create it.
+      createArtData();
+   
+   // Note:  Since the next two lines fill the entire panel, there is
+   // no need to call super.paintComponent(g), since any drawing
+   // that it does will only be covered up anyway.
+   
+   g.setColor(artData.backgroundColor); // Fill with the art's background color.
+   g.fillRect( 0, 0, getWidth(), getHeight() );
+
+   artData.draw(g);  // Draw the art.
+     
+} // end paintComponent()</pre>
+
+
+<p>The only thing that remains for discussion is the three classes that define the three
+types of art.  Note that we have been able to get this far without thinking about creating
+or drawing the actual art.  This is because we have been thinking "abstractly," in terms of the
+abstract class.</p>
+
+<p>Let's look in detail at <span class="classname">LineArtData</span>, one of the three concrete 
+subclasses of <span class="classname">ArtData</span>.  In the original program, line art was
+drawn in the <span class="code">paintComponent()</span> method as follows:</p>
+
+<pre>for (int i = 0; i &lt; 500; i++) {
+   int x1 = (int)(getWidth() * Math.random());
+   int y1 = (int)(getHeight() * Math.random());
+   int x2 = (int)(getWidth() * Math.random());
+   int y2 = (int)(getHeight() * Math.random());
+   Color randomHue = Color.getHSBColor( (float)Math.random(), 1.0F, 1.0F);
+   g.setColor(randomHue);
+   g.drawLine(x1,y1,x2,y2);
+}</pre>
+
+<p>Here, the coordinates and colors for each line are chosen at random and the line is immediately
+drawn using that data.  For the new version, we want to save the data in instance variables
+so that the picture can be drawn and redrawn on demand.  The creation of the data will be split
+from the drawing; the data will be created in the constructor and will be used to draw the
+picture in the <span class="code">draw()</span> method.   To save the data for all 500 lines,
+we have to store the coordinates and colors in arrays.  There are several ways to do this,
+but I used one array for each piece of data, <span class="code">x1</span>, <span class="code">y1</span>, <span class="code">x2</span>,
+<span class="code">y2</span>, and the color.  
+To store data for 500 lines, each array should be of length
+500.  For example, <span class="code">x1</span> is declared as an instance variable of type
+<span class="atype">int[]</span>, and the array is created with the command "<span class="code">x1 = new&nbsp;int[500];</span>".
+The arrays are created in the <span class="classname">LineArtData</span> constructor and are filled with random data.
+In the <span class="code">draw()</span> method, the <span class="code">i-th</span> line can be drawn with the commands:</p>
+
+<pre>g.setColor( color[i] );    // Use the i-th color in the array
+g.drawLine( x1[i], y1[i], x2[i], y2[i] );</pre>
+
+<p>We just need a <span class="code">for</span> loop to draw all the lines.  The complete definition of
+<span class="classname">LineArtData</span> class is as follows:</p>
+
+<pre>/**
+ * Stores data for a picture that contains 500 random lines drawn in
+ * different random colors.
+ */
+private class LineArtData extends ArtData {
+   Color[] color;         // color[i] is the color of line number i
+   int[] x1, y1, x2, y2;  // line i goes from (x1[i],y1[i]) to (x2[i],y2[i]).
+   LineArtData() {  // Constructor creates arrays and fills then randomly.
+      color = new Color[500];
+      x1 = new int[500];
+      y1 = new int[500];
+      x2 = new int[500];
+      y2 = new int[500];
+      for (int i = 0; i &lt; 500; i++) {
+         x1[i] = (int)(getWidth() * Math.random());
+         y1[i] = (int)(getHeight() * Math.random());
+         x2[i] = (int)(getWidth() * Math.random());
+         y2[i] = (int)(getHeight() * Math.random());
+         color[i] = Color.getHSBColor( (float)Math.random(), 1.0F, 1.0F);
+      }
+   }
+   void draw(Graphics g) {  // Draw the picture.
+      for (int i = 0; i &lt; 500; i++) {
+         g.setColor(color[i]);
+         g.drawLine( x1[i], y1[i], x2[i], y2[i] );
+      }
+   }
+}</pre>
+
+<p>This is, by the way, a <b>non-static</b> nested class in the <span class="classname">RandomArtPanel</span>
+class.  It can't be static because it uses the instance methods <span class="code">getWidth()</span> and
+<span class="code">getHeight()</span> from the containing class.</p>
+
+<p>The other two classes are very similar.  Note that we are using the technique of 
+"parallel arrays" here.  That is, the data for the <span class="code">i-th</span> line is spread out
+over five different arrays.  An array of objects, where each object holds all the data
+for one line, might be better style but it seemed to be overkill for this
+simple example.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+/**
+ * A RandomArtPanel draws random pictures which might be taken to have
+ * some vague resemblance to abstract art.  A new picture is produced every
+ * four seconds.  There are three types of pictures:  random lines,
+ * random circles, and random 3D rects.  The figures are drawn in
+ * random colors on a background that is a random shade of gray.  The
+ * data for a given piece of art is stored in a data structure so
+ * that the picture can be redrawn if necessary.  The data is created
+ * in response to the action event form a timer.
+ */
+public class RandomArtPanel2 extends JPanel {
+   
+   /**
+    * The data for the currently displayed picture (unless it is null).
+    */
+   private ArtData artData;
+   
+   
+   /**
+    * The constructor creates a timer with a delay time of four seconds
+    * (4000 milliseconds), and with a RepaintAction object as its
+    * ActionListener.  It also starts the timer running.  The
+    * RepaintAction class is a nested class, defined below.
+    */
+   public RandomArtPanel2() {
+      RepaintAction action = new RepaintAction();
+      Timer timer = new Timer(4000, action);
+      timer.start();
+   }
+
+   
+   /**
+    * The paintComponent() method fills the panel with a random shade of
+    * gray and then draws one of three types of random "art".  The data for
+    * the picture is in the variable artData (if this variable is null,
+    * then an artData object is created here).
+    */
+   public void paintComponent(Graphics g) {
+
+      if (artData == null)  // If no artdata has yet been created, create it.
+         createArtData();
+      
+      // Note:  Since the next two lines fill the entire panel, there is
+      // no need to call super.paintComponent(g), since any drawing
+      // that it does will only be covered up anyway.
+      
+      g.setColor(artData.backgroundColor); // Fill with the art's background color.
+      g.fillRect( 0, 0, getWidth(), getHeight() );
+
+      artData.draw(g);  // Draw the art.
+        
+   } // end paintComponent()
+   
+   
+   /**
+    * Creates an object belonging to one of the three subclasses of
+    * ArtData, and assigns that object to the instance variable, artData.
+    * The subclass to use (that is, the type of art) is chosen at random.
+    */
+   private void createArtData() {
+      switch ( (int)(3*Math.random()) ) {
+      case 0:
+         artData = new LineArtData();
+         break;
+      case 1:
+         artData = new CircleArtData();
+         break;
+      case 2:
+         artData = new SquareArtData();
+         break;
+      }
+   }
+   
+   
+   /**
+    * An abstract class that represents the data for a random work
+    * of "art".  Different concrete subclasses of this class represent
+    * different types of art.  This class contains a background
+    * color which is a random shade of gray, selected when the object
+    * is constructed.
+    */
+   private abstract class ArtData {
+      Color backgroundColor;  // The background color for the art.
+      ArtData() {  // Contructor sets background color to be a random shade of gray.
+         int x = (int)(256*Math.random());
+         backgroundColor = new Color( x, x, x );
+      }
+      abstract void draw(Graphics g);  // Draw the picture.
+   }
+   
+   
+   /**
+    * Stores data for a picture that contains 500 random lines drawn in
+    * different random colors.
+    */
+   private class LineArtData extends ArtData {
+      Color[] color;         // color[i] is the color of line number i
+      int[] x1, y1, x2, y2;  // line i goes from (x1[i],y1[i]) to (x2[i],y2[i]).
+      LineArtData() {  // Constructor creates arrays and fills then randomly.
+         color = new Color[500];
+         x1 = new int[500];
+         y1 = new int[500];
+         x2 = new int[500];
+         y2 = new int[500];
+         for (int i = 0; i &lt; 500; i++) {
+            x1[i] = (int)(getWidth() * Math.random());
+            y1[i] = (int)(getHeight() * Math.random());
+            x2[i] = (int)(getWidth() * Math.random());
+            y2[i] = (int)(getHeight() * Math.random());
+            color[i] = Color.getHSBColor( (float)Math.random(), 1.0F, 1.0F);
+         }
+      }
+      void draw(Graphics g) {  // Draw the picture.
+         for (int i = 0; i &lt; 500; i++) {
+            g.setColor(color[i]);
+            g.drawLine( x1[i], y1[i], x2[i], y2[i] );
+         }
+      }
+   }
+   
+   
+   /**
+    * Stores data for a picture that contains 200 circles with 
+    * radius 50, with random centers, and drawn in random colors.
+    */
+   private class CircleArtData extends ArtData {
+      Color[] color;  // color[i] is the color of the i-th circle
+      int[] centerX;  // center of circle i is at (centerX[i], centerY[i])
+      int[] centerY;
+      CircleArtData() {  // Constructor creates arrays and fills then randomly.
+         color = new Color[200];
+         centerX = new int[200];
+         centerY = new int[200];
+         for (int i = 0; i &lt; 200; i++) {
+            centerX[i] =  (int)(getWidth() * Math.random());
+            centerY[i] = (int)(getHeight() * Math.random());
+            color[i] = Color.getHSBColor( (float)Math.random(), 1.0F, 1.0F);
+         }
+      }
+      void draw(Graphics g) {  // Draw the picture.
+         for (int i = 0; i &lt; 200; i++) {
+            g.setColor(color[i]);
+            g.drawOval(centerX[i] - 50, centerY[i] - 50, 100, 100);
+         }
+      }
+   }
+   
+   
+   /**
+    * Stores data for a picture that contains 25 filled squares with 
+    * random sizes and  with random centers, and drawn in random colors.
+    */
+   private class SquareArtData extends ArtData {
+      Color[] color;  // color[i] is the color of the i-th square
+      int[] centerX;  // the center of square i is (centerX[i], centerY[i])
+      int[] centerY; 
+      int[] size;     // size[i] is the length of the side of the i-th square
+      SquareArtData() {  // Constructor creates arrays and fills then randomly.
+         color = new Color[25];
+         centerX = new int[25];
+         centerY = new int[25];
+         size = new int[25];
+         for (int i = 0; i &lt; 25; i++) {
+            centerX[i] =  (int)(getWidth() * Math.random());
+            centerY[i] = (int)(getHeight() * Math.random());
+            size[i] = 30 + (int)(170*Math.random());
+            color[i] = new Color( (int)(256*Math.random()), 
+                  (int)(256*Math.random()), (int)(256*Math.random()) );
+         }
+      }
+      void draw(Graphics g) {  // Draw the picture.
+         for (int i = 0; i &lt; 25; i++) {
+            g.setColor(color[i]);
+            g.fill3DRect(centerX[i] - size[i]/2, centerY[i] - size[i]/2, 
+                  size[i], size[i], true);
+         }
+      }
+   }
+   
+
+   /**
+    * A RepaintAction object creates a new artData object and calls the repaint 
+    * method of this panel each time its actionPerformed() method is called.  
+    * An object of this type is used as an action listener for a Timer that 
+    * generates an ActionEvent every four seconds.  The result is a new work of
+    * art every four seconds.
+    */
+   private class RepaintAction implements ActionListener {
+      public void actionPerformed(ActionEvent evt) {
+         createArtData();
+         repaint();
+      }
+   }
+   
+   
+} // end class RandomArtPanel2
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

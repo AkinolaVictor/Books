@@ -1,0 +1,382 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 2, Chapter 6</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 6.2</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 6.2:</h3>
+<p>Write a panel that shows a small red square and a small blue
+square. The user should be able to drag either square with the mouse.
+(You'll need an instance variable to remember which square the user is
+dragging.) The user can drag the square off the applet if she wants; if she
+does this, there is no
+way to get it back. Use your panel in either an applet or a stand-alone application.
+You can try the applet version here:</p>
+<p align="center">
+<applet code="DragTwoSquaresApplet.class" width="260" height="160" archive="DragTwoSquares.jar" alt=""></applet></p>
+
+<p>Note that for this exercise, you should do all the drawing in the
+<span class="code">paintComponent()</span> method (as indeed you should whenever possible).</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>To write this applet, you need to understand dragging, as discussed in
+<a href="../c6/s4.html#GUI1.4.4">Subsection&nbsp;6.4.4</a>. To support dragging, you have to implement
+both the <span class="classname">MouseListener</span> and <span class="classname">MouseMotionListener</span> interfaces and
+register some object to listen for both mouse and mouse motion events. The code
+for dragging a square is spread out over three methods, <span class="code">mousePressed</span>,
+<span class="code">mouseReleased</span>, and <span class="code">mouseDragged</span>. Several instance variables
+are needed to keep track of what is going on while a dragging operation is
+being executed. A general framework for dragging is given in <a href="../c6/s4.html#GUI1.4.4">Subsection&nbsp;6.4.4</a>. This
+example is simplified a bit because while dragging the square, we only need to
+know the current position of the mouse, so that we can move the square to that
+position. We don't need to keep track of the previous position of the
+mouse.  In my solution, I decided to write a nested class inside the panel class
+to define the listening object.  Another possibility would have been to let
+the panel class implement <span class="classname">MouseListener</span> and
+<span class="classname">MouseMotionListener</span>, and then register the panel with
+itself to listen for events.</p>
+
+
+<p>As always for any implementation of dragging, I use a boolean variable,
+<span class="code">dragging</span>, to keep track of whether or not a drag operation is in
+progress. Not every mouse press starts a drag operation. If the user clicks the
+applet outside of the squares, there is nothing to drag, and <span class="code">dragging</span>
+is set to false in the <span class="code">mousePressed</span> method.  If the user clicks one 
+of the squares, <span class="code">dragging</span> is set to true. Since there are two
+squares to be dragged, we have to keep track of which is being dragged. I use a
+boolean variable, <span class="code">dragRedSquare</span>, which is true if the red square is
+being dragged and is false if the blue square is being dragged. (A boolean
+variable is actually not the best choice in this case. It would be a problem if
+we wanted to add another square. A boolean variable only has two possible
+values, so an integer variable would probably be a better choice.) I keep track
+of the locations of the squares with integer instance variables <span class="code">x1</span> and
+<span class="code">y1</span> for the upper left corner of the red square and <span class="code">x2</span> and
+<span class="code">y2</span> for the upper left corner of the blue square.  These variables
+are in the main class, not the nested class that defines the listener, since the
+panel needs to know the location of the squares when it paints itself,
+in the <span class="code">paintComponent()</span> method.</p>
+
+
+<p>There is one little problem. The mouse location is a single <span class="code">(x,y)</span>
+point. A square occupies a whole bunch of points. When we move the square to
+follow the mouse, where exactly should we put the square? One possibility is to
+put the upper left corner of the square at the mouse location. If we did this,
+the <span class="code">mouseDragged</span> routine would look like:</p>
+
+
+<pre>public void mouseDragged(MouseEvent evt) { 
+    if (dragging == false)  
+      return;
+    int x = evt.getX();  // Get mouse position.
+    int y = evt.getY();
+    if (dragRedSquare) {  // Move the red square.
+       x1 = x;  // Put top-left corner at mouse position.
+       y1 = y;
+    }
+    else {   // Move the blue square.
+       x2 = x;  // Put top-left corner at mouse position.
+       y2 = y;
+    }
+    repaint();
+}</pre>
+
+
+<p>This works, but it not very aesthetic. When the user starts dragging a
+square, no matter where in the square the user clicks, the square will jump so
+that its top-left corner is at the mouse position. This is not what a user
+typically expects. If I grab a square by clicking its center, then I want the
+center to stay under the mouse cursor as I move it. If I grab the lower right
+corner, I want the lower right corner to follow the mouse, not the upper left
+corner. There is a solution to this, and it's one that is often needed for
+dragging operations. We need to record the original position of the mouse
+relative to the upper left corner of the square. This tells us where in the
+square the user clicked. This is done in the <span class="code">mousePressed</span> routine by
+assigning appropriate values to instance variables <span class="code">offsetX</span> and
+<span class="code">offsetY</span>:</p>
+
+
+<pre>int x = evt.getX();  // Location where user clicked.
+int y = evt.getY();
+
+if (x &gt;= x2 &amp;&amp; x &lt; x2+30 &amp;&amp; y &gt;= y2 &amp;&amp; y &lt; y2+30) {
+      // It's the blue square (which should be checked first,
+      // since it's drawn on top of the red square.)
+   dragging = true;
+   dragRedSquare = false;
+   offsetX = x - x2;  // Distance from corner of square to (x,y).
+   offsetY = y - y2;
+}
+else if (x &gt;= x1 &amp;&amp; x &lt; x1+30 &amp;&amp; y &gt;= y1 &amp;&amp; y &lt; y1+30) {
+      // It's the red square.
+   dragging = true;
+   dragRedSquare = true;
+   offsetX = x - x1;  // Distance from corner of square to (x,y).
+   offsetY = y - y1;
+}</pre>
+
+
+<p>In <span class="code">mouseDragged</span>, when the mouse moves to a new <span class="code">(x,y)</span>
+point, we move the square so that the vertical and horizontal distances between
+the mouse location and the top left corner of the square remain the same:</p>
+
+
+<pre>if (dragRedSquare) {  // Move the red square.
+   x1 = x - offsetX;  // Offset corner from mouse location.
+   y1 = y - offsetY;
+}
+else {   // Move the blue square.
+   x2 = x - offsetX;  // Offset corner from mouse location.
+   y2 = y - offsetY;
+}</pre>
+
+
+<p>The main class is a subclass of <span class="classname">JPanel</span>.
+The constructor in this class sets up the initial positions of the two
+squares, creates a listening object, and registers the listening object to
+listen for mouse and mouse motion events.  It also adds a border around the
+panel to make it more attractive.  The only other thing in the main class
+is a <span class="code">paintComponent()</span> method, which just has to draw the two
+squares in their current positions.  This is easy to write.</p>
+
+
+<p>All this leads to the complete source code, shown below, along with a
+simple applet class  that uses the panel as its content pane.</p>
+
+
+<p>By the way, if you wanted to stop the user from dragging the square outside
+the applet, you would just have to add code to the <span class="code">mouseDragged</span>
+routine to "clamp" the variables <span class="code">x1</span>, <span class="code">y1</span>, <span class="code">x2</span>, and
+<span class="code">y2</span> so that they lie in the acceptable range. Here is a modified
+routine that keeps the square entirely within the applet:</p>
+
+
+<pre>public void mouseDragged(MouseEvent evt) { 
+    if (dragging == false)  
+      return;
+    int x = evt.getX();
+    int y = evt.getY();
+    if (dragRedSquare) {  // Move the red square.
+       x1 = x - offsetX;
+       y1 = y - offsetY;
+       if (x1 &lt; 0)  // Clamp (x1,y1) so the square lies in the applet.
+          x1 = 0;
+       else if (x1 &gt;= getWidth() - 30)
+          x1 = getWidth() - 30;
+       if (y1 &lt; 0)
+          y1 = 0;
+       else if (y1 &gt;= getHeight() - 30)
+          y1 = getHeight() - 30;
+    }
+    else {   // Move the blue square.
+       x2 = x - offsetX;
+       y2 = y - offsetY;
+       if (x2 &lt; 0)  // Clamp (x2,y2) so the square lies in the applet.
+          x2 = 0;
+       else if (x2 &gt;= getWidth() - 30)
+          x2 = getWidth() - 30;
+       if (y2 &lt; 0)
+          y2 = 0;
+       else if (y2 &gt;= getHeight() - 30)
+          y2 = getHeight() - 30;
+    }
+    repaint();
+}</pre>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+<pre class="exercisecode">
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+/**
+ * A panel showing a red square and a blue square that the user
+ * can drag with the mouse.   The user can drag the squares off
+ * the panel and drop them.  There is no way of getting them back.
+ */
+public class DragTwoSquaresPanel extends JPanel {
+   
+   
+   private int x1, y1;   // Coords of top-left corner of the red square.
+   private int x2, y2;   // Coords of top-left corner of the blue square.
+   
+   
+   /**
+    *  The constructor places the two squares in their initial positions and
+    *  sets up listening for mouse events and mouse motion events.
+    */
+   public DragTwoSquaresPanel() {
+      
+      x1 = 10;  // Set up initial positions of the squares.
+      y1 = 10;
+      x2 = 50;
+      y2 = 10;
+      
+      setBackground(Color.LIGHT_GRAY);  // Set up appearance of the panel
+      setBorder(BorderFactory.createLineBorder(Color.BLACK, 1) );
+      
+      Dragger listener = new Dragger();  // Listening object, belonging to a nested
+                                         //     class that is defined below.
+      
+      addMouseListener(listener);        // Set up listening.
+      addMouseMotionListener(listener);
+      
+   } 
+   
+   
+   /**
+    * paintComponent just draws the two squares in their current positions.
+    */
+   public void paintComponent(Graphics g) {
+      super.paintComponent(g);  // Fill with background color.
+      g.setColor(Color.RED);
+      g.fillRect(x1, y1, 30, 30);
+      g.setColor(Color.BLUE);
+      g.fillRect(x2, y2, 30, 30);
+   }
+   
+   
+   /**
+    *  This private class is used to define the listener that listens
+    *  for mouse events and mouse motion events on the panel.
+    */
+   private class Dragger implements MouseListener, MouseMotionListener {
+      
+      /* Some variables used during dragging */
+      
+      boolean dragging;      // Set to true when a drag is in progress.
+      
+      boolean dragRedSquare; // True if red square is being dragged, false
+                             //    if blue square is being dragged.
+      
+      int offsetX, offsetY;  // Offset of mouse-click coordinates from the
+                             //   top-left corner of the square that was
+                             //   clicked.
+      
+      /**
+       * Respond when the user presses the mouse on the panel.
+       * Check which square the user clicked, if any, and start
+       * dragging that square.
+       */
+      public void mousePressed(MouseEvent evt) { 
+         
+         if (dragging)  // Exit if a drag is already in progress.
+            return;
+         
+         int x = evt.getX();  // Location where user clicked.
+         int y = evt.getY();
+         
+         if (x &gt;= x2 &amp;&amp; x &lt; x2+30 &amp;&amp; y &gt;= y2 &amp;&amp; y &lt; y2+30) {
+               // It's the blue square (which should be checked first,
+               // since it's drawn on top of the red square.)
+            dragging = true;
+            dragRedSquare = false;
+            offsetX = x - x2;  // Distance from corner of square to (x,y).
+            offsetY = y - y2;
+         }
+         else if (x &gt;= x1 &amp;&amp; x &lt; x1+30 &amp;&amp; y &gt;= y1 &amp;&amp; y &lt; y1+30) {
+               // It's the red square.
+            dragging = true;
+            dragRedSquare = true;
+            offsetX = x - x1;  // Distance from corner of square to (x,y).
+            offsetY = y - y1;
+         }
+         
+      }
+      
+      /**
+       * Dragging stops when user releases the mouse button.
+       */
+      public void mouseReleased(MouseEvent evt) { 
+         dragging = false;
+      }
+      
+      /**
+       * Respond when the user drags the mouse.  If a square is 
+       * not being dragged, then exit. Otherwise, change the position
+       * of the square that is being dragged to match the position
+       * of the mouse.  Note that the corner of the square is placed
+       * in the same relative position with respect to the mouse that i
+       * had when the user started dragging it.
+       */
+      public void mouseDragged(MouseEvent evt) { 
+         
+         if (dragging == false)  
+            return;
+         int x = evt.getX();
+         int y = evt.getY();
+         if (dragRedSquare) {  // Move the red square.
+            x1 = x - offsetX;
+            y1 = y - offsetY;
+         }
+         else {   // Move the blue square.
+            x2 = x - offsetX;
+            y2 = y - offsetY;
+         }
+         repaint();  // (Calls the repaint() method in the DragTwoSquaresPanel class.)
+      }
+      
+      
+      public void mouseMoved(MouseEvent evt) { }  // empty methods required by interfaces.
+      public void mouseClicked(MouseEvent evt) { }
+      public void mouseEntered(MouseEvent evt) { }
+      public void mouseExited(MouseEvent evt) { }
+      
+   } // end nested class Dragger
+   
+   
+} // end class DragTwoSquaresPanel
+</pre>
+
+<p>It is easy to write an applet or main program that uses this panel.
+The applet version can be written as follows:</p>
+
+<pre class="exercisecode">
+import javax.swing.JApplet;
+
+/**
+ * This applet just shows a DragTwoSquaresPanel as its content pane.
+ */
+public class DragTwoSquaresApplet extends JApplet{
+
+   public void init() {
+      setContentPane( new DragTwoSquaresPanel() );
+   }
+
+}
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

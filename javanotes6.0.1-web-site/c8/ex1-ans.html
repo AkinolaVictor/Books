@@ -1,0 +1,200 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 1, Chapter 8</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 8.1</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 8.1:</h3>
+<p>Write a program that uses
+the following subroutine, from <a href="../c8/s3.html#robustness.3.3">Subsection&nbsp;8.3.3</a>, to solve
+equations specified by the user.</p>
+
+<pre>/**
+ * Returns the larger of the two roots of the quadratic equation
+ * A*x*x + B*x + C = 0, provided it has any roots.  If A == 0 or
+ * if the discriminant, B*B - 4*A*C, is negative, then an exception
+ * of type IllegalArgumentException is thrown.
+ */
+static public double root( double A, double B, double C ) 
+                              throws IllegalArgumentException {
+    if (A == 0) {
+      throw new IllegalArgumentException("A can't be zero.");
+    }
+    else {
+       double disc = B*B - 4*A*C;
+       if (disc &lt; 0)
+          throw new IllegalArgumentException("Discriminant &lt; zero.");
+       return  (-B + Math.sqrt(disc)) / (2*A);
+    }
+}</pre>
+
+<p>Your program should allow the user to specify values for <span class="code">A</span>,
+<span class="code">B</span>, and <span class="code">C</span>. It should call the subroutine to compute a solution
+of the equation. If no error occurs, it should print the root. However, if an
+error occurs, your program should catch that error and print an error message.
+After processing one equation, the program should ask whether the user wants to
+enter another equation. The program should continue until the user answers
+no.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+
+<p>This is really just a fairly easy exercise in using exceptions. The
+<span class="code">root()</span> subroutine must be called in a <span class="code">try..catch</span> statement. There
+must be a <span class="code">catch</span> clause to handle the <span class="classname">IllegalArgumentException</span>
+that might be thrown by the routine. The catch clause can simply print an error
+message:</p>
+
+
+<pre>try {
+   solution = root(A,B,C);
+   TextIO.putln("A solution of the equation is " + solution);
+}
+catch (IllegalArgumentException e) {
+   TextIO.putln("Sorry, I can't find a solution.");
+   TextIO.putln(e.getMessage());
+}</pre>
+
+
+<p>Note that I've put the output statement that prints the solution inside the
+<span class="code">try</span> statement. If an <span class="code">IllegalArgumentException</span> is thrown by
+the subroutine, then this output statement will not be executed since the
+computer will jump immediately to the <span class="code">catch</span> clause. You have to be
+careful about things like this. It wouldn't do to have the output statement
+after the <span class="code">try..catch</span> statement, since then the computer would still
+try to execute the output statement after handling an
+<span class="classname">IllegalArgumentException</span>. There are other ways to deal with this
+problem. For example, since the <span class="code">try..catch</span> statement occurs in a
+<span class="code">while</span> loop, we could put a <span class="code">continue</span> statement in the
+<span class="code">catch</span> clause to abort further processing when an exception occurs:</p>
+
+<pre>try {
+   solution = root(A,B,C);
+}
+catch (IllegalArgumentException e) {
+   TextIO.putln("Sorry, I can't find a solution.");
+   TextIO.putln(e.getMessage());
+   continue;  // jump back to start of the while loop.
+}
+
+/* We only get to this point if NO exception was thrown.
+   So we know that the solution was computed successfully. */
+
+TextIO.putln("A solution of the equation is " + solution);</pre>
+
+<p>The rest of the main program is pretty standard. A complete solution is
+shown below.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">/**   
+ * This program will compute and print one of the solutions
+ * to an equation of the form A*X*X + B*X + C = 0, where
+ * A, B, and C are numbers entered by the user.  It depends
+ * on the non-standard class TextIO for doing input/output.
+ */
+public class Quadratic {
+
+   public static void main(String[] args) {
+      
+      double A, B, C;   // Coefficients in the equation.
+      double solution;  // The solution computed for the equation.
+      boolean goAgain;  // Set to true if the user wants to
+                        //   solve another equation.
+                        
+      TextIO.putln("This program will print a solution of an equation");
+      TextIO.putln("of the form A*X*X + B*X + C = 0, where A, B, and");
+      TextIO.putln("C are values that you enter.");
+      
+      do {
+         
+         /* Get the coefficients from the user. */
+
+         TextIO.putln();
+         TextIO.putln("Enter values for A, B, and C:");
+         TextIO.put("A = ");
+         A = TextIO.getlnDouble();
+         TextIO.put("B = ");
+         B = TextIO.getlnDouble();
+         TextIO.put("C = ");
+         C = TextIO.getlnDouble();
+         TextIO.putln();
+         
+         /* Print the solution, or an error message, if
+            there is no solution. */
+
+         try {
+            solution = root(A,B,C);
+            TextIO.putln("A solution of the equation is " + solution);  
+         }
+         catch (IllegalArgumentException e) {
+            TextIO.putln("Sorry, I can't find a solution.");
+            TextIO.putln(e.getMessage());
+         }
+          
+         /* Find out whether the user wants to go again. */
+
+         TextIO.putln();
+         TextIO.put("Do you want to solve another equation? ");
+         goAgain = TextIO.getlnBoolean();
+
+      } while (goAgain);
+   
+   } // end main
+   
+ 
+   /**
+    * Returns the larger of the two roots of the quadratic equation
+    * A*x*x + B*x + C = 0, provided it has any roots.  If A == 0 or
+    * if the discriminant, B*B - 4*A*C, is negative, then an exception
+    * of type IllegalArgumentException is thrown.
+    */
+   static public double root( double A, double B, double C ) 
+                                 throws IllegalArgumentException {
+       if (A == 0) {
+         throw new IllegalArgumentException("A can't be zero.");
+       }
+       else {
+          double disc = B*B - 4*A*C;
+          if (disc &lt; 0)
+             throw new IllegalArgumentException("Discriminant &lt; zero.");
+          return  (-B + Math.sqrt(disc)) / (2*A);
+       }
+   }   
+
+}  // end class</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

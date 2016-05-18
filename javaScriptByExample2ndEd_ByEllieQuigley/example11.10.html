@@ -1,0 +1,31 @@
+
+<html><head><title>onClick Event Handler and Forms</title>
+<script type="text/javascript">
+	function readySubmit(){
+		if(confirm("Are you ready to submit your form? ")){
+		  return true;
+		}
+		else{
+	          return false;
+		}
+	}
+</script>
+</head>
+<body>
+<form action="http://cgi-bin/testform.cgi"      
+           method="post">
+	    Enter your user id:
+
+	    <input type="text"
+		       name="textbox"
+		       value="" />
+	     <br />
+	     Type your password:
+	    <input type="password"
+		       name="secret" />
+	    <p></p>
+	    <input type="submit"
+		onClick="readySubmit();" />
+</form>
+</body>
+</html>

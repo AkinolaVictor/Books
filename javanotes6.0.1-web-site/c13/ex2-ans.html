@@ -1,0 +1,1250 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 2, Chapter 13</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 13.2</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 13.2:</h3>
+<p>For this exercise, you should continue to work on the
+program from the <a href="../c13/ex1-ans.html">previous exercise</a>.
+Add a "StrokeWidth" menu that allows the user to draw lines of varying
+thicknesses.  Make it possible to use different colors for the interior
+of a filled shape and for the outline of that shape.  To do this, change
+the "Color" menu to "StrokeColor" and add a "FillColor" menu.  (My solution
+adds two new tools, "Stroked Filled Rectangle" and "Stroked Filled Oval",
+to represent filled shapes that are outlined with the current stroke.)
+Add support for filling shapes with transparent color.  A simple approach to this
+is to use a <span class="classname">JCheckboxMenuItem</span> to select either
+fully opaque or 50% opaque fill.  (Don't try to apply transparency to stokes -- it's
+very difficult to make transparency work correctly for the Curve tool, and in any
+case, shape outlines look better if they are opaque.)  Finally, make the menus more
+user friendly by adding some keyboard accelerators to some commands
+and by using <span class="classname">JRadioButtonMenuItems</span> where
+appropriate, such as in the color and tool menus.  This exercise
+takes quite a bit of work to get it all right, so you should tackle
+the problem in pieces.</p>
+
+
+<p>Here is an applet version of my solution to the program.  Since an applet
+does not have access to files on the computer where it is running, the
+"File" menu is non-functional in this applet.  Keyboard accelerators for
+menu commands are probably also non-functional in the applet.</p>
+
+<p align="center">
+<applet code="PaintWithOSCFinal$Applet" width="550" height="450" archive="PaintWithOSCFinal.jar" alt=""></applet></p>
+
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>Most of the individual things that you have to do for this
+exercise are not very difficult, but there are a lot of them.  First of all, although
+it was not required by the project, I decided to use antialiasing, since it produces
+nicer pictures.  So, before drawing in a graphics context <span class="code">g</span>, I say</p>
+
+<pre>Graphics2D g2 = (Graphics2D)g;
+g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                      RenderingHints.VALUE_ANTIALIAS_ON);</pre>
+
+<p>I added these lines at several points in the program, both for the graphics context
+in the <span class="code">paintComponent()</span> method and for graphics contexts for drawing
+in the off-screen canvas.</p>
+
+<p>There are a lot of changes in the <span class="code">getMenuBar()</span> method, which creates
+ the menus that are used in the program.  First of all, I changed the <span class="code">colorMenu</span>
+to <span class="code">strokeColorMenu</span>, and I added two new menus named <span class="code">strokeWidthMenu</span>
+and <span class="code">fillColorMenu</span>.  The contents of the <span class="code">strokeColorMenu</span> are
+the same as the old <span class="code">colorMenu</span>, but the items in that menu have changed
+from simple <span class="classname">JMenuItems</span> to <span class="classname">JRadioButtonMenuItems</span>.
+All the items are added to the same <span class="classname">ButtonGroup</span> so that only
+one of the items in the menu can be selected.  The only real point of this is to give
+the user some visual feedback about which color is currently selected in the menu -- this
+is just the sort of touch that can make a program much more usable.  Items could be
+added to the menu as follows:</p>
+
+<pre>ButtonGroup group = new ButtonGroup();  // Will contain all the radio buttons.
+
+JRadioButtonMenuItem radioItem;
+radioItem = new JRadioButtonMenuItem("Draw With Black");
+strokeColorMenu.add( radioItem );
+group.add( radioItem );
+radioItem.setSelected( true );  // Black is currently selected.
+radioItem.addActionListener( listener );
+
+JRadioButtonMenuItem radioItem;
+radioItem = new JRadioButtonMenuItem("Draw With White");
+strokeColorMenu.add( radioItem );
+group.add( radioItem );
+radioItem.addActionListener( listener );
+   .
+   .
+   .</pre>
+   
+
+<p>However, having so much repetitive code becomes annoying, so I decided to write a method to
+do the work.  The method makes an entire set of <span class="classname">JRadioButtonMenuItems</span>
+and adds them to a menu.  I pass the names of all the menu items to the method
+as an array of <span class="classname">Strings</span>.
+My first version of this method looked like this:</p>
+   
+
+<pre>/**
+ * Adds a set of JRadionButtonMenuItems to a JMenu.  All the items are in
+ * the same button group and have the same ActionListener.  Initially,
+ * the first item is selected.
+ * @param menu  the menu to which the items will be added
+ * @param commandNames  the names of the items
+ * @param listener  the ActionListener for the items
+ */
+private void createRadioGroup(JMenu menu, String[] commandNames, 
+                                                ActionListener listener) {
+   ButtonGroup group = new ButtonGroup();
+   for ( int i = 0; i &lt; commandNames.length; i++ )  {
+      JRadioButtonMenuItem item = new JRadioButtonMenuItem(commandNames[i]);
+      menu.add(item);
+      group.add(item);
+      if ( i == 0 ) // First item is the one that is currently selected.
+         item.setSelected(true);
+   }
+}</pre>   
+ 
+
+<p>With method available, I could fill the <span class="code">strokeColorMenu</span>
+with one command:</p>
+   
+
+<pre>createRadioGroup( strokeColorMenu, 
+      new String[] {
+         "Draw With Black", "Draw With White", "Draw With Red", 
+         "Draw With Green", "Draw With Blue", "Draw With Yellow", 
+         "Custom Drawing Color..."
+      }, listener);</pre>
+
+
+<p>I also used <span class="code">createRadioGroup()</span> to add entries
+to <span class="code">fillColorMenu</span> and <span class="code">strokeWidthMenu</span>.
+When I came to the <span class="code">toolMenu</span>, I wanted to add separators
+between some of the menu items, but the <span class="code">createRadioGroup()</span>
+method just adds all the items to the menu, without separators.
+To solve this problem, I came up with the idea of using a <span class="code">null</span>
+value in the array of <span class="code">commandNames</span> to indicate a position
+where a separator should be inserted instead of a menu item.</p>
+   
+
+<p>It was not until the end of the project that I added accelerator
+keys to the menus.  Once again, my <span class="code">createRadioGroup()</span> caused
+a problem, since it provided no way to add accelerator keys to the
+menu items that it creates.  At first, this stumped me, and I thought
+I might have to go back to creating individual menu items. However,
+I came up with the idea of <i>coding the accelerator key into the
+command name</i> in the <span class="code">commandName</span> array.  For example,
+to specify the accelerator keystroke "ctrl&nbsp;L" for the "Line"
+command, I used <span class="code">"Line/crtl&nbsp;L"</span> in the array.  The
+final version of the <span class="code">createRadioGroup()</span> method became:</p>
+     
+
+<pre>/**
+ * Adds a set of JRadionButtonMenuItems to a JMenu.  All the items are in
+ * the same button group and have the same ActionListener.
+ * @param menu  the menu to which the items will be added
+ * @param commandNames  the names of the items; null values in this array
+ *    become separators in the menu.  The name can contain the character "/".
+ *    In that case the actual item name is the part of the name that
+ *    precedes the "/" and the remainder of the name specifies a
+ *    KeyStroke that will be used as the keyboard accelerator key
+ *    for the item.
+ * @param listener  the ActionListener for the items
+ */
+private void createRadioGroup(JMenu menu, String[] commandNames, 
+                                                ActionListener listener) {
+   ButtonGroup group = new ButtonGroup();
+   for ( int i = 0; i &lt; commandNames.length; i++) {
+      if (commandNames[i] == null)
+         menu.addSeparator();
+      else {
+         String name = commandNames[i];
+         String accel = null;
+         if (name.indexOf("/") &gt; 0) {
+            int pos = name.indexOf("/");  // Extract accelerator key and name.
+            accel = name.substring(pos+1);
+            name = name.substring(0,pos);
+         }
+         JRadioButtonMenuItem item = new JRadioButtonMenuItem(name);
+         menu.add(item);
+         group.add(item);
+         item.addActionListener(listener);
+         if (accel != null)
+            item.setAccelerator(KeyStroke.getKeyStroke(accel));
+         if (i == 0)
+            item.setSelected(true);
+      }
+   }
+}</pre>
+
+
+<p>With this method available, I could fill the "Tool" menu with:</p>
+   
+
+<pre>createRadioGroup( toolMenu, 
+      new String[] {
+         "Curve/ctrl U", null, "Line/ctrl L", "Rectangle/ctrl R", "Oval/ctrl V", 
+         "Filled Rectangle/ctrl alt R", "Filled Oval/ctrl alt V", 
+         "Stroked Filled Rectangle/ctrl shift R", "Stroked Filled Oval/ctrl shift V",
+         null, "Smudge/ctrl M", "Erase/ctrl E"
+      }, listener);</pre>
+   
+
+<p>The only other menu command that remains to be added is the one that controls
+transparency.  For that, I needed a <span class="classname">JCheckBoxMenuItem</span>.
+Whenever a filled shape is drawn, the setting of this item has to be checked to
+determine whether or not to use a transparent color.  Since I need to have
+the item available, it's an instance variable in the class:</p>
+
+<pre>private JCheckBoxMenuItem transparent = new JCheckBoxMenuItem("Translucent Fill");</pre>
+
+<p>I decided to add this item to the end of the "FillColor" menu, since it only
+affects colors that are used for filling shapes.</p> 
+   
+
+<p>The new menu commands had to be implemented in the <span class="code">actionPerformed()</span>
+method that responds when the user selects a menu command.  This was straightforward.
+I did have to introduce a new instance variable to represent the fill color, since
+previously there was only a single color, used for both filling and drawing.
+Note that no response is programmed for the <span class="classname">JCheckBoxMenuItem</span>,
+<span class="code">transparent</span>, since the program can check the status of the
+checkbox itself whenever it needs to know the status.</p>
+   
+
+<hr class="break">
+   
+
+<p>Turning to the implementation of all the new menu commands, consider the problem
+of setting the properties of a graphics context before drawing.  Previously, it
+was just a matter of setting a color.  Now, there is the possibility of using
+transparency (when filling a shape) or using a non-default <span class="classname">BasicStroke</span>
+(when drawing a line or outlining a shape).  To make it easier to take these possibilities
+into account, I wrote the following two methods:</p>
+   
+
+<pre>/**
+ * Set the graphics context g to use the current stroke color and
+ * lineWidth.
+ */
+private void applyStrokeProperties(Graphics g) {
+   if (lineWidth &gt; 1) {
+      Graphics2D g2 = (Graphics2D)g;
+      g2.setStroke( new BasicStroke(lineWidth, 
+                            BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER) );
+   }
+   g.setColor(currentStrokeColor);
+}
+
+/**
+ * Set the graphics context g to use the current fill color, taking
+ * into account the setting of transparency.  If transparency is on,
+ * the RGB components are obtained from the current fill color, and
+ * the alpha component is set to 125.
+ */
+private void applyFillColor(Graphics g) {
+   Color c = currentFillColor;
+   if (transparent.isSelected())
+      g.setColor(new Color( c.getRed(), c.getGreen(), c.getBlue(), 125 ));
+   else
+      g.setColor(c);
+}</pre>
+   
+
+<p>I used <span class="code">BasicStroke.CAP_ROUND</span> for the <span class="classname">BasicStroke</span>
+because the default cap gave really ugly results when drawing a thick curve. Note that
+to implement transparency, I just use a transparent version of the current color.
+The <span class="code">currentColor</span> variable always holds a fully opaque color.</p>
+   
+
+<p>Drawing ovals and rectangles has become more complicated, since there are now
+three different possibilities for each shape:  fill only, outline only, or both fill
+and outline.  To implement this, I modified the <span class="code">putRect()</span> method to
+have two boolean parameters, one to tell whether to fill the rectangle and one
+to tell whether to outline it:</p>
+
+
+<pre>/**
+ * Draws a rectangle with corners at the points (x1,y1)
+ * and (x2,y2).  Nothing is drawn if x1 == x2 or y1 == y2.  The rectangle
+ * can be either stroked (that is, the outline is drawn) or filled or both.
+ * @param g the graphics context where the rectangle is drawn
+ * @param stroked tells whether to draw an outline of the rectangle.
+ * @param filled tells whether to draw a filled or unfilled rectangle.
+ */
+private void putRect(Graphics g, boolean stroked, boolean filled, 
+                                   int x1, int y1, int x2, int y2) {
+   if (x1 == x2 || y1 == y2)
+      return;
+   if (x2 &lt; x1) {  // Swap x1,x2 if necessary to make x2 &gt; x1.
+      int temp = x1;
+      x1 = x2;
+      x2 = temp;
+   }
+   if (y2 &lt; y1) {  // Swap y1,y2 if necessary to make y2 &gt; y1.
+      int temp = y1;
+      y1 = y2;
+      y2 = temp;
+   }
+   if (filled) {
+      applyFillColor(g);
+      g.fillRect(x1,y1,x2-x1,y2-y1);
+   }
+   if (stroked) {
+      applyStrokeProperties(g);
+      g.drawRect(x1,y1,x2-x1,y2-y1);
+   }
+}</pre>
+   
+
+<p>And <span class="code">putOval()</span> was modified in the same way.  When I call these
+methods (in the <span class="code">putShape()</span> method), the value that I used for
+<span class="code">stroked</span> and <span class="code">filled</span> depend on which tool is currently
+selected.</p>
+   
+
+<hr class="break">
+   
+
+<p>There is one further really tricky point.  The method <span class="code">repaintRect()</span>
+is defined to call <span class="code">repaint()</span> for a rectangle with corners
+<span class="code">(x1,y1)</span> and <span class="code">(x2,y2)</span>.  I call this method when part of
+the offscreen canvas is modified, so that that part of the canvas can be copied
+to the screen.  For example, after drawing a rectangle or oval with corners
+<span class="code">(x1,y1)</span> and <span class="code">(x2,y2)</span>, I call
+<span class="code">repaintRect(x1,y1,x2,y2)</span>.  The problem is that the drawing operation
+can actually modify parts of the canvas that are outside the specified rectangle.
+When you outline the figure with a wide stroke, part of the stroke will lie outside
+the boundary of the rectangle, and that part will not be copied to the screen.
+A quick solution would be to simply call <span class="code">repaint()</span> to repaint the
+entire component.  Repainting just a rectangle is an optimization.  It's more
+efficient, but it probably doesn't affect the performance of the program all
+that much.  However, another solution is simply to make the rectangle that
+is repainted big enough to contain the entire area that was modified in
+the canvas.  That's the approach that I take in my solution.</p>
+   
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<p>
+<b>Significant changes from the solution to <a href="../c13/ex1-ans.html">Exercise&nbsp;13.1</a> are shown in red</b>
+</p>
+
+<pre class="exercisecode">
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.util.EnumSet;
+
+/**
+ * A simple paint program.  The user can draw various shapes in various
+ * colors and with various line thicknesses.  Transparent drawing
+ * is also supported.  This class can be run as a main program
+ * and has a nested class PaintWithOSCFinal.Applet that can be used as
+ * an applet.  However, the File menu will not be functional in an
+ * applet.  Note that the way that the off-screen canvas is used
+ * in this class requires that the panel be non-resizable; this
+ * is because the size of the off-screen canvas does not change
+ * when the panel changes size.
+ */
+public class PaintWithOSCFinal extends JPanel {
+   
+   /**
+    * The main routine simply opens a window that shows a PaintWithOSCFinal panel.
+    */
+   public static void main(String[] args) {
+      JFrame window = new JFrame("PaintWithOSCFinal");
+      PaintWithOSCFinal content = new PaintWithOSCFinal();
+      window.setContentPane(content);
+      window.setJMenuBar(content.getMenuBar());
+      window.pack();  
+      window.setResizable(false); 
+      Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+      window.setLocation( (screenSize.width - window.getWidth())/2,
+            (screenSize.height - window.getHeight())/2 );
+      window.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+      window.setVisible(true);
+   }
+   
+   
+   /**
+    * The public static class PaintWithOSCFinal$Applet represents this program
+    * as an applet.  The applet's init() method simply sets the content 
+    * pane of the applet to be a PaintWithOSCFinal.  To use the applet on
+    * a web page, use code="PaintWithOSCFinal$Applet.class" as the name of
+    * the class.  The File menu will not work in an applet.
+    */
+   public static class Applet extends JApplet {
+      public void init() {
+         JPanel content = new JPanel();
+         PaintWithOSCFinal paint = new PaintWithOSCFinal();
+         content.setBorder(BorderFactory.createLineBorder(Color.GRAY,2));
+         content.setLayout(new BorderLayout());
+         content.add(paint, BorderLayout.CENTER);
+         setContentPane( content );
+         setJMenuBar(paint.getMenuBar());
+      }
+   }
+   
+   
+   /**
+    * The possible drawing tools in this program.  (The CURVE tool allows the
+    * user to sketch a free-hand curve, while the LINE tool draws a line
+    * between two points.  The SMUDGE tool lets the user "spread paint around"
+    * with the mouse.  The ERASE tool erases with a 10-by-10 pixel rectangle.)
+    */
+   private enum Tool { CURVE, LINE, RECT, OVAL, FILLED_RECT, FILLED_OVAL, 
+      <span class="newcode">STROKED_FILLED_RECT, STROKED_FILLED_OVAL,</span> SMUDGE, ERASE }
+   
+   /**
+    * The set of Tools that represnet "shapes."  Shapes are handled differently
+    * during dragging than other tools, since they are drawn "on top of" the
+    * current picture during a mouse drag and are only added permanently to the
+    * picture on mouse release.
+    */
+   private final static EnumSet&lt;Tool&gt; SHAPE_TOOLS = 
+                                    EnumSet.range(Tool.LINE, <span class="newcode">Tool.STROKED_FILLED_OVAL</span>);
+
+   /**
+    * The currently selected drawing tool.  Initially Tool.CURVE.  Can be
+    * changed by the user with commands in the "Tool" menu.
+    */
+   private Tool currentTool = Tool.CURVE;
+   
+   /**
+    * The current drawing color for drawing lines.  Initially Color.BLACK.  Can be 
+    * changed by the user using the "StrokeColor" menu. 
+    */
+   private Color currentStrokeColor = Color.BLACK;
+   
+   <span class="newcode">/**
+    * The current drawing color for filling shapes.  Initially Color.BLACK.  Can be 
+    * changed by the user using the "FillColor" menu. This is a fully opaque color, 
+    * even if the user has select transparent  drawing; transparency is applied when 
+    * the color is used.
+    */
+   private Color currentFillColor = Color.BLACK;</span>
+   
+   /**
+    * The background color that is used to fill the off-screen canvas when
+    * it is created.  If the user selects the "Fill With Color", the fill
+    * color changes, and the canvas is filled with the new fill color,
+    * erasing whatever was there before.
+    */
+   private Color fillColor = Color.WHITE;
+   
+   <span class="newcode">/**
+    * The width of the stroke that is used to draw lines and curves.
+    */
+   private int lineWidth = 1;
+   
+   /**
+    * Tells wether to fill shapes with fully opaque colors or to use colors that are
+    * 50% transparent.
+    */
+   private JCheckBoxMenuItem transparent = new JCheckBoxMenuItem("Translucent Fill");</span>
+
+   /**
+    * The off-screen canvas.  This is not created until the first time
+    * paintComponent() is called.  If the size of the component changes,
+    * a new OSC is created (and the picture in the old one is lost).
+    */
+   private BufferedImage OSC;
+
+   /**
+    * This is set to true when the user is dragging the mouse.
+    */
+   private boolean dragging;
+   
+   /**
+    * The start position of the mouse during a mouse drag.
+    */
+   private int startX, startY;
+   
+   /**
+    * The current position of the mouse during a mouse drag.
+    */
+   private int currentX, currentY;
+   
+   /**
+    * File dialog for implementing the File menu commands.
+    */
+   private JFileChooser fileDialog;
+
+   /**
+    * An extra copy of the image that is used for the Undo command.
+    * Before any change is made to the image, the image is copied
+    * to this variable.  The Undo command swaps the saved image 
+    * with the image that is shown on screen.  (Thus, a second Undo
+    * will effectively act as a Redo.)
+    */
+   private BufferedImage imageSavedForUndo;
+   
+   /**
+    * The constructor sets the preferred size of the panel to
+    * 640-by-480.  It also sets up a mouse listener.
+    */
+   public PaintWithOSCFinal() {
+      setPreferredSize(new Dimension(640,480));
+      MouseHandler mouseHandler = new MouseHandler();
+      addMouseListener(mouseHandler);
+      addMouseMotionListener(mouseHandler);
+   }
+   
+
+   /**
+    * The paintComponent() method copies the off-screen canvas to the screen
+    * (first creating it, if necessary).  If a mouse drag is in progress,
+    * then the current tool is not Tool.CURVE, then the shape that the user
+    * is drawing is drawn over the off-screen canvas.  (This is to avoid
+    * making the shape a permanent part of the picture until after the user
+    * releases the mouse.  The effect is a "rubber band cursor" in which
+    * the shape changes as the user drags the mouse, but the picture under
+    * the shape is not affected.)
+    */
+   public void paintComponent(Graphics g) {
+
+      /* First create the off-screen canvas, if it does not already exist. */ 
+
+      if (OSC == null)
+         createOSC();
+
+      /* Copy the off-screen canvas to the panel.  Since we know that the
+            image is already completely available, the fourth "ImageObserver"
+            parameter to g.drawImage() can be null.  Since the canvas completely
+            fills the panel, there is no need to call super.paintComponent(g). */
+
+      g.drawImage(OSC,0,0,null);
+
+      /* If the user is currently dragging the mouse to draw a line, oval,
+            or rectangle, draw the shape on top the image from the off-screen
+            canvas, using the current drawing color.  (This is not done if the
+            user is drawing a curve or using the smudge tool.) */
+
+      if (dragging &amp;&amp; SHAPE_TOOLS.contains(currentTool)) {
+         <span class="newcode">Graphics2D g2 = (Graphics2D)g;
+         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                               RenderingHints.VALUE_ANTIALIAS_ON);</span>
+         putCurrentShape(g);
+      }
+
+   }
+   
+   
+   /**
+    * This method creates the off-screen canvas and fills it with the current
+    * fill color.  The image that is used to implement the Undo command is
+    * also created here.
+    */
+   private void createOSC() {
+      OSC = new BufferedImage(getWidth(),getHeight(),BufferedImage.TYPE_INT_RGB);
+      imageSavedForUndo = new BufferedImage(getWidth(),getHeight(),BufferedImage.TYPE_INT_RGB);
+      Graphics osg = OSC.getGraphics();
+      osg.setColor(fillColor);
+      osg.fillRect(0,0,getWidth(),getHeight());
+      osg.dispose();
+      saveUndoImage();
+   }
+   
+   
+   /**
+    * Copies the current image into the image that is saved for the Undo
+    * command.  This method is called before any change is made to the image.
+    */
+   private void saveUndoImage() {
+      Graphics g = imageSavedForUndo.getGraphics();
+      g.drawImage(OSC,0,0,null);
+      g.dispose();
+   }
+   
+   
+   /**
+    * A utility method to draw the current shape in a given graphics context.
+    * It draws the correct shape for the current tool in a rectangle whose
+    * corners are given by the starting position of the mouse and the current
+    * position of the mouse.  This is used by paintComponent() during a
+    * mouse drag.  It is also used to make the shape a permanent part of the
+    * off-screen canvas when the mouse is released.
+    * This method is not used when the current tool is Tool.CURVE or Tool.SMUDGE.  
+    */
+   private void putCurrentShape(Graphics g) {
+      switch (currentTool) {
+      case LINE:
+         <span class="newcode">applyStrokeProperties(g);</span>
+         g.drawLine(startX, startY, currentX, currentY);
+         break;
+      case OVAL:
+         putOval(g,<span class="newcode">true,</span>false,startX, startY, currentX, currentY);
+         break;
+      case RECT:
+         putRect(g,<span class="newcode">true,</span>false,startX, startY, currentX, currentY);
+         break;
+      case FILLED_OVAL:
+         putOval(g,<span class="newcode">false,</span>true,startX, startY, currentX, currentY);
+         break;
+      case FILLED_RECT:
+         putRect(g,<span class="newcode">false,</span>true,startX, startY, currentX, currentY);
+         break;
+      <span class="newcode">case STROKED_FILLED_OVAL:
+         putOval(g,true,true,startX, startY, currentX, currentY);
+         break;
+      case STROKED_FILLED_RECT:
+         putRect(g,true,true,startX, startY, currentX, currentY);
+         break;</span>
+      }
+   }
+   
+   
+   <span class="newcode">/**
+    * Set the graphics context g to use the current stroke color and
+    * lineWidth.
+    */
+   private void applyStrokeProperties(Graphics g) {
+      if (lineWidth &gt; 1) {
+         Graphics2D g2 = (Graphics2D)g;
+         g2.setStroke( new BasicStroke(lineWidth, 
+                               BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER) );
+      }
+      g.setColor(currentStrokeColor);
+   }
+   
+   
+   /**
+    * Set the graphics context g to use the current fill color, taking
+    * into account the setting of transparency.  If transparency is on,
+    * the RGB components are obtained from the current fill color, and
+    * the alpha component is set to 125.
+    */
+   private void applyFillColor(Graphics g) {
+      Color c = currentFillColor;
+      if (transparent.isSelected())
+         g.setColor(new Color( c.getRed(), c.getGreen(), c.getBlue(), 125 ));
+      else
+         g.setColor(c);
+   }</span>
+   
+      
+   /**
+    * Draws a rectangle with corners at the points (x1,y1)
+    * and (x2,y2).  Nothing is drawn if x1 == x2 or y1 == y2.  The rectangle
+    * can be either stroked (that is, the outline is drawn) or filled or both.
+    * @param g the graphics context where the rectangle is drawn
+    * <span class="newcode">@param stroked tells whether to draw an outline of the rectangle.</span>
+    * @param filled tells whether to draw a filled or unfilled rectangle.
+    */
+   private void putRect(Graphics g, <span class="newcode">boolean stroked,</span> boolean filled, 
+                                      int x1, int y1, int x2, int y2) {
+      assert stroked || filled;  // It doesn't make sense for both to be false,
+                                 //    since then nothing would be drawn.  
+      if (x1 == x2 || y1 == y2)
+         return;
+      if (x2 &lt; x1) {  // Swap x1,x2 if necessary to make x2 &gt; x1.
+         int temp = x1;
+         x1 = x2;
+         x2 = temp;
+      }
+      if (y2 &lt; y1) {  // Swap y1,y2 if necessary to make y2 &gt; y1.
+         int temp = y1;
+         y1 = y2;
+         y2 = temp;
+      }
+      <span class="newcode">if (filled) {
+         applyFillColor(g);
+         g.fillRect(x1,y1,x2-x1,y2-y1);
+      }
+      if (stroked) {
+         applyStrokeProperties(g);
+         g.drawRect(x1,y1,x2-x1,y2-y1);
+      }</span>
+   }
+   
+   
+   /**
+    * Draws an oval in the rectangle with corners at the points (x1,y1)
+    * and (x2,y2).  Nothing is drawn if x1 == x2 or y1 == y2.  The oval
+    * can be either stroked (that is, the outline is drawn) or filled or both.
+    * @param g the graphics context where the oval is drawn
+    * <span class="newcode">@param stroked tells whether to draw an outline of the oval.</span>
+    * @param filled tells whether to draw a filled or unfilled oval.
+    */
+   private void putOval(Graphics g, <span class="newcode">boolean stroked,</span> boolean filled, 
+                                      int x1, int y1, int x2, int y2) {
+      assert stroked || filled;  // It doesn't make sese for both to be false,
+                                 //    since then nothing would be drawn.  
+      if (x1 == x2 || y1 == y2)
+         return;
+      if (x2 &lt; x1) {  // Swap x1,x2 if necessary to make x2 &gt; x1.
+         int temp = x1;
+         x1 = x2;
+         x2 = temp;
+      }
+      if (y2 &lt; y1) {  // Swap y1,y2 if necessary to make y2 &gt; y1.
+         int temp = y1;
+         y1 = y2;
+         y2 = temp;
+      }
+      <span class="newcode">if (filled) {
+         applyFillColor(g);
+         g.fillOval(x1,y1,x2-x1,y2-y1);
+      }
+      if (stroked) {
+         applyStrokeProperties(g);
+         g.drawOval(x1,y1,x2-x1,y2-y1);
+      }</span>
+   }
+   
+   
+   /**
+    * Calls the repaint() method of this panel for the rectangle with corners
+    * at the points (x1,y1) and (x2,y2).  An extra one-pixel border is added
+    * to the area that is repainted; this allows for the size of the "pen"
+    * that is used to draw lines and unfilled ovals and rectangles.
+    */
+   private void repaintRect(int x1, int y1, int x2, int y2) {
+      if (x2 &lt; x1) {  // Swap x1,x2 if necessary to make x2 &gt;= x1.
+         int temp = x1;
+         x1 = x2;
+         x2 = temp;
+      }
+      if (y2 &lt; y1) {  // Swap y1,y2 if necessary to make y2 &gt;= y1.
+         int temp = y1;
+         y1 = y2;
+         y2 = temp;
+      }
+      x1 -= <span class="newcode">lineWidth</span> + 1;
+      x2 += <span class="newcode">lineWidth</span> + 1;
+      y1 -= <span class="newcode">lineWidth</span> + 1;
+      y2 += <span class="newcode">lineWidth</span> + 1;
+      repaint(x1,y1,x2-x1,y2-y1);
+   }
+   
+   
+   <span class="newcode">**
+    * Adds a set of JRadionButtonMenuItems to a JMenu.  All the items are in
+    * the same button group and have the same ActionListener.
+    * @param menu  the menu to which the items will be added
+    * @param commandNames  the names of the items; null values in this array
+    *    become separators in the menu.  The name can contain the character "/".
+    *    In that case the actual item name is the part of the name that
+    *    precedes the "/" and the remainder of the name specifies a
+    *    KeyStroke that will be used as the keyboard accelerator key
+    *    for the item.
+    * @param listener  the ActionListener for the items
+    */
+   private void createRadioGroup(JMenu menu, String[] commandNames, 
+                                                   ActionListener listener) {
+      ButtonGroup group = new ButtonGroup();
+      for ( int i = 0; i &lt; commandNames.length; i++) {
+         if (commandNames[i] == null)
+            menu.addSeparator();
+         else {
+            String name = commandNames[i];
+            String accel = null;
+            if (name.indexOf("/") &gt; 0) {
+               int pos = name.indexOf("/");
+               accel = name.substring(pos+1);
+               name = name.substring(0,pos);
+            }
+            JRadioButtonMenuItem item = new JRadioButtonMenuItem(name);
+            menu.add(item);
+            group.add(item);
+            item.addActionListener(listener);
+            if (accel != null)
+               item.setAccelerator(KeyStroke.getKeyStroke(accel));
+            if (i == 0)
+               item.setSelected(true);
+         }
+      }
+   }</span>
+   
+   
+   /**
+    * Creates a menu bar for use with this panel, with "File", "Edit",
+    * "StrokeColor", "FillColor", and "Tool" menus.
+    */
+   public JMenuBar getMenuBar() {
+      JMenuBar menubar = new JMenuBar();
+      JMenu fileMenu = new JMenu("File");
+      JMenu editMenu = new JMenu("Edit");
+      <span class="newcode">JMenu strokeWidthMenu = new JMenu("StrokeWidth");</span>
+      JMenu strokeColorMenu = new JMenu("<span class="newcode">StrokeColor</span>");
+      <span class="newcode">JMenu fillColorMenu = new JMenu("FillColor");</span>
+      JMenu toolMenu = new JMenu("Tool");
+      menubar.add(fileMenu);
+      menubar.add(editMenu);
+      menubar.add(toolMenu);
+      <span class="newcode">menubar.add(strokeWidthMenu);</span>
+      menubar.add(strokeColorMenu);
+      <span class="newcode">menubar.add(fillColorMenu);</span>
+      ActionListener listener = new MenuHandler();
+      JMenuItem item;
+      item = new JMenuItem("Open Image File...");
+      <span class="newcode">item.setAccelerator(KeyStroke.getKeyStroke("ctrl O"));</span>
+      item.addActionListener(listener);
+      fileMenu.add(item);
+      item = new JMenuItem("Save PNG File...");
+      <span class="newcode">item.setAccelerator(KeyStroke.getKeyStroke("ctrl S"));</span>
+      item.addActionListener(listener);
+      fileMenu.add(item);
+      item = new JMenuItem("Save JPEG File...");
+      <span class="newcode">item.addActionListener(listener);</span>
+      fileMenu.add(item);
+      fileMenu.addSeparator();
+      item = new JMenuItem("Quit");
+      <span class="newcode">item.setAccelerator(KeyStroke.getKeyStroke("ctrl Q"));</span>
+      item.addActionListener(listener);
+      fileMenu.add(item);
+      item = new JMenuItem("Undo");
+      <span class="newcode">item.setAccelerator(KeyStroke.getKeyStroke("ctrl Z"));</span>
+      item.addActionListener(listener);
+      editMenu.add(item);
+      editMenu.addSeparator();
+      item = new JMenuItem("Clear to Color...");
+      <span class="newcode">item.setAccelerator(KeyStroke.getKeyStroke("ctrl K"));</span>
+      item.addActionListener(listener);
+      editMenu.add(item);
+      
+      <span class="newcode">createRadioGroup( strokeWidthMenu,
+            new String[] {
+               "Thickness = 1/ctrl 1", "Thickness = 2/ctrl 2", "Thickness = 3/ctrl 3", 
+               "Thickness = 4/ctrl 4",
+               "Thickness = 5/ctrl 5", "Thickness = 7", "Thickness = 10", "Thickness = 15",
+               "Thickness = 20", "Thickness = 25"
+            }, listener );
+      
+      createRadioGroup( strokeColorMenu, 
+            new String[] {
+               "Draw With Black/ctrl B", "Draw With White/ctrl W", "Draw With Red", 
+               "Draw With Green", "Draw With Blue", "Draw With Yellow", 
+               "Custom Drawing Color.../ctrl C"
+            }, listener);
+
+      createRadioGroup( fillColorMenu, 
+            new String[] {
+               "Fill With Black/ctrl shift B", "Fill With White/ctrl shift W", "Fill With Red", 
+               "Fill With Green", "Fill With Blue", "Fill With Yellow", 
+               "Custom Fill Color.../ctrl shift C"
+            }, listener);
+      
+      fillColorMenu.addSeparator();
+      fillColorMenu.add(transparent);
+      transparent.setAccelerator(KeyStroke.getKeyStroke("ctrl T"));
+
+      createRadioGroup( toolMenu, 
+            new String[] {
+               "Curve/ctrl U", null, "Line/ctrl L", "Rectangle/ctrl R", "Oval/ctrl V", 
+               "Filled Rectangle/ctrl alt R", "Filled Oval/ctrl alt V", 
+               "Stroked Filled Rectangle/ctrl shift R", "Stroked Filled Oval/ctrl shift V",
+               null, "Smudge/ctrl M", "Erase/ctrl E"
+            }, listener);</span>
+      
+      return menubar;
+   }
+   
+   
+   /**
+    * This nested class defins the ActionListener that responds when the
+    * user selects a command from one of the menus.  It is used in the
+    * getMenuBar() method.
+    */
+   private class MenuHandler implements ActionListener {
+      public void actionPerformed(ActionEvent evt) {
+         String command = evt.getActionCommand();
+         if (command.equals("Custom Drawing Color...")) {
+            Color newColor = JColorChooser.showDialog(PaintWithOSCFinal.this, 
+                  "Select Drawing Color", currentStrokeColor);
+            if (newColor != null)
+               currentStrokeColor = newColor;
+         }
+         <span class="newcode">else if (command.equals("Custom Fill Color...")) {
+            Color newColor = JColorChooser.showDialog(PaintWithOSCFinal.this, 
+                  "Select Fill Color", currentFillColor);
+            if (newColor != null)
+               currentFillColor = newColor;
+         }</span>
+         else if (command.equals("Clear to Color...")) {
+            Color newColor = JColorChooser.showDialog(PaintWithOSCFinal.this, 
+                  "Select Background Color", fillColor);
+            if (newColor != null) {
+               fillColor = newColor;
+               saveUndoImage();
+               Graphics osg = OSC.getGraphics();
+               osg.setColor(fillColor);
+               osg.fillRect(0,0,OSC.getWidth(),OSC.getHeight());
+               osg.dispose();
+               PaintWithOSCFinal.this.repaint();
+            }
+         }
+         <span class="newcode">else if (command.startsWith("Thickness = "))
+            lineWidth = Integer.parseInt(command.substring(12));</span>
+         else if (command.equals("Draw With Black"))
+            currentStrokeColor = Color.BLACK;
+         else if (command.equals("Draw With White"))
+            currentStrokeColor = Color.WHITE;
+         else if (command.equals("Draw With Red"))
+            currentStrokeColor = Color.RED;
+         else if (command.equals("Draw With Green"))
+            currentStrokeColor = Color.GREEN;
+         else if (command.equals("Draw With Blue"))
+            currentStrokeColor = Color.BLUE;
+         else if (command.equals("Draw With Yellow"))
+            currentStrokeColor = Color.YELLOW;
+         <span class="newcode">else if (command.equals("Fill With Black"))
+            currentFillColor = Color.BLACK;
+         else if (command.equals("Fill With White"))
+            currentFillColor = Color.WHITE;
+         else if (command.equals("Fill With Red"))
+            currentFillColor = Color.RED;
+         else if (command.equals("Fill With Green"))
+            currentFillColor = Color.GREEN;
+         else if (command.equals("Fill With Blue"))
+            currentFillColor = Color.BLUE;
+         else if (command.equals("Fill With Yellow"))
+            currentFillColor = Color.YELLOW;</span>
+         else if (command.equals("Curve"))
+            currentTool = Tool.CURVE;
+         else if (command.equals("Line"))
+            currentTool = Tool.LINE;
+         else if (command.equals("Rectangle"))
+            currentTool = Tool.RECT;
+         else if (command.equals("Oval"))
+            currentTool = Tool.OVAL;
+         else if (command.equals("Filled Rectangle"))
+            currentTool = Tool.FILLED_RECT;
+         else if (command.equals("Filled Oval"))
+            currentTool = Tool.FILLED_OVAL;
+         <span class="newcode">else if (command.equals("Stroked Filled Rectangle"))
+            currentTool = Tool.STROKED_FILLED_RECT;
+         else if (command.equals("Stroked Filled Oval"))
+            currentTool = Tool.STROKED_FILLED_OVAL;</span>
+         else if (command.equals("Smudge"))
+            currentTool = Tool.SMUDGE;
+         else if (command.equals("Erase"))
+            currentTool = Tool.ERASE;
+         else if (command.equals("Open Image File..."))
+            doOpenFile();
+         else if (command.equals("Save PNG File..."))
+            doSaveFile("PNG");
+         else if (command.equals("Save JPEG File..."))
+            doSaveFile("JPEG");
+         else if (command.equals("Quit"))
+            System.exit(0);
+         else if (command.equals("Undo")) {
+            BufferedImage temp = OSC;
+            OSC = imageSavedForUndo;
+            imageSavedForUndo = temp;
+            repaint();
+         }
+      }
+   } // end nested class MenuHandler
+   
+   
+   /**
+    * This nested class defines the object that listens for mouse and
+    * mouse motion events on the panel.  It is used in the constructor.
+    */
+   private class MouseHandler implements MouseListener, MouseMotionListener {
+      
+      int prevX, prevY;  // Previous position of mouse during a drag.
+      
+      double[][] smudgeRed, smudgeGreen, smudgeBlue;  // data for smudge tool
+      
+      /**
+       * When the ERASE or SMUDGE tools are used and the mouse jumps
+       * from (x1,y1) to (x2,y2), the tool has to be applied to a
+       * line of pixel positions between the two points in order to
+       * cover the entire line that the mouse moves along.  The change
+       * is made to the off-screen canvas, and repaint() is called to
+       * copy the changes to the screen.
+       */
+      void applyToolAlongLine(int x1, int y1, int x2, int y2) {
+         Graphics g = OSC.getGraphics();
+         Graphics2D g2 = (Graphics2D)g;
+         <span class="newcode">g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                               RenderingHints.VALUE_ANTIALIAS_ON);</span>
+         g.setColor(fillColor);    // (for ERASE only)
+         int w = OSC.getWidth();   // (for SMUDGE only)
+         int h = OSC.getHeight();  // (for SMUDGE only)
+         int dist = Math.max(Math.abs(x2-x1),Math.abs(y2-y1));
+             // dist is the number of points along the line from
+             // (x1,y1) to (x2,y2) at which the tool will be applied.
+         double dx = (double)(x2-x1)/dist;
+         double dy = (double)(y2-y1)/dist;
+         for (int d = 1; d &lt;= dist; d++) {
+                // Apply the tool at one of the points (x,y) along the
+                // line from (x1,y1) to (x2,y2).
+            int x = (int)Math.round(x1 + dx*d);
+            int y = (int)Math.round(y1 + dy*d);
+            if (currentTool == Tool.ERASE) {
+                   // Erase a 10-by-10 block of pixels around (x,y)
+               g.fillRect(x-5,y-5,10,10);
+               repaint(x-5,y-5,10,10);
+            }
+            else { 
+                  // For the SMUDGE tool, blend some of the color from
+                  // the smudgeRed, smudgeGreen, and smudgeBlue arrays
+                  // into the pixels in a 7-by-7 block around (x,y), and
+                  // vice versa.  The effect is to smear out the color
+                  // of pixels that are visited by the tool.
+               for (int i = 0; i &lt; 7; i++)
+                  for (int j = 0; j &lt; 7; j++) {
+                     int r = y + j - 3;
+                     int c = x + i - 3;
+                     if (!(r &lt; 0 || r &gt;= h || c &lt; 0 || c &gt;= w || smudgeRed[i][j] == -1)) {
+                        int curCol = OSC.getRGB(c,r);
+                        int curRed = (curCol &gt;&gt; 16) &amp; 0xFF;
+                        int curGreen = (curCol &gt;&gt; 8) &amp; 0xFF;
+                        int curBlue = curCol &amp; 0xFF;
+                        int newRed = (int)(curRed*0.7 + smudgeRed[i][j]*0.3);
+                        int newGreen = (int)(curGreen*0.7 + smudgeGreen[i][j]*0.3);
+                        int newBlue = (int)(curBlue*0.7 + smudgeBlue[i][j]*0.3);
+                        int newCol = newRed &lt;&lt; 16 | newGreen &lt;&lt; 8 | newBlue;
+                        OSC.setRGB(c,r,newCol);
+                        smudgeRed[i][j] = curRed*0.3 + smudgeRed[i][j]*0.7;
+                        smudgeGreen[i][j] = curGreen*0.3 + smudgeGreen[i][j]*0.7;
+                        smudgeBlue[i][j] = curBlue*0.3 + smudgeBlue[i][j]*0.7;
+                     }
+                  }
+               repaint(x-3,y-3,7,7);
+            }
+         }
+         g.dispose();
+      }
+
+      /**
+       * Start a drag operation.
+       */
+      public void mousePressed(MouseEvent evt) {
+         startX = prevX = currentX = evt.getX();
+         startY = prevY = currentY = evt.getY();
+         dragging = true;
+         saveUndoImage();
+         if (currentTool == Tool.ERASE) {
+               // Erase a 10-by-10 block around the starting mouse position.
+            Graphics g = OSC.getGraphics();
+            <span class="newcode">Graphics2D g2 = (Graphics2D)g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                                  RenderingHints.VALUE_ANTIALIAS_ON);</span>
+            g.setColor(fillColor);
+            g.fillRect(startX-5,startY-5,10,10);
+            g.dispose();
+            repaint(startX-5,startY-5,10,10);
+         }
+         else if (currentTool == Tool.SMUDGE) {
+                // Record the colors in a 7-by-7 block of pixels around the
+                // starting mouse position into the arrays smudgeRed, 
+                // smudgeGreen, and smudgeBlue.  These arrays hold the
+                // red, green, and blue components of the colors.
+            if (smudgeRed == null) {
+                  // Create the arrays, if they have not already been created.
+               smudgeRed = new double[7][7];
+               smudgeGreen = new double[7][7];
+               smudgeBlue = new double[7][7];
+            }
+            int w = OSC.getWidth();
+            int h = OSC.getHeight();
+            int x = evt.getX();
+            int y = evt.getY();
+            for (int i = 0; i &lt; 7; i++)
+               for (int j = 0; j &lt; 7; j++) {
+                  int r = y + j - 3;
+                  int c = x + i - 3;
+                  if (r &lt; 0 || r &gt;= h || c &lt; 0 || c &gt;= w) {
+                        // A -1 in the smudgeRed array indicates that the
+                        // corresponding pixel was outside the canvas.
+                     smudgeRed[i][j] = -1;
+                  }
+                  else {
+                     int color = OSC.getRGB(c,r);
+                     smudgeRed[i][j] = (color &gt;&gt; 16) &amp; 0xFF;
+                     smudgeGreen[i][j] = (color &gt;&gt; 8) &amp; 0xFF;
+                     smudgeBlue[i][j] = color &amp; 0xFF;
+                  }
+               }
+         }
+      }
+      
+      /**
+       * Continue a drag operation when the user drags the mouse.
+       * For the CURVE tool, a line is drawn from the previous mouse
+       * position to the current mouse position in the off-screen canvas,
+       * and the repaint() method is called for a rectangle that contains
+       * the line segment that was drawn.  For shape tools, the off-screen
+       * canvas is not changed, but the repaint() method is called so
+       * that the paintComponent() method can redraw the picture with
+       * the user's shape in the new position.  For the SMUDGE and
+       * ERASE tools, the tool is applied along a line from the previous
+       * mouse position to the current position;
+       */
+      public void mouseDragged(MouseEvent evt) {
+         currentX = evt.getX();
+         currentY = evt.getY();
+         if (currentTool == Tool.CURVE) {
+            Graphics g = OSC.getGraphics();
+            <span class="newcode">Graphics2D g2 = (Graphics2D)g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                                  RenderingHints.VALUE_ANTIALIAS_ON);</span>
+            applyStrokeProperties(g);
+            g.drawLine(prevX,prevY,currentX,currentY);
+            g.dispose();
+            repaintRect(prevX,prevY,currentX,currentY);
+         }
+         else if (SHAPE_TOOLS.contains(currentTool)) {
+                 // Repaint the rectangles occupied by the previous position of
+                 // the shape and by its current position.
+            repaintRect(startX,startY,prevX,prevY);
+            repaintRect(startX,startY,currentX,currentY);
+         }
+         else {
+               // Tool has to be ERASE or SMUDGE
+            applyToolAlongLine(prevX,prevY,currentX,currentY);
+         }
+         prevX = currentX;
+         prevY = currentY;
+      }
+
+      /**
+       * Finish a mouse drag operation.  Nothing is done unless the current tool
+       * is a shape tool.  For shape tools, the user's shape is drawn to the
+       * off-screen canvas, making it a permanent part of the picture, and
+       * then the repaint() method is called to show the modified picture
+       * on the screen.
+       */
+      public void mouseReleased(MouseEvent evt) {
+         dragging = false;
+         if (SHAPE_TOOLS.contains(currentTool)) {
+            Graphics g = OSC.getGraphics();
+            <span class="newcode">Graphics2D g2 = (Graphics2D)g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                                  RenderingHints.VALUE_ANTIALIAS_ON);</span>
+            putCurrentShape(g);
+            g.dispose();
+            repaint();
+         }
+      }
+      
+      public void mouseMoved(MouseEvent evt) { }
+      public void mouseClicked(MouseEvent evt) { }
+      public void mouseEntered(MouseEvent evt) { }
+      public void mouseExited(MouseEvent evt) { }
+      
+   } // end nested class MenuHandler
+   
+   
+   /**
+    * Opens an image file selected by the user.  If the image is read
+    * successfulle, it replaces the image in the off-screen canvas.
+    * (The new image is scaled to fit the canvas size exactly.)
+    */
+   private void doOpenFile() {
+      if (fileDialog == null)
+         fileDialog = new JFileChooser();
+      fileDialog.setDialogTitle("Select File to be Opened");
+      fileDialog.setSelectedFile(null);  // No file is initially selected.
+      int option = fileDialog.showOpenDialog(this);
+      if (option != JFileChooser.APPROVE_OPTION)
+         return;  // User canceled or clicked the dialog's close box.
+      File selectedFile = fileDialog.getSelectedFile();
+      FileInputStream stream;
+      try {
+         stream = new FileInputStream(selectedFile);
+      }
+      catch (Exception e) {
+         JOptionPane.showMessageDialog(this,
+               "Sorry, but an error occurred while trying to open the file:\n" + e);
+         return;
+      }
+      try {
+         BufferedImage image = ImageIO.read(stream);
+         if (image == null)
+            throw new Exception("File does not contain a recognized image format.");
+         saveUndoImage();
+         Graphics g = OSC.getGraphics();
+         g.drawImage(image,0,0,OSC.getWidth(),OSC.getHeight(),null);
+         g.dispose();
+         repaint();
+      }
+      catch (Exception e) {
+         JOptionPane.showMessageDialog(this,
+               "Sorry, but an error occurred while trying to read the image:\n" + e);
+      }   
+   }
+   
+   
+   /**
+    * Attempts to save the current image to a file selected by the user. 
+    * @param format the format of the image, either "PNG" or "JPEG" in this program
+    */
+   private void doSaveFile(String format) {
+      if (fileDialog == null)
+         fileDialog = new JFileChooser();
+      fileDialog.setSelectedFile(new File("image." + format.toLowerCase())); 
+      fileDialog.setDialogTitle("Select File to be Saved");
+      int option = fileDialog.showSaveDialog(null);
+      if (option != JFileChooser.APPROVE_OPTION)
+         return;  // User canceled or clicked the dialog's close box.
+      File selectedFile = fileDialog.getSelectedFile();
+      if (selectedFile.exists()) {  // Ask the user whether to replace the file.
+         int response = JOptionPane.showConfirmDialog( null,
+               "The file \"" + selectedFile.getName()
+               + "\" already exists.\nDo you want to replace it?", 
+               "Confirm Save",
+               JOptionPane.YES_NO_OPTION, 
+               JOptionPane.WARNING_MESSAGE );
+         if (response != JOptionPane.YES_OPTION)
+            return;  // User does not want to replace the file.
+      }
+      try {
+         boolean hasFormat = ImageIO.write(OSC,format,selectedFile);
+         if ( ! hasFormat )
+            throw new Exception(format + " format is not available.");
+      }
+      catch (Exception e) {
+         System.out.println("Sorry, but an error occured while trying to save the image.");
+         e.printStackTrace();
+      }
+   }
+
+
+} // end class PaintWithOSCFinal
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

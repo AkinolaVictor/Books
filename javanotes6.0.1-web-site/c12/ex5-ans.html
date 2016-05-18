@@ -1,0 +1,893 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 5, Chapter 12</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 12.5</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 12.5:</h3>
+<p>It is possible to get an estimate of the mathematical constant π by using a random
+process.  The idea is based on the fact that the area of a circle of radius&nbsp;1 is equal to&nbsp;π,
+and the area of a <i>quarter</i> of that circle is&nbsp;π/4.  Here is a picture of a quarter
+of a circle of radius&nbsp;1, inside a 1-by-1 square: 
+</p>
+
+
+<p align="center">
+<img src="estimate_pi_figure.png" width="131" height="132" alt=""></p>
+
+
+<p>The area of the whole square is one, while the area of the part inside the circle is π/4.  If
+we choose a point in the square at random, the probability that it is inside the circle is π/4.
+If we choose <span class="code">N</span> points in the square at random, and if <span class="code">C</span> of them are
+inside the circle, we expect the fraction <span class="code">C/N</span> of points that fall inside the
+circle to be about π/4. That is, we expect <span class="code">4*C/N</span> to be close to&nbsp;π.
+If <span class="code">N</span> is large, we can expect <span class="code">4*C/N</span> to be a good estimate for π,
+and as <span class="code">N</span> gets larger and larger, the estimate is likely to improve.</p>
+
+
+<p>We can pick a random number in the square by choosing numbers <span class="code">x</span> and <span class="code">y</span> in
+the range 0 to&nbsp;1 (using <span class="code">Math.random()</span>).  Since the equation of the circle
+is <span class="code">x*x+y*y=1</span>, the point lies inside the circle if <span class="code">x*x+y*y</span> is less than&nbsp;1.
+One trial consists of picking <span class="code">x</span> and <span class="code">y</span> and testing whether 
+<span class="code">x*x+y*y</span> is less than&nbsp;1.  To get an estimate for π, you have to do many trials, 
+count the trials, and count the number of trials in which <span class="code">x*x+y*y</span> is less than&nbsp;1,
+</p>
+
+
+<p>For this exercise, you should write a GUI program that does this computation and 
+displays the result.  The computation should be done in a separate thread, and the
+results should be displayed periodically.  The program can use <span class="classname">JLabels</span>
+to the display the results.  It should set the text on the labels after running each
+batch of, say, one million trials.  (Setting the text after each trial doesn't
+make sense, since millions of trials can be done in one second, and trying to change
+the display millions of times per second would be silly.</p>
+
+
+<p>Your program should have a "Run"/"Pause" button that controls the computation.  When
+the program starts, clicking "Run" will start the computation and change the text on
+the button to "Pause".  Clicking "Pause" will cause the computation to pause.  The thread
+that does the computation should be started at the beginning of the program, but should
+immediately go into the paused state until the "Run" button is pressed.  Use the
+<span class="code">wait()</span> method in the thread to make it wait until "Run" is pressed.  Use
+the <span class="code">notify()</span> method when the "Run" button is pressed to wake up the thread.
+Use a <span class="ptype">boolean</span> signal variable <span class="code">running</span> to control whether
+the computation thread is paused. (The <span class="code">wait()</span> and <span class="code">notify()</span>
+methods are covered in <a href="../c12/s3.html#threads.3.4">Subsection&nbsp;12.3.4</a>.)</p>
+
+
+<p>Here is an applet version of my solution for you to try:</p>
+
+
+<p align="center">
+<applet code="EstimatePiApplet.class" width="525" height="170" archive="EstimatePi.jar" alt=""></applet></p>
+         
+
+<p>You might want to start with a version of the program with no control button.  In that
+version, the computation
+thread can run continually from the time it is started.  Once that is working, you
+can add the button and the control feature.</p>
+
+
+<p>To get you started, here is the code from the thread in my solution that runs one batch
+of trials and updates the display labels:</p>
+
+
+<pre>for (int i = 0; i &lt; BATCH_SIZE; i++) {
+    double x = Math.random();
+    double y = Math.random();
+    trialCount++;
+    if (x*x + y*y &lt; 1)
+        inCircleCount++;                        
+}
+double estimateForPi = 4 * ((double)inCircleCount / trialCount);
+countLabel.setText(      " Number of Trials:   " + trialCount);
+piEstimateLabel.setText( " Current Estimate:   " + estimateForPi);</pre>
+
+
+<p>The variables <span class="code">trialCount</span> and <span class="code">inCircleCount</span> are of
+type <span class="ptype">long</span> in order to allow the number of trials to be more
+than the two billion or so that would be possible with a variable of type
+<span class="ptype">int</span>.</p>
+
+
+<p>(I was going to ask you to use multiple computation threads, one for each
+available processor, but I ran into an issue when using the <span class="code">Math.random()</span>
+method in several threads.  This method requires synchronization, which causes
+serious performance problems when several threads are using it to generate
+large amounts of random numbers.  A solution to this problem is to have
+each thread use its own object of type <span class="code">java.util.Random</span> to
+generate its random numbers (see <a href="../c5/s3.html#OOP.3.1">Subsection&nbsp;5.3.1</a>).  My
+solution to this exercise discusses this problem further.)</p>
+
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+
+<p>I will present three versions of the solution: one without a control button,
+one with the button and a single computation thread, and one that uses
+multiple threads.  But first, you might be interested in how I set
+up the <span class="classname">JLabels</span>:</p>
+
+
+<pre>countLabel =      new JLabel(" Number of Trials:   0");
+piEstimateLabel = new JLabel(" Current Estimate:   (none)");
+JLabel piLabel =  new JLabel(" Actual value of pi: " + Math.PI + "  ");
+Font bigMonospace = new Font("Monospaced", Font.PLAIN, 20);
+countLabel.setFont(bigMonospace);
+piEstimateLabel.setFont(bigMonospace);
+piLabel.setFont(bigMonospace);
+countLabel.setOpaque(true);
+piEstimateLabel.setOpaque(true);
+piLabel.setOpaque(true);</pre>
+
+
+<p>I used a monospaced font (in which all the character are the same
+width) so that the characters on the three labels would line
+up neatly.  I set the labels to be opaque to make sure that
+they would use their own background color rather than let the 
+color of the panel show through.</p>
+
+
+<hr class="break">
+
+
+<p>For the first version of the program, I simply wrapped the
+code given in the exercise for doing one batch of trials inside
+an infinite <span class="code">while</span> loop, and made that the <span class="code">run()</span>
+method of the thread:</p>
+
+
+<pre>private class ComputationThread extends Thread {
+    final int BATCH_SIZE = 1000000;  // Number of trials between updates of the display.
+    long trialCount;     // Total number of trials that have been performed.
+    long inCircleCount;  // Number of trials in which x*x+y*y is less than 1.
+    public ComputationThread() {
+        setDaemon(true);
+        setPriority(Thread.currentThread().getPriority() - 1);
+    }
+    public void run() {
+        while (true) {
+            for (int i = 0; i &lt; BATCH_SIZE; i++) {
+                double x = Math.random();
+                double y = Math.random();
+                trialCount++;
+                if (x*x + y*y &lt; 1)
+                    inCircleCount++;                        
+            }
+            double estimateForPi = 4 * ((double)inCircleCount / trialCount);
+            countLabel.setText(      " Number of Trials:   " + trialCount);
+            piEstimateLabel.setText( " Current Estimate:   " + estimateForPi);
+        }
+    }
+}</pre>
+
+
+<p>The thread is created and started in the constructor of the panel.  It's quite possible
+that several batches of trials are done before the labels ever appear on the screen.  That's
+OK because it's OK to call a label's <span class="code">setText()</span> method even before
+the label appears.</p>
+
+
+<hr class="break">
+
+
+<p>The first version of the program is pretty short and simple, and it's not too
+hard to add the control button.  First of all, I added the <span class="code">volatile</span>
+<span class="ptype">boolean</span> variable, <span class="code">running</span> to the program, and I added
+the following code at the beginning of the <span class="code">while</span> loop in the thread to make
+the thread pause when the value of  <span class="code">running</span> is <span class="code">false</span>:</p>
+
+
+<pre>synchronized(this) {
+    while ( ! running ) { // wait for running to be true
+        try {
+            wait();
+        }
+         catch (InterruptedException e) {
+        }
+     }
+ }</pre>
+
+
+<p>When <span class="code">running</span> is <span class="code">false</span>, this code calls the <span class="code">wait()</span>
+method to go to sleep.  It will require a call to <span class="code">notify()</span> elsewhere in the
+program to wake the thread so that it can continue.  Note that the synchronization is
+on the object "<span class="code">this</span>", which refers here to the thread object.  (Recall that
+<span class="code">obj.wait()</span> must always be called in code that is synchronized on <span class="code">obj</span>.
+In this case, <span class="code">this</span> plays the role of <span class="code">obj</span> because a simple
+call to <span class="code">wait()</span> is really a call to <span class="code">this.wait()</span>.)  A <span class="code">while</span>
+loop is used in this code rather than an <span class="code">if</span> statement to be absolutely sure
+that <span class="code">running</span> is true before continuing.</p>
+
+
+<p>When the thread is first started at the beginning of the program, the value of
+<span class="code">running</span> is false.  The thread sees this value and calls <span class="code">wait()</span>
+as soon as it starts, and the thread remains in this waiting state until the user
+clicks the "Run" button.  The <span class="code">actionPerformed()</span> method that responds
+to the button has to set the value of <span class="code">running</span> to <span class="code">true</span>.
+It also has to call <span class="code">notify()</span> to wake up the thread so it can see the
+new value.  The <span class="code">notify()</span> method must be called on the same object
+that the thread used to call <span class="code">wait()</span> -- that is, on the thread object
+itself.  The program has a variable named <span class="code">runner</span> that refers to the
+thread, so the thread is woken with the code:</p>
+
+
+<pre>synchronized(runner) {
+    running = true;
+    runner.notify(); 
+}</pre>
+
+
+<p>It's important, by the way, that the statement that sets <span class="code">running</span> to
+<span class="code">true</span> is inside the <span class="code">synchronized</span> statement here, and that
+the code in the thread that tests the value of <span class="code">running</span> is also
+inside a statement that is synchronized on the same object.  This avoids a race
+condition:  Suppose these statements are not synchronized.  Then it is possible
+that the thread might test the value  of <span class="code">running</span>, find it to be
+<span class="code">false</span>, and decide to call <span class="code">wait()</span>.  However,
+before it actually calls <span class="code">wait()</span>, the event-handling thread
+might set <span class="code">running</span> to <span class="code">true</span> <b>and</b> call <span class="code">notify()</span>.
+So it's possible for the <span class="code">notify()</span> to come before the <span class="code">wait()</span>,
+which means the thread will be left waiting for a notification that was already given!
+Proper synchronization prevents the thread from being interrupted between the 
+time it decides to call <span class="code">wait()</span> and the time it actually does so.
+</p>
+
+
+<hr class="break">
+
+
+<p>As I mentioned in the statement of the exercise, I actually wanted to use
+several computation threads -- one for each available processor.  When I wrote
+that program, however, I was dismayed to find that it was much <b>slower</b> than
+the single-threaded program.  After trying for a while to track down the reason,
+I eventually remembered that the call to <span class="code">Math.random()</span> has to be
+synchronized internally (because there is a race condition in the way that the next
+random number in a sequence is generated).  There is a significant overhead
+involved in synchronization, which can really slow down a program when it is
+done too often.  In this case, when <span class="code">Math.random()</span> was called
+millions of times per second by several different threads, the slowdown
+was by a factor of about 100!</p>
+
+
+<p>Behind the scenes, <span class="code">Math.random()</span>
+uses an object of type <span class="code">java.util.Random</span> to generate the random
+numbers.  By having each thread create and use its own object of
+this type, instead of calling <span class="code">Math.random()</span>, I avoided the
+synchronization problem.  (I am honestly not sure how Java avoids the
+overhead of a <span class="code">synchronized</span> statement when there is only
+one thread that is synchronizing on a given object.)</p>
+
+
+<p>Aside from that problem, the main issue introduced by using multiple
+threads is how to combine the results from the different threads.  In the
+first two versions of the program, the thread keeps track of the total number
+of trials and the number of trials where <span class="code">x*x+y*y</span> is less than&nbsp;1.
+It uses this information to figure out what to put on the display labels.
+However, when there are two or more threads, the data that is needed to
+update the display is not available to any one thread.  So, someone else
+has to collect the data from the threads and combine all the data to
+get the overall total number of trials and the overall total number of
+trials in which <span class="code">x*x+y*y&lt;1</span>.</p>
+
+
+<p>There are several ways to do this.  I decided to use a queue to
+transport the results from the computation threads to another thread
+that combines the results and updates the display accordingly.  In fact,
+the role of the other thread is played by the event-handling thread.
+There is a timer that goes off every 1/10 of a second.  The <span class="code">actionPerformed()</span>
+method that
+is called in response to the timer removes all the data that have been collected
+in the queue and uses it to update the display.</p>
+
+
+<p>Trials are run in batches of 1,000,000.  Each batch produces one
+result.  The result is simply the number of trials in that batch for
+which <span class="code">x*x+y*y&lt;1</span>.  The result is an integer, so
+for the result queue I use a queue of <span class="classname">Integers</span>.
+Each result in the queue corresponds to 1,000,000 trials, so each 
+time I process a result, I add 1000000 to the total number of trials
+and add the number from the queue to the number or trials in which
+<span class="code">x*x+y*y&lt;1</span>.</p>
+
+
+<p>For the queue, I used a <span class="classname">LinkedBlockingQueue</span>.  Since the
+queue is being used by several threads, I need a queue where the operations
+are properly synchronized.  In fact, I don't need the blocking behavior
+of the blocking queue, but a <span class="classname">LinkedBlockingQueue</span>
+has a nice, synchronized method, <span class="code">drainTo()</span>, for retrieving
+all the items from a queue in one step.  I would have used
+<span class="classname">ConcurrentLinkedQueue</span> if it had a similar method.</p>
+
+
+<p>I won't discuss the third version of the program further.  You can see
+the source code, which is well commented, below.</p>
+
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+
+<p>
+<b>The first version of the program, with no control button:</b>
+</p>
+
+
+<pre class="exercisecode">
+import java.awt.*;
+import javax.swing.*;
+
+/**
+ * This program uses a probabilistic technique to estimate the
+ * value of the mathematical constant pi.  The technique is to
+ * choose random numbers x and y in the range 0 to 1, and to
+ * compute x*x + y*y.  The probability that x*x + y*y is less than
+ * 1 is pi/4.  If many trials are performed, and the number of
+ * trials in which x*x+y*y is less than 1 is divided by the total
+ * number of trials, the result is an approximation for pi/4.
+ * Multiplying this by 4 gives an approximation for pi.
+ * 
+ * The program shows the estimate produced by this procedure, along
+ * with the number of trials that have been done and, for comparison,
+ * the actual value of pi.  These values are shown in three JLabels.
+ * The computation is done by a separate thread that updates the
+ * contents of the labels after every millionth trial.
+ * 
+ * In this version of the program, the computation thread runs
+ * continually from the time the program is started until it
+ * ends.  It is run at a reduced priority so that it does not
+ * interfere with the GUI thread.
+ */
+public class EstimatePi_1 extends JPanel {
+    
+    /**
+     * Main program just creates a window to show the panel that
+     * contains the JLables.
+     */
+    public static void main(String[] args) {
+        JFrame window = new JFrame("Estimating Pi Probabilistically");
+        EstimatePi_1 content = new EstimatePi_1();
+        window.setContentPane(content);
+        window.pack(); 
+        window.setResizable(false);
+        window.setLocation( 300, 200 );
+        window.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+        window.setVisible(true);
+    }
+    
+    private JLabel piEstimateLabel;  // A label for showing the current estimate of pi.
+    private JLabel countLabel;       // A label for showing the number of trials.
+    
+    private ComputationThread runner;  // The thread that does the computation.
+    
+    
+    /**
+     * Constructor creates the three display labels and adds them to this
+     * panel.  It also creates and starts the computation thread.
+     */
+    public EstimatePi_1() {
+
+        setLayout(new GridLayout(0, 1, 2, 2));
+        setBackground(Color.BLUE);
+        setBorder(BorderFactory.createLineBorder(Color.BLUE,2));
+        
+        countLabel =      new JLabel(" Number of Trials:   0");
+        piEstimateLabel = new JLabel(" Current Estimate:   (none)");
+        JLabel piLabel =  new JLabel(" Actual value of pi: " + Math.PI + "  ");
+        Font bigMonospace = new Font("Monospaced", Font.PLAIN, 20);
+        countLabel.setFont(bigMonospace);
+        piEstimateLabel.setFont(bigMonospace);
+        piLabel.setFont(bigMonospace);
+        countLabel.setOpaque(true);
+        piEstimateLabel.setOpaque(true);
+        piLabel.setOpaque(true);
+        add(piLabel);
+        add(piEstimateLabel);
+        add(countLabel);
+        
+        runner = new ComputationThread();
+        runner.start();
+        
+    } // end constructor
+
+    
+    /**
+     *  This class defines the thread that does the computation.
+     *  The thread runs in an infinite loop in which it performs
+     *  batches of 1000000 trials and then updates the display labels.
+     */
+    private class ComputationThread extends Thread {
+        final int BATCH_SIZE = 1000000;  // Number of trials between updates of the display.
+        long trialCount;     // Total number of trials that have been performed.
+        long inCircleCount;  // Number of trials in which x*x+y*y is less than 1.
+        public ComputationThread() {
+            setDaemon(true);
+            setPriority(Thread.currentThread().getPriority() - 1);
+        }
+        public void run() {
+            while (true) {
+                for (int i = 0; i &lt; BATCH_SIZE; i++) {
+                    double x = Math.random();
+                    double y = Math.random();
+                    trialCount++;
+                    if (x*x + y*y &lt; 1)
+                        inCircleCount++;                        
+                }
+                double estimateForPi = 4 * ((double)inCircleCount / trialCount);
+                countLabel.setText(      " Number of Trials:   " + trialCount);
+                piEstimateLabel.setText( " Current Estimate:   " + estimateForPi);
+            }
+        }
+    }
+    
+    
+} // end class EstimatePi_1
+
+
+</pre>
+
+
+<p>
+<b>The second version of the program, with a control button and just one thread.  Significant
+changes from the first version are shown in red:</b>
+</p>
+
+
+<pre class="exercisecode">
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+/**
+ * This program uses a probabilistic technique to estimate the
+ * value of the mathematical constant pi.  The technique is to
+ * choose random numbers x and y in the range 0 to 1, and to
+ * compute x*x + y*y.  The probability that x*x + y*y is less than
+ * 1 is pi/4.  If many trials are performed, and the number of
+ * trials in which x*x+y*y is less than 1 is divided by the total
+ * number of trials, the result is an approximation for pi/4.
+ * Multiplying this by 4 gives an approximation for pi.
+ * 
+ * The program shows the estimate produced by this procedure, along
+ * with the number of trials that have been done and, for comparison,
+ * the actual value of pi.  These values are shown in three JLabels.
+ * The computation is done by a separate thread that updates the
+ * contents of the labels after every millionth trial.
+ * 
+ <span class="newcode">* In this version of the program, there is a "Run"/"Pause" button
+ * that controls the computation thread.  Clicking the button once
+ * starts the thread; clicking it again pauses it.  Initially, the
+ * thread is paused.</span>
+ */
+public class EstimatePi_2 extends JPanel implements ActionListener {
+    
+    /**
+     * Main program just creates a window to show the panel that
+     * contains the JLables and the Run/Pause button.
+     */
+    public static void main(String[] args) {
+        JFrame window = new JFrame("Estimating Pi Probabilistically");
+        EstimatePi_2 content = new EstimatePi_2();
+        window.setContentPane(content);
+        window.pack(); 
+        window.setResizable(false);
+        window.setLocation( 300, 200 );
+        window.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+        window.setVisible(true);
+    }
+    
+    private JLabel piEstimateLabel;  // A label for showing the current estimate of pi.
+    private JLabel countLabel;       // A label for showing the number of trials.
+    
+   <span class="newcode"> private JButton runPauseButton;  // Button to control the thread.  Clicking this
+                                     // button will pause the thread if it is running
+                                     // and will restart it if it is paused.</span>
+    
+    private ComputationThread runner;  // The thread that does the computation.
+    
+    <span class="newcode">private volatile boolean running;  // Control variable for signaling the thread to
+                                       // run or pause.  Initially, this is false, so
+                                       // the thread pauses as soon as it is created,
+                                       // until the user clicks the "Run" button.</span>
+    
+    
+    /**
+     * Constructor creates the three display labels and adds them to this
+     * panel.  It adds a "Run"/"Pause" button below the labels.  
+     * It also creates and starts the computation thread.
+     */
+    public EstimatePi_2() {
+
+        setLayout(new GridLayout(4, 1, 2, 2));
+        setBackground(Color.BLUE);
+        setBorder(BorderFactory.createLineBorder(Color.BLUE,2));
+        
+        countLabel =      new JLabel(" Number of Trials:   0");
+        piEstimateLabel = new JLabel(" Current Estimate:   (none)");
+        JLabel piLabel =  new JLabel(" Actual value of pi: " + Math.PI + " ");
+        Font bigMonospace = new Font("Monospaced", Font.PLAIN, 20);
+        countLabel.setFont(bigMonospace);
+        piEstimateLabel.setFont(bigMonospace);
+        piLabel.setFont(bigMonospace);
+        countLabel.setOpaque(true);
+        piEstimateLabel.setOpaque(true);
+        piLabel.setOpaque(true);
+        add(piLabel);
+        add(piEstimateLabel);
+        add(countLabel);
+        
+        <span class="newcode">JPanel bottom = new JPanel();
+        add(bottom);
+        runPauseButton = new JButton("Run");
+        bottom.add(runPauseButton);
+        runPauseButton.addActionListener(this);</span>
+        
+        runner = new ComputationThread();
+        runner.start();
+        
+    } // end constructor
+
+
+    <span class="newcode">/**
+     * This method responds to clicks on the button, by
+     * toggling the value of the signal variable from true
+     * to false or from false to true.  The text on the 
+     * button is changed to match the state.  When
+     * running is set to true, notify() is called to wake
+     * up the thread.
+     */
+    public void actionPerformed(ActionEvent evt) {
+        if (running) {
+            runPauseButton.setText("Run");
+            running = false;
+        }
+        else {
+            runPauseButton.setText("Pause");
+            synchronized(runner) {
+                running = true;
+                runner.notify(); 
+            }
+        }
+    }</span>
+    
+    
+    /**
+     *  This class defines the thread that does the computation.
+     *  The thread runs in an infinite loop in which it performs
+     *  batches of 1000000 trials and then updates the display labels.
+     <span class="newcode">*  Just after it starts and between batches, the thread tests
+     *  the value of the signal variable, running.  If this variable
+     *  is false, then the thread sleeps until the value of running
+     *  is set to true.</span>
+     */
+    private class ComputationThread extends Thread {
+        final int BATCH_SIZE = 1000000;  // Number of trials between updates of the display.
+        long trialCount;     // Total number of trials that have been performed.
+        long inCircleCount;  // Number of trials in which x*x+y*y is less than 1.
+        public ComputationThread() {
+            setDaemon(true);
+            setPriority(Thread.currentThread().getPriority() - 1);
+        }
+        public void run() {
+            while (true) {
+                <span class="newcode">synchronized(this) {
+                    while ( ! running ) { // wait for running to be true
+                        try {
+                            wait();
+                        }
+                        catch (InterruptedException e) {
+                        }
+                    }
+                }</span>
+                for (int i = 0; i &lt; BATCH_SIZE; i++) {
+                    double x = Math.random();
+                    double y = Math.random();
+                    trialCount++;
+                    if (x*x + y*y &lt; 1)
+                        inCircleCount++;                        
+                }
+                double estimateForPi = 4 * ((double)inCircleCount / trialCount);
+                countLabel.setText(      " Number of Trials:   " + trialCount);
+                piEstimateLabel.setText( " Current Estimate:   " + estimateForPi);
+            }
+        }
+    }
+    
+    
+}  // end class EstimatePi_2
+
+
+</pre>
+
+
+<p>
+<b>The third version of the program, with a control button and multiple threads.
+Significant changes from the previous verions are shown in red</b>
+</p>
+
+
+<pre class="exercisecode">
+import java.awt.*;
+import java.awt.event.*;
+<span class="newcode">import java.util.ArrayList;
+import java.util.Random;
+import java.util.concurrent.LinkedBlockingQueue;</span>
+import javax.swing.*;
+
+/**
+ * This program uses a probabilistic technique to estimate the
+ * value of the mathematical constant pi.  The technique is to
+ * choose random numbers x and y in the range 0 to 1, and to
+ * compute x*x + y*y.  The probability that x*x + y*y is less than
+ * 1 is pi/4.  If many trials are performed, and the number of
+ * trials in which x*x+y*y is less than 1 is divided by the total
+ * number of trials, the result is an approximation for pi/4.
+ * Multiplying this by 4 gives an approximation for pi.
+ * 
+ * The program shows the estimate produced by this procedure, along
+ * with the number of trials that have been done and, for comparison,
+ * the actual value of pi.  These values are shown in three JLabels.
+ * The computation is done by <span class="newcode">several separate threads.  Periodically,
+ * these threads place their results into a queue.  Another thread,
+ * the event-handling thread in a method called by a Timer, removes
+ * results from the queue and applies them to the labels every
+ * 1/10 second.</span>
+ * 
+ * In this version of the program, there is a "Run"/"Pause" button
+ * that controls the computation threads.  Clicking the button once
+ * starts the threads; clicking it again pauses them.  Initially, the
+ * threads are paused.
+ */
+public class EstimatePi_3 extends JPanel implements ActionListener {
+    
+    public static void main(String[] args) {
+        JFrame window = new JFrame("Estimating Pi Probabilistically");
+        EstimatePi_3 content = new EstimatePi_3();
+        window.setContentPane(content);
+        window.pack(); 
+        window.setResizable(false);
+        window.setLocation( 300, 200 );
+        window.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+        window.setVisible(true);
+    }
+    
+    private final static int BATCH_SIZE = 1000000;  // This is the number of trials
+                                     // in a batch.  A computation thread runs this
+                                     // many trials in a fast for loop, without checking
+                                     // the value of running and without reporting its
+                                     // results.  After the for loop, the thread puts
+                                     // the result from that batch into the queue.  It
+                                     // then checks the value of running and will pause
+                                     // if running is false.
+    
+    <span class="newcode">private long totalTrialCount;    // Total number of trials considered so far.
+    private long totalInCircleCount; // Number of those trials for which x*x+y*y &lt; 1.</span>
+
+    private JLabel piEstimateLabel;  // A label for showing the current estimate of pi.
+    private JLabel countLabel;       // A label for showing the number of trials.
+    
+    private JButton runPauseButton;  // Button to control the threads.  Clicking this
+                                     // button will pause the threads if they is running
+                                     // and will restart it if it is paused.
+    
+    private volatile boolean running;  // Control variable for signaling the threads to
+                                       // run or pause.  Initially, this is false, so
+                                       // the thread pauses as soon as it is created,
+                                       // until the user clicks the "Run" button.
+
+        
+    <span class="newcode">private LinkedBlockingQueue&lt;Integer&gt; resultsQueue; // Results from the computation
+                                 // threads are placed into this queue.  Every number
+                                 // in the queue represents the results from running
+                                 // a batch of trials, of size BATCH_SIZE.  The number
+                                 // in the queue is the number of trials in that batch
+                                 // that resulted in x*x+y*y being less than 1.  (Note
+                                 // that I use a blocking queue rather than a 
+                                 // ConcurrentLinkedQueue only because the blocking
+                                 // queue has a convenient drainTo() method for getting
+                                 // all the items out of the queue at once, with correct
+                                 // synchronization.)
+    
+    private Timer resultsTimer;  // While the computation is running, this timer is
+                                 // also running.  Every 1/10 second, it grabs the
+                                 // results from the queue and applies them to the
+                                 // display labels.  (Note that some results can be
+                                 // left in the queue while the timer and threads are
+                                 // paused.  This seems harmless.)</span>
+    
+    
+    /**
+     * Constructor creates the three display labels and adds them to this
+     * panel.  It adds a "Run"/"Pause" button below the labels.  
+     <span class="newcode">* It also creates and starts the computation threads and the timer
+     * that takes the results from the threads and updates the labels
+     * every 1/10 second.</span>
+     */
+    public EstimatePi_3() {
+
+        setLayout(new GridLayout(4, 1, 2, 2));
+        setBackground(Color.BLUE);
+        setBorder(BorderFactory.createLineBorder(Color.BLUE,2));
+        
+        countLabel =      new JLabel(" Number of Trials:   0");
+        piEstimateLabel = new JLabel(" Current Estimate:   (none)");
+        JLabel piLabel =  new JLabel(" Actual value of pi: " + Math.PI + " ");
+        Font bigMonospace = new Font("Monospaced", Font.PLAIN, 20);
+        countLabel.setFont(bigMonospace);
+        piEstimateLabel.setFont(bigMonospace);
+        piLabel.setFont(bigMonospace);
+        countLabel.setOpaque(true);
+        piEstimateLabel.setOpaque(true);
+        piLabel.setOpaque(true);
+        add(piLabel);
+        add(piEstimateLabel);
+        add(countLabel);
+        
+        JPanel bottom = new JPanel();
+        add(bottom);
+        runPauseButton = new JButton("Run");
+        bottom.add(runPauseButton);
+        runPauseButton.addActionListener(this);
+        
+        <span class="newcode">resultsQueue = new LinkedBlockingQueue&lt;Integer&gt;();
+        int threadCount = Runtime.getRuntime().availableProcessors();
+        for (int i = 0; i &lt; threadCount; i++) {
+            ComputationThread runner = new ComputationThread();
+            runner.start();
+        }
+        
+        resultsTimer = new Timer(100, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                grabResults();
+            }
+        });</span>
+        
+    } // end constructor
+
+    
+    /**
+     * This method responds to clicks on the button, by
+     * toggling the value of the signal variable from true
+     * to false or from false to true.  The text on the 
+     * button is changed to match the state.  The timer
+     * that grabs the results is also started or stopped,
+     * depending on whether the computation is running.  When
+     * running is set to true, <span class="newcode">notifyAll()</span> is called to wake
+     * up all the threads.  (Note that the synchronization
+     * for controlling the threads is on the panel object,
+     * this.  The threads have to synchronize on the same 
+     * object when testing the value of running.)
+     */
+    public void actionPerformed(ActionEvent evt) {
+        if (running) {
+            <span class="newcode">resultsTimer.stop();</span>
+            runPauseButton.setText("Run");
+            running = false;
+        }
+        else {
+            <span class="newcode">runPauseButton.setText("Pause");</span>
+            resultsTimer.start();
+            synchronized(<span class="newcode">this</span>) { <span class="newcode">// IMPORTANT: Synchronization is now on this JPanel object!</span>
+                running = true;
+                <span class="newcode">notifyAll(); // IMPORTANT: Use notifyAll(), not notify(), to wake all computation threads</span>
+            }
+        }
+    }
+    
+    
+    <span class="newcode">/**
+     * This method is called by the timer, every 1/10 second while the
+     * computation is running.  It grabs the entire contents of the
+     * queue that is used to send results from the threads to
+     * this method.  Each value in the queue represents the number of
+     * trials, out of a batch of size BATCH_SIZE, in which x*x+y*Y was
+     * less than 1.  This method updates the total number of trials that 
+     * have been performed and the total number of trials for which
+     * x*x+y*y was less than 1.  It then updates the display labels
+     * with the new data.
+     */
+    private void grabResults() {
+        ArrayList&lt;Integer&gt; results = new ArrayList&lt;Integer&gt;();
+        resultsQueue.drainTo(results);  // Get entire contents of queue.
+                                        // Using this method avoids having to synchronize
+                                        // the entire process of removing items from the
+                                        // queue one at a time.  (And doing that without
+                                        // synchronization would introduce a race condition.)
+        for (int inCircleCount : results) {
+            totalTrialCount += BATCH_SIZE;
+            totalInCircleCount += inCircleCount;
+        }
+        double estimateOfPi = 4 * ((double)totalInCircleCount / totalTrialCount);
+        countLabel.setText(      "Number of Trials:   " + totalTrialCount);
+        piEstimateLabel.setText( "Current Estimate:   " + estimateOfPi);
+        // System.out.println("Got " + results.size() + " results.");  // for testing
+    }</span>
+    
+    
+    /**
+     *  This class defines the thread that does the computation.
+     *  The thread runs in an infinite loop in which it performs
+     *  batches of 1000000 trials and <span class="newcode">places the result in the queue.</span>
+     *  Just after it starts and between batches, the thread tests
+     *  the value of the signal variable, running.  If this variable
+     *  is false, then the thread sleeps until the value of running
+     *  is set to true.  <span class="newcode">Note that this method creates and uses its
+     *  own object of type Random to generate random numbers. ( Because
+     *  access to Math.random() has to be synchronized, using it
+     *  in multiple threads slowed things down immensely.)
+     *  Synchronization in this thread, as in the rest of the program,
+     *  is on the panel object, which is referred to here as
+     *  "EstimatePi_3.this".  The previous version used the thread
+     *  object for synchronization, but in this version there can
+     *  be multiple threads, so it seemed more natural to use the panel.</span>
+     */
+    private class ComputationThread extends Thread {
+        public ComputationThread() {
+            setDaemon(true);
+            setPriority(Thread.currentThread().getPriority() - 1);
+        }
+        public void run() {
+            <span class="newcode">Random myRandom = new Random();</span>
+            while (true) {
+                synchronized(<span class="newcode">EstimatePi_3.this</span>) { 
+                    while ( ! running ) {
+                        try {
+                            <span class="newcode">EstimatePi_3.this.</span>wait();
+                        }
+                        catch (InterruptedException e) {
+                        }
+                    }
+                }
+                int inCircleCount = 0;
+                for (int i = 0; i &lt; BATCH_SIZE; i++) {
+                    double x = myRandom.nextDouble();
+                    double y = myRandom.nextDouble();
+                    if (x*x + y*y &lt; 1)
+                        inCircleCount++;                        
+                }
+                <span class="newcode">resultsQueue.add(inCircleCount);</span>
+            }
+        }
+    }
+    
+    
+} // end class EstimatePi_3
+
+</pre>
+
+
+
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

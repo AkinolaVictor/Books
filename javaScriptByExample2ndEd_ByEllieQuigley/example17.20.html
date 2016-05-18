@@ -1,0 +1,18 @@
+
+<html><head><title></title></head>
+<body>
+   <script type="text/javascript">
+	var reg_expression = /[A-Z][a-z]+\s/;
+	var textString=prompt("Type a string of text","");
+	var result=reg_expression.test(textString);  // Returns true
+		                                             // or false
+	document.write(result+"<br />");
+	if (result){
+		document.write("<b>The regular expression /[A-Z][a-z]"+ "\\s/matched the string\""+ textString +"\".<br />");
+	}
+	else{
+		alert("No Match!");
+	}
+</script>
+</body>
+</html>

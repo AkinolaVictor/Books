@@ -1,0 +1,13 @@
+<html><head><title>The split() Method</title></head>
+<body>
+<script type = "text/javascript">
+	var splitArray = new Array();
+	var string="apples:pears:peaches:plums:oranges";
+	var regex = /:/;  
+	splitArray=string.split(regex);  // Split the string by colons
+	for(i=0; i < splitArray.length; i++){
+		document.write(splitArray[i] + "<br>");
+	}
+</script>
+</body>
+</html>

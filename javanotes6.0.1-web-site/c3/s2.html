@@ -1,0 +1,600 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 3.2 -- Algorithm Development</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s1.html">Previous Section</a> |
+           <a href="s3.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#control.2.1">Pseudocode and Stepwise Refinement</a>
+<br>
+<a href="#control.2.2">The 3N+1 Problem</a>
+<br>
+<a href="#control.2.3">Coding, Testing, Debugging</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 3.2</h3>
+<h2 class="section_title">Algorithm Development</h2>
+<hr class="break">
+
+
+<p>
+<span class="start"><big>P</big>rogramming is difficult</span> (like many activities that
+are useful and worthwhile -- and like most of those activities, it can also be
+rewarding and a lot of fun). When you write a program, you have to tell the
+computer every small detail of what to do. And you have to get everything
+exactly right, since the computer will blindly follow your program exactly as
+written. How, then, do people write any but the most simple programs? It's not
+a big mystery, actually. It's a matter of learning to think in the right
+way.</p>
+
+
+<p>A program is an expression of an idea. A programmer starts with a general
+idea of a task for the computer to perform. Presumably, the programmer has some
+idea of how to perform the task by hand, at least in general outline. The
+problem is to flesh out that outline into a complete, unambiguous, step-by-step
+procedure for carrying out the task. Such a procedure is called an "algorithm."
+(Technically, an <span class="newword">algorithm</span> is an unambiguous,
+step-by-step procedure that terminates after a finite number of steps; we don't
+want to count procedures that go on forever.) An algorithm is not the same as a
+program. A program is written in some particular programming language. An
+algorithm is more like the <b>idea</b> behind the program, but it's the idea of
+the <b>steps</b> the program will take to perform its task, not just the idea
+of the <b>task</b> itself. When describing an algorithm, the steps 
+don't necessarily have to be specified in complete detail, as long as the steps are unambiguous and it's clear that
+carrying out the steps will accomplish the assigned task. An algorithm can be
+expressed in any language, including English. Of course, an algorithm can only
+be expressed as a program if all the details have been filled in.</p>
+
+
+<p>So, where do algorithms come from? Usually, they have to be developed, often
+with a lot of thought and hard work. Skill at algorithm development is
+something that comes with practice, but there are techniques and guidelines
+that can help. I'll talk here about some techniques and guidelines that are
+relevant to "programming in the small," and I will return to the subject
+several times in later chapters.</p>
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="control.2.1">3.2.1&nbsp;&nbsp;Pseudocode and Stepwise Refinement</a>
+</h3>
+
+
+<p>When programming in the small, you have a few basics to work with:
+variables, assignment statements, and input/output routines. You might also
+have some subroutines, objects, or other building blocks that have already been
+written by you or someone else. (Input/output routines fall into this class.)
+You can build sequences of these basic instructions, and you can also combine
+them into more complex control structures such as <span class="code">while</span> loops and
+<span class="code">if</span> statements.</p>
+
+
+<p>Suppose you have a task in mind that you want the computer to perform. One
+way to proceed is to write a description of the task, and take that description
+as an outline of the algorithm you want to develop. Then you can refine and
+elaborate that description, gradually adding steps and detail, until you have a
+complete algorithm that can be translated directly into programming language.
+This method is called <span class="newword">stepwise refinement</span>, and it
+is a type of top-down design. As you proceed through the stages of stepwise
+refinement, you can write out descriptions of your algorithm in 
+<span class="newword">pseudocode</span> -- informal instructions that imitate the structure
+of programming languages without the complete detail and perfect syntax of
+actual program code.</p>
+
+
+<p>As an example, let's see how one might develop the program from the previous
+section, which computes the value of an investment over five years. The task
+that you want the program to perform is: "Compute and display the value of an
+investment for each of the next five years, where the initial investment and
+interest rate are to be specified by the user." You might then write -- or at
+least think -- that this can be expanded as:</p>
+
+
+<pre>Get the user's input
+Compute the value of the investment after 1 year
+Display the value
+Compute the value after 2 years
+Display the value
+Compute the value after 3 years
+Display the value
+Compute the value after 4 years
+Display the value
+Compute the value after 5 years
+Display the value</pre>
+
+
+<p>This is correct, but rather repetitive. And seeing that repetition, you
+might notice an opportunity to use a loop. A loop would take less typing. More
+important, it would be more <b>general</b>: Essentially the same loop
+will work no matter how many years you want to process. So, you might rewrite
+the above sequence of steps as:</p>
+
+
+<pre>Get the user's input
+while there are more years to process:
+    Compute the value after the next year
+    Display the value</pre>
+
+
+<p>Following this algorithm would certainly solve the problem, but
+for a computer we'll have to be more explicit about how to "Get the
+user's input," how to "Compute the value after the next year," and what it
+means to say "there are more years to process." We can expand the step, "Get
+the user's input" into</p>
+
+
+<pre>Ask the user for the initial investment
+Read the user's response
+Ask the user for the interest rate
+Read the user's response</pre>
+
+
+<p>To fill in the details of the step "Compute the value after the next year,"
+you have to know how to do the computation yourself. (Maybe you need to ask
+your boss or professor for clarification?) Let's say you know that the value is
+computed by adding some interest to the previous value. Then we can refine the
+<span class="code">while</span> loop to:</p>
+
+
+<pre>while there are more years to process:
+    Compute the interest
+    Add the interest to the value
+    Display the value</pre>
+
+
+<p>As for testing whether there are more years to process, the only way that we
+can do that is by counting the years ourselves. This displays a very common
+pattern, and you should expect to use something similar in a lot of programs:
+We have to start with zero years, add one each time we process a year, and stop
+when we reach the desired number of years. So the <span class="code">while</span> loop
+becomes:</p>
+
+
+<pre>years = 0
+while years &lt; 5:
+    years = years + 1
+    Compute the interest
+    Add the interest to the value
+    Display the value</pre>
+
+
+<p>We still have to know how to compute the interest. Let's say that the
+interest is to be computed by multiplying the interest rate by the current
+value of the investment. Putting this together with the part of the algorithm
+that gets the user's inputs, we have the complete algorithm:</p>
+
+
+<pre>Ask the user for the initial investment
+Read the user's response
+Ask the user for the interest rate
+Read the user's response
+years = 0
+while years &lt; 5:
+    years = years + 1
+    Compute interest = value * interest rate
+    Add the interest to the value
+    Display the value</pre>
+
+
+<p>Finally, we are at the point where we can translate pretty directly into
+proper programming-language syntax. We still have to choose names for the
+variables, decide exactly what we want to say to the user, and so forth. Having
+done this, we could express our algorithm in Java as:</p>
+
+
+<pre>double principal, rate, interest;  // declare the variables
+int years;
+System.out.print("Type initial investment: ");
+principal = TextIO.getlnDouble();
+System.out.print("Type interest rate: ");
+rate = TextIO.getlnDouble();
+years = 0;
+while (years &lt; 5) {
+   years = years + 1;
+   interest = principal * rate;
+   principal = principal + interest;
+   System.out.println(principal);
+}</pre>
+
+
+<p>This still needs to be wrapped inside a complete program, it still needs to
+be commented, and it really needs to print out more information in a nicer format for the user.
+But it's essentially the same program as the one in the previous section. (Note
+that the pseudocode algorithm uses indentation to show which statements are
+inside the loop. In Java, indentation is completely ignored by the computer, so
+you need a pair of braces to tell the computer which statements are in the
+loop. If you leave out the braces, the only statement inside the loop would be
+"<span class="code">years&nbsp;=&nbsp;years&nbsp;+&nbsp;1;"</span>. The other statements would only be executed
+once, after the loop ends. The nasty thing is that the computer won't notice
+this error for you, like it would if you left out the parentheses around
+"<span class="code">(years&nbsp;&lt;&nbsp;5)</span>". The parentheses are required by the syntax of the
+<span class="code">while</span> statement. The braces are only required semantically. The
+computer can recognize syntax errors but not semantic errors.)</p>
+
+
+<p>One thing you should have noticed here is that my original specification of
+the problem -- "Compute and display the value of an investment for each of the
+next five years" -- was far from being complete. Before you start writing a
+program, you should make sure you have a complete specification of exactly what
+the program is supposed to do. In particular, you need to know what information
+the program is going to input and output and what computation it is going to
+perform. Here is what a reasonably complete specification of the problem might
+look like in this example:</p>
+
+
+<div style="margin-left: 100; margin-right: 100;">
+
+<p>
+"Write a program that will compute and display the value of an investment
+for each of the next five years. Each year, interest is added to the value. The
+interest is computed by multiplying the current value by a fixed interest rate.
+Assume that the initial value and the rate of interest are to be input by the
+user when the program is run."</p>
+
+</div>
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="control.2.2">3.2.2&nbsp;&nbsp;The 3N+1 Problem</a>
+</h3>
+
+
+<p>Let's do another example, working this time with a program that you haven't
+already seen. The assignment here is an abstract mathematical problem that is
+one of my favorite programming exercises. This time, we'll start with a more
+complete specification of the task to be performed:</p>
+
+
+<div style="margin-left: 100; margin-right: 100;">
+
+<p>
+"Given a positive integer, N, define the '3N+1' sequence starting from N as
+follows: If N is an even number, then divide N by two; but if N is odd, then
+multiply N by 3 and add 1. Continue to generate numbers in this way until N
+becomes equal to 1. For example, starting from N = 3, which is odd, we multiply
+by 3 and add 1, giving N = 3*3+1 = 10. Then, since N is even, we divide by 2,
+giving N = 10/2 = 5. We continue in this way, stopping when we reach 1, giving
+the complete sequence: 3, 10, 5, 16, 8, 4, 2, 1.</p>
+
+<p>
+"Write a program that will read a positive integer from the user and will
+print out the 3N+1 sequence starting from that integer. The program should also
+count and print out the number of terms in the sequence."</p>
+
+</div>
+
+
+<p>A general outline of the algorithm for the program we want is:</p>
+
+
+<pre>   Get a positive integer N from the user.
+   Compute, print, and count each number in the sequence.
+   Output the number of terms.</pre>
+
+
+<p>The bulk of the program is in the second step. We'll need a loop, since we
+want to keep computing numbers until we get 1. To put this in terms appropriate
+for a <span class="code">while</span> loop, we need to know when to <b>continue</b> the
+loop rather than when to stop it: We want to continue as long as the number is
+<b>not</b> 1. So, we can expand our pseudocode algorithm to:</p>
+
+
+<pre>Get a positive integer N from the user;
+while N is not 1:
+    Compute N = next term;
+    Output N;
+    Count this term;
+Output the number of terms;</pre>
+
+
+<p>In order to compute the next term, the computer must take different actions
+depending on whether N is even or odd. We need an <span class="code">if</span> statement to
+decide between the two cases:</p>
+
+
+<pre>Get a positive integer N from the user;
+while N is not 1:
+    if N is even:
+       Compute N = N/2;
+    else
+       Compute N = 3 * N + 1;
+    Output N;
+    Count this term;
+Output the number of terms;</pre>
+
+
+<p>We are almost there. The one problem that remains is counting. Counting
+means that you start with zero, and every time you have something to count, you
+add one. We need a variable to do the counting. (Again, this is a common
+pattern that you should expect to see over and over.) With the counter added,
+we get:</p>
+
+
+<pre>Get a positive integer N from the user;
+Let counter = 0;
+while N is not 1:
+    if N is even:
+       Compute N = N/2;
+    else
+       Compute N = 3 * N + 1;
+    Output N;
+    Add 1 to counter;
+Output the counter;</pre>
+
+
+<p>We still have to worry about the very first step. How can we get a
+<b>positive</b> integer from the user? If we just read in a number,
+it's possible that the user might type in a negative number or zero. If you
+follow what happens when the value of N is negative or zero, you'll see that
+the program will go on forever, since the value of N will never become equal to
+1. This is bad. In this case, the problem is probably no big deal, but in
+general you should try to write programs that are foolproof. One way to fix
+this is to keep reading in numbers until the user types in a positive
+number:</p>
+
+
+<pre>Ask user to input a positive number;
+Let N be the user's response;
+while N is not positive:
+   Print an error message;
+   Read another value for N;
+Let counter = 0;
+while N is not 1:
+    if N is even:
+       Compute N = N/2;
+    else
+       Compute N = 3 * N + 1;
+    Output N;
+    Add 1 to counter;
+Output the counter;</pre>
+
+
+<p>The first <span class="code">while</span> loop will end only when N is a positive number, as
+required. (A common beginning programmer's error is to use an <span class="code">if</span>
+statement instead of a <span class="code">while</span> statement here: "If N is not positive,
+ask the user to input another value." The problem arises if the second number
+input by the user is also non-positive. The <span class="code">if</span> statement is only
+executed once, so the second input number is never tested, and the program
+proceeds into an infinite loop. With the
+<span class="code">while</span> loop, after the second number is input, the computer jumps back
+to the beginning of the loop and tests whether the second number is positive.
+If not, it asks the user for a third number, and it will continue asking for
+numbers until the user enters an acceptable input.)</p>
+
+
+<p>Here is a Java program implementing this algorithm. It uses the operators
+<span class="code">&lt;=</span> to mean "is less than or equal to" and <span class="code">!=</span> to mean "is
+not equal to." To test whether N is even, it uses "<span class="code">N&nbsp;%&nbsp;2&nbsp;==&nbsp;0</span>". All
+the operators used here were discussed in <a href="../c2/s5.html">Section&nbsp;2.5</a>.</p>
+
+
+<pre>/**  
+ * This program prints out a 3N+1 sequence starting from a positive 
+ * integer specified by the user.  It also counts the number of 
+ * terms in the sequence, and prints out that number.
+ */
+ public class ThreeN1 {
+ 
+      public static void main(String[] args) {                
+        
+         int N;       // for computing terms in the sequence
+         int counter; // for counting the terms
+        
+         TextIO.put("Starting point for sequence: ");
+         N = TextIO.getlnInt();
+         while (N &lt;= 0) {
+            TextIO.put("The starting point must be positive. Please try again: ");
+            N = TextIO.getlnInt();
+         }
+         // At this point, we know that N &gt; 0
+        
+         counter = 0;
+         while (N != 1) {
+             if (N % 2 == 0)
+                N = N / 2;
+             else
+                N = 3 * N + 1;
+             TextIO.putln(N);
+             counter = counter + 1;
+         }
+        
+         TextIO.putln();
+         TextIO.put("There were ");
+         TextIO.put(counter);
+         TextIO.putln(" terms in the sequence.");
+                           
+     }  // end of main()
+ 
+ }  // end of class ThreeN1</pre>
+
+
+
+<p>As usual, you can try this out in an applet that simulates the program. Try
+different starting values for N, including some negative values:</p>
+
+
+<p align="center">
+<applet code="ThreeN1Console" width="600" height="300" archive="ThreeN1Applet.jar" alt="(Applet 'ThreeN1Console' should be displayed here.)"></applet></p>
+
+
+   
+
+<p>Two final notes on this program: First, you might have noticed that the
+first term of the sequence -- the value of N input by the user -- is not
+printed or counted by this program. Is this an error? It's hard to say. Was the
+specification of the program careful enough to decide? This is the type of
+thing that might send you back to the boss/professor for clarification. The
+problem (if it is one!) can be fixed easily enough. Just replace the line
+"counter = 0" before the while loop with the two lines:</p>
+
+
+<pre>TextIO.putln(N);   // print out initial term
+counter = 1;       // and count it</pre>
+
+
+<p>Second, there is the question of why this problem is at all interesting.
+Well, it's interesting to mathematicians and computer scientists because of a
+simple question about the problem that they haven't been able to answer: Will
+the process of computing the 3N+1 sequence finish after a finite number of
+steps for all possible starting values of N? Although individual sequences are
+easy to compute, no one has been able to answer the general question. To put
+this another way, no one knows whether the process of computing 3N+1 sequences
+can properly be called an algorithm, since an algorithm is required to
+terminate after a finite number of steps!  (This discussion assumes that
+the value of <span class="code">N</span> can take on arbitrarily large integer values, which
+is not true for a variable of type <span class="ptype">int</span> in a Java program.
+When the value of <span class="code">N</span> in the program becomes too large to be
+represented as a 32-bit <span class="ptype">int</span>, the values output by the program
+are no longer mathematically correct.  See <a href="../c8/ex2-ans.html">Exercise&nbsp;8.2</a>)</p>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="control.2.3">3.2.3&nbsp;&nbsp;Coding, Testing, Debugging</a>
+</h3>
+
+
+
+<p>It would be nice if, having developed an algorithm for your program, you
+could relax, press a button, and get a perfectly working program.
+Unfortunately, the process of turning an algorithm into Java source code
+doesn't always go smoothly. And when you do get to the stage of a working
+program, it's often only working in the sense that it does <b>something</b>.
+Unfortunately not what you want it to do.</p>
+
+
+<p>After program design comes coding: translating the design into a program
+written in Java or some other language. Usually, no matter how careful you are,
+a few syntax errors will creep in from somewhere, and the Java compiler will
+reject your program with some kind of error message. Unfortunately, while a
+compiler will always detect syntax errors, it's not very good about telling you
+exactly what's wrong. Sometimes, it's not even good about telling you where the
+real error is. A spelling error or missing "{" on line 45 might cause the
+compiler to choke on line 105. You can avoid lots of errors by making sure that
+you really understand the syntax rules of the language and by following some
+basic programming guidelines. For example, I never type a "{" without typing
+the matching "}". Then I go back and fill in the statements between the braces.
+A missing or extra brace can be one of the hardest errors to find in a large
+program. Always, always indent your program nicely. If you change the program,
+change the indentation to match. It's worth the trouble. Use a consistent
+naming scheme, so you don't have to struggle to remember whether you called
+that variable <span class="code">interestrate</span> or <span class="code">interestRate</span>. In general, when
+the compiler gives multiple error messages, don't try to fix the second error
+message from the compiler until you've fixed the first one. Once the compiler
+hits an error in your program, it can get confused, and the rest of the error
+messages might just be guesses. Maybe the best advice is: Take the time to
+understand the error before you try to fix it. Programming is not an
+experimental science.</p>
+
+
+<p>When your program compiles without error, you are still not done. You have
+to test the program to make sure it works correctly. Remember that the goal is
+not to get the right output for the two sample inputs that the professor gave
+in class. The goal is a program that will work correctly for all reasonable
+inputs. Ideally, when faced with an unreasonable input, it should respond by
+gently chiding the user rather than by crashing. Test your program on a wide
+variety of inputs. Try to find a set of inputs that will test the full range of
+functionality that you've coded into your program. As you begin writing larger
+programs, write them in stages and test each stage along the way. You might
+even have to write some extra code to do the testing -- for example to call a
+subroutine that you've just written. You don't want to be faced, if you can
+avoid it, with 500 newly written lines of code that have an error in there
+<i>somewhere.</i>
+</p>
+
+
+<p>The point of testing is to find <span class="newword">bugs</span> -- semantic 
+errors that show up as incorrect behavior rather than as compilation
+errors. And the sad fact is that you will probably find them. Again, you can
+minimize bugs by careful design and careful coding, but no one has found a way
+to avoid them altogether. Once you've detected a bug, it's time for
+<span class="newword">debugging</span>. You have to track down the cause of the
+bug in the program's source code and eliminate it. Debugging is a skill that,
+like other aspects of programming, requires practice to master. So don't be
+afraid of bugs. Learn from them. One essential debugging skill is the ability
+to read source code -- the ability to put aside preconceptions about what you
+<i>think</i> it does and to follow it the way the computer does -- mechanically, 
+step-by-step -- to see what it really does. This is hard. I can
+still remember the time I spent hours looking for a bug only to find that a
+line of code that I had looked at ten times had a "1" where it should have had
+an "i", or the time when I wrote a subroutine named <span class="code">WindowClosing</span>
+which would have done exactly what I wanted except that the computer was
+looking for <span class="code">windowClosing</span> (with a lower case "w"). Sometimes it can
+help to have someone who doesn't share your preconceptions look at your
+code.</p>
+
+
+<p>Often, it's a problem just to find the part of the program that contains the
+error. Most programming environments come with a <span class="newword">debugger</span>, 
+which is a program that can help you find bugs.
+Typically, your program can be run under the control of the debugger. The
+debugger allows you to set "breakpoints" in your program. A breakpoint is a
+point in the program where the debugger will pause the program so you can look
+at the values of the program's variables. The idea is to track down exactly
+when things start to go wrong during the program's execution. The debugger will
+also let you execute your program one line at a time, so that you can watch
+what happens in detail once you know the general area in the program where the
+bug is lurking.</p>
+
+
+<p>I will confess that I only occasionally use debuggers myself. A more traditional
+approach to debugging is to insert <span class="newword">debugging statements</span> into your program. 
+These are output statements that print out
+information about the state of the program. Typically, a debugging statement
+would say something like</p>
+
+
+<pre>System.out.println("At start of while loop, N = " + N);</pre> 
+
+
+<p>You need to be able to tell from the output where in your program the output is
+coming from, and you want to know the value of important variables. Sometimes,
+you will find that the computer isn't even getting to a part of the program
+that you think it should be executing. Remember that the goal is to find the
+first point in the program where the state is not what you expect it to be.
+That's where the bug is.</p>
+
+
+<p>And finally, remember the golden rule of debugging: If you are absolutely
+sure that everything in your program is right, and if it still doesn't work,
+then one of the things that you are absolutely sure of is wrong.</p>
+   
+
+   
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s1.html">Previous Section</a> |
+           <a href="s3.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

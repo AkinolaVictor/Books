@@ -1,0 +1,18 @@
+<html><head><title>The Conversion Functions</title></head>
+<body>
+  <p>
+  <h3>Data Conversion</h3>
+  <script type="text/javascript">
+	var num1 = prompt("Enter a number: ","");
+	var num2 = prompt("Enter another number: ","");
+	var result = Number(num1) + Number(num2);  
+		// Convert strings to numbers
+	alert("Result is "+ result);
+	var myString=String(num1);
+	result=myString + 200;  // String + Number is String
+	alert("Result is "+ result);   // Concatenates 200 to the
+                           // result; displays 20200
+	alert("Boolean result is "+ Boolean(num2));  // Prints true
+  </script>
+</body>
+</html>

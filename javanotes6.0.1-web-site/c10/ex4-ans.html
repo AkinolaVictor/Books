@@ -1,0 +1,456 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 4, Chapter 10</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 10.4</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 10.4:</h3>
+<p>A <span class="newword">predicate</span> is a boolean-valued function with one parameter.
+Some languages use predicates in generic programming. Java doesn't, but this
+exercise looks at how predicates might work in Java.</p>
+
+
+<p>In Java, we could implement "predicate objects" by defining a generic interface:</p>
+
+
+<pre>public interface Predicate&lt;T&gt; {
+    public boolean test( T obj );
+}</pre>
+
+
+<p>The idea is that an object that implements this interface knows how to
+"test" objects of type <span class="classname">T</span>
+in some way.   Define a class that contains 
+the following generic static methods for working with predicate objects.
+The name of the class should be <span class="classname">Predicates</span>, in analogy
+with the standard class <span class="classname">Collections</span> that provides various
+<span class="code">static</span> methods for working with collections.</p>
+
+
+<pre>public static &lt;T&gt; void remove(Collection&lt;T&gt; coll, Predicate&lt;T&gt; pred)
+   // Remove every object, obj, from coll for which
+   // pred.test(obj) is true.
+   
+public static &lt;T&gt; void retain(Collection&lt;T&gt; coll, Predicate&lt;T&gt; pred)
+   // Remove every object, obj, from coll for which
+   // pred.test(obj) is false.  (That is, retain the
+   // objects for which the predicate is true.)
+   
+public static &lt;T&gt; List&lt;T&gt; collect(Collection&lt;T&gt; coll, Predicate&lt;T&gt; pred)
+   // Return a List that contains all the objects, obj,
+   // from the collection, coll, such that pred.test(obj)
+   // is true.
+   
+public static &lt;T&gt; int find(ArrayList&lt;T&gt; list, Predicate&lt;T&gt; pred)
+   // Return the index of the first item in list
+   // for which the predicate is true, if any.
+   // If there is no such item, return -1.</pre>
+   
+
+<p>(In C++, methods similar to these are included as a standard part of the
+generic programming framework.)</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>The code for this exercises is pretty short, but it
+involves some advanced ideas, including methods with bounded type parameters
+(from <a href="../c10/s5.html#generics.5.4">Subsection&nbsp;10.5.4</a>).  Aside from that,
+the main point of the exercise is to introduce predicates and show how they might
+be useful in generic programming. The operation of finding all the items in a
+collection that satisfy some condition is very common. The code to do it is not
+hard to write, but even so, it is nice to have it done once and for all. In this
+exercise, the condition that the items have to satisfy is represented as a
+<span class="classname">Predicate</span>. The <span class="code">collect()</span> method provides a general way to
+find all the items that satisfy the condition. The items are dumped into a
+collection, which can then be processed further if necessary. If I wanted to
+carry this generic programming thing even further, I would define another
+interface:</p>
+
+
+<pre>public interface Processor&lt;T&gt; {
+   public void process( T obj );
+}</pre>
+
+
+<p>and define a generic method for applying a <span class="classname">Processor</span> object to each
+item in a collection. With <span class="classname">Predicates</span> and <span class="classname">Processors</span> in hand,
+it would hardly ever be necessary to write a loop for iterating through all the
+items in a collection.</p>
+
+
+<hr class="break">
+
+
+<p>The implementation of the <span class="code">collect()</span> method simply uses a
+for-each loop to go through the collection, <span class="code">coll</span>, and puts every
+item that satisfies the predicate into a list. The method returns an object of
+type <span class="classname">List</span>, but <span class="classname">List</span> is only an interface. Any real list must
+belong to one of the classes that implement this interface, such as
+<span class="classname">LinkedList</span> or <span class="classname">ArrayList</span>. I create the list as an
+<span class="classname">ArrayList</span>, but a <span class="classname">LinkedList</span> would also be reasonable.
+(Perhaps the return type of the method should have been specified as
+<span class="classname">ArrayList</span> rather than <span class="classname">List</span> so that users of the method would
+know exactly what they are getting.)</p>
+
+
+<pre>/**
+ * Return a List that contains all the objects, obj, from the collection, 
+ * coll, for which pred.test(obj) is true.
+ */
+public static &lt;T&gt; List&lt;T&gt; collect(Collection&lt;T&gt; coll, Predicate&lt;T&gt; pred) {
+   List&lt;T&gt; list = new ArrayList&lt;T&gt;();
+   for ( T item : coll ) {
+      if (pred.test(item))
+         list.add(item);
+   }
+   return list;
+} // end collect()</pre>
+
+
+<p>The <span class="code">remove()</span> and <span class="code">retain()</span> methods are similar to
+<span class="code">collect()</span>, except that instead of making a new collection, they modify
+the collection, <span class="code">coll</span>.  A for-each loop cannot modify the collection
+over which it is iterating, so the <span class="code">remove()</span> and <span class="code">retain()</span> methods
+will have to use <span class="classname">Iterators</span>.  Recall that if <span class="code">iter</span>
+is an <span class="classname">Iterator</span> for a collection, then the method
+<span class="code">iter.remove()</span> will remove from the collection the item that was seen
+most recently by the iterator.  The <span class="code">remove()</span> method can be written
+as:</p>
+   
+
+<pre>/**
+ * Remove every object, obj, from coll for which pred.test(obj) is true.
+ */
+public static &lt;T&gt; void remove(Collection&lt;T&gt; coll, Predicate&lt;T&gt; pred) {
+   Iterator&lt;T&gt; iter = coll.iterator();
+   while (iter.hasNext()) {
+      T item = iter.next();
+      if (pred.test(item))
+         iter.remove();
+   }
+} // end remove()</pre>
+   
+
+<p>The <span class="code">retain()</span> method is almost identical to this, and the
+<span class="code">find()</span> method is easy to write using an ordinary <span class="code">for</span>
+loop.  See my solution, below.</p>
+
+
+<p>My test program simply creates some collections and applies the methods from
+the <span class="classname">Predicates</span> class to them. My collections contain objects of type
+<span class="classname">Integer</span> and I made two <span class="classname">Predicates</span> that work on objects of
+this type. To define such a predicate, we need a class that implements the interface
+<span class="classname">Predicate&lt;Integer&gt;</span>, and then we have to make an object belonging to
+that class. For example, I define the class:</p>
+
+
+<pre>/**
+ * An object of type Even tests an Object of type Integer to see whether the 
+ * integer that it represents is an even number. Note that the test() method 
+ * should only be applied to non-null values of type Integer.
+ */
+static class Even implements Predicate&lt;Integer&gt; {
+   public boolean test(Integer i) {
+      if ( i % 2 == 0 )
+         return true;
+      else
+         return false;
+   }
+} // end class Even</pre>
+
+
+<p>The predicate object is then created with a command:</p>
+
+
+<pre>Predicate&lt;Integer&gt; pred = new Even():</pre>
+
+
+<p>A predicate object belonging to class <span class="classname">Even</span> will throw an exception
+if its <span class="code">test()</span> method is applied to a <span class="code">null</span> value. If this class were 
+meant for more
+general use, it might be better to define <span class="code">test()</span> so that it simply
+returns the answer "false" in this cases:</p>
+
+
+<pre>/**
+ * An object of type Even tests an Object of type Integer to see whether the 
+ * integer that it represents is an even number.  <span class="newcode">When applied to a null</span>
+ * <span class="newcode">object, the test returns the value false.</span>
+ */
+static class Even implements Predicate&lt;Integer&gt; {
+   public boolean test(Integer i) {
+      <span class="newcode">if (i == null)
+         return false;</span>
+      else if ( i % 2 == 0 )
+         return true;
+      else
+         return false;
+   }
+} // end class Even</pre>
+
+
+<hr class="break">
+
+
+<p>Note that a <span class="classname">Predicate</span> is an object, but we are really only
+interested in the <span class="code">test()</span> method of the object. In some languages,
+including C++, it is possible to pass a function as a parameter to another
+function. In those languages, predicates are simply functions that return
+boolean values, and working with predicates does not require the overhead of
+making classes and objects. Of course, things are not so bad in Java if you
+make use of an anonymous nested class to define the predicate. In fact, you can
+define the predicate right in the function call where you need it. For
+example:</p>
+
+
+<pre>result = Predicates.collect( coll, 
+                    new Predicate&lt;Integer&gt;() {
+                       public boolean test(Integer i) {
+                          return (i != null &amp;&amp; i &gt; 100);
+                       }
+                    } );</pre>
+
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<p>
+<b><u>The Predicate interface must be defined:</u></b>
+</p>
+   
+
+<pre class="exercisecode">interface Predicate&lt;T&gt; {
+   public boolean test( T obj );
+}
+</pre>
+   
+
+<p>
+<b><u>The Predicates class:</u></b>
+</p>
+   
+
+<pre class="exercisecode">import java.util.*;
+
+
+/**
+ * This class defines some static methods for working
+ * with Collections and Predicates.  (The Predicate
+ * interface is NOT a standard part of Java.)
+ */
+public class Predicates {
+
+   
+   /**
+    * Remove every object, obj, from coll for which pred.test(obj) is true.
+    */
+   public static &lt;T&gt; void remove(Collection&lt;T&gt; coll, Predicate&lt;T&gt; pred) {
+      Iterator&lt;T&gt; iter = coll.iterator();
+      while (iter.hasNext()) {
+         T item = iter.next();
+         if (pred.test(item))
+            iter.remove();
+      }
+   } // end remove()
+
+   
+   /**
+    * Remove every object, obj, from coll for which pred.test(obj) is false.  
+    * (That is, retain the objects for which the predicate is true.)
+    */
+   public static &lt;T&gt; void retain(Collection&lt;T&gt; coll, Predicate&lt;T&gt; pred){
+      Iterator&lt;T&gt; iter = coll.iterator();
+      while (iter.hasNext()) {
+         T item = iter.next();
+         if ( ! pred.test(item) )
+            iter.remove();
+      }
+   } // end retain()
+   
+   
+   /**
+    * Return a List that contains all the objects, obj, from the collection, 
+    * coll, for which pred.test(obj) is true.
+    */
+   public static &lt;T&gt; List&lt;T&gt; collect(Collection&lt;T&gt; coll, Predicate&lt;T&gt; pred) {
+      List&lt;T&gt; list = new ArrayList&lt;T&gt;();
+      for ( T item : coll ) {
+         if (pred.test(item))
+            list.add(item);
+      }
+      return list;
+   } // end collect()
+
+   
+   /**
+    * Return the index of the first item in list for which the predicate is true, if any.
+    * If there is no such item, return -1.
+    */
+   public static &lt;T&gt; int find(ArrayList&lt;T&gt; list, Predicate&lt;T&gt; pred) {
+      // 
+      for (int i = 0; i &lt; list.size(); i++) {
+         T item = list.get(i);
+         if (pred.test(item))
+            return i;
+      }
+      return -1;
+   } // end find()
+
+   
+} // end class Predicates
+</pre>
+   
+
+<p>
+<b><u>The Test program:</u></b>
+</p>
+   
+
+<pre class="exercisecode">
+import java.util.*;
+
+/**
+ * Perform some simple tests on the Predicates class.
+ */
+public class TestPred {
+
+   /**
+    * An object of type Even tests an Object of type Integer to see whether the 
+    * integer that it represents is an even number. Note that the test() method 
+    * should only be applied to non-null values of type Integer.
+    */
+   static class Even implements Predicate&lt;Integer&gt; {
+      public boolean test(Integer i) {
+         if ( i % 2 == 0 )
+            return true;
+         else
+            return false;
+      }
+   } // end class Even
+
+   
+   /**
+    * An object of type Big tests an Object of type Integer to see whether the 
+    * integer that it represents is bigger than 100.  Note that the test() method 
+    * should only be applied to non-null values of type Integer.
+    */
+   static class Big implements Predicate&lt;Integer&gt; {
+      public boolean test(Integer i) {
+         if ( i &gt; 100 )
+            return true;
+         else
+            return false;
+      }
+   } // end class Big
+
+   
+   /**
+    * For convenience make a Collection containing some integers.  The Collection 
+    * is actually a TreeSet, but that is not relevant to the main program.
+    */
+   static Collection&lt;Integer&gt; makeSet() {
+      Collection&lt;Integer&gt; set = new TreeSet&lt;Integer&gt;();
+      set.add(new Integer(32));
+      set.add(new Integer(17));
+      set.add(new Integer(142));
+      set.add(new Integer(56));
+      set.add(new Integer(1899));
+      set.add(new Integer(57));
+      set.add(new Integer(999));
+      set.add(new Integer(86));
+      set.add(new Integer(83));
+      set.add(new Integer(100));
+      return set;
+   } // end makeSet()
+
+
+
+   /**
+    * Main routine tests the Predicates class by making Collections of Integers 
+    * and applying the methods from the Predicates class to them.
+    */
+   public static void main(String[] args) {
+
+      Collection&lt;Integer&gt; coll;    // A collection (from makeSet() method).
+
+      List&lt;Integer&gt; result;        // The result of applying collect() to coll.
+
+      Predicate&lt;Integer&gt; pred = new Even();  // Tests if an Integer is even.
+
+      coll = makeSet();
+      System.out.println("Original collection: " + coll);
+
+      Predicates.remove(coll,pred);
+      System.out.println("Remove evens: " + coll);
+
+      coll = makeSet();
+      Predicates.retain(coll,pred);
+      System.out.println("Retain evens: " + coll);
+
+      coll = makeSet();
+      result = Predicates.collect(coll,pred);
+      System.out.println("Collect evens: " + result);
+
+      ArrayList&lt;Integer&gt; list = new ArrayList&lt;Integer&gt;(coll);
+      int i = Predicates.find(list,pred);
+      System.out.println("Find first even: at index " + i);
+
+
+      pred = new Big();        // Tests if an Integer is bigger than 100.
+
+      coll = makeSet();
+      System.out.println("Original collection: " + coll);
+
+      Predicates.remove(coll,pred);
+      System.out.println("Remove big: " + coll);
+
+      coll = makeSet();
+      Predicates.retain(coll,pred);
+      System.out.println("Retain big: " + coll);
+
+      coll = makeSet();
+      result = Predicates.collect(coll,pred);
+      System.out.println("Collect big: " + result);
+
+      list = new ArrayList&lt;Integer&gt;(coll);
+      i = Predicates.find(list,pred);
+      System.out.println("Find first big: at index " + i);
+
+   } // end main()
+
+} // end class TestPred
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

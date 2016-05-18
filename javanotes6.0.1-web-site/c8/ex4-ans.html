@@ -1,0 +1,244 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 4, Chapter 8</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 8.4</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 8.4:</h3>
+<p>The source code file <span class="sourceref"><a href="../source/Expr.java">Expr.java</a></span>
+defines a class, <span class="classname">Expr</span>, that can be
+used to represent mathematical expressions involving the variable <span class="code">x</span>.
+The expression can use the operators <span class="code">+</span>, <span class="code">-</span>, <span class="code">*</span>, <span class="code">/</span>, 
+and <span class="code">^</span> (where <span class="code">^</span> represents the
+operation of raising a number to a power). It can use mathematical functions
+such as <span class="code">sin</span>, <span class="code">cos</span>, <span class="code">abs</span>, and <span class="code">ln</span>. See the
+source code file for full details. The <span class="classname">Expr</span> class uses some advanced
+techniques which have not yet been covered in this textbook. However, the
+interface is easy to understand. It contains only a constructor and two public
+methods.</p>
+
+
+<p>The constructor <span class="code">new Expr(def)</span> creates
+an <span class="classname">Expr</span> object defined by a given expression. The parameter,
+<span class="code">def</span>, is a string that contains the definition. For example, 
+<span class="code">new&nbsp;Expr("x^2")</span> or <span class="code">new&nbsp;Expr("sin(x)+3*x")</span>. 
+If the parameter in the
+constructor call does not represent a legal expression, then the constructor
+throws an <span class="classname">IllegalArgumentException</span>. The message in the exception
+describes the error.</p>
+
+
+<p>If <span class="code">func</span> is a variable of type <span class="code">Expr</span> and <span class="code">num</span> is of
+type <span class="ptype">double</span>, then <span class="code">func.value(num)</span>
+is a function that returns the value
+of the expression when the number <span class="code">num</span> is substituted for the variable
+<span class="code">x</span> in the expression. For example, if <span class="code">Expr</span> represents the
+expression <span class="code">3*x+1</span>, then <span class="code">func.value(5)</span> is <span class="code">3*5+1</span>, or
+16. If the expression is undefined for the specified value of <span class="code">x</span>, then
+the special value <span class="code">Double.NaN</span> is returned; no exception is thrown.</p>
+
+
+<p>Finally, <span class="code">func.toString()</span> returns
+the definition of the expression. This is just the string that was used in the
+constructor that created the expression object.</p>
+
+
+<p>For this exercise, you should write a program that lets the user enter an
+expression. If the expression contains an error, print an error message.
+Otherwise, let the user enter some numerical values for the variable
+<span class="code">x</span>. Print the value of the expression for each number that the user
+enters. However, if the expression is undefined for the specified value of
+<span class="code">x</span>, print a message to that effect. You can use the
+<span class="ptype">boolean</span>-valued function <span class="code">Double.isNaN(val)</span> to check whether a
+number, <span class="code">val</span>, is <span class="code">Double.NaN</span>.</p>
+
+
+<p>The user should be able to enter as many values of <span class="code">x</span> as desired.
+After that, the user should be able to enter a new expression. Here is an
+applet that simulates my solution to this exercise, so that you can see how it
+works:</p>
+
+
+
+<p align="center">
+<applet code="FunctionEvaluatorConsole.class" width="520" height="300" archive="FunctionEvaluator.jar" alt=""></applet></p>
+
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+
+<p>A pseudocode algorithm for the program is given by:</p>
+
+
+<pre>while (true):
+    Get a line of input from the user
+    if the line is empty:
+       break
+    Convert the input line to an Expr
+    Read and process the user's numbers</pre>
+
+
+<p>Converting the input line into an object of type <span class="classname">Expr</span> involves
+calling the constructor from the <span class="classname">Expr</span> class. This call might generate
+an <span class="classname">IllegalArgumentException</span>. The algorithm must be expanded to handle
+this exception and print an error message if it occurs. When an error occurs, I
+use a <span class="code">continue</span> statement to jump back to the start of the loop without
+reading any numbers from the user:</p>
+
+
+<pre>while (true):
+    Get a line of input from the user
+    if the line is empty:
+       break
+    try {
+       Let expression = new Expr(line)
+    }
+    catch (IllegalArgumentException e) {
+       Print an error message
+       continue   // jumps back to start of loop
+    }
+    Read and process the user's numbers</pre>
+
+
+<p>The last step, reading and processing the user's numbers, expands into a
+loop, which is nested inside the main <span class="code">while</span> loop. In this loop, I
+could use <span class="code">TextIO.getDouble()</span> to read one of the user's numbers, but
+instead I choose to read the user's input into a string and convert that string
+into a value of type <span class="ptype">double</span>. This has two advantages: I can end the
+loop when the user presses return. And I can do nicer error handling than the
+default error-handling that is provided by <span class="classname">TextIO</span>. The conversion from
+a string, <span class="code">line</span>, to a <span class="ptype">double</span> is done using a method
+<span class="code">Double.parseDouble(string)</span>. The conversion will
+generate a <span class="classname">NumberFormatException</span> if the user's input is not a legal
+number. The algorithm for reading and processing the user's numbers
+becomes:</p>
+
+
+<pre>while (true):
+    Get a line of input from the user
+    if the line is empty:
+       break
+    try {
+       Let x = Double.parseDouble(line)
+    }
+    catch (NumberFormatException e) {
+       Print an error message
+       continue
+    }
+    Let val = expression.value(x)
+    if val is Double.NaN:
+       Print an error message
+    else:
+       Output val</pre>
+
+
+<p>All this can be easily translated into the complete solution, which
+follows.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">public class FunctionEvaluator {
+
+   public static void main(String[] args) {
+   
+      String line;      // A line of input read from the user.
+      Expr expression;  // The definition of the function f(x).
+      double x;         // A value of x for which f(x) is to be calculated.
+      double val;       // The value of f(x) for the specified value of x.
+      
+      TextIO.putln("This program will evaluate a specified function, f(x), at");
+      TextIO.putln("specified values of the variable x.  The definition of f(x)");
+      TextIO.putln("can use the operators +, -, *, /, and ^ as well as mathematical");
+      TextIO.putln("functions such as sin, abs, and ln.");
+      
+      while (true) {
+      
+         /* Get the function from the user.  A line of input is read and
+            used to construct an object of type Expr.  If the input line is
+            empty, then the loop will end, and the program will terminate. */
+ 
+         TextIO.putln("\n\n\nEnter definition of f(x), or press return to quit.");
+         TextIO.put("\nf(x) = ");
+         line = TextIO.getln().trim();
+         if (line.length() == 0)
+            break;
+            
+         try {
+            expression = new Expr(line);
+         }
+         catch (IllegalArgumentException e) {
+                // An error was found in the input.  Print an error
+                //    message and go back to the beginning of the loop.
+            TextIO.putln("Error!  The definition of f(x) is not valid.");
+            TextIO.putln(e.getMessage());
+            continue;
+         }
+         
+         /* Read values of x from the user, until the user presses return.
+            If the user's input is not a legal number, print an error message.
+            Otherwise, compute f(x) and print the result. */
+         
+         TextIO.putln("\nEnter values of x where f(x) is to be evaluated.");
+         TextIO.putln("Press return to end.");
+         
+         while (true) {
+            TextIO.put("\nx = ");
+            line = TextIO.getln().trim();
+            if (line.length() == 0)
+               break;
+            try {
+               x = Double.parseDouble(line);
+            }
+            catch (NumberFormatException e) {
+               TextIO.putln("\"" + line + "\" is not a legal number.");
+               continue;
+            }
+            val = expression.value(x);
+            if (Double.isNaN(val))
+               TextIO.putln("f(" + x + ") is undefined.");
+            else
+               TextIO.putln("f(" + x + ") = " + val);
+         }  // end while
+         
+      } // end while
+      
+      TextIO.putln("\n\n\nOK.  Bye for now.");
+   
+   }  // end main();
+   
+} // end class FunctionEvaluator</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

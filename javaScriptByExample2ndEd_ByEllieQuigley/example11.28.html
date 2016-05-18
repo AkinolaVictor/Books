@@ -1,0 +1,38 @@
+
+<html><head><title>Checking Email</title>
+   <script type="text/javascript">
+	function email(form){   // Validate the address
+		if(form.address.value.indexOf("@") != -1 &&
+			  form.address.value.indexOf(".") != -1){
+			  alert("OK address!");
+			   return true;
+		}
+		else {
+			   alert("Invalid address");
+			   return false;
+		}
+        }
+    </script>
+</head>
+<body bgcolor="lightgreen">
+   <font face=verdana>
+	 <b>
+	 <div align=”center”>
+
+	 <form name="mailchk" 
+		action="http://cgi-bin/ml.pl"
+		method="post" 
+		onSubmit="return email(this);">
+	 Enter your email address:
+	 <p>
+	<input name="address"
+		type="text"
+		size=60>
+	</p><p>
+	<input type=submit value="Check it out" />
+	<input type=reset />
+    </p>
+  </form>
+  </div>
+</body>
+</html> 

@@ -1,0 +1,27 @@
+<html><head><title>Assigning Value on the Fly to a TextField</title></head>
+<body bgcolor="aquamarine">
+<font face=arial>
+<big>
+<form name="form1" id="form1">
+Enter your name
+	<input type="text"
+		name="yourname"
+		id="yourname"
+		size="60"/>
+		<p></p>
+		Click in the box
+	<input type="text"
+		name="message"
+		id="message"
+		size="60"
+	onClick="this.value='Greetings and Salutations, '+
+	 document.forms['form1']['yourname'].value + '!'";
+           />
+
+		<p>
+		<input type="reset" />
+		</p>
+	</form>
+    </big>
+</body>
+  </html

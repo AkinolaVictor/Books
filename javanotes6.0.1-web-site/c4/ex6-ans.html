@@ -1,0 +1,316 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 6, Chapter 4</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 4.6</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 4.6:</h3>
+<p>For this exercise, you will do something even more interesting
+with the <span class="classname">Mosaic</span> class that was discussed in <a href="../c4/s6.html">Section&nbsp;4.6</a>.
+(Again, don't forget that you will need <span class="sourceref"><a href="../source/Mosaic.java">Mosaic.java</a></span> and <span class="sourceref"><a href="../source/MosaicCanvas.java">MosaicCanvas.java</a></span>.)
+</p>
+ 
+
+<p>The program that you write for this exercise should start by filling a mosaic with
+random colors.  Then repeat the following until the user closes the mosaic window:
+Select one of the rectangles in the mosaic at random.  Then select one of the
+neighboring rectangles -- above it, below it, to the left of it, or to the right of it.
+Copy the color of the originally selected rectangle to the selected neighbor, so that
+the two rectangles now have the same color.
+</p>
+ 
+ 
+<p>As this process is repeated over and over, it becomes more and more likely that neighboring
+ squares will have the same color.  The result is to build up larger color patches.  On the other
+ hand, once the last square of a given color disappears, there is no way for that color to
+ ever reappear (extinction is forever!).  If you let the program run long enough, eventually
+ the entire mosaic will be one uniform color.</p>
+ 
+ 
+<p>Here is an applet version of the program.  In the applet version -- but not in the
+ version that you will write -- you can double-click the applet to reset all the rectangles 
+ to random colors.</p>
+ 
+ 
+<p align="center">
+<applet code="MosaicConvertApplet.java" width="320" height="320" archive="MosaicConvertApplet.jar" alt=""></applet></p>
+   
+ 
+<p>After doing each color conversion, your program should insert a very short delay.
+ You can try running the program without the delay; it will work, but it might be a little
+ glitchy.</p>
+ 
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+
+<p>I will call the program <span class="classname">Convert</span>, since the basic operation
+is to convert one square to be the same color as a neighboring square.  An outline for the
+main program is easy:</p>
+
+<pre>Open a mosaic window
+Fill the mosaic with random colors
+while the window is open:
+   Select one of the rectangles at random
+   Convert the color of one of that rectangle's neighbors
+   Short delay</pre>
+   
+
+<p>We have already seen a subroutine for filling the mosaic with random color, in
+<a href="../c4/s6.html#subroutines.6.2">Subsection&nbsp;4.6.2</a>.  I will also write a subroutine to do the second
+step in the while loop.  There is some question about what it means to "select one
+of the rectangles at random."  A rectangle in the mosaic is specified by a 
+row number and a column number.  We can select a random rectangle by choosing a
+row number and a column number at random.  Assuming that <span class="code">ROWS</span> and
+<span class="code">COLUMNS</span> are constants that give the number of rows and the number of
+columns, we can do that by saying</p>
+
+
+<pre>int randomRow = (int)(ROWS * Math.random());
+int randomColumn = (int)(COLUMNS * Math.random());</pre>
+
+
+<p>where I have declared each variable and initialized it in one step, as
+discussed in <a href="../c4/s7.html#subroutines.7.1">Subsection&nbsp;4.7.1</a>.  For the "convert" subroutine
+to do its work, we will have to tell it which rectangle has been selected, so
+<span class="code">randomRow</span> and <span class="code">randomColumn</span> will be parameters to 
+that subroutine.  So, the code for the program's <span class="code">main()</span> routine
+becomes:</p>
+
+
+<pre>Mosaic.open(ROWS, COLUMNS, SQUARE_SIZE, SQUARE_SIZE);
+fillWithRandomColors();
+while (Mosaic.isOpen()) {
+   int randomRow = (int)(ROWS * Math.random());
+   int randomColumn = (int)(COLUMNS * Math.random());
+   convertRandomNeighbor(randomRow, randomColumn);
+   Mosaic.delay(DELAY);
+}</pre>
+
+
+<p>All that remains is to write the <span class="code">convertRandomNeighbor()</span> subroutine.
+This routine should pick a random neighbor of a given rectangle and change its color.
+A rectangle in the mosaic has four neighbors, above, below, to the left, and to the right.
+We can pick one at random by selecting a random integer less than four and using that
+integer to decide which neighbor to select.
+We have a problem, though, if the rectangle is on the edge of the mosaic.  For example,
+if the rectangle is in the top row, then there is no neighbor <b>above</b>
+that rectangle in the mosaic.  One solution to this problem is to wrap around to the
+bottom of the mosaic and use a square from the bottom row as the neighbor.  Essentially,
+we think of the top of the mosaic as connected to the bottom and the left edge as
+connected to the right.  We have seen something like this in <a href="../c4/s6.html#subroutines.6.3">Subsection&nbsp;4.6.3</a>,
+in the <span class="code">randomMove()</span> subroutine, and <span class="code">convertRandomNeighbor()</span>
+can use some basic ideas from <span class="code">randomMove()</span>.  Here is a version of <span class="code">convertRandomNeighbor()</span>
+that would work:
+</p>
+
+
+<pre>static void convertRandomNeighbor(int row, int col) {
+
+   /* Choose a random direction, and get the row and column
+    * numbers of the neighbor that lies in that direction. */
+
+   int neighborRow;       // row number of selected neighbor
+   int neighborColumn;    // column number of selected neighbor
+
+   int directionNum = (int)(4*Math.random());  // random direction;
+
+   switch (directionNum) {
+   case 0:    // Choose neighbor above.
+      neighborColumn = col;        // Neighbor is in the same column.
+      neighborRow = row - 1;       // Subtract 1 to get neighbor's row number.
+      if (neighborRow &lt; 0)         // Neighbor's row number is outside the mosaic.
+         neighborRow = ROWS - 1;  // So wrap around to bottom of the mosaic.
+      break;
+   case 1:    // Choose neighbor to the right.
+      neighborRow = row;               // Same row.
+      neighborColumn = col + 1;        // Column to the right.
+      if (neighborColumn &gt;= COLUMNS)   // Outside the mosaic?
+         neighborColumn = 0;          // Wrap around to the left edge
+      break; 
+   case 2:    // Choose neighbor below.
+      neighborColumn = col;
+      neighborRow = row + 1;
+      if (neighborRow &gt;= ROWS)
+         neighborRow = 0;
+      break;
+   default:    // Choose neighbor to the left.
+      neighborRow = row;
+      neighborColumn = col - 1;
+      if (neighborColumn &lt; 0)
+         neighborColumn = COLUMNS - 1;
+      break; 
+   }
+       
+   /* Get the color components for position (row,col) */
+   
+   int red = Mosaic.getRed(row,col);
+   int green = Mosaic.getGreen(row,col);
+   int blue = Mosaic.getBlue(row,col);
+   
+    /* Change the color of the neighbor to color of the original square. */
+       
+    Mosaic.setColor(neighborRow,neighborColumn,red,green,blue);
+    
+}</pre>
+
+
+<p>Note the use of a <span class="code">default</span> case at the end of the <span class="code">switch</span>
+statement.  Saying "<span class="code">case&nbsp;3</span>" will not work here, because the computer would
+not be able to verify that values have definitely been assigned to <span class="code">neighborRow</span>
+and <span class="code">neighborColumn</span>.</p>
+
+
+<p>In my program, I actually used a different algorithm that requires somewhat less code.
+My algorithm goes like this:</p>
+
+
+<pre>Get the color components for the rectangle at position (row,col).
+Modify the value of row or col to point to a neighboring rectangle.
+Set the color of position (row,col).</pre>
+
+
+<p>This is a little tricky, since the variables <span class="code">row</span> and <span class="code">col</span> are 
+used both for getting the color and for setting it.  But by the time <span class="code">row</span>
+and <span class="code">col</span> are used for setting the color, they are referring to a different
+rectangle.  You can see my version of <span class="code">convertRandomNeighbor</span> in the full
+source code listing below.</p>
+
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+ 
+<pre class="exercisecode">/**
+ * This program fills a mosaic with random colors.  It then enters
+ * a loop in which it randomly selects one of the squares in the
+ * mosaic, then randomly selects one of the four neighbors of that
+ * square and converts the selected neighbor to the color of the
+ * originally selected square.  The effect is to gradually build
+ * up larger patches of uniform color.  The animation continues 
+ * until the user closes the window.  This program depends on
+ * the non-standard classes Mosaic and MosaicCanvas.
+ */
+
+public class Convert {
+   
+   final static int ROWS = 40;        // Number of rows in the mosaic. 
+   final static int COLUMNS = 40;     // Number of columns in the mosaic.
+   final static int SQUARE_SIZE = 10; // Size of each square in the mosaic.
+   final static int DELAY = 1;        // Millisecond delay after each convert.
+   
+
+   /**
+    * The main() routine opens the mosaic window, then enters into
+    * a loop in which it repeatedly converts the color of one square.
+    * The loop ends when the user closes the mosaic window.
+    */
+   public static void main(String[] args) {
+      Mosaic.open(ROWS, COLUMNS, SQUARE_SIZE, SQUARE_SIZE);
+      fillWithRandomColors();
+      while (Mosaic.isOpen()) {
+         int randomRow = (int)(ROWS * Math.random());
+         int randomColumn = (int)(COLUMNS * Math.random());
+         convertRandomNeighbor(randomRow, randomColumn);
+         Mosaic.delay(DELAY);
+      }
+   }
+
+   
+   /**
+    * Set each square in the mosaic to be a randomly selected color.
+    */
+   static void fillWithRandomColors() {
+      for (int row = 0; row &lt; ROWS; row++) {
+         for (int col = 0; col &lt; COLUMNS; col++) {
+            int r = (int)(256*Math.random());
+            int g = (int)(256*Math.random());
+            int b = (int)(256*Math.random());
+            Mosaic.setColor(row,col,r,g,b);
+         }
+      }
+   }
+   
+   
+   /**
+    * Select one of the neighbors of the square at position (row,column) in
+    * the mosaic.  Change the color at position (row, column) to match the
+    * color of the selected neighbor.   The neighbors of a square are the
+    * squares above, below, to the left, and to the right of the square.
+    * For squares on the edge of the mosaic, wrap around to the opposite
+    * edge.
+    */
+   static void convertRandomNeighbor(int row, int col) {
+      
+      /* Get the color components for position (row,col) */
+      
+      int red = Mosaic.getRed(row,col);
+      int green = Mosaic.getGreen(row,col);
+      int blue = Mosaic.getBlue(row,col);
+      
+      /* Choose a random direction, and change the value of row
+       * or col to refer to the neighbor that lies in that direction. */
+      
+        int directionNum = (int)(4*Math.random());
+        switch (directionNum) {
+           case 0:    // Choose neighbor above.
+              row--;  // Move row number one row up.
+              if (row &lt; 0)  // row number is outside the mosaic.
+                  row = ROWS - 1;  // Wrap around to bottom of the mosaic.
+              break;
+           case 1:    // Choose neighbor to the right.
+              col++;
+              if (col &gt;= COLUMNS)
+                col = 0;
+              break; 
+           case 2:    // Choose neighbor below.
+              row++;
+              if (row &gt;= ROWS)
+                  row = 0;
+              break;
+           case 3:    // Choose neighbor to the left.
+              col--;
+              if (col &lt; 0)
+                  col = COLUMNS - 1;
+              break; 
+        }
+        
+        /* Change the color of the neighbor to color of the original square. */
+        
+        Mosaic.setColor(row,col,red,green,blue);
+    }
+
+}
+ </pre>
+ 
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

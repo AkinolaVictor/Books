@@ -1,0 +1,248 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Excercises for Chapter 3</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Programming Exercises for Chapter 3</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> several exercises for Chapter 3
+        in <a href="../index.html">Introduction to Programming Using Java</a>.  For each exercise, a link to
+        a possible solution is provided.   Each solution includes a discussion of how a programmer might approach the
+        problem and interesting points raised by the problem or its solution, as well as complete source
+        code of the solution.</p>
+<hr>
+<h3 class="exercise">Exercise 3.1:</h3>
+<p>How many times do you have
+to roll a pair of dice before they come up snake eyes? You could do the
+experiment by rolling the dice by hand. Write a computer program that simulates
+the experiment. The program should report the number of rolls that it makes
+before the dice come up snake eyes. (Note: "Snake eyes" means that both dice
+show a value of 1.) <a href="../c2/ex2-ans.html">Exercise&nbsp;2.2</a> explained how to simulate rolling a pair of dice.</p>
+
+<p align="right">
+<a href="ex1-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 3.2:</h3>
+<p>Which integer between 1
+and 10000 has the largest number of divisors, and how many divisors does it
+have? Write a program to find the answers and print out the results. It is
+possible that several integers in this range have the same, maximum number of
+divisors. Your program only has to print out one of them.  An example in
+<a href="../c3/s4.html#control.4.2">Subsection&nbsp;3.4.2</a> discussed divisors. The source code for
+that example is <span class="sourceref"><a href="../source/CountDivisors.java">CountDivisors.java</a></span>.</p>
+
+
+<p>You might need some hints about how to find a maximum value. The basic idea
+is to go through all the integers, keeping track of the largest number of
+divisors that you've seen <i>so far</i>. Also, keep track of the integer that
+had that number of divisors.</p>
+
+<p align="right">
+<a href="ex2-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 3.3:</h3>
+<p>Write a program that will
+evaluate simple expressions such as 17 + 3 and 3.14159 * 4.7. The expressions
+are to be typed in by the user. The input always consist of a number, followed
+by an operator, followed by another number. The operators that are allowed are
++, -, *, and /. You can read the numbers with <span class="code">TextIO.getDouble()</span> and
+the operator with <span class="code">TextIO.getChar()</span>. Your program should read an
+expression, print its value, read another expression, print its value, and so
+on. The program should end when the user enters 0 as the first number on the
+line.</p>
+
+<p align="right">
+<a href="ex3-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 3.4:</h3>
+<p>Write a program that reads
+one line of input text and breaks it up into words. The words should be output
+one per line. A word is defined to be a sequence of letters. Any characters in
+the input that are not letters should be discarded. For example, if the user
+inputs the line</p>
+
+
+<pre>He said, "That's not a good idea."</pre>
+
+
+<p>then the output of the program should be</p>
+
+
+<pre>He
+said
+That
+s
+not
+a
+good
+idea</pre>
+
+
+<p>An improved version of the program would list "that's" as a single word. An
+apostrophe can be considered to be part of a word if there is a letter on each
+side of the apostrophe.</p>
+
+
+<p>To test whether a character is a letter, you might use <span class="code">(ch &gt;= 'a'
+&amp;&amp; ch &lt;= 'z') || (ch &gt;= 'A' &amp;&amp; ch &lt;= 'Z')</span>.
+However, this only works in English and similar languages. A better choice is
+to call the standard function <span class="code">Character.isLetter(ch)</span>, which returns a
+boolean value of <span class="code">true</span> if <span class="code">ch</span> is a letter and <span class="code">false</span> if
+it is not. This works for any Unicode character.</p>
+
+<p align="right">
+<a href="ex4-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 3.5:</h3>
+<p>Suppose that a file contains information about sales figures for a company in various cities.
+Each line of the file contains a city name, followed by a colon&nbsp;(:) followed by the data for that
+city.  The data is a number of type <span class="ptype">double.</span>
+However, for some cities, no data was available.  In these lines, the data is replaced by
+a comment explaining why the data is missing.  For example, several lines from the file might
+look like:</p>
+
+<pre>San Francisco:  19887.32
+Chicago:  no report received
+New York: 298734.12</pre>
+
+<p>Write a program that will compute and print the total sales from all the cities together. The
+program should also report the number of cities for which data was not available.  The name of the
+file is "sales.dat".</p>
+
+<p>To complete this program, you'll need one fact about file input with <span class="classname">TextIO</span>
+that was not covered in <a href="../c2/s4.html#basics.4.5">Subsection&nbsp;2.4.5</a>.  Since you don't know in advance how many
+lines there are in the file, you need a way to tell when you have gotten to the end of the file.
+When <span class="classname">TextIO</span> is reading from a file, the function <span class="code">TextIO.eof()</span>
+can be used to test for <span class="newword">end of file</span>.  This <span class="ptype">boolean</span>-valued
+function returns <span class="code">true</span> if the file has been entirely read and returns <span class="code">false</span>
+if there is more data to read in the file.  This means that you can read the lines of the
+file in a loop <span class="code">while&nbsp;(TextIO.eof()&nbsp;==&nbsp;false)...</span>. The loop will end
+when all the lines of the file have been read.</p>
+
+<p>Suggestion:  For each line, read and ignore characters up to the colon.  Then read the rest
+of the line into a variable of type <span class="classname">String</span>.  Try to convert the string
+into a number, and use <span class="code">try..catch</span> to test whether the conversion succeeds.</p>
+
+<p align="right">
+<a href="ex5-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 3.6:</h3>
+<p>Write an applet that draws
+a checkerboard.  Write your solution as a subclass of
+<span class="classname">AnimationBase</span>, even though all the
+frames that it draws will be the same.
+Assume that the size of the applet is 160 by 160 pixels. Each
+square in the checkerboard is 20 by 20 pixels. The checkerboard contains 8 rows
+of squares and 8 columns. The squares are red and black. Here is a tricky way
+to determine whether a given square should be red or black: If the row number and the
+column number are either both even or both odd, then the square is red.
+Otherwise, it is black. Note that a square is just a rectangle in which the
+height is equal to the width, so you can use the subroutine
+<span class="code">g.fillRect()</span> to draw the squares. Here is an image of the
+checkerboard:</p>
+
+
+<p align="center">
+<img src="checkerboard.gif" width="170" height="169" alt="checkerboard"></p>
+
+
+<p>(To run an applet, you need a Web page to display it. A very simple page
+will do. Assume that your applet class is called <span class="code">Checkerboard</span>, so that
+when you compile it you get a class file named <span class="code">Checkerboard.class</span> Make
+a file that contains only the lines:</p>
+
+
+<pre>&lt;applet code="Checkerboard.class" width=160 height=160&gt;
+&lt;/applet&gt;</pre>
+
+
+<p>Call this file <span class="code">Checkerboard.html</span>. This is the source code for a
+simple Web page that shows nothing but your applet. The compiled class file,
+<span class="code">Checkerboard.class</span>, must be in the same directory with the Web-page
+file, <span class="code">Checkerboard.html</span>.  Furthermore, since your program depends on
+the non-standard class <span class="classname">AnimationBase</span>, you also have to
+make that class available to your program.  To do this, you should 
+compile the source code, <span class="sourceref"><a href="../source/AnimationBase.java">AnimationBase.java</a></span>.  
+The result will 
+be <b>two</b> class files, <span class="code">AnimationBase.class</span> and
+<span class="code">AnimationBase$1.class</span>.  Place <b>both</b> of these class
+files in the same directory, together with <span class="code">Checkerboard.html</span>
+and <span class="code">Checkerboard.class</span>. Now, to run the applet, simply
+open <span class="code">Checkerboard.html</span> in a web browser.  Alternatively,
+on the command line, you can use the command</p>
+
+
+<pre>appletviewer Checkerboard.html</pre>
+
+
+<p>The <span class="code">appletviewer</span> command, like <span class="code">java</span> and <span class="code">javac</span>
+is part of a standard installation of the JDK.</p>
+
+
+<p>If you are using the Eclipse Integrated Development Environment, you should add
+<span class="sourceref"><a href="../source/AnimationBase.java">AnimationBase.java</a></span> to the project where you want to write
+<span class="code">Checkerboard.java</span>.  You can then
+simply right-click the name of the source code file in the Package Explorer.
+In the pop-up menu, go to "Run&nbsp;As" then to "Java Applet".  This will open
+the window in which the applet appears.  The default size for the window
+is bigger than 160-by-160, so the drawing of the checkerboard will not fill the
+entire window.)</p>
+
+<p align="right">
+<a href="ex6-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 3.7:</h3>
+<p>Write an animation applet
+that shows a checkerboard pattern in which the even numbered rows slide to the
+left while the odd numbered rows slide to the right. You can assume that the
+applet is 160 by 160 pixels. Each row can be offset towards the left or right from its usual position
+by the amount <span class="code">getFrameNumber()&nbsp;%&nbsp;40</span>. Hints: Anything you draw outside
+the boundaries of the applet will be invisible, so you can draw more than 8
+squares in a row. You can use negative values of x in
+<span class="code">g.fillRect(x,y,w,h)</span>. Here is a working solution to this exercise:
+</p>
+
+
+<p align="center">
+<applet code="SlidingCheckerboard.class" width="160" height="160" archive="SlidingCheckerboard.jar" alt=""></applet></p>
+
+
+<p>As with <a href="../c3/ex6-ans.html">Exercise&nbsp;3.6</a>, you can write your class as a subclass of
+<span class="classname">AnimationBase</span>.  Compile and run the program in the same way,
+as described in that exercise.  Assuming that the name of your class is <span class="code">SlidingCheckerboard</span>, then the
+source file for the Web page this time should contain the lines:</p>
+
+
+<pre>&lt;applet code="SlidingCheckerboard.class" width=160 height=160&gt;
+&lt;/applet&gt;</pre>
+
+<p align="right">
+<a href="ex7-ans.html">See the Solution</a>
+</p>
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

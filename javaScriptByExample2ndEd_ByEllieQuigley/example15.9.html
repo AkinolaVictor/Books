@@ -1,0 +1,36 @@
+<html><head><title>Create Elements and Attributes with the DOM</title>
+   <style type="text/css">
+      p { font-style:arial;
+         color:darkblue;
+         font-size:18
+       }
+    </style>
+    </head>
+    <body>
+	<script type="text/javascript">
+	    window.onload=function(){
+	 // Create three paragraphs with text
+		for(var i=1; i <= 3; i++){
+		       var aPara=document.createElement("p");
+		       var aBR = document.createElement("br");
+		       var theTXT1=document.createTextNode("Hello, world. ");
+		       var theTXT2=document.createTextNode("I hope you're enjoying this DOM stuff! ");
+		       var theTXT3=document.createTextNode("I am paragraph " + i +".");
+
+		      aPara.setAttribute("id","aPara" + i); 
+                 //set id attribute for the p element
+
+              	document.body.appendChild(aPara);
+		aPara.appendChild(theTXT1);
+		aPara.appendChild(aBR);
+		aPara.appendChild(theTXT2);
+		aPara.appendChild(aBR);
+		aPara.appendChild(theTXT3);
+
+	 	}
+	   alert(document.getElementById("aPara1"));
+
+	 }
+</script>
+</body>
+</html>

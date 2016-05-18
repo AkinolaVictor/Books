@@ -1,0 +1,22 @@
+<html><head><title>IE Event Handling</title>
+<script type="text/javascript">
+       function greetings(){
+            alert( "Hello World" );
+        }
+        // Add an event handler
+        window.attachEvent( "onload", greetings );
+
+        // Add another event handler
+        document.attachEvent( "onclick", greetings );
+
+     // Add another event handler
+          document.attachEvent( "onmouseover", greetings);
+
+        // Remove an event handler just added
+          document.detachEvent( "onmouseover", greetings );
+      </script>
+    </head>
+    <body>
+      <p>IE has its own way of listening.</p>
+    </body>
+    </html>

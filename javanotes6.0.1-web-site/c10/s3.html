@@ -1,0 +1,579 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 10.3 -- Maps</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s2.html">Previous Section</a> |
+           <a href="s4.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#generics.3.1">The Map Interface</a>
+<br>
+<a href="#generics.3.2">Views, SubSets, and SubMaps</a>
+<br>
+<a href="#generics.3.3">Hash Tables and Hash Codes</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 10.3</h3>
+<h2 class="section_title">Maps</h2>
+<hr class="break">
+
+
+<p>
+<span class="start"><big>A</big>n array of N elements</span> can be thought of as a way
+of associating some item with each of the integers <span class="code">0</span>, <span class="code">1</span>,
+...,&nbsp;<span class="code">N-1</span>. If <span class="code">i</span> is one of these integers, it's possible
+to <span class="newword">get</span> the item associated with <span class="code">i</span>, and
+it's possible to <span class="newword">put</span> a new item in the <span class="code">i</span>-th
+position. These "get" and "put" operations define what it means to be an
+array.</p>
+
+
+<p>A <span class="newword">map</span> is a kind of generalized array. Like an
+array, a map is defined by "get" and "put" operations. But in a map, these
+operations are defined not for integers <span class="code">0</span>, <span class="code">1</span>,
+...,&nbsp;<span class="code">N-1</span>, but for arbitrary objects of some specified
+type <span class="classname">T</span>.  Associated to these objects of type <span class="classname">T</span>
+are objects of some possibly different type&nbsp;<span class="classname">S</span>.</p>
+   
+
+<p>In fact, some
+programming languages use the term <span class="newword">associative array</span> 
+instead of "map" and use the same notation for associative arrays
+as for regular arrays. In those languages, for example, you might see the
+notation <span class="code">A["fred"]</span> used to indicate the item associated to the string
+"fred" in the associative array&nbsp;<span class="code">A</span>. Java does not use array notation for maps,
+unfortunately, but the idea is the same: A map is like an array, but the indices for a map
+are objects, not integers. In a map, an object that serves as an
+"index" is called a <span class="newword">key</span>. The object that is
+associated with a key is called a <span class="newword">value</span>. Note that
+a key can have at most one associated value, but the same value can be
+associated to several different keys.  A map can be considered to be
+a set of "associations," where each association is a key/value pair.</p>
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="generics.3.1">10.3.1&nbsp;&nbsp;The Map Interface</a>
+</h3>
+
+
+<p>In Java, maps are defined by the interface <span class="code">java.util.Map</span>, which
+includes <span class="code">put</span> and <span class="code">get</span> methods as well as other general methods
+for working with maps.  The map interface, <span class="classname">Map&lt;K,V&gt;</span>, is
+parameterized by <b>two</b> types.  The first type parameter, <span class="classname">K</span>,
+specifies the type of objects that are possible keys in the map; the second type parameter,
+<span class="classname">V</span>, specifies the type of objects that are possible values in the
+map.  For example, a map of type <span class="classname">Map&lt;Date,JButton&gt;</span>
+would associate values of type <span class="classname">JButton</span> to keys of
+type <span class="classname">Date</span>.  For a map of type
+<span class="classname">Map&lt;String,String&gt;</span>, both the keys and the values
+are of type <span class="classname">String</span>.</p>
+
+
+<p>Suppose that <span class="code">map</span> is a variable of type <span class="classname">Map&lt;K,V&gt;</span>
+for some specific types <span class="classname">K</span> and <span class="classname">V</span>. Then
+the following are some of the methods that are defined for <span class="code">map</span>:</p>
+
+
+<ul>
+
+<li>
+<span class="codedef">map.get(key)</span>  --  returns the
+object of type <span class="classname">V</span> that is associated by the map to the
+<span class="code">key</span>. <span class="code">key</span> can be any object; it does not have
+to be of type&nbsp;<span class="classname">K</span>.
+If the map does not associate any value with <span class="code">obj</span>, then
+the return value is <span class="code">null</span>. Note that it's also possible for the return
+value to be <span class="code">null</span> when the map explicitly associates the value
+<span class="code">null</span> with the key. Referring to "<span class="code">map.get(key)</span>" is similar to
+referring to "<span class="code">A[key]</span>" for an array&nbsp;<span class="code">A</span>. (But note that
+there is nothing like an <span class="classname">IndexOutOfBoundsException</span> for maps.)</li>
+
+
+<li>
+<span class="codedef">map.put(key,value)</span>  --  Associates the
+specified <span class="code">value</span> with the specified <span class="code">key</span>, where <span class="code">key</span>
+must be of type <span class="classname">K</span> and <span class="code">value</span> must be of
+type <span class="classname">V</span>. If the map already associated some other
+value with the key, then the new value replaces the old one. This is similar to
+the command "<span class="code">A[key]&nbsp;=&nbsp;value</span>" for an array.</li>
+
+
+<li>
+<span class="codedef">map.putAll(map2)</span>  --  if <span class="code">map2</span>
+is another map of type <span class="classname">Map&lt;K,V&gt;</span>, 
+this copies all the associations from <span class="code">map2</span> into map.
+</li>
+
+
+<li>
+<span class="codedef">map.remove(key)</span>  --  if <span class="code">map</span>
+associates a value to the specified <span class="code">key</span>, that association is removed
+from the map.  <span class="code">key</span> can be any object; it does not have
+to be of type&nbsp;<span class="classname">K</span>.</li>
+
+
+<li>
+<span class="codedef">map.containsKey(key)</span>  --  returns a
+boolean value that is <span class="code">true</span> if the map associates some value to the
+specified <span class="code">key</span>. <span class="code">key</span> can be any object; it does not have
+to be of type&nbsp;<span class="classname">K</span>.</li>
+
+
+<li>
+<span class="codedef">map.containsValue(value)</span>  --  returns a
+boolean value that is <span class="code">true</span> if the map associates the specified
+<span class="code">value</span> to some key. <span class="code">value</span> can be any object; it does not have
+to be of type&nbsp;<span class="classname">V</span>.</li>
+
+
+<li>
+<span class="codedef">map.size()</span>  --  returns an <span class="ptype">int</span>
+that gives the number of key/value associations in the map.</li>
+
+
+<li>
+<span class="codedef">map.isEmpty()</span>  --  returns a boolean
+value that is <span class="code">true</span> if the map is empty, that is if it contains no
+associations.</li>
+
+
+<li>
+<span class="codedef">map.clear()</span>  --  removes all
+associations from the map, leaving it empty.</li>
+
+</ul>
+
+
+<p>The <span class="code">put</span> and <span class="code">get</span> methods are certainly the most commonly
+used of the methods in the <span class="classname">Map</span> interface. In many applications, these
+are the only methods that are needed, and in such cases a map is really no more
+difficult to use than a standard array.</p>
+
+
+<p>Java includes two classes that implement the interface <span class="classname">Map&lt;K,V&gt;</span>:
+<span class="classname">TreeMap&lt;K,V&gt;</span> and <span class="classname">HashMap&lt;K,V&gt;</span>. 
+In a <span class="classname">TreeMap</span>, the key/value
+associations are stored in a sorted tree, in which they are sorted according to
+their <span class="code">keys</span>. For this to work, it must be possible to compare the keys
+to one another. This means either that the keys must implement the interface
+<span class="classname">Comparable&lt;K&gt;</span>, or that a <span class="classname">Comparator</span> must be provided
+for comparing keys. (The <span class="classname">Comparator</span> can be provided as a parameter to
+the <span class="classname">TreeMap</span> constructor.)  Note that in a <span class="classname">TreeMap</span>,
+as in a <span class="classname">TreeSet</span>, the <span class="code">compareTo()</span> method is used
+to decide whether two keys are to be considered the same.  This can have undesirable
+consequences if the <span class="code">compareTo()</span> method does not agree with the usual
+notion of equality, and you should keep this in mind when using <span class="classname">TreeMaps</span>.</p>
+
+
+<p>A <span class="classname">HashMap</span> does not store associations in any particular order, so
+the keys that can be used in a <span class="classname">HashMap</span> do not have to be comparable.
+However, the key class should have reasonable definitions for the <span class="code">equals()</span> method
+and for a <span class="code">hashCode()</span> method that is discussed later in this section; most of Java's
+standard classes define these methods correctly.
+Most operations are a little faster on <span class="classname">HashMaps</span> than they are on
+<span class="classname">TreeMaps</span>. In general, you should use a <span class="classname">HashMap</span> unless you
+have some particular need for the ordering property of a <span class="classname">TreeMap</span>. In
+particular, if you are only using the <span class="code">put</span> and <span class="code">get</span> operations,
+you can safely use a <span class="classname">HashMap</span>.</p>
+
+
+<p>Let's consider an example where maps would be useful. In <a href="../c7/s4.html#arrays.4.2">Subsection&nbsp;7.4.2</a>, I
+presented a simple <span class="classname">PhoneDirectory</span> class that associated phone numbers
+with names. That class defined operations <span class="code">addEntry(name,number)</span> and
+<span class="code">getNumber(name)</span>, where both <span class="code">name</span> and <span class="code">number</span> are
+given as <span class="classname">Strings</span>. In fact, the phone directory is acting just like a
+map, with the <span class="code">addEntry</span> method playing the role of the <span class="code">put</span>
+operation and <span class="code">getNumber</span> playing the role of <span class="code">get</span>. In a real
+programming application, there would be no need to define a new class; we could
+simply use a map of type <span class="classname">Map&lt;String,String&gt;</span>. A directory
+would be defined as</p>
+   
+
+<pre>Map&lt;String,String&gt; directory = new Map&lt;String,String&gt;();</pre>
+   
+
+<p>and then <span class="code">directory.put(name,number)</span> would record a phone number
+in the directory and <span class="code">directory.get(name)</span> would retrieve the phone number
+associated with a given name.</p>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="generics.3.2">10.3.2&nbsp;&nbsp;Views, SubSets, and SubMaps</a>
+</h3>
+
+
+<p>A <span class="classname">Map</span> is not a <span class="classname">Collection</span>, and maps do not implement all
+the operations defined on collections. In particular, there are no iterators
+for maps. Sometimes, though, it's useful to be able to iterate through all the
+associations in a map. Java makes this possible in a roundabout but clever
+way. If <span class="code">map</span> is a variable of type <span class="classname">Map&lt;K,V&gt;</span>, then the method</p>
+
+
+<pre>map.keySet()</pre>
+
+
+<p>returns the set of all objects that occur as keys for associations in the
+map. The value returned by this method is an object that implements the interface 
+<span class="classname">Set&lt;K&gt;</span>. The elements of this set are the map's keys. The obvious way to
+implement the <span class="code">keySet()</span> method would be to create a new set object, add
+all the keys from the map, and return that set. But that's not how it's done.
+The value returned by <span class="code">map.keySet()</span> is not an independent object. It is
+what is called a <span class="newword">view</span> of the actual objects that are stored
+in the map. This "view" of the map implements the <span class="classname">Set&lt;K&gt;</span> interface, but
+it does it in such a way that the methods defined in the interface refer
+directly to keys in the map. For example, if you remove a key from the view,
+that key -- along with its associated value -- is actually removed from the
+map. It's not legal to add an object to the view, since it doesn't make sense
+to add a key to a map without specifying the value that should be associated to
+the key. Since <span class="code">map.keySet()</span> does not create a new set, it's very
+efficient, even for very large maps.</p>
+
+
+<p>One of the things that you can do with a <span class="classname">Set</span> is get an
+<span class="classname">Iterator</span> for it and use the iterator to visit each of the elements of
+the set in turn. We can use an iterator (or a for-each loop) for the key set of a map to traverse
+the map. For example, if <span class="code">map</span> is of type <span class="classname">Map&lt;String,Double&gt;</span>,
+we could write:</p>
+
+
+<pre>Set&lt;String&gt; keys = map.keySet();     // The set of keys in the map.
+Iterator&lt;String&gt; keyIter = keys.iterator();
+System.out.println("The map contains the following associations:");
+while (keyIter.hasNext()) {
+   String key = keyIter.next();  // Get the next key.
+   Double value = map.get(key);  // Get the value for that key.
+   System.out.println( "   (" + key + "," + value + ")" );
+}</pre>
+   
+
+<p>Or we could do the same thing more easily, avoiding the explicit use of an iterator,
+with a for-each loop:</p>
+
+
+<pre>System.out.println("The map contains the following associations:");
+for ( String key : map.keySet() ) {  // "for each key in the map's key set"
+    Double value = map.get(key);
+    System.out.println( "   (" + key + "," + value + ")" );
+}</pre>
+   
+   
+
+<p>If the map is a <span class="classname">TreeMap</span>, then the key set of the map is a sorted
+set, and the iterator will visit the keys in ascending order.  For a <span class="classname">HashMap</span>,
+the keys are visited in an arbitrary, unpredictable order.</p>
+
+
+<p>The <span class="classname">Map</span> interface defines two other views. If <span class="code">map</span> is a
+variable of type <span class="classname">Map&lt;K,V&gt;</span>, then the method:</p>
+
+
+<pre>map.values()</pre>
+
+
+<p>returns an object of type <span class="classname">Collection&lt;V&gt;</span>
+that contains all the values from the
+associations that are stored in the map. The return value is a
+<span class="classname">Collection</span> rather than a <span class="classname">Set</span> because it can contain duplicate
+elements (since a map can associate the same value to any number of keys). The
+method:</p>
+
+
+<pre>map.entrySet()</pre>
+
+
+<p>returns a set that contains all the associations from the map.  The
+elements in the set are objects of type <span class="classname">Map.Entry&lt;K,V&gt;</span>.
+<span class="classname">Map.Entry&lt;K,V&gt;</span> is defined as a static nested interface
+inside the interface <span class="classname">Map&lt;K,V&gt;</span>, so
+its full name contains a period. However, the name can be used in the same way as
+any other type name.  (The return type
+of the method <span class="code">map.entrySet()</span> is written as
+<span class="classname">Set&lt;Map.Entry&lt;K,V&gt;&gt;</span>.  The type parameter
+in this case is itself a parameterized type.  Although this might look
+confusing, it's just Java's way of saying that the elements of the
+set are of type <span class="classname">Map.Entry&lt;K,V&gt;</span>.)
+The information in the set returned by <span class="code">map.entrySet()</span>
+is actually no different from the information in the
+map itself, but the set provides a different view of this information, with
+different operations. Each <span class="code">Map.Entry</span>
+object contains one key/value pair, and defines methods <span class="code">getKey()</span> and
+<span class="code">getValue()</span> for retrieving the key and the value. There is also a
+method, <span class="code">setValue(value)</span>, for setting the value; calling this
+method for a <span class="code">Map.Entry</span> object will modify the map itself,
+just as if the map's <span class="code">put</span> method were called.
+As an example, we can use the entry
+set of a map to print all the key/value pairs in the map. This is more efficient than
+using the key set to print the same information, as I did in the above example,
+since we don't have to use the <span class="code">get()</span> method to look up the value associated with each key.
+Suppose again that <span class="code">map</span> is of type <span class="classname">Map&lt;String,Double&gt;</span>.
+Then we can write:</p>
+
+
+<pre>Set&lt;Map.Entry&lt;String,Double&gt;&gt; entries = map.entrySet();
+Iterator&lt;Map.Entry&lt;String,Double&gt;&gt; entryIter = entries.iterator();
+System.out.println("The map contains the following associations:");
+while (entryIter.hasNext()) {
+   Map.Entry&lt;String,Double&gt; entry = entryIter.next();
+   String key = entry.getKey();  // Get the key from the entry.
+   Double value = entry.getValue();  // Get the value.
+   System.out.println( "   (" + key + "," + value + ")" );
+}</pre>
+   
+
+<p>or, using a for-each loop:</p>
+
+
+<pre>System.out.println("The map contains the following associations:");
+for ( Map.Entry&lt;String,Double&gt; entry : map.entrySet() )
+   System.out.println( "   (" + entry.getKey() + "," + entry.getValue() + ")" );</pre>
+   
+
+<hr class="break">
+   
+
+<p>Maps are not the only place in Java's generic programming framework where
+views are used. For example, the interface <span class="classname">List&lt;T&gt;</span> defines a 
+<span class="newword">sublist</span> as a view of a part of a list. If <span class="code">list</span>
+implements the interface <span class="classname">List&lt;T&gt;</span>, then
+the method:</p>
+
+
+<pre>list.subList( fromIndex, toIndex )</pre>
+
+
+<p>where <span class="code">fromIndex</span> and <span class="code">toIndex</span> are integers,
+returns a view of the part of the list consisting of the list elements in
+positions between <span class="code">fromIndex</span> and <span class="code">toIndex</span> (including
+<span class="code">fromIndex</span> but excluding <span class="code">toIndex</span>). This view lets you operate
+on the sublist using any of the operations defined for lists, but the sublist
+is not an independent list. Changes made to the sublist are actually  made
+to the original list.</p>
+
+
+<p>Similarly, it is possible to obtain views that represent certain subsets of
+a sorted set. If <span class="code">set</span> is of type <span class="classname">TreeSet&lt;T&gt;</span>, then
+<span class="code">set.subSet(fromElement,toElement)</span> returns a <span class="classname">Set&lt;T&gt;</span> that contains
+all the elements of <span class="code">set</span> that are between <span class="code">fromElement</span> and
+<span class="code">toElement</span> (including <span class="code">fromElement</span> and excluding
+<span class="code">toElement</span>).  The parameters <span class="code">fromElement</span> and <span class="code">toElement</span>
+must be objects of type&nbsp;<span class="classname">T</span>.
+For example, if <span class="code">words</span> is a set of type <span class="classname">TreeSet&lt;String&gt;</span> in
+which all the elements are strings of lower case letters, then
+<span class="code">words.subSet("m","n")</span> contains all the elements of <span class="code">words</span> that
+begin with the letter&nbsp;'m'. This subset is a view of part of the original set.
+That is, creating the subset does not involve copying elements. And changes
+made to the subset, such as adding or removing elements, are actually made to
+the original set. The view <span class="code">set.headSet(toElement)</span> consists of all
+elements from the set which are strictly less than <span class="code">toElement</span>, and
+<span class="code">set.tailSet(fromElement)</span> is a view that contains all elements from the
+set that are greater than or equal to <span class="code">fromElement</span>.</p>
+
+
+<p>The class <span class="classname">TreeMap&lt;K,V&gt;</span> defines three submap views. A submap is similar
+to a subset. A submap is a <span class="classname">Map</span> that contains a subset of the keys from
+the original <span class="classname">Map</span>, along with their associated values. If <span class="code">map</span>
+is a variable of type <span class="classname">TreeMap&lt;K,V&gt;</span>, and if <span class="code">fromKey</span>
+and <span class="code">toKey</span> are of type&nbsp;<span class="classname">T</span>,
+then <span class="code">map.subMap(fromKey,toKey)</span>
+returns a view that contains all key/value pairs from <span class="code">map</span> whose keys
+are between <span class="code">fromKey</span> and <span class="code">toKey</span> (including <span class="code">fromKey</span> and
+excluding <span class="code">toKey</span>). There are also views <span class="code">map.headMap(toKey)</span> and
+<span class="code">map.tailMap(fromKey)</span> which are defined analogously to <span class="code">headSet</span>
+and <span class="code">tailSet</span>. Suppose,
+for example, that <span class="code">blackBook</span> is a map of type
+<span class="classname">TreeMap&lt;String,String&gt;</span> in which the keys
+are names and the values are phone numbers. We can print out all the entries
+from <span class="code">blackBook</span> where the name begins with "M" as follows:</p>
+
+
+<pre>Map&lt;String,String&gt; ems = blackBook.subMap("M","N");
+     // This submap contains entries for which the key is greater
+     // than or equal to "M" and strictly less than "N".
+     
+if (ems.isEmpty()) {
+   System.out.println("No entries beginning with M.");
+}
+else {
+   System.out.println("Entries beginning with M:");
+   for ( Map.Entry&lt;String,String&gt; entry : ems.entrySet() )
+      System.out.println( "   " + entry.getKey() + ": " + entry.getValue() );
+}</pre>
+
+
+<p>Subsets and submaps are probably best thought of as generalized search
+operations that make it possible to find all the items in a range of values,
+rather than just to find a single value. Suppose, for example that a database
+of scheduled events is stored in a map of type <span class="classname">TreeMap&lt;Date,Event&gt;</span> 
+in which the keys are the
+times of the events, and suppose you want a listing of all events that are
+scheduled for some time on July 4, 2011. Just make a submap containing all keys
+in the range from 12:00 AM, July 4, 2011 to 12:00 AM, July 5, 2011, and output
+all the entries from that submap. This type of search, which is known as a
+<span class="newword">subrange query</span> is quite common.</p>
+
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="generics.3.3">10.3.3&nbsp;&nbsp;Hash Tables and Hash Codes</a>
+</h3>
+
+
+<p>
+<span class="classname">HashSets</span> and <span class="classname">HashMaps</span> are implemented using a data
+structure known as a <span class="newword">hash table</span>. You don't need to
+understand hash tables to use <span class="classname">HashSets</span> or <span class="classname">HashMaps</span>, but any
+computer programmer should be familiar with hash tables and how they work.</p>
+
+
+<p>Hash tables are an elegant solution to the search problem. A hash table,
+like a <span class="classname">HashMap</span>, stores key/value pairs. Given a key, you have to
+search the table for the corresponding key/value pair. When a hash table is
+used to implement a set, the values are all null, and the only question is
+whether or not the key occurs in the set. You still have to search for the key
+to check whether it is there or not.</p>
+
+
+<p>In most search algorithms, in order to find the item you are interested in,
+you have to look through a bunch of other items that don't interest you. To
+find something in an unsorted list, you have to go though the items one-by-one
+until you come to the one you are looking for. In a binary sort tree, you have
+to start at the root and move down the tree until you find the item you want.
+When you search for a key/value pair in a hash table, you can go directly to
+the location that contains the item you want. You don't have to look through
+any other items. (This is not quite true, but it's close.) The location of the
+key/value pair is computed from the key: You just look at the key, and then you
+go directly to the location where it is stored.</p>
+
+
+<p>How can this work? If the keys were integers in the range 0 to 99, we could
+store the key/value pairs in an array, <span class="code">A</span>, of 100 elements. The
+key/value pair with key <span class="code">K</span> would be stored in <span class="code">A[K]</span>. The key
+takes us directly to the location of the key/value pair. The problem is that
+there are usually far too many different possible keys for us to be able to use
+an array with one location for each possible key. For example, if the key can
+be any value of type <span class="ptype">int</span>, then we would need an array with over four
+billion locations -- quite a waste of space if we are only going to store, say,
+a few thousand items! If the key can be a string of any length, then the number
+of possible keys is infinite, and using an array with one location for each
+possible key is simply impossible.</p>
+
+
+<p>Nevertheless, hash tables store their data in an array, and the array index
+where a key is stored is based on the key. The index is not equal to the key,
+but it is computed from the key. The array index for a key is called the
+<span class="newword">hash code</span> for that key. A function that computes a
+hash code, given a key, is called a <span class="newword">hash function</span>.
+To find a key in a hash table, you just have to compute the hash code of the
+key and go directly to the array location given by that hash code. If the hash
+code is 17, look in array location number 17.</p>
+
+
+<p>Now, since there are fewer array locations than there are possible keys,
+it's possible that we might try to store two or more keys in the same array
+location. This is called a <span class="newword">collision</span>. A collision
+is not an error. We can't reject a key just because another key happened to
+have the same hash code. A hash table must be able to handle collisions in some
+reasonable way. In the type of hash table that is used in Java, each array
+location actually holds a linked list of key/value pairs (possibly an empty
+list). When two items have the same hash code, they are in the same linked
+list. The structure of the hash table looks something like this:</p>
+
+
+<p align="center">
+<img src="hashTable.png" width="372" height="347" alt="hash table"></p>
+
+
+
+<p>In this diagram, there is one item with hash code 0, no items with hash code
+1, two items with hash code 2, and so on. In a properly designed hash table,
+most of the linked lists are of length zero or one, and the average length of
+the lists is less than one. Although the hash code of a key doesn't necessarily
+take you directly to that key, there are probably no more than one or two other
+items that you have to look through before finding the key you want. For this
+to work properly, the number of items in the hash table should be somewhat less
+than the number of locations in the array. In Java's implementation, whenever
+the number of items exceeds 75% of the array size, the array is replaced by a
+larger one and all the items in the old array are inserted into the new
+one. (This is why adding one new item will sometimes cause the ordering of all
+the items in the hash table to change completely.)</p>
+
+
+<p>There is still the question of where hash codes come from.  Every object in
+Java has a hash code.
+The <span class="classname">Object</span> class defines the method <span class="code">hashCode()</span>, which
+returns a value of type <span class="ptype">int</span>.  When an object, <span class="code">obj</span>, is stored
+in a hash table that has <span class="code">N</span> locations, a hash code in the range
+<span class="code">0</span> to <span class="code">N-1</span> is needed. This hash code is computed as
+<span class="code">Math.abs(obj.hashCode())&nbsp;%&nbsp;N</span>, the remainder when the absolute value of
+<span class="code">obj.hashCode()</span> is divided by <span class="code">N</span>. (The <span class="code">Math.abs</span> is
+necessary because <span class="code">obj.hashCode()</span> can be a negative integer, and we
+need a non-negative number to use as an array index.)</p>
+
+
+<p>For hashing to work properly, two objects that are equal according to the
+<span class="code">equals()</span> method must have the same hash code. In the <span class="classname">Object</span>
+class, this condition is satisfied because
+both <span class="code">equals()</span> and <span class="code">hashCode()</span> are based on the address
+of the memory location where the object is stored. 
+However, as noted in
+<a href="../c10/s1.html#generics.1.6">Subsection&nbsp;10.1.6</a>, many classes redefine the <span class="code">equals()</span>
+method. If a class redefines the <span class="code">equals()</span> method, and if objects of
+that class will be used as keys in hash tables, then the class should also
+redefine the <span class="code">hashCode()</span> method. For example, in the <span class="classname">String</span>
+class, the <span class="code">equals()</span> method is redefined so that two objects of type
+<span class="classname">String</span> are considered to be equal if they contain the same sequence of
+characters. The <span class="code">hashCode()</span> method is also redefined in the
+<span class="classname">String</span> class, so that the hash code of a string is computed from the
+characters in that string rather than from its location in memory. For Java's
+standard classes, you can expect <span class="code">equals()</span> and <span class="code">hashCode()</span> to
+be correctly defined. However, you might need to define these methods in
+classes that you write yourself.</p>
+   
+
+<p>Writing a good hash function is something of an art.  In order to work well, the hash
+function must spread the possible keys fairly evenly over the hash table.  Otherwise,
+the items in a table can be concentrated in a subset of the available locations, and the
+linked lists at those locations can grow to large size; that would destroy the efficiency
+that is the major reason for hash tables to exist in the first place.  However, I won't
+cover techniques for creating good hash functions in this book.</p>
+   
+
+
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s2.html">Previous Section</a> |
+           <a href="s4.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

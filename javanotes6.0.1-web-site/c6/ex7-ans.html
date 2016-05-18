@@ -1,0 +1,432 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 7, Chapter 6</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 6.7</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 6.7:</h3>
+<p>
+<a href="../c5/ex2-ans.html">Exercise&nbsp;5.2</a> involved a class, <span class="sourceref"><a href="../source/StatCalc.java">StatCalc.java</a></span>,
+that could compute some statistics
+of a set of numbers. Write a program that uses the <span class="classname">StatCalc</span> class to
+compute and display statistics of numbers entered by the user. The panel will
+have an instance variable of type <span class="classname">StatCalc</span> that does the computations.
+The panel should include a <span class="classname">JTextField</span> where the user enters a number.
+It should have four labels that display four statistics for the numbers that
+have been entered: the number of numbers, the sum, the mean, and the standard
+deviation. Every time the user enters a new number, the statistics displayed on
+the labels should change. The user enters a number by typing it into the
+<span class="classname">JTextField</span> and pressing return. There should be a "Clear" button that
+clears out all the data. This means creating a new <span class="classname">StatCalc</span> object and
+resetting the displays on the labels. My panel also has an "Enter" button that
+does the same thing as pressing the return key in the <span class="classname">JTextField</span>.
+(Recall that a <span class="classname">JTextField</span> generates an <span class="classname">ActionEvent</span> when the
+user presses return, so your panel should register itself to listen for
+<span class="classname">ActionEvents</span> from the <span class="classname">JTextField</span>.)
+Write your program as a stand-alone application.  Here is an applet version of my solution to
+this problem:</p>
+
+<p align="center">
+<applet code="StatsApplet.class" width="320" height="218" archive="Stats.jar" alt=""></applet></p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+
+<p>In my solution, I used four labels to display results and another label at the
+top of the applet to display a message to the user. Aside from these labels,
+one row of the applet holds three other components: a <span class="classname">JTextField</span> and
+two <span class="classname">JButtons</span>. The content pane of the applet, which holds all the
+components, uses a <span class="classname">GridLayout</span> with six rows. Five of the rows hold
+<span class="classname">JLabels</span>. The other row contains a <span class="classname">JPanel</span> that holds the
+<span class="classname">JTextField</span> and <span class="classname">JButtons</span>. This <span class="classname">JPanel</span> uses a
+<span class="classname">GridLayout</span> with three columns and just one row.</p>
+
+
+<p>The constructor creates and lays out the
+components. Since I want the program to look nice, I set a background color and
+a foreground color for most of the components. I set the labels to
+be opaque, to make sure that the background of each label will actually be
+filled in with the label's background color. After looking at my first attempt,
+I decided to use a Monospaced font for the display labels. In a Monospaced
+font, all the characters are the same size. This makes it possible to line up
+the output values vertically by putting the same number of characters in each
+label. To make it easy to play with the colors and fonts, I declared three
+named constants</p>
+
+
+<pre>final static Color labelBG = new Color(240,225,200);  // beige
+final static Color labelFG = new Color(180,0,0);  // dark red
+final static Font labelFont = new Font("Monospaced", Font.PLAIN, 12);</pre>
+
+
+<p>I could then make one of the labels, such as <span class="code">countLabel</span>, with the
+commands:</p>
+
+
+<pre>countLabel = new JLabel("Number of Entries:   0");
+countLabel.setBackground(labelBG);
+countLabel.setForeground(labelFG);
+countLabel.setOpaque(true);
+countLabel.setFont(labelFont);</pre>
+
+
+<p>However, since there are four labels to create, I wrote a subroutine to
+create a display label to show a given string:</p>
+
+
+<pre>/**
+ * A utility routine for creating the labels that are used
+ * for display.  This routine is called by the constructor.
+ * @param text The text to show on the label.
+ */
+private JLabel makeLabel(String text) {
+   JLabel label = new JLabel(text);
+   label.setBackground(labelBG);
+   label.setForeground(labelFG);
+   labe.setOpaque(true);
+   label.setFont(labelFont);
+   return label;
+}</pre>
+
+
+<p>Then in the constructor, the labels can be created with four
+lines, instead of 16:</p>
+
+
+<pre>countLabel =   makeLabel(" Number of Entries:  0");
+sumLabel =     makeLabel(" Sum:                0.0");
+meanLabel =    makeLabel(" Average:            undefined");
+standevLabel = makeLabel(" Standard Deviation: undefined");</pre>
+
+
+<p>Utility routines like <span class="code">makeLabel()</span> are very commonly used when there
+are a lot of similar components to create. Note that when the labels are first
+created, the text on the labels is appropriate for a dataset that contains zero
+elements. In particular, if there are no data, the average and standard
+deviation are undefined.</p>
+
+
+<p>The panel registers itself to listen for action events from the
+<span class="classname">JTextField</span> and from the <span class="classname">JButtons</span>. In the
+<span class="code">actionPerformed()</span> method, the function <span class="code">evt.getSource()</span> is
+called to find the <span class="classname">Object</span> that generated the event. This will be
+either the <span class="code">numberInput</span> box, the <span class="code">enterButton</span>, or the
+<span class="code">clearButton</span>. The source of the event is checked to decide how to
+respond. (This is an alternative to checking the event's action command.)</p>
+
+
+<p>If the user clicked the "Clear" button, the response is to create a new
+<span class="classname">StatCalc</span> object and to reset the display labels to reflect the fact
+that there is no data in the dataset. It's important to understand the effect
+of the command "<span class="code">stats&nbsp;=&nbsp;new&nbsp;StatCalc();</span>". The panel will continue to
+use the same <span class="classname">StatCalc</span> <b>variable</b>, <span class="code">stats</span>. However, now
+the variable refers to a new <span class="classname">StatCalc</span> <b>object</b>. The new object
+does not yet have any data in its dataset. The next time the user enters a
+number, the dataset will get its first value. Always keep in mind the
+difference between variables and objects. Also, keep in mind that you have to
+think in terms of changing the state of the panel in response to events. I
+change the panel's state by starting to use a new <span class="classname">StatCalc</span> object,
+and the display labels are changed to keep them consistent with the new
+state.</p>
+
+
+<p>When the user clicks the "Enter" button or presses return in the
+<span class="classname">JTextField</span>, we have to get the user's input and add it to the
+<span class="classname">StatCalc</span> object. This will cause the values of the four statistics to
+change. We have to change the display labels to show the new values. The code
+for getting the user's number from the input box includes a check to make sure that the user's
+input is a legal number. If the input is not legal, then I show an error
+message in the <span class="classname">JLabel</span> named <span class="code">message</span> and return from the
+<span class="code">actionPerformed()</span> method without entering any new data:</p>
+
+
+<pre>double num;  // The user's number.
+try {
+   num = Double.parseDouble(numberInput.getText());
+}
+catch (NumberFormatException e) {
+       // The user's entry is not a legal number.  
+       // Put an error message in the message label
+       // and return without entering a number.
+   message.setText("\"" + numberInput.getText() + 
+                       "\" is not a legal number.");
+   numberInput.selectAll();
+   numberInput.requestFocus();
+   return;
+}</pre>
+
+
+<p>The commands "<span class="code">numberInput.selectAll();</span>" and
+"<span class="code">numberInput.requestFocus();</span>" are there as a convenience for the user.
+The first command, which was not covered in this chapter,
+selects all the text in the number input box. The second
+command gives the input focus to the input box. That way, the user can just
+start typing the next number, without having to click on the input box or erase
+the content of the box. (Since the contents of the box are selected, they will
+disappear automatically when the user starts typing, to be replaced with the
+new input. A surprising number of people have never learned that text
+selections work this way.)</p>
+
+
+<p>Once we have the user's number, the command "<span class="code">stats.enter(num);</span>"
+adds the number <span class="code">num</span> into the dataset. The statistics about the data
+set can be obtained by calling the functions <span class="code">stats.getCount()</span>,
+<span class="code">stats.getSum()</span>, <span class="code">stats.getMean()</span>, and
+<span class="code">stats.getStandardDeviation()</span>. This information can be found by reading
+the <span class="sourceref"><a href="../source/StatCalc.java">source code</a></span> for the <span class="classname">StatCalc</span>
+class.</p>
+
+
+<p>As a point of interest, I will mention another technique that is not been covered
+elsewhere in the book.  You might want to limit the number of decimal places that
+are displayed in the statistics.  You know how to do this in output to the command
+line, using <span class="code">System.out.printf</span> or <span class="code">TextIO.putf</span>, but we are not 
+outputting the data here, just putting it into a String.  The <span class="classname">String</span>
+class has a <span class="code">static</span> method <span class="code">String.format()</span> that solves this
+problem.  <span class="code">String.format(fmtString,val,val,val,...)</span> works similarly
+to <span class="code">System.out.prinf(fmtString,val,val,val,...)</span>, but instead of producing
+output, <span class="code">String.format</span> just creates a string and returns it.
+To set the text of the label that displays the average, for example, you Might say:</p>
+
+
+<pre>meanLabel.setText( String.format(" Average:            %1.9g", stats.getMean()) );</pre>
+
+
+<p>I don't do this in my solution, but <span class="code">String.format</span> can be very useful,
+especially in GUI programs.</p>
+   
+
+<p>In addition to the StatCalc class and the panel class shown below, you will need a main routine before
+you can run the program.  As usual, this can go in a separate class, such as:</p>
+   
+
+<pre>import javax.swing.JFrame;
+
+/**
+ * A stand-alone application that let's the user input some numbers and
+ * compute some statistics The main program just opens a window
+ * that shows a StatsPanel, which does all the work.
+ */
+public class Stats {
+   
+   public static void main(String[] args) {
+      JFrame window = new JFrame("Simple Stats Calculator");
+      StatsPanel content = new StatsPanel();
+      window.setContentPane(content);
+      window.pack();  // Set to preferred size of contents
+      window.setLocation(100,100);
+      window.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+      window.setVisible(true);
+   }
+   
+}</pre>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode"> import java.awt.*;
+ import java.awt.event.*;
+ import javax.swing.*;
+ 
+ /**
+  * In this panel, the user enters numbers in a text field box.
+  * After entering each number, the user presses return (or clicks
+  * on a button).  Some statistics are displayed about all the
+  * numbers that the user has entered.
+  */
+ public class StatsPanel extends JPanel implements ActionListener {
+ 
+    final static Color labelBG = new Color(240,225,200);  // For creating labels
+    final static Color labelFG = new Color(180,0,0);
+    final static Font labelFont = new Font("Monospaced", Font.PLAIN, 12);
+    
+    private JLabel countLabel;    // A label for displaying the number of numbers.
+    private JLabel sumLabel;      // A label for displaying the sum of the numbers.
+    private JLabel meanLabel;     // A label for displaying the average.
+    private JLabel standevLabel;  // A label for displaying the standard deviation.
+    
+    private JLabel message;  // A message at the top of the applet.  It will
+                             //   show an error message if the user's input is
+                             //   not a legal number.  Otherwise, it just tells
+                             //   the user to enter a number and press return.
+    
+    private JButton enterButton;   // A button the user can press to enter a number.
+                                   //    This is an alternative to pressing return.
+    private JButton clearButton;   // A button that clears all the data that the
+                                   //    user has entered.
+    
+    private JTextField numberInput;  // The input box where the user enters numbers.
+    
+    private StatCalc stats;  // An object that keeps track of the statistics
+                             //   for all the numbers that have been entered.
+ 
+    /**
+     * The constructor creates the objects used by the panel.  The panel
+     * will listen for action events from the buttons and from the text
+     * field.  (A JTextField generates an ActionEvent when the user presses 
+     * return while typing in the text field.)
+     */
+    public StatsPanel() {
+    
+       stats = new StatCalc();
+       
+       numberInput = new JTextField();
+       numberInput.setBackground(Color.WHITE);
+       numberInput.addActionListener(this);
+       
+       enterButton = new JButton("Enter");
+       enterButton.addActionListener(this);
+       
+       clearButton = new JButton("Clear");
+       clearButton.addActionListener(this);
+       
+       JPanel inputPanel = new JPanel();  // A panel that will hold the
+                                          //   JTextField and JButtons.
+       inputPanel.setLayout( new GridLayout(1,3) );
+       inputPanel.add(numberInput);
+       inputPanel.add(enterButton);
+       inputPanel.add(clearButton);
+       
+       countLabel =   makeLabel(" Number of Entries:  0");
+       sumLabel =     makeLabel(" Sum:                0.0");
+       meanLabel =    makeLabel(" Average:            undefined");
+       standevLabel = makeLabel(" Standard Deviation: undefined");
+       
+       message = new JLabel("Enter a number, press return:",
+                                      JLabel.CENTER);
+       message.setBackground(labelBG);
+       message.setForeground(Color.BLUE);
+       message.setOpaque(true);
+       message.setFont(new Font("SansSerif", Font.BOLD, 12));
+       
+       /* Use a GridLayout with 6 rows and 1 column, and add all the
+          components that have been created to the applet. */
+       
+       setBackground(Color.BLUE);
+       setLayout( new GridLayout(6,1,2,2) );
+       add(message);
+       add(inputPanel);
+       add(countLabel);
+       add(sumLabel);
+       add(meanLabel);
+       add(standevLabel);
+
+       /* Add a blue border around the panel. */
+
+       setBorder( BorderFactory.createLineBorder(Color.BLUE, 2) );
+       
+    } // end constructor
+
+    
+    /**
+     * A utility routine for creating the labels that are used
+     * for display.  This routine is called by the constructor.
+     * @param text The text to show on the label.
+     */
+    private JLabel makeLabel(String text) {
+       JLabel label = new JLabel(text);
+       label.setBackground(labelBG);
+       label.setForeground(labelFG);
+       label.setFont(labelFont);
+       label.setOpaque(true);
+       return label;
+    }   
+    
+    
+    /**
+     * This is called when the user clicks one of the buttons or
+     * presses return in the input box.  The response to clicking
+     * on the Enter button is the same as the response to pressing
+     * return in the JTextField.
+     */
+    public void actionPerformed(ActionEvent evt) {
+    
+       Object source = evt.getSource();  // Object that generated 
+                                         //   the action event.
+       
+       if (source == clearButton) {
+             // Handle the clear button by starting with a new,
+             // empty StatCalc object and resetting the display
+             // labels to show no data entered.  The TextField
+             // is also made empty.
+          stats = new StatCalc();
+          countLabel.setText(" Number of Entries:  0");
+          sumLabel.setText(" Sum:                0.0");
+          meanLabel.setText(" Average:            undefined");
+          standevLabel.setText(" Standard Deviation: undefined");
+          numberInput.setText("");
+       }
+       else if (source == enterButton || source == numberInput) {
+             // Get the user's number, enter it into the StatCalc
+             // object, and set the display on the display labels
+             // to reflect the new data.
+          double num;  // The user's number.
+          try {
+             num = Double.parseDouble(numberInput.getText());
+          }
+          catch (NumberFormatException e) {
+                 // The user's entry is not a legal number.  
+                 // Put an error message in the message label 
+                 // and return without entering a number.
+             message.setText("\"" + numberInput.getText() + 
+                                  "\" is not a legal number.");
+             numberInput.selectAll();
+             numberInput.requestFocus();
+             return;
+          }
+          stats.enter(num);
+          countLabel.setText(" Number of Entries:  " + stats.getCount());
+          sumLabel.setText(" Sum:                " + stats.getSum());
+          meanLabel.setText(" Average:            " + stats.getMean());
+          standevLabel.setText(" Standard Deviation: " 
+                                                   + stats.getStandardDeviation());
+       }
+       
+       /* Set the message label back to its normal text, in case it has
+          been showing an error message.  For the user's convenience,
+          select the text in the TextField and give the input focus
+          to the text field.  That way the user can just start typing
+          the next number. */
+       
+       message.setText("Enter a number, press return:");
+       numberInput.selectAll();
+       numberInput.requestFocus();
+       
+    }  // end ActionPerformed
+ 
+ }  // end StatsApplet
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

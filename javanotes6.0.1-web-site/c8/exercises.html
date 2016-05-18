@@ -1,0 +1,391 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Excercises for Chapter 8</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Programming Exercises for Chapter 8</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> several exercises for Chapter 8
+        in <a href="../index.html">Introduction to Programming Using Java</a>.  For each exercise, a link to
+        a possible solution is provided.   Each solution includes a discussion of how a programmer might approach the
+        problem and interesting points raised by the problem or its solution, as well as complete source
+        code of the solution.</p>
+<hr>
+<h3 class="exercise">Exercise 8.1:</h3>
+<p>Write a program that uses
+the following subroutine, from <a href="../c8/s3.html#robustness.3.3">Subsection&nbsp;8.3.3</a>, to solve
+equations specified by the user.</p>
+
+<pre>/**
+ * Returns the larger of the two roots of the quadratic equation
+ * A*x*x + B*x + C = 0, provided it has any roots.  If A == 0 or
+ * if the discriminant, B*B - 4*A*C, is negative, then an exception
+ * of type IllegalArgumentException is thrown.
+ */
+static public double root( double A, double B, double C ) 
+                              throws IllegalArgumentException {
+    if (A == 0) {
+      throw new IllegalArgumentException("A can't be zero.");
+    }
+    else {
+       double disc = B*B - 4*A*C;
+       if (disc &lt; 0)
+          throw new IllegalArgumentException("Discriminant &lt; zero.");
+       return  (-B + Math.sqrt(disc)) / (2*A);
+    }
+}</pre>
+
+<p>Your program should allow the user to specify values for <span class="code">A</span>,
+<span class="code">B</span>, and <span class="code">C</span>. It should call the subroutine to compute a solution
+of the equation. If no error occurs, it should print the root. However, if an
+error occurs, your program should catch that error and print an error message.
+After processing one equation, the program should ask whether the user wants to
+enter another equation. The program should continue until the user answers
+no.</p>
+
+<p align="right">
+<a href="ex1-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 8.2:</h3>
+<p>As discussed in <a href="../c8/s1.html">Section&nbsp;8.1</a>,
+values of type <span class="ptype">int</span> are limited to 32 bits.
+Integers that are too large to be represented in 32 bits cannot be stored in an
+<span class="ptype">int</span> variable. Java has a standard class,
+<span class="code">java.math.BigInteger</span>, that addresses this problem. An object of type
+<span class="classname">BigInteger</span> is an integer that can be arbitrarily large. (The maximum
+size is limited only by the amount of memory available to the Java Virtual Machine.) Since
+<span class="classname">BigIntegers</span> are objects, they must be manipulated using instance
+methods from the <span class="classname">BigInteger</span> class. For example, you can't add two
+<span class="classname">BigIntegers</span> with the <span class="code">+</span> operator. Instead, if <span class="code">N</span> and
+<span class="code">M</span> are variables that refer to <span class="classname">BigIntegers</span>, you can compute
+the sum of <span class="code">N</span> and <span class="code">M</span> with the function call <span class="code">N.add(M)</span>.
+The value returned by this function is a new <span class="classname">BigInteger</span> object that is
+equal to the sum of <span class="code">N</span> and <span class="code">M</span>.</p>
+
+
+<p>The <span class="code">BigInteger</span> class has a constructor 
+<span class="code">new BigInteger(str)</span>, where <span class="code">str</span> is a string.
+The string must represent an integer, such as "3" or "39849823783783283733". If
+the string does not represent a legal integer, then the constructor throws a
+<span class="classname">NumberFormatException</span>.</p>
+
+
+<p>There are many instance methods in the <span class="classname">BigInteger</span> class. Here are a
+few that you will find useful for this exercise. Assume that <span class="code">N</span> and
+<span class="code">M</span> are variables of type <span class="code">BigInteger</span>.</p>
+
+
+<ul>
+
+<li>
+<span class="codedef">N.add(M)</span>  --  a function that returns a
+<span class="classname">BigInteger</span> representing the sum of <span class="code">N</span> and <span class="code">M</span>.</li>
+
+<li>
+<span class="codedef">N.multiply(M)</span>  --  a function that
+returns a <span class="classname">BigInteger</span> representing the result of multiplying <span class="code">N</span>
+times <span class="code">M</span>.</li>
+
+<li>
+<span class="codedef">N.divide(M)</span>  --  a function that returns
+a <span class="classname">BigInteger</span> representing the result of dividing <span class="code">N</span> by
+<span class="code">M</span>, discarding the remainder.</li>
+
+<li>
+<span class="codedef">N.signum()</span>  --  a function that returns
+an ordinary <span class="ptype">int</span>. The returned value represents the sign of the integer
+<span class="code">N</span>. The returned value is 1 if <span class="code">N</span> is greater than zero. It is
+-1 if <span class="code">N</span> is less than zero. And it is 0 if <span class="code">N</span> is zero.</li>
+
+<li>
+<span class="codedef">N.equals(M)</span>  --  a function that returns
+a <span class="ptype">boolean</span> value that is <span class="code">true</span> if <span class="code">N</span> and <span class="code">M</span>
+have the same integer value.</li>
+
+<li>
+<span class="codedef">N.toString()</span>  --  a function that
+returns a <span class="classname">String</span> representing the value of <span class="code">N</span>.</li>
+
+<li>
+<span class="codedef">N.testBit(k)</span>  --  a function that
+returns a <span class="ptype">boolean</span> value. The parameter <span class="code">k</span> is an integer. The
+return value is <span class="code">true</span> if the <span class="code">k</span>-th bit in <span class="code">N</span> is 1, and
+it is <span class="code">false</span> if the <span class="code">k</span>-th bit is 0. Bits are numbered from
+right to left, starting with 0. Testing "<span class="code">if&nbsp;(N.testBit(0))</span>" is an easy
+way to check whether <span class="code">N</span> is even or odd. <span class="code">N.testBit(0)</span> is
+<span class="code">true</span> if and only if <span class="code">N</span> is an odd number.</li>
+
+</ul>
+
+
+<p>For this exercise, you should write a program that prints <span class="code">3N+1</span>
+sequences with starting values specified by the user. In this version of the
+program, you should use <span class="classname">BigIntegers</span> to represent the terms in the
+sequence. You can read the user's input into a <span class="classname">String</span> with the
+<span class="code">TextIO.getln()</span> function. Use the input value to create the
+<span class="classname">BigInteger</span> object that represents the starting point of the
+<span class="code">3N+1</span> sequence. Don't forget to catch and handle the
+<span class="classname">NumberFormatException</span> that will occur if the user's input is not a
+legal integer! You should also check that the input number is greater than
+zero.</p>
+
+
+<p>If the user's input is legal, print out the <span class="code">3N+1</span> sequence. Count
+the number of terms in the sequence, and print the count at the end of the
+sequence. Exit the program when the user inputs an empty line.</p>
+
+
+
+<p>Since it's fun to see a computer work with really big numbers, here for your
+amusement is a working applet version of the solution:</p>
+
+<p align="center">
+<applet code="BigThreeNApplet.class" width="650" height="350" archive="BigThreeNApplet.jar" alt=""></applet></p>
+
+
+<p align="right">
+<a href="ex2-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 8.3:</h3>
+<p>A Roman numeral represents
+an integer using letters. Examples are XVII to represent 17, MCMLIII for 1953,
+and MMMCCCIII for 3303. By contrast, ordinary numbers such as 17 or 1953 are
+called Arabic numerals. The following table shows the Arabic equivalent of all
+the single-letter Roman numerals:</p>
+
+
+<pre>M    1000            X   10
+D     500            V    5
+C     100            I    1
+L      50</pre>
+
+
+<p>When letters are strung together, the values of the letters are just added
+up, with the following exception. When a letter of smaller value is followed by
+a letter of larger value, the smaller value is subtracted from the larger
+value. For example, IV represents 5&nbsp;-&nbsp;1, or 4. And MCMXCV is interpreted as 
+M&nbsp;+&nbsp;CM&nbsp;+&nbsp;XC&nbsp;+&nbsp;V, 
+or 1000&nbsp;+ (1000&nbsp;-&nbsp;100) + (100&nbsp;-&nbsp;10)&nbsp;+&nbsp;5, which is 1995. In
+standard Roman numerals, no more than three consecutive copies of the same
+letter are used. Following these rules, every number between 1 and 3999 can be
+represented as a Roman numeral made up of the following one- and two-letter
+combinations:</p>
+
+
+<pre>M    1000            X   10
+CM    900            IX   9
+D     500            V    5
+CD    400            IV   4
+C     100            I    1
+XC     90
+L      50
+XL     40</pre>
+
+
+<p>Write a class to represent Roman numerals. The class should have two
+constructors. One constructs a Roman numeral from a string such as "XVII" or
+"MCMXCV". It should throw a <span class="classname">NumberFormatException</span> if the string is not
+a legal Roman numeral. The other constructor constructs a Roman numeral from an
+<span class="ptype">int</span>. It should throw a <span class="classname">NumberFormatException</span> if the
+<span class="ptype">int</span> is outside the range 1 to 3999.</p>
+
+
+<p>In addition, the class should have two instance methods. The method
+<span class="code">toString()</span> returns the string that represents the Roman numeral. The
+method <span class="code">toInt()</span> returns the value of the Roman numeral as an
+<span class="ptype">int</span>.</p>
+
+
+<p>At some point in your class, you will have to convert an <span class="ptype">int</span> into
+the string that represents the corresponding Roman numeral. One way to approach
+this is to gradually "move" value from the Arabic numeral to the Roman numeral.
+Here is the beginning of a routine that will do this, where <span class="code">number</span> is
+the <span class="ptype">int</span> that is to be converted:</p>
+
+
+<pre>String roman = "";
+int N = number;
+while (N &gt;= 1000) {
+      // Move 1000 from N to roman.
+   roman += "M";
+   N -= 1000;
+}
+while (N &gt;= 900) {
+      // Move 900 from N to roman.
+   roman += "CM";
+   N -= 900;
+}
+.
+.  // Continue with other values from the above table.
+.</pre>
+
+
+<p>(You can save yourself a lot of typing in this routine if you use arrays in
+a clever way to represent the data in the above table.)</p>
+
+
+<p>Once you've written your class, use it in a main program that will read both
+Arabic numerals and Roman numerals entered by the user. If the user enters an
+Arabic numeral, print the corresponding Roman numeral. If the user enters a
+Roman numeral, print the corresponding Arabic numeral. (You can tell the
+difference by using <span class="code">TextIO.peek()</span> to peek at the first character in
+the user's input (see <a href="../c8/s2.html#robustness.2.2">Subsection&nbsp;8.2.2</a>). 
+If the first character is a digit, then the user's input is an
+Arabic numeral. Otherwise, it's a Roman numeral.) The program should end when
+the user inputs an empty line. Here is an applet that simulates my solution to
+this problem:</p>
+
+
+
+<p align="center">
+<applet code="RomanConverterConsole.class" width="520" height="300" archive="RomanConverter.jar" alt=""></applet></p>
+
+
+<p align="right">
+<a href="ex3-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 8.4:</h3>
+<p>The source code file <span class="sourceref"><a href="../source/Expr.java">Expr.java</a></span>
+defines a class, <span class="classname">Expr</span>, that can be
+used to represent mathematical expressions involving the variable <span class="code">x</span>.
+The expression can use the operators <span class="code">+</span>, <span class="code">-</span>, <span class="code">*</span>, <span class="code">/</span>, 
+and <span class="code">^</span> (where <span class="code">^</span> represents the
+operation of raising a number to a power). It can use mathematical functions
+such as <span class="code">sin</span>, <span class="code">cos</span>, <span class="code">abs</span>, and <span class="code">ln</span>. See the
+source code file for full details. The <span class="classname">Expr</span> class uses some advanced
+techniques which have not yet been covered in this textbook. However, the
+interface is easy to understand. It contains only a constructor and two public
+methods.</p>
+
+
+<p>The constructor <span class="code">new Expr(def)</span> creates
+an <span class="classname">Expr</span> object defined by a given expression. The parameter,
+<span class="code">def</span>, is a string that contains the definition. For example, 
+<span class="code">new&nbsp;Expr("x^2")</span> or <span class="code">new&nbsp;Expr("sin(x)+3*x")</span>. 
+If the parameter in the
+constructor call does not represent a legal expression, then the constructor
+throws an <span class="classname">IllegalArgumentException</span>. The message in the exception
+describes the error.</p>
+
+
+<p>If <span class="code">func</span> is a variable of type <span class="code">Expr</span> and <span class="code">num</span> is of
+type <span class="ptype">double</span>, then <span class="code">func.value(num)</span>
+is a function that returns the value
+of the expression when the number <span class="code">num</span> is substituted for the variable
+<span class="code">x</span> in the expression. For example, if <span class="code">Expr</span> represents the
+expression <span class="code">3*x+1</span>, then <span class="code">func.value(5)</span> is <span class="code">3*5+1</span>, or
+16. If the expression is undefined for the specified value of <span class="code">x</span>, then
+the special value <span class="code">Double.NaN</span> is returned; no exception is thrown.</p>
+
+
+<p>Finally, <span class="code">func.toString()</span> returns
+the definition of the expression. This is just the string that was used in the
+constructor that created the expression object.</p>
+
+
+<p>For this exercise, you should write a program that lets the user enter an
+expression. If the expression contains an error, print an error message.
+Otherwise, let the user enter some numerical values for the variable
+<span class="code">x</span>. Print the value of the expression for each number that the user
+enters. However, if the expression is undefined for the specified value of
+<span class="code">x</span>, print a message to that effect. You can use the
+<span class="ptype">boolean</span>-valued function <span class="code">Double.isNaN(val)</span> to check whether a
+number, <span class="code">val</span>, is <span class="code">Double.NaN</span>.</p>
+
+
+<p>The user should be able to enter as many values of <span class="code">x</span> as desired.
+After that, the user should be able to enter a new expression. Here is an
+applet that simulates my solution to this exercise, so that you can see how it
+works:</p>
+
+
+
+<p align="center">
+<applet code="FunctionEvaluatorConsole.class" width="520" height="300" archive="FunctionEvaluator.jar" alt=""></applet></p>
+
+
+<p align="right">
+<a href="ex4-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 8.5:</h3>
+<p>This exercise uses the
+class <span class="classname">Expr</span>, which was described in
+<a href="../c8/ex4-ans.html">Exercise&nbsp;8.4</a> and which is defined in the source code
+file <span class="sourceref"><a href="../source/Expr.java">Expr.java</a></span>.  For this exercise, you
+should write a GUI program that can graph a function, <span class="code">f(x)</span>, whose
+definition is entered by the user. The program should have a text-input box
+where the user can enter an expression involving the variable <span class="code">x</span>, such
+as <span class="code">x^2</span> or <span class="code">sin(x-3)/x</span>. This expression is the definition of
+the function. When the user presses return in the text input box, the program
+should use the contents of the text input box to construct an object of type
+<span class="classname">Expr</span>. If an error is found in the definition, then the program should
+display an error message. Otherwise, it should display a graph of the function.
+(Note: A <span class="code">JTextField</span> generates an <span class="code">ActionEvent</span> when the user
+presses return.)</p>
+
+
+<p>The program will need a <span class="classname">JPanel</span> for displaying the graph. To keep
+things simple, this panel should represent a fixed region in the xy-plane,
+defined by <span class="code">-5&nbsp;&lt;=&nbsp;x&nbsp;&lt;=&nbsp;5</span> and
+<span class="code">-5&nbsp;&lt;=&nbsp;y&nbsp;&lt;=&nbsp;5</span>. To draw the graph, compute a
+large number of points and connect them with line segments. (This method does
+not handle discontinuous functions properly; doing so is very hard, so you
+shouldn't try to do it for this exercise.) My program divides the interval
+<span class="code">-5&nbsp;&lt;=&nbsp;x&nbsp;&lt;=&nbsp;5</span> into 300 subintervals and uses
+the 301 endpoints of these subintervals for drawing the graph. Note that the
+function might be undefined at one of these <span class="code">x</span>-values. In that case,
+you have to skip that point.</p>
+
+
+<p>A point on the graph has the form <span class="code">(x,y)</span> where <span class="code">y</span> is
+obtained by evaluating the user's expression at the given value of <span class="code">x</span>.
+You will have to convert these real numbers to the integer coordinates of the
+corresponding pixel on the canvas. The formulas for the conversion are:</p>
+
+
+<pre>a  =  (int)( (x + 5)/10 * width );
+b  =  (int)( (5 - y)/10 * height );</pre>
+
+
+<p>where <span class="code">a</span> and <span class="code">b</span> are the horizontal and vertical coordinates
+of the pixel, and <span class="code">width</span> and <span class="code">height</span> are the width and height
+of the panel.</p>
+
+
+   
+
+
+<p>Here is an applet version of my solution to this exercise:</p>
+
+<p align="center">
+<applet code="SimpleGrapherApplet.class" width="520" height="400" archive="SimpleGrapher.jar" alt=""></applet></p>
+
+
+<p align="right">
+<a href="ex5-ans.html">See the Solution</a>
+</p>
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

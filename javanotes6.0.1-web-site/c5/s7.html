@@ -1,0 +1,778 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 5.7 -- Interfaces, Nested Classes, and Other Details</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s6.html">Previous Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#OOP.7.1">Interfaces</a>
+<br>
+<a href="#OOP.7.2">Nested Classes</a>
+<br>
+<a href="#OOP.7.3">Anonymous Inner Classes</a>
+<br>
+<a href="#OOP.7.4">Mixing Static and Non-static</a>
+<br>
+<a href="#OOP.7.5">Static Import</a>
+<br>
+<a href="#OOP.7.6">Enums as Classes</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 5.7</h3>
+<h2 class="section_title">Interfaces, Nested Classes, and Other Details</h2>
+<hr class="break">
+
+
+<p>
+<big>T</big>HIS SECTION simply pulls together a few more
+miscellaneous features of object oriented programming in Java. Read it now, or
+just look through it and refer back to it later when you need this
+material.   (You will need to know about the first topic,
+interfaces, almost as soon as we begin GUI programming.)</p>
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="OOP.7.1">5.7.1&nbsp;&nbsp;Interfaces</a>
+</h3>
+
+
+
+<p>Some object-oriented programming languages, such as C++, allow a class to
+extend two or more superclasses. This is called <span class="newword">multiple inheritance</span>. 
+In the illustration below, for example, class&nbsp;E is shown as
+having both class&nbsp;A and class&nbsp;B as direct superclasses, while class&nbsp;F has three
+direct superclasses.</p>
+
+
+<p align="center">
+<img src="multipleInheritance.png" width="293" height="248" alt=""></p>
+   
+
+<p>Such multiple inheritance is <b>not</b> allowed in Java. The
+designers of Java wanted to keep the language reasonably simple, and felt that
+the benefits of multiple inheritance were not worth the cost in increased
+complexity. However, Java does have a feature that can be used to accomplish
+many of the same goals as multiple inheritance: <span class="newword">interfaces</span>.</p>
+
+
+<p>We've encountered the term "interface" before, in connection with black
+boxes in general and subroutines in particular. The interface of a subroutine
+consists of the name of the subroutine, its return type, and the number and
+types of its parameters. This is the information you need to know if you want
+to call the subroutine. A subroutine also has an implementation: the block of
+code which defines it and which is executed when the subroutine is called.</p>
+
+
+<p>In Java, <span class="code">interface</span> is a reserved word with an additional, technical
+meaning. An "<span class="code">interface</span>" in this sense consists of a set of instance method
+interfaces, without any associated implementations.  (Actually, a Java interface
+can contain other things as well, but we won't discuss them here.)
+A class can <span class="newword">implement</span> 
+an <span class="code">interface</span> by providing an implementation
+for each of the methods specified by the interface. Here is an example of a
+very simple Java <span class="code">interface</span>:</p>
+
+
+<pre>public interface Drawable {
+   public void draw(Graphics g);
+}</pre>
+
+
+<p>This looks much like a class definition, except that the implementation of
+the <span class="code">draw()</span> method is omitted. A class that implements the
+<span class="code">interface</span> <span class="classname">Drawable</span> must provide an implementation for this
+method. Of course, the class can also include other methods and variables. For
+example,</p>
+
+
+<pre>public class Line implements Drawable {
+    public void draw(Graphics g) {
+        . . . // do something -- presumably, draw a line
+    }
+    . . . // other methods and variables
+}</pre>
+
+
+<p>Note that to implement an interface, a class must do more than simply provide
+an implementation for each method in the interface; it must also <b>state</b> that
+it implements the interface, using the reserved word <span class="code">implements</span> as
+in this example: "<span class="code">public class Line <b>implements</b> Drawable</span>".
+Any class that implements the <span class="classname">Drawable</span> interface defines a
+<span class="code">draw()</span> instance method. Any object created from such a class includes
+a <span class="code">draw()</span> method. We say that an <b>object</b> implements an
+<span class="code">interface</span> if it belongs to a class that implements the interface. For
+example, any object of type <span class="classname">Line</span> implements the <span class="classname">Drawable</span>
+interface.</p>
+
+
+<p>While a class can <b>extend</b> only one other class, it can
+<b>implement</b> any number of interfaces. In fact, a class can both extend
+one other class and implement one or more interfaces.  So, we can have things
+like</p>
+
+
+<pre>class FilledCircle extends Circle 
+                        implements Drawable, Fillable {
+   . . .
+}</pre>
+
+
+<p>The point of all this is that, although interfaces are not classes, they are
+something very similar. An interface is very much like an abstract class, that
+is, a class that can never be used for constructing objects, but can be used as
+a basis for making subclasses. The subroutines in an interface are abstract
+methods, which must be implemented in any concrete class that implements the
+interface.  You can compare the <span class="classname">Drawable</span>
+interface with the abstract class</p>
+
+
+<pre>public abstract class AbstractDrawable {
+   public abstract void draw(Graphics g);
+}</pre>
+
+
+<p>The main difference is that a class that extends <span class="classname">AbstractDrawable</span>
+cannot extend any other class, while a class that implements <span class="classname">Drawable</span>
+can also extend some class.  As with abstract classes, even though you can't construct an
+object from an interface, you can declare a variable whose type is given by the
+interface. For example, if <span class="classname">Drawable</span> is an interface, and if
+<span class="classname">Line</span> and <span class="classname">FilledCircle</span> are classes that implement
+<span class="classname">Drawable</span>, then you could say:</p>
+
+
+<pre>Drawable figure;  // Declare a variable of type Drawable.  It can
+                  //    refer to any object that implements the
+                  //    Drawable interface.
+                  
+figure = new Line();  // figure now refers to an object of class Line
+figure.draw(g);   // calls draw() method from class Line
+
+figure = new FilledCircle();   // Now, figure refers to an object
+                               //   of class FilledCircle.
+figure.draw(g);   // calls draw() method from class FilledCircle</pre>
+
+
+<p>A variable of type <span class="classname">Drawable</span> can refer to any object of any class
+that implements the <span class="classname">Drawable</span> interface. A statement like
+<span class="code">figure.draw(g)</span>, above, is legal because <span class="code">figure</span> is of type
+<span class="classname">Drawable</span>, and <b>any</b> <span class="classname">Drawable</span> object has a <span class="code">draw()</span>
+method.  So, whatever object <span class="code">figure</span> refers to, that object must
+have a <span class="code">draw()</span> method.</p>
+
+
+<p>Note that a <span class="newword">type</span> is something that can be used
+to declare variables. A type can also be used to specify the type of a
+parameter in a subroutine, or the return type of a function. In Java, a type
+can be either a class, an interface, or one of the eight built-in primitive
+types. These are the only possibilities. Of these, however, only classes can be
+used to construct new objects.</p>
+
+
+<p>You are not likely to need to write your own interfaces until you get to the
+point of writing fairly complex programs. However, there are several interfaces
+that are used in important ways in Java's standard packages. You'll learn about
+some of these standard interfaces in the next few chapters, and you will
+write classes that implement them.</p>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="OOP.7.2">5.7.2&nbsp;&nbsp;Nested Classes</a>
+</h3>
+
+
+<p>A class seems like it should be a pretty important thing. A class is a
+high-level building block of a program, representing a potentially complex idea
+and its associated data and behaviors. I've always felt a bit silly writing
+tiny little classes that exist only to group a few scraps of data together.
+However, such trivial classes are often useful and even essential. Fortunately,
+in Java, I can ease the embarrassment, because one class can be nested inside
+another class. My trivial little class doesn't have to stand on its own. It
+becomes part of a larger more respectable class. This is particularly useful
+when you want to create a little class specifically to support the work of a
+larger class. And, more seriously, there are other good reasons for nesting the
+definition of one class inside another class.</p>
+
+
+<p>In Java, a <span class="newword">nested class</span> is any class whose definition is inside the
+definition of another class. Nested classes can be either <span class="newword">named</span> 
+or <span class="newword">anonymous</span>. I will come
+back to the topic of anonymous classes later in this section.  A named nested
+class, like most other things that occur in classes, can be either static or
+non-static.</p>
+   
+
+<p>The definition of a static nested class looks just like the definition of any other class,
+except that it is nested inside another class and it has the modifier <span class="code">static</span>
+as part of its declaration. A static nested class is part of the static structure of the
+containing class. It can be used inside that class to create objects in the
+usual way. If it has not been declared private, then it can also be used
+outside the containing class, but when it is used outside the class, its name
+must indicate its membership in the containing class. This is similar to other
+static components of a class: A static nested class is part of the class itself
+in the same way that static member variables are parts of the class itself.</p>
+
+
+<p>For example, suppose a class named <span class="classname">WireFrameModel</span> represents a set
+of lines in three-dimensional space. (Such models are used to represent
+three-dimensional objects in graphics programs.) Suppose that the
+<span class="classname">WireFrameModel</span> class contains a static nested class, <span class="classname">Line</span>,
+that represents a single line. Then, outside of the class
+<span class="classname">WireFrameModel</span>, the <span class="classname">Line</span> class would be referred to as
+<span class="code">WireFrameModel.Line</span>. Of course, this just follows the normal naming
+convention for static members of a class. The definition of the
+<span class="classname">WireFrameModel</span> class with its nested <span class="classname">Line</span> class would look,
+in outline, like this:</p>
+
+
+<pre>public class WireFrameModel {
+
+   . . . // other members of the WireFrameModel class
+   
+   static public class Line {
+         // Represents a line from the point (x1,y1,z1)
+         // to the point (x2,y2,z2) in 3-dimensional space.
+      double x1, y1, z1;
+      double x2, y2, z2;
+   } // end class Line
+   
+   . . . // other members of the WireFrameModel class
+   
+} // end WireFrameModel</pre>
+
+
+<p>Inside the <span class="classname">WireFrameModel</span> class, a <span class="classname">Line</span> object would be
+created with the constructor "<span class="code">new Line()</span>". Outside the class, "<span class="code">new
+WireFrameModel.Line()</span>" would be used.</p>
+
+
+<p>A static nested class has full access to the static members of the containing
+class, even to the private members. Similarly, the containing class has full
+access to the members of the nested class.  This can be another motivation for
+declaring a nested class, since it lets you give one class access to the
+private members of another class without making those members generally
+available to other classes.  Note also that a nested class can itself be private,
+meaning that it can only be used inside the class in which it is nested.</p>
+
+
+<p>When you compile the above class definition, two class files will be
+created. Even though the definition of <span class="classname">Line</span> is nested inside
+<span class="classname">WireFrameModel</span>, the compiled <span class="classname">Line</span> class is stored in a
+separate file. The name of the class file for <span class="classname">Line</span> will be
+<span class="code">WireFrameModel$Line.class</span>.</p>
+
+
+<hr class="break">
+
+
+<p>Non-static nested classes are referred to as <span class="newword">inner classes</span>.
+Inner classes are not, in practice, very different from static
+nested classes, but a non-static nested class is actually associated with an
+object rather than to the class in which it is nested. This can take some
+getting used to.</p>
+
+
+<p>Any non-static member of a class is not really part of the class itself
+(although its source code is contained in the class definition). This is true
+for inner classes, just as it is for any other non-static part of a
+class. The non-static members of a class specify what will be contained in
+objects that are created from that class. The same is true -- at least
+logically -- for inner classes. It's as if each object that belongs
+to the containing class has its <b>own copy</b> of the nested class. This copy
+has access to all the instance methods and instance variables of the object,
+even to those that are declared <span class="code">private</span>.
+The two copies of the inner class in two different objects differ because the instance
+variables and methods they refer to are in different objects. In fact, the rule
+for deciding whether a nested class should be static or non-static is simple:
+If the nested class needs to use any instance variable or instance method
+from the containing class, make the nested class
+non-static. Otherwise, it might as well be static.</p>
+
+
+<p>From outside the containing class, a non-static nested class has to be
+referred to using a name of the form <span class="bnf">variableName</span>.<span class="bnf">NestedClassName</span>,
+where <span class="bnf">variableName</span> is a variable that refers to the object that
+contains the class. This is actually rather rare, however. A non-static nested
+class is generally used only inside the class in which it is nested, and there
+it can be referred to by its simple name.</p>
+
+
+<p>In order to create an object that belongs to an inner class, you
+must first have an object that belongs to the containing class. (When working
+inside the class, the object "<span class="code">this</span>" is used implicitly.) The
+inner class object is permanently associated with the containing class object, and it
+has complete access to the members of the containing class object. Looking at
+an example will help, and will hopefully convince you that inner
+classes are really very natural. Consider a class that represents poker games.
+This class might include a nested class to represent the players of the game.
+This structure of the <span class="classname">PokerGame</span> class could be:</p>
+
+
+<pre>public class PokerGame {  // Represents a game of poker.
+    
+    class Player {  // Represents one of the players in <u>this</u> game.
+       .
+       .
+       .
+    } // end class Player
+    
+    private Deck deck;      // A deck of cards for playing the game.
+    private int pot;        // The amount of money that has been bet.
+    
+    .
+    .
+    .
+
+} // end class PokerGame</pre>
+
+
+<p>If <span class="code">game</span> is a variable of type <span class="classname">PokerGame</span>, then,
+conceptually, <span class="code">game</span> contains its own copy of the <span class="classname">Player</span> class.
+In an instance method of a <span class="classname">PokerGame</span> object, a new <span class="classname">Player</span>
+object would be created by saying "<span class="code">new Player()</span>", just as for any
+other class. (A <span class="classname">Player</span> object could be created outside the
+<span class="classname">PokerGame</span> class with an expression such as 
+"<span class="code">game.new&nbsp;Player()</span>".  Again, however, this is rare.)
+The <span class="classname">Player</span>
+object will have access to the <span class="code">deck</span> and <span class="code">pot</span> instance
+variables in the <span class="classname">PokerGame</span> object. Each <span class="code">PokerGame</span> object has
+its own <span class="code">deck</span> and <span class="code">pot</span> and <span class="code">Players</span>. Players of that
+poker game use the deck and pot for that game; players of another poker game use
+the other game's deck and pot. That's the effect of making the <span class="classname">Player</span>
+class non-static. This is the most natural way for players to behave. A
+<span class="classname">Player</span> object represents a player of one particular poker game. If
+<span class="classname">Player</span> were a <b>static</b> nested class, on the other hand,
+it would represent the general idea of a poker player, independent of a
+particular poker game.</p>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="OOP.7.3">5.7.3&nbsp;&nbsp;Anonymous Inner Classes</a>
+</h3>
+
+
+<p>In some cases, you might find yourself writing an inner class and then using
+that class in just a single line of your program. Is it worth creating such a
+class? Indeed, it can be, but for cases like this you have the option of using
+an <span class="newword">anonymous inner class</span>. An anonymous class is
+created with a variation of the <span class="code">new</span> operator that has the form</p>
+
+
+<pre>
+          new  <span class="bnf">superclass-or-interface</span> ( <span class="bnf">parameter-list</span> ) {
+                   <span class="bnf">methods-and-variables</span>
+              }
+</pre>
+
+
+<p>This constructor defines a new class, without giving it a name, and it
+simultaneously creates an object that belongs to that class. This form of the
+<span class="code">new</span> operator can be used in any statement where a regular
+"<span class="code">new</span>" could be used. The intention of this expression is to create: "a
+new object belonging to a class that is the same as <span class="bnf">superclass-or-interface</span> 
+but with these <span class="bnf">methods-and-variables</span> added." 
+The effect is to create a uniquely customized object, just at the point in the program where you need it.
+Note that it is possible to base an anonymous class on an interface, rather
+than a class. In this case, the anonymous class must implement the interface by
+defining all the methods that are declared in the interface.  If an interface
+is used as a base, the <span class="bnf">parameter-list</span> must be empty.  Otherwise, it can contain
+parameters for a constructor in the <span class="bnf">superclass</span>.</p>
+
+
+<p>Anonymous classes are  often used for handling events in graphical user
+interfaces, and we will encounter them several times in the chapters on GUI programming.
+For now, we will look at one not-very-plausible example. Consider the
+<span class="classname">Drawable</span> interface, which is defined earlier in this section. Suppose
+that we want a <span class="classname">Drawable</span> object that draws a filled, red, 100-pixel
+square. Rather than defining a new, separate class and then using that class to
+create the object, we can use an anonymous class to create the object in one
+statement:</p>
+
+
+<pre>Drawable redSquare = new Drawable() {
+       void draw(Graphics g) {
+          g.setColor(Color.red);
+          g.fillRect(10,10,100,100);
+       }
+   };</pre>
+
+
+<p>The semicolon at the end of this statement is not part of the class
+definition. It's the semicolon that is required at the end of every declaration
+statement.</p>
+
+
+<p>When a Java class is compiled, each anonymous nested class will produce a
+separate class file. If the name of the main class is <span class="code">MainClass</span>, for
+example, then the names of the class files for the anonymous nested classes
+will be <span class="code">MainClass$1.class</span>, <span class="code">MainClass$2.class</span>,
+<span class="code">MainClass$3.class</span>, and so on.</p>
+
+
+   
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="OOP.7.4">5.7.4&nbsp;&nbsp;Mixing Static and Non-static</a>
+</h3>
+
+
+<p>Classes, as I've said, have two very distinct purposes. A class can be used
+to group together a set of static member variables and static methods.
+Or it can be used as a factory for making objects. The non-static
+variables and methods in the class definition specify the
+instance variables and methods of the objects. In most cases, a class performs
+one or the other of these roles, not both.</p>
+
+
+<p>Sometimes, however, static and non-static members are mixed in a single
+class. In this case, the class plays a dual role. Sometimes, these roles are
+completely separate. But it is also possible for the static and non-static parts of
+a class to interact. This happens when instance methods use static member
+variables or call static member subroutines. An instance method belongs to an
+object, not to the class itself, and there can be many objects with their own
+versions of the instance method. But there is only one copy of a static member
+variable. So, effectively, we have many objects sharing that one variable.</p>
+
+
+<p>Suppose, for example, that we want to write a <span class="classname">PairOfDice</span> class that
+uses the <span class="classname">Random</span> class mentioned in <a href="../c5/s3.html">Section&nbsp;5.3</a> for
+rolling the dice. To do this, a <span class="classname">PairOfDice</span> object needs access to an
+object of type <span class="classname">Random</span>. But there is no need for each
+<span class="classname">PairOfDice</span> object to have a separate <span class="classname">Random</span> object. (In fact,
+it would not even be a good idea: Because of the way random number generators
+work, a program should, in general, use only one source of random numbers.) A
+nice solution is to have a single <span class="classname">Random</span> variable as a <span class="code">static</span>
+member of the <span class="classname">PairOfDice</span> class, so that it can be shared by all
+<span class="classname">PairOfDice</span> objects. For example:</p>
+
+
+<pre>import java.util.Random;
+ 
+public class PairOfDice {
+ 
+    <span class="newcode">private static Random randGen = new Random();</span>
+    
+    public int die1;   // Number showing on the first die.
+    public int die2;   // Number showing on the second die.
+    
+    public PairOfDice() {
+            // Constructor.  Creates a pair of dice that
+            // initially shows random values.
+         roll();
+    }
+   
+    public void roll() {
+            // Roll the dice by setting each of the dice to be
+            // a random number between 1 and 6.
+         die1 = <span class="newcode">randGen.nextInt(6)</span> + 1;  // Use the static variable!
+         die2 = <span class="newcode">randGen.nextInt(6)</span> + 1;
+    }
+    
+} // end class PairOfDice</pre>
+
+
+<p>As another example, let's rewrite the <span class="classname">Student</span> class that was used
+in <a href="../c5/s2.html">Section&nbsp;5.2</a>. I've added an <span class="code">ID</span> for each
+student and a <span class="code">static</span> member called <span class="code">nextUniqueID</span>. Although
+there is an <span class="code">ID</span> variable in each student object, there is only one
+<span class="code">nextUniqueID</span> variable.</p>
+
+
+<pre>public class Student {
+
+   private String name;  // Student's name.
+   private int ID;  // Unique ID number for this student.
+   public double test1, test2, test3;   // Grades on three tests.
+   
+   private static int nextUniqueID = 0;
+             // keep track of next available unique ID number
+   
+   Student(String theName) {
+        // Constructor for Student objects; provides a name for the Student,
+        // and assigns the student a unique ID number.
+      name = theName;
+      nextUniqueID++;
+      ID = nextUniqueID;
+   }
+   
+   public String getName() {
+        // Accessor method for reading the value of the private
+        // instance variable, name.
+      return name;
+   }
+   
+   public int getID() {
+        // Accessor method for reading the value of ID.
+      return ID;
+   }
+   
+   public double getAverage() {  
+        // Compute average test grade.
+      return (test1 + test2 + test3) / 3;
+   }
+   
+}  // end of class Student</pre>
+
+
+<p>Since <span class="code">nextUniqueID</span> is a <span class="code">static</span> variable,
+the initialization "<span class="code">nextUniqueID&nbsp;=&nbsp;0</span>" is done only once, when the
+class is first loaded. Whenever a <span class="classname">Student</span> object is constructed and
+the constructor says "<span class="code">nextUniqueID++;</span>", it's always the same static
+member variable that is being incremented. When the very first <span class="classname">Student</span>
+object is created, <span class="code">nextUniqueID</span> becomes 1. When the second object is
+created, <span class="code">nextUniqueID</span> becomes 2. After the third object, it becomes 3.
+And so on. The constructor stores the new value of <span class="code">nextUniqueID</span> in the
+<span class="code">ID</span> variable of the object that is being created. Of course,
+<span class="code">ID</span> is an instance variable, so every object has its own individual
+<span class="code">ID</span> variable. The class is constructed so that each student will
+automatically get a different value for its <span class="code">ID</span> variable. Furthermore,
+the <span class="code">ID</span> variable is <span class="code">private</span>, so there is no way for this
+variable to be tampered with after the object has been created. You are
+guaranteed, just by the way the class is designed, that every student object
+will have its own permanent, unique identification number. Which is kind of
+cool if you think about it.</p>
+
+
+<p>(Unfortunately, if you think about it a bit more, it turns out that the
+guarantee isn't quite absolute.  The guarantee is valid in programs that use
+a single thread.  But, as a preview of the difficulties of parallel programming, 
+I'll note that in multi-threaded programs, where several things can be
+going on at the same time, things can get a bit strange.  In a multi-threaded
+program, it is possible that two threads are creating <span class="classname">Student</span>
+objects at exactly the same time, and it becomes possible for both objects to get
+the same ID number.  We'll come back to this in <a href="../c12/s1.html#threads.1.3">Subsection&nbsp;12.1.3</a>, where 
+you will learn how to fix the problem.)</p>
+
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="OOP.7.5">5.7.5&nbsp;&nbsp;Static Import</a>
+</h3>
+   
+
+<p>The <span class="code">import</span> directive makes it possible to refer to a class
+such as <span class="code">java.awt.Color</span> using its simple name, <span class="classname">Color</span>.
+All you have to do is say <span class="code">import java.awt.Color</span> or <span class="code">import java.awt.*</span>.
+But you still have to use compound names to refer to static member variables such
+as <span class="code">System.out</span> and to static methods such as <span class="code">Math.sqrt</span>.</p>
+   
+
+<p>Java 5.0 introduced a new form of the <span class="code">import</span> directive that can
+be used to import <span class="code">static</span> members of a class in the same way that
+the ordinary <span class="code">import</span> directive imports classes from a package.
+The new form of the directive is called a <span class="newword">static import</span>,
+and it has syntax</p>
+   
+
+<pre>import static <span class="bnf">package-name</span>.<span class="bnf">class-name</span>.<span class="bnf">static-member-name</span>;</pre>
+   
+
+<p>to import one static member name from a class, or</p>
+   
+
+<pre>import static <span class="bnf">package-name</span>.<span class="bnf">class-name</span>.*;</pre>
+   
+
+<p>to import all the public static members from a class.  For example, if you preface
+a class definition with</p>
+   
+
+<pre>import static java.lang.System.out;</pre>
+   
+
+<p>then you can use the simple name <span class="code">out</span> instead of the compound name <span class="code">System.out</span>.
+This means you can use <span class="code">out.println</span> instead of <span class="code">System.out.println</span>.  If you
+are going to work extensively with the <span class="classname">Math</span> class, you can preface
+your class definition with</p>
+   
+
+<pre>import static java.lang.Math.*;</pre>
+   
+
+<p>This would allow you to say <span class="code">sqrt</span> instead of <span class="code">Math.sqrt</span>, <span class="code">log</span>
+instead of <span class="code">Math.log</span>, <span class="code">PI</span> instead of <span class="code">Math.PI</span>, and so on.</p>
+
+
+<p>Note that the static import directive requires a <span class="bnf">package-name</span>, even for classes in
+the standard package <span class="code">java.lang</span>.  One consequence of this is that you can't do a 
+static import from a class in the default package.  In particular, it is not possible to do
+a static import from my <span class="classname">TextIO</span> class -- if you wanted to do that,
+you would have to move <span class="classname">TextIO</span> into a package.</p>
+   
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="OOP.7.6">5.7.6&nbsp;&nbsp;Enums as Classes</a>
+</h3>
+   
+
+<p>Enumerated types were introduced in <a href="../c2/s3.html#basics.3.3">Subsection&nbsp;2.3.3</a>.  Now that we have
+covered more material on classes and objects, we can revisit the topic (although still not
+covering enumerated types in their full complexity).</p>
+
+
+<p>Enumerated types are actually classes, and each enumerated 
+type constant is a <span class="code">public</span>, <span class="code">final</span>,
+<span class="code">static</span> member variable in that class (even though they are not declared with these modifiers).
+The value of the variable is an object belonging to the enumerated type class.  There is one
+such object for each enumerated type constant, and these are the only objects of the class that
+can ever be created.  It is really these objects that represent the possible values of
+the enumerated type.  The enumerated type constants are actually variables that refer
+to these objects.</p>
+
+
+<p>When an enumerated type is defined inside another class, it is a nested class inside the
+enclosing class.  In fact, it is a static nested class, whether you declare it to
+be <span class="code">static</span> or not.  But it can also be declared as a non-nested class, in a file
+of its own.  For example, we could define the following enumerated type in a file
+named <span class="code">Suit.java</span>:</p>
+   
+
+<pre>public enum Suit {
+   
+   SPADES, HEARTS, DIAMONDS, CLUBS
+   
+}</pre>
+
+
+<p>This enumerated type represents the four possible suits for a playing card, and it could
+have been used in the example <span class="sourceref"><a href="../source/Card.java">Card.java</a></span> from <a href="../c5/s4.html#OOP.4.2">Subsection&nbsp;5.4.2</a>.</p>
+   
+
+<p>Furthermore, in addition to its list of values, an enumerated type can contain some of the 
+other things that a regular class can contain, including methods and additional member variables.
+Just add a semicolon (;) at the end of the list of values, and then add definitions of
+the methods and variables in the usual way.  For example, we might make an enumerated type
+to represent the possible values of a playing card.  It might be useful to have a method
+that returns the corresponding value in the game of Blackjack.  As another example, suppose
+that when we print out one of the values, we'd like to see something different from the
+default string representation (the identifier that names the constant).  In that case, we can override 
+the <span class="code">toString()</span> method in the
+class to print out  a different string representation.  This would give something like:</p>
+   
+
+<pre>public enum CardValue {
+
+   ACE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT,
+         NINE, TEN, JACK, QUEEN, KING;
+   
+   /**
+    * Return the value of this CardValue in the game of Blackjack.
+    * Note that the value returned for an ace is 1.
+    */
+   public int blackJackValue() {
+      if (this == JACK || this == QUEEN || this == KING)
+         return 10;
+      else
+         return 1 + ordinal();
+   }
+   
+   /**
+    * Return a String representation of this CardValue, using numbers
+    * for the numerical cards and names for the ace and face cards.
+    */
+   public String toString() {
+      switch (this) {       // "this" is one of the enumerated type values
+      case ACE:     
+         return "Ace";
+      case JACK:        
+         return "Jack";
+      case QUEEN:  
+         return "Queen";
+      case KING:  
+         return "King";
+      default:              // it's a numeric card value
+         int numericValue = 1 + ordinal();
+         return "" + numericValue;     
+   }
+
+} // end CardValue</pre>
+   
+
+<p>The methods <span class="code">blackjackValue()</span> and <span class="code">toString()</span> are instance methods
+in <span class="classname">CardValue</span>.  Since <span class="code">CardValue.JACK</span> is an object belonging
+to that class, you can call <span class="code">CardValue.JACK.blackjackValue()</span>.
+Suppose that <span class="code">cardVal</span> is declared to be a variable of type <span class="classname">CardValue</span>,
+so that it can refer to any of the values in the enumerated type.
+We can call <span class="code">cardVal.blackjackValue()</span> to find the Blackjack value of the <span class="classname">CardValue</span>
+object to which <span class="code">cardVal</span> refers, and <span class="code">System.out.println(cardVal)</span> will
+implicitly call the method <span class="code">cardVal.toString()</span> to obtain the print representation of
+that <span class="classname">CardValue</span>. (One other thing to keep in mind is that since <span class="classname">CardValue</span>
+is a class, the value of <span class="code">cardVal</span> can be <span class="code">null</span>, which means it does not refer
+to any object.)</p>
+   
+
+<p>Remember that <span class="code">ACE</span>, <span class="code">TWO</span>, ..., <span class="code">KING</span> are the only possible
+objects of type <span class="classname">CardValue</span>, so in an instance method in that class,
+<span class="code">this</span> will refer to one of those values.  Recall that the instance method <span class="code">ordinal()</span>
+is defined in any enumerated type and gives the position of the enumerated type value in the list
+of possible values, with the count starting from zero.</p>
+   
+
+<p>(If you find it annoying to use the class name as part of the name of every enumerated type constant,
+you can use static import to make the simple names of the constants directly available -- but
+only if you put the enumerated type into a package.  For example, if the enumerated type
+<span class="classname">CardValue</span> is defined in a package named <span class="code">cardgames</span>, then you could place</p>
+   
+
+<pre>import static cardgames.CardValue.*;</pre>
+   
+
+<p>at the beginning of a source code file.  This would allow you, for example, to use the name
+<span class="code">JACK</span> in that file instead of <span class="code">CardValue.JACK</span>.)</p>
+   
+
+   
+
+<hr>
+<div align="center">
+<b><small>End of Chapter 5</small></b>
+</div>
+<hr>
+<p align="center">
+<applet code="SymmetricBrighten.class" width="240" height="240" archive="SymmetricBrightenApplet.jar" alt=""></applet></p>
+   
+
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s6.html">Previous Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

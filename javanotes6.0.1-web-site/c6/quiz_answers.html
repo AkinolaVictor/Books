@@ -1,0 +1,287 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Answers for Quiz on Chapter 6</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2 class="quiz_title">Answers for Quiz on Chapter 6</h2>
+<p>
+<span class="start"><big>T</big>his page contains</span> sample answers to the quiz on Chapter 6 of
+           <a href="../index.html"><i>Introduction to Programming Using Java</i></a>.
+           Note that generally, there are lots of correct answers to a given question.</p>
+<table border="1" align="center" cellpadding="8" width="95%">
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;1:</span></td><td>
+<p>Programs written for a
+graphical user interface have to deal with "events." Explain what is meant by
+the term <i>event.</i> Give at least two different examples of events, and
+discuss how a program might respond to those events.</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p> An event is anything that can
+occur asynchronously, not under the control of the program, to which the
+program might want to respond. GUI programs are said to be "event-driven"
+because for the most part, such programs simply wait for events and respond to
+them when they occur. In many (but not all) cases, an event is the result of a
+user action, such as when the user clicks the mouse button, types a character,
+or clicks a button. The program might respond to a mouse-click on a canvas by
+drawing a shape, to a typed character by adding the character to an input box,
+or to a click on a button by clearing a drawing. More generally, a programmer
+can set up any desired response to an event by writing an event-handling
+routine for that event.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;2:</span></td><td>
+<p>Explain carefully what the
+<span class="code">repaint()</span> method does.</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>The <span class="code">repaint()</span> method of a component is
+called to notify the system that the component
+needs to be redrawn. It does not itself do any drawing (neither
+directly nor by calling the <span class="code">paintComponent()</span>
+routine). You should call <span class="code">repaint()</span> when you have made some change to
+the state of the applet that requires its appearance to change. Sometime
+shortly after you call it, the system will call 
+the component's <span class="code">paintComponent()</span> routine.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;3:</span></td><td>
+<p>What is HTML?</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>HTML, or HyperText Markup
+Language, is a language that is used for writing Web pages. An HTML document
+contains all the text on a Web page, "marked up" with "tags" that determine how
+the text looks -- its size and color and how it is broken into paragraphs, for
+example. Other tags can include things like horizontal lines, images, links,
+and applets on the page. A Web browser acts as an interpreter for the HTML
+language.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;4:</span></td><td>
+<p>Java has a standard class
+called <span class="classname">JPanel</span>. Discuss <b>two</b> ways in which JPanels can be
+used.</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>A JPanel can be used as a <i>container</i> for other components or
+as a <i>drawing surface</i>.   A JPanel is a type of component.
+That is, it is a visible element of a GUI. By itself, a JPanel is simply a
+blank rectangular region on the screen. However, a JPanel is a "container",
+which means that other components can be added to it and will then appear on
+the screen inside the JPanel. A JPanel can also be used as a drawing surface.
+In order to do this, it is necessary to create a subclass of <span class="classname">JPanel</span>
+and define a <span class="code">paintComponent()</span> method in that subclass. An object
+belonging to that subclass can then be added to another panel or other container.
+The <span class="code">paintComponent()</span> method defines how that object will draw itself
+on the screen.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;5:</span></td><td>
+<p>Draw the picture that will
+be produced by the following <span class="code">paintComponent()</span> method:</p>
+
+<pre>public static void paintComponent(Graphics g) {
+    super.paintComponent(g);
+    for (int i=10; i &lt;= 210; i = i + 50)
+       for (int j = 10; j &lt;= 210; j = j + 50)
+          g.drawLine(i,10,j,60);
+}</pre>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>The outer loop is executed for
+values of <span class="code">i</span> equal to 10, 60, 110, 160, and 210. For <b>each</b> of
+these values, the inner loop is executed for <span class="code">j</span> equal to 10, 60, 110,
+160, and 210. The <span class="code">drawLine</span> command is therefore executed 25 times --
+and so, 25 different lines are drawn. These lines connect the five points
+(10,10), (60,10), (110,10), (160,10), and (210,10) to the five points (10,60),
+(60,60), (110,60), (160,60), and (210,60) in all possible pairings. Here is the
+picture:</p>
+
+<p align="center">
+<img src="crisscross.gif" width="286" height="77" alt="(25 criss-crossed lines)"></p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;6:</span></td><td>
+<p>Suppose you would like a
+panel that displays a green square inside a red circle, as illustrated. Write
+a <span class="code">paintComponent()</span> method for the panel class that will draw the image.</p>
+
+<p align="center">
+<img src="circle_in_square.gif" width="129" height="128" alt="(Picture of Circle in Square)"></p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>(The size of the square and
+circle are not specified in the problem, so any size would be acceptable, as
+long as the square is in the middle of the circle. Notice that the drawing
+commands are <span class="code">fillOval</span> and <span class="code">fillRect</span>. There are no special
+routines for drawing circles or squares.)</p>
+
+<pre>public void paintComponent(Graphics g) {
+   super.paintComponent(g);
+   g.setColor(Color.red);
+   g.fillOval(10,10,80,80);
+   g.setColor(Color.green);
+   g.fillRect(30,30,40,40);
+}</pre>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;7:</span></td><td>
+<p>Java has a standard class
+called <span class="classname">MouseEvent</span>. What is the purpose of this class? What does an
+object of type <span class="classname">MouseEvent</span> do?</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>When an event occurs, the system
+packages information about the event into an object. That object is passed as a
+parameter to the event-handling routine. Different types of events are
+represented by different classes of objects. An object of type
+<span class="classname">MouseEvent</span> represents a mouse or mouse motion event. It contains
+information about the location of the mouse cursor and any modifier keys that
+the user is holding down. This information can be obtained by calling the
+instance methods of the object. For example, if <span class="code">evt</span> is a
+<span class="classname">MouseEvent</span> object, then <span class="code">evt.getX()</span> is the
+<span class="code">x</span>-coordinate of the mouse cursor, and <span class="code">evt.isShiftDown()</span> is a
+boolean value that tells you whether the user was holding down the Shift
+key.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;8:</span></td><td>
+<p>One of the main classes in
+Swing is the <span class="classname">JComponent</span> class. What is meant by a component? What are
+some examples?</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p> A <span class="classname">JComponent</span> represents
+a visual component of the computer's graphical user interface. A
+<span class="classname">JComponent</span> is not completely independent. It must be added to a
+"container," such as a panel. Examples of <span class="classname">JComponents</span> are
+<span class="classname">JButtons</span>, <span class="classname">JTextFields</span>, and <span class="classname">JPanels</span>.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;9:</span></td><td>
+<p> What is the function of a
+<span class="classname">LayoutManager</span> in Java?</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>A <span class="classname">LayoutManager</span>
+implements some policy for laying out all the visual components that have been
+added to a container, such as a <span class="classname">JPanel</span> or the content pane of a
+<span class="classname">JApplet</span>. That is, it sets the sizes and positions of the components.
+Different types of layout managers have different rules about how components
+are to be arranged. Some standard layout manager classes are
+<span class="classname">BorderLayout</span> and <span class="classname">GridLayout</span>.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;10:</span></td><td>
+<p>What type of layout manager is being used for each of the three panels
+in the following illustration from <a href="../c6/s7.html">Section&nbsp;6.7</a>?</p>
+
+<p align="center">
+<img src="nested_panels.png" width="283" height="270" alt="main panel with subpanels and nested components"></p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>The main panel, shown in blue, seems to be using a <span class="classname">GridLayout</span>
+with two rows and one column.  A <span class="classname">GridLayout</span> is most likely
+since the two components in the main panel -- the other two panels, shown in red and green -- are
+exactly the same size.  Similarly, the bottom subpanel, shown in green, seems to
+be using a <span class="classname">GridLayout</span> with one row and three columns.
+The top subpanel, shown in red, could be using a <span class="classname">BorderLayout</span>.
+The components on the left and right ends of the subpanel would be in the
+<span class="code">WEST</span> and <span class="code">EAST</span> positions of the <span class="classname">BorderLayout</span>.
+Each of these components would then be shown at its own preferred width, which would
+explain how their widths could be different.  The third component, in the center
+of the subpanel, would then be in the <span class="code">CENTER</span> position.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;11:</span></td><td>
+<p>Explain how <span class="classname">Timers</span>
+are used to do animation.</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>Displaying an animation requires
+showing a sequence of frames. The frames are shown one after the other, with a
+short delay between each frame and the next. A <span class="classname">Timer</span> can generate a
+sequence of <span class="classname">ActionEvents</span>. When a timer is used to do animation, each
+event triggers the display of another frame. The <span class="classname">ActionListener</span> that
+processes events from the timer just needs to be programmed to display a new frame
+each time its <span class="classname">actionPerformed()</span> method is called.  Usually,
+the <span class="code">actionPerformed()</span> just changes the values of some state variables and
+calls <span class="code">repaint()</span> to make the effect of the changes visible on the screen.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;12:</span></td><td>
+<p>What is a <span class="classname">JCheckBox</span>
+and how is it used?</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>A <span class="classname">JCheckBox</span> is a
+component that has two possible states, "selected" and "not selected". The user can
+change the state by clicking on the <span class="classname">JCheckBox</span>. If <span class="code">box</span> is a
+variable of type <span class="classname">JCheckBox</span>, then a program can set the state of the box 
+to "selected" by
+calling <span class="code">box.setSelected(true)</span> and can unselect the box by calling
+<span class="code">box.setSelected(false)</span>. The current state can be determined by calling
+<span class="code">box.isSelected()</span>, which is a boolean-valued function. A
+<span class="classname">JCheckBox</span> generates an event of type <span class="code">ActionEvent</span> when it
+changes state. A program can listen for these events if it wants to take some
+action at the time the state changes. Often, however, it's enough for a program
+simply to look at the state of the <span class="classname">JCheckBox</span> when it needs it.</p>
+</td>
+</tr>
+</table>
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<html><head><title>The test() method</title></head>
+<body bgcolor=silver>
+<font face="arial" size="+1">
+<script type = "text/javascript">
+	var myString="I love my new gloves!";
+	var regex = /love/g;   // Create a regular expression object
+	var booleanResult = regex.test(myString);
+	if ( booleanResult != false  ){
+		document.write("Tested regular expression <em>"+
+			   regex.source + ".</em> The result is <em>"
+			   + booleanResult + "</em>");
+		document.write(".<br>Starts searching again at position " +
+			   regex.lastIndex + " in string<em> \"" +
+			   RegExp.input + "\"<br>");
+		document.write("The last matched characters were: "+
+			   RegExp.lastMatch+"<br>");
+		document.write("The substring preceding the last match is: "+
+			   RegExp.leftContext+"<br>");
+		document.write("The substring following the last match is:"+
+			   RegExp.rightContext+"<br>");
+		}
+		else{ alert("No match!"); }
+</script></body>
+</html>

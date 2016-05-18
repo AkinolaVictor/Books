@@ -1,0 +1,345 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 5, Chapter 11</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 11.5</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 11.5:</h3>
+<p>The sample program <span class="sourceref"><a href="../source/PhoneDirectoryFileDemo.java">PhoneDirectoryFileDemo.java</a></span>,
+from <a href="../c11/s3.html#IO.3.2">Subsection&nbsp;11.3.2</a>,
+stores name/number pairs for a simple phone book in a text file in the user's home
+directory.  Modify that program so that is uses an XML format for the data.
+The only significant changes that you will have to make are to the parts of
+the program that read and write the data file.  Use the DOM to read the
+data, as discussed in <a href="../c11/s5.html#IO.5.3">Subsection&nbsp;11.5.3</a>.  You can use the XML format
+illustrated in the following sample phone directory file:</p>
+
+<pre>&lt;?xml version="1.0"?&gt;
+&lt;phone_directory&gt;
+  &lt;entry name='barney' number='890-1203'/&gt;
+  &lt;entry name='fred' number='555-9923'/&gt;
+&lt;/phone_directory&gt;</pre>
+
+<p>(This is just an easy exercise in simple XML processing; as before, the
+program in this exercise is not meant to be a useful phone directory program.)</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>The data for the phone book is stored in a
+<span class="classname">TreeMap</span> in which the entries are name/number
+pairs.  The original program uses a two-line for-each loop to output
+the data to a <span class="classname">PrintWriter</span> named <span class="code">out</span>:</p>
+   
+
+<pre>for ( Map.Entry&lt;String,String&gt; entry : phoneBook.entrySet() )
+   out.println(entry.getKey() + "%" + entry.getValue() );</pre>
+   
+
+<p>The data file is written at the end of the program.
+Writing out the data in the XML format shown in the exercise is only
+a little harder.  The same values are output, but we have to add in
+a lot of extra text:</p>
+   
+
+<pre>out.println("&lt;?xml version=\"1.0\"?&gt;");
+out.println("&lt;phone_directory&gt;");
+for ( Map.Entry&lt;String,String&gt; entry : phoneBook.entrySet() ) {
+   out.print("  &lt;entry name='");
+   out.print(entry.getKey());
+   out.print("' number='");
+   out.print(entry.getValue());
+   out.println("'/&gt;");
+}
+out.println("&lt;/phone_directory&gt;");</pre>
+   
+
+<p>The data file is read at the beginning of the program.  To use the
+Document Object Model for this, we have to create a <span class="classname">DocumentBuilder</span> and
+use it to parse the data file:</p>
+   
+
+<pre>DocumentBuilder docReader = 
+        DocumentBuilderFactory.newInstance().newDocumentBuilder();
+Document xmldoc = docReader.parse(dataFile);</pre>
+   
+
+<p>If this succeeds, we know that the file contained a well-formed XML document.
+We can then call <span class="code"> xmldoc.getDocumentElement()</span> to get the
+root element of the document.  This element should have tag name
+"phone_directory." The phone directory entries are stored in
+elements that are directly nested inside the root element.
+We can get a list of the children of the root element by calling
+<span class="code">root.getChildNodes()</span> and we can traverse that list
+to get the individual directory entries.  The name and number
+for an entry are stored as values of attributes named "name" and
+"number", and we can retrieve them using the <span class="code">getAttribute()</span>
+method.  Once we have a name and number, we can add it to the <span class="classname">TreeMap</span>
+in the usual way.  Here is the code that gets the data from
+the DOM representation of the XML data file:</p>
+   
+
+<pre>Element root = xmldoc.getDocumentElement();
+if (! root.getTagName().equals("phone_directory"))
+   throw new Exception();
+NodeList nodes = root.getChildNodes();
+for (int i = 0; i &lt; nodes.getLength(); i++) {
+   if ( nodes.item(i) instanceof Element ) {
+      Element entry = (Element)nodes.item(i);
+      if (! entry.getTagName().equals("entry"))
+         throw new Exception();
+      String entryName = entry.getAttribute("name");
+      String entryNumber = entry.getAttribute("number");
+      if (entryName.length() == 0 || entryNumber.length() == 0)
+         throw new Exception();
+      phoneBook.put(entryName,entryNumber);
+   }
+}</pre>
+   
+
+<p>A complete solution is given below, with changes from
+<span class="sourceref"><a href="../source/PhoneDirectoryFileDemo.java">PhoneDirectoryFileDemo.java</a></span> shown
+in red.</p>
+
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">import java.io.*;
+
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.Scanner;
+
+<span class="newcode">import javax.xml.parsers.*;
+import org.w3c.dom.*;</span>
+
+/**
+ * This program lets the user keep a persistent "phone book" that
+ * contains names and phone numbers.  The data for the phone book
+ * is stored in a a file in the user's home directory.  
+ * 
+ * The program is meant only as a demonstration of files and XML.
+ * <span class="newcode">The data file uses XML to represent the phone book data.</span>
+ */
+public class <span class="newcode">PhoneDirectoryXMLDemo</span> {
+   
+   /**
+    * The name of the file in which the phone book data is kept.  The
+    * file is stored in the user's home directory.  The "." at the
+    * beginning of the file name means that the file will be a
+    * "hidden" file on Unix-based computers, including Linux and
+    * Mac OS X.
+    */
+   private static String DATA_FILE_NAME = ".<span class="newcode">phone_book_xml_demo</span>";
+   
+   
+   public static void main(String[] args) {
+      
+      String name, number;  // Name and number of an entry in the directory
+                            // (used at various places in the program).
+
+      TreeMap&lt;String,String&gt;  phoneBook;   // Phone directory data structure.
+                                           // Enties are name/number pairs.
+      
+      phoneBook = new TreeMap&lt;String,String&gt;();
+      
+      
+      /* Create a dataFile variable of type File to represent the
+       * data file that is stored in the user's home directory.
+       */
+      
+      File userHomeDirectory = new File( System.getProperty("user.home") );
+      File dataFile = new File( userHomeDirectory, DATA_FILE_NAME );
+      
+      
+      /* If the data file already exists, then the data in the file is
+       * read and is used to initialize the phone directory.
+       */
+      
+      if ( ! dataFile.exists() ) {
+         System.out.println("No phone book data file found.");
+         System.out.println("A new one will be created.");
+         System.out.println("File name:  " + dataFile.getAbsolutePath());
+      }
+      else {
+         System.out.println("Reading phone book data...");
+         try {
+            <span class="newcode">DocumentBuilder docReader = 
+               DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document xmldoc = docReader.parse(dataFile);
+            Element root = xmldoc.getDocumentElement();
+            if (! root.getTagName().equals("phone_directory"))
+               throw new Exception();
+            NodeList nodes = root.getChildNodes();
+            for (int i = 0; i &lt; nodes.getLength(); i++) {
+               if ( nodes.item(i) instanceof Element ) {
+                  Element entry = (Element)nodes.item(i);
+                  if (! entry.getTagName().equals("entry"))
+                     throw new Exception();
+                  String entryName = entry.getAttribute("name");
+                  String entryNumber = entry.getAttribute("number");
+                  if (entryName.length() == 0 || entryNumber.length() == 0)
+                     throw new Exception();
+                  phoneBook.put(entryName,entryNumber);
+               }
+            }</span>
+         }
+         catch (Exception e) {
+            System.out.println("Error in read phone book data file.");
+            System.out.println("File name:  " + dataFile.getAbsolutePath());
+            System.out.println("This program cannot continue.");
+            System.exit(1);
+         }
+      }
+      
+      
+      /* Read commands from the user and carry them out, until the
+       * user gives the "Exit from program" command.
+       */
+      
+      Scanner in = new Scanner( System.in );
+      boolean changed = false;  // Have any changes been made to the directory?
+      
+      mainLoop: while (true) {
+         System.out.println("\nSelect the action that you want to perform:");
+         System.out.println("   1.  Look up a phone number.");
+         System.out.println("   2.  Add or change a phone number.");
+         System.out.println("   3.  Remove an entry from your phone directory.");
+         System.out.println("   4.  List the entire phone directory.");
+         System.out.println("   5.  Exit from the program.");
+         System.out.println("Enter action number (1-5):  ");
+         int command;
+         if ( in.hasNextInt() ) {
+            command = in.nextInt();
+            in.nextLine();
+         }
+         else {
+            System.out.println("\nILLEGAL RESPONSE.  YOU MUST ENTER A NUMBER.");
+            in.nextLine();
+            continue;
+         }
+         switch(command) {
+         case 1:
+            System.out.print("\nEnter the name whose number you want to look up: ");
+            name = in.nextLine().trim().toLowerCase();
+            number = phoneBook.get(name);
+            if (number == null)
+               System.out.println("\nSORRY, NO NUMBER FOUND FOR " + name);
+            else
+               System.out.println("\nNUMBER FOR " + name + ":  " + number);
+            break;
+         case 2:
+            System.out.print("\nEnter the name: ");
+            name = in.nextLine().trim().toLowerCase();
+            if (name.length() == 0)
+               System.out.println("\nNAME CANNOT BE BLANK.");
+            else if (name.indexOf('%') &gt;= 0)
+               System.out.println("\nNAME CANNOT CONTAIN THE CHARACTER \"%\".");
+            else { 
+               System.out.print("Enter phone number: ");
+               number = in.nextLine().trim();
+               if (number.length() == 0)
+                  System.out.println("\nPHONE NUMBER CANNOT BE BLANK.");
+               else {
+                  phoneBook.put(name,number);
+                  changed = true;
+               }
+            }
+            break;
+         case 3:
+            System.out.print("\nEnter the name whose entry you want to remove: ");
+            name = in.nextLine().trim().toLowerCase();
+            number = phoneBook.get(name);
+            if (number == null)
+               System.out.println("\nSORRY, THERE IS NO ENTRY FOR " + name);
+            else {
+               phoneBook.remove(name);
+               changed = true;
+               System.out.println("\nDIRECTORY ENTRY REMOVED FOR " + name);
+            }
+            break;
+         case 4:
+            System.out.println("\nLIST OF ENTRIES IN YOUR PHONE BOOK:\n");
+            for ( Map.Entry&lt;String,String&gt; entry : phoneBook.entrySet() )
+               System.out.println("   " + entry.getKey() + ": " + entry.getValue() );
+            break;
+         case 5:
+            System.out.println("\nExiting program.");
+            break mainLoop;
+         default:
+            System.out.println("\nILLEGAL ACTION NUMBER.");
+         }
+      }
+      
+      
+      /* Before ending the program, write the current contents of the
+       * phone directory, but only if some changes have been made to
+       * the directory.
+       */
+      
+      if (changed) {
+         System.out.println("Saving phone directory changes to file " + 
+               dataFile.getAbsolutePath() + " ...");
+         PrintWriter out;
+         try {
+            out = new PrintWriter( new FileWriter(dataFile) );
+         }
+         catch (IOException e) {
+            System.out.println("ERROR: Can't open data file for output.");
+            return;
+         }
+         <span class="newcode">out.println("&lt;?xml version=\"1.0\"?&gt;");
+         out.println("&lt;phone_directory&gt;");
+         for ( Map.Entry&lt;String,String&gt; entry : phoneBook.entrySet() ) {
+            out.print("  &lt;entry name='");
+            out.print(entry.getKey());
+            out.print("' number='");
+            out.print(entry.getValue());
+            out.println("'/&gt;");
+         }
+         out.println("&lt;/phone_directory&gt;");</span>
+         out.close();
+         if (out.checkError())
+            System.out.println("ERROR: Some error occurred while writing data file.");
+         else
+            System.out.println("Done.");
+      }
+   
+   }
+
+}
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

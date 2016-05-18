@@ -1,0 +1,64 @@
+</html><title>Planet Slide Show</title>
+<head>
+ <script type="text/javascript">
+    var timeout;
+    var step=0
+    var whichimage=0;
+    var planet=new Array();
+    function preLoadImages(){
+       planet[0]=new Image();
+ 	    planet[0]="/images/Jupiter.bmp";
+	    planet[1]=new Image();
+	    planet[1]="/images/Neptune.bmp";
+	    planet[2]=new Image();
+	    planet[2]="/images/Earth.jpg";
+	    planet[3]=new Image();
+	    planet[3]="/images/venus.jpg";
+	    planet[4]=new Image();
+	    planet[4]="/images/http:/mars.jpg";
+     }
+  function slideShow(){
+       document.images["planet_pic"].src=planet[step];
+       whichimage=step;
+       if (step < planet.length){
+           step++;
+       }
+       else{
+         step=0;
+        }
+    setTimeout("slideShow()",1800);
+   }
+   function slideLink(){
+     switch(whichimage){
+       case 0:
+          window.location=
+            "http://www.nasa.gov/worldbook/jupiter_worldbook.html";
+            break;
+       case 1:
+            window.location=
+            "http://www.aerospaceguide.net/planet/planetneptune.html"
+             break;
+       case 2: window.location=
+            "http://www.windows.ucar.edu/tour/link=/earth/earth.html";
+             break;
+       case 3: window.location=
+           "http://csep10.phys.utk.edu/astr161/lect/venus/venus.html";
+             break;
+       case 4: window.location=
+            "http://www.nasa.gov/worldbook/mars_worldbook.html";
+            break;
+      }
+   }
+  </script>
+  </head>
+  <body bgColor="black" onLoad = "preLoadImages(); slideShow()">
+    <font color="white">
+    <big>
+    Click on a Planet<br/><br/>
+  <a href="javascript:slideLink()">
+      <img src="file://C:/wamp/www/Jupiter.bmp" name="planet_pic"
+         border="0" width="120" /></a>
+</big>
+</font>
+</body>
+</html>

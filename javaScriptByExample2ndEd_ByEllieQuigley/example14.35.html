@@ -1,0 +1,53 @@
+
+<html><head><title>A tool tip</title>
+  <style type="text/css">
+        body { background-color:black;}
+		#divclass { font-size:12pt;
+		            font-family: arial;
+		            font-weight: bold;
+		            background-color:aqua;
+		            border:thin solid;
+		            width: 210px;
+		            height:40px;
+		            visibility: hidden;   /* Can’t see the container */
+		            position:absolute;
+		            top: 50px;
+		            left: 175px;
+		            z-index: 1;   /* Put the div container on top */
+		}
+		a {
+			font-family: cursive;
+			font-size: 18pt;
+			font-weight: bold;
+			color:white;
+			position: absolute;
+			left: 60px;
+		}
+		img { position:absolute; top: 50px; z-index:0; }
+</style>
+<script type = "text/javascript">
+	var div1;
+	function init(){
+		div1=document.getElementById("divclass");
+	}
+	function showHideTip(e) {
+		if(e.type == "mouseover")
+			   div1.style.visibility="visible";
+		else if(e.type == "mouseout"){
+			   div1.style.visibility="hidden";
+		}
+	}
+</script>
+</head>
+
+<body onLoad="init();">
+	<a href="http://www.servant.xxx"
+	onMouseover="showHideTip(event);"
+	onMouseout="showHideTip(event);"
+	>At Your Service!
+	</a>
+	<br />
+	<img src="waiter.bmp">
+	<div id="divclass">Always tip me at least 20%!</div>
+</body>
+</html>

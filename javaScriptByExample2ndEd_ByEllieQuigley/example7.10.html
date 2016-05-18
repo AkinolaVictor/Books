@@ -1,0 +1,42 @@
+<html>
+   <head><title="Fibonacci Series"</title>
+   <script type="text/javascript">
+
+    var count = 0;
+    function fib(num){
+        count++;
+        switch(num){
+        case 0 :
+           return(0);
+           break;
+        case 1:
+           return(1);
+           break;
+        default:
+           return(fib(num - 1) + fib( num - 2 ));
+           break;
+        }
+
+     }
+
+    </script>
+</head>
+<body bgcolor="azure">
+   <big>
+     <div align = "center">
+      <table border="1">
+      <tr>
+       <script type = "text/javascript">
+         for( n=0; n < 20; n++){
+            value = fib(n);
+            document.write("<td>"+value+"</td>");
+
+         }
+          alert("Function called itself "+ count + " times!!");
+       </script>
+    </tr>
+    </table>
+    </div>
+  </big>
+  </body>
+  </html>

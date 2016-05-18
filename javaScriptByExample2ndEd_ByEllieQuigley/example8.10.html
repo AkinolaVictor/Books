@@ -1,0 +1,26 @@
+<html><head><title>User-defined objects</title>
+<script type = "text/javascript">
+     function book(title, author, publisher){
+	this.title = title;
+	this.author = author;
+	this.publisher = publisher;
+	this.show=show;   // Define a method for the object
+     }
+     function show(obj, name){
+	// Function to show the object's properties
+	var result = "";
+	for (var prop in obj){
+		result += name + "." + prop + " = " + 
+			                obj[prop] + "<br>";
+	}
+	return result;
+     }
+</script>
+</head>
+<body bgcolor="lightblue">
+<script type="text/javascript">
+    myBook = new book("JavaScript by Example", "Ellie","Prentice Hall");
+    document.write("<br><b>" + myBook.show(myBook, "myBook"));
+</script>
+</body>
+</html>

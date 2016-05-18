@@ -1,0 +1,22 @@
+</html><head><title>Object Properties</title>
+<script type="text/javascript">
+     function Book(title, author){
+	  this.title =title;
+	  this.author=author;
+     }
+</script>
+</head>
+<body bgColor="#EOFFFF">
+<big>
+<script>
+    var book1 = new Book("Kidnapped","R.L.Stevenson");
+     var book2 = new Book("Tale of Two Cities", "Charles Dickens")
+   book1.publisher="Penguin Books";
+     document.write(book1.title + " is published by "+ 
+        book1.publisher + "<br />");
+     document.write(book2.title + " is published by " +       
+       book2.publisher);  //Doesn’t have this property
+ </script>
+</big>
+</body>
+</html>

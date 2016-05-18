@@ -1,0 +1,11 @@
+
+ /*Style for the Vietnam Trip Gallery */
+    .mainpic{  position:absolute; top: 50px;left:60px;
+             border-style:solid;border-color:darkgreen;}
+    .title { position: absolute; left:165px; top: 8px;font-size:160%;
+             color:darkgreen;font-family:cursive;}
+    .divbuttons{ position:relative; top: 465px;left:60px;}
+    .caption{position:absolute; top: 430px;left:60px;
+             font-family:cursive;font-style:bold;
+             font-size:16pt;color:darkgreen;}
+     body{background-color:silver;}

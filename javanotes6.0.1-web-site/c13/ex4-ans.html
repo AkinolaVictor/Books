@@ -1,0 +1,142 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 4, Chapter 13</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 13.4</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 13.4:</h3>
+<p>The custom component example <span class="sourceref"><a href="../source/MirrorText.java">MirrorText.java</a></span>,
+from <a href="../c13/s4.html#GUI2.4.5">Subsection&nbsp;13.4.5</a>, uses an off-screen canvas to show mirror-reversed text in
+a <span class="classname">JPanel</span>.  An alternative approach would be to draw the text
+after applying a transform to the graphics context that is used for drawing.
+(See <a href="../c13/s2.html#GUI2.2.5">Subsection&nbsp;13.2.5</a>.)  With this approach, the custom component can be defined
+as a subclass of <span class="classname">JLabel</span> in which the <span class="code">paintComponent()</span>
+method is overridden.  Write a version of the <span class="code">MirrorText</span> component that
+takes this approach.  The solution is very short, but tricky.  Note that the scale
+transform <span class="code">g2.scale(-1,1)</span> does a left-right reflection through the
+left edge of the component.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>The original version of <span class="classname">MirrorText</span> was
+defined as a subclass of <span class="classname">JPanel</span>, so it inherited only the
+methods defined in that class.  Since <span class="classname">JPanel</span> has no
+<span class="code">setText()</span> or <span class="code">getText()</span> method, I had to define them
+myself.  To make the custom component behave like a normal component, I had
+to define a <span class="code">getPreferredSize()</span> method, and I had to call
+<span class="code">revalidate()</span> in the <span class="code">setText()</span> method.  And my component
+still does not behave exactly like a standard component.  For example, a
+<span class="classname">JLabel</span> generates an event when its text is changed.</p>
+
+<p>By defining the new version of <span class="classname">MirrorText</span> as a
+subclass of <span class="classname">JLabel</span>, we avoid these problems, since
+the custom component will automatically have all the methods and behaviors
+of a <span class="classname">JLabel</span>.  The main thing that has to be changed
+is the <span class="code">paintComponent()</span> method.  I also defined a constructor
+that sets the default alignment of the text in the label to centered rather
+than left-justified. In the <span class="code">paintComponent()</span> method, I used</p>
+
+<pre>Graphics2D g2 = (Graphics2D)g.create();</pre>
+
+<p>to get a <span class="classname">Graphics2D</span> graphics context for drawing on
+the label.  This is required since transforms are only defined in <span class="classname">Graphics2D</span>
+class.  I used <span class="code">(Graphics2D)g.create()</span> rather than simply
+<span class="code">(Graphics2D)g</span> because I wanted to avoid changing the original graphics
+context, which might be used for further drawing after the <span class="code">paintComponent()</span>
+method finishes.  (See <a href="../c13/s2.html">Section&nbsp;13.2</a>).  To apply a mirror reversal to
+the label, I used  <span class="code">g2.scale(-1,1)</span>, as suggested in the exercise.
+However, this reflects the contents of the label through the left edge of the label.
+If that were the only thing that I did, the text would end up on the other side of
+the left edge, and that means it wouldn't appear on the label at all.  To fix this,
+<b>before</b> scaling, I translate the text to the left by an amount equal to the width of the
+label, with the command <span class="code">g2.translate(getWidth(),0)</span>.
+This puts the text to the left of the label, and then the scale transform reflects
+it back onto the label.  Finally, I call <span class="code">super.paintComponent(g2)</span> to
+call the paint method from the <span class="classname">JLabel</span> class.  This will
+draw the text of the label, but the drawing will be subject to the transforms
+that have been applied to&nbsp;<span class="code">g2</span>.</p>
+
+<p>The way I did it is not the only way to apply the transforms.  One alternative is
+to use <span class="code">g.scale(-1,1)</span> followed by <span class="code">g.translate(-getWidth(),0)</span>.
+After the scale, the text lies to the left of the label.  To translate it back onto
+the label, it must be moved to the right by <span class="code">getWidth()</span> pixels.  However,
+that direction is now the direction of the <b>negative</b> x-axis, so the translation
+is actually <span class="code">-getWidth()</span>, with a minus sign to indicate that the motion is
+in the negative direction.  (As I said before, it takes a fair amount of study to fully
+understand transforms.)</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">
+import java.awt.*;
+import javax.swing.*;
+
+/**
+ * A component for displaying a mirror-reversed line of text.
+ * The text will be centered in the available space.  This component
+ * is defined as a subclass of JLabel.
+ * 
+ * This version uses a transform in a Graphics2D graphics context
+ * to achieve the mirror-reversal, and is defined as a simple
+ * subclass of JLabel.
+ */
+public class MirrorText2 extends JLabel {
+   
+   /**
+    * Define the constructor so that the default alignment of
+    * the text will be centered, instead of left-justified.
+    * @param text The string that is to be shown on the label.
+    */
+   public MirrorText2(String text) {
+      super(text,JLabel.CENTER);
+   }
+
+   /**
+    * The paintComponent method calls super.paintComponent() after
+    * applying a left/right mirror transform.
+    */
+   public void paintComponent(Graphics g) {
+      Graphics2D g2 = (Graphics2D)g.create();
+      g2.translate(getWidth(),0);
+      g2.scale(-1,1);
+      super.paintComponent(g2);
+   }
+
+
+}  // end MirrorText2
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

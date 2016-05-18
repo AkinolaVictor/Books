@@ -1,0 +1,32 @@
+
+<html>
+<!--  This script is a modification of a free script found at
+	      the JavaScript source.
+	      Author: Asif Nasir (Asifnasir@yahoo.com)
+-->
+<head>
+<script type="text/javascript">
+	var today = new Date();
+        var year=today.getFullYear();
+			var future = new Date("December 25," + year);
+	var diff = future.getTime() - today.getTime();
+		                   // Number of milliseconds
+	var days =Math.floor(diff / (1000 * 60 * 60 * 24 ));
+		                   // Convert to days
+	var str="Only " + days + "  shopping days left until Christmas!";
+	function scroller(){
+		str = str.substring(1, str.length) + str.substring(0,1);
+		document.title=str;
+		window.status=str;
+		setTimeout(scroller, 300);   // Set the timer
+	}
+</script>
+</head>
+<body onload = "scroller()">
+<b>
+<font color=green size=4>
+Get Dizzy. Watch the title bar and the status bar!!
+<br />
+<image src="http://www.crestock.com/uploads/blog/wallpapers/previews/1293599.jpg">
+</body>
+</html>

@@ -1,0 +1,441 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 4.4 -- Return Values</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s3.html">Previous Section</a> |
+           <a href="s5.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#subroutines.4.1">The return statement</a>
+<br>
+<a href="#subroutines.4.2">Function Examples</a>
+<br>
+<a href="#subroutines.4.3">3N+1 Revisited</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 4.4</h3>
+<h2 class="section_title">Return Values</h2>
+<hr class="break">
+
+
+<p>
+<span class="start"><big>A</big> subroutine that returns a value</span> is called a
+<span class="newword">function</span>. A given function can only return a value
+of a specified type, called the <span class="newword">return type</span> of the
+function. A function call generally occurs in a position where the computer is
+expecting to find a value, such as the right side of an assignment statement,
+as an actual parameter in a subroutine call, or in the middle of some larger
+expression. A boolean-valued function can even be used as the test condition in
+an <span class="code">if</span>, <span class="code">while</span>, <span class="code">for</span> or <span class="code">do..while</span> statement.</p>
+
+
+<p>(It is also legal to use a function call as a stand-alone statement, just as
+if it were a regular subroutine. In this case, the computer ignores the value
+computed by the subroutine. Sometimes this makes sense. For example, the
+function <span class="code">TextIO.getln()</span>, with a return type of <span class="classname">String</span>, reads
+and returns a line of input typed in by the user. Usually, the line that is
+returned is assigned to a variable to be used later in the program, as in the
+statement "<span class="code">name&nbsp;=&nbsp;TextIO.getln();</span>". However, this function is also
+useful as a subroutine call statement "<span class="code">TextIO.getln();</span>", which still
+reads all input up to and including the next carriage return.  Since the return value
+is not assigned to a variable or used in an expression, it is simply discarded.
+So, the effect of the subroutine call is to read <b>and discard</b> some input.
+Sometimes, discarding unwanted input is exactly what you need to do.)</p>
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="subroutines.4.1">4.4.1&nbsp;&nbsp;The return statement</a>
+</h3>
+   
+
+<p>You've already seen how functions such as <span class="code">Math.sqrt()</span> and
+<span class="code">TextIO.getInt()</span> can be used. What you haven't seen is how to write
+functions of your own. A function takes the same form as a regular subroutine,
+except that you have to specify the value that is to be returned by the
+subroutine. This is done with a <span class="newword">return statement</span>,
+which has the following syntax:</p>
+
+
+<pre>return  <span class="bnf">expression</span> ;</pre>
+
+
+<p>Such a <span class="code">return</span> statement can only occur inside the definition of a
+function, and the type of the <span class="bnf">expression</span> must
+match the return type that was specified for the function. (More exactly, it
+must be legal to assign the expression to a variable whose type is specified by
+the return type.) When the computer executes this <span class="code">return</span> statement, it
+evaluates the expression, terminates execution of the function, and uses the
+value of the expression as the returned value of the function.</p>
+
+
+<p>For example, consider the function definition</p>
+
+
+<pre>static double pythagoras(double x, double y) {
+      // Computes the length of the hypotenuse of a right
+      // triangle, where the sides of the triangle are x and y.
+    return  Math.sqrt( x*x + y*y );
+}</pre>
+
+
+<p>Suppose the computer executes the statement "<span class="code">totalLength = 17 +
+pythagoras(12,5);</span>". When it gets to the term <span class="code">pythagoras(12,5)</span>, it
+assigns the actual parameters <span class="code">12</span> and <span class="code">5</span> to the formal
+parameters <span class="code">x</span> and <span class="code">y</span> in the function. In the body of the
+function, it evaluates <span class="code">Math.sqrt(12.0*12.0 + 5.0*5.0)</span>, which works out
+to <span class="code">13.0</span>. This value is "returned" by the function, so the <span class="code">13.0</span> essentially
+replaces the function call in the assignment statement, which then has the same effect
+as the statement "<span class="code">totalLength&nbsp;=&nbsp;17+<span class="newcode">13.0</span></span>". 
+The return value is added to <span class="code">17</span>, and the result, 30.0, is stored in the variable,
+<span class="code">totalLength</span>.</p>
+   
+
+<p>Note that a <span class="code">return</span> statement does not have to be the last
+statement in the function definition.  At any point in the function where you
+know the value that you want to return, you can return it.  Returning a value
+will end the function immediately, skipping any subsequent statements in the
+function.  However, it must be the case that the function definitely does
+return some value, no matter what path the execution of the function takes
+through the code.</p>
+
+
+<p>You can use a <span class="code">return</span> statement inside an ordinary subroutine,  one
+with declared return type "<span class="code">void</span>".  Since a void subroutine
+does not return a value, the <span class="code">return</span> statement does not include 
+an expression; it simply takes the form "<span class="code">return;</span>".  The effect
+of this statement is to
+terminate execution of the subroutine and return control back to the point in
+the program from which the subroutine was called. This can be convenient if you
+want to terminate execution somewhere in the middle of the subroutine, but
+<span class="code">return</span> statements are optional in non-function subroutines. In a
+function, on the other hand, a return statement, with expression, is always
+required.</p>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="subroutines.4.2">4.4.2&nbsp;&nbsp;Function Examples</a>
+</h3>
+
+
+<p>Here is a very simple function that could be used in a program to compute
+3N+1 sequences. (The 3N+1 sequence problem is one we've looked at several times
+already, including in the <a href="../c4/s3.html">previous section</a>.)
+Given one term in a 3N+1 sequence, this function computes the next
+term of the sequence:</p>
+ 
+
+<pre>static int nextN(int currentN) {
+   if (currentN % 2 == 1)     // test if current N is odd
+      return 3*currentN + 1;  // if so, return this value
+   else
+      return currentN / 2;    // if not, return this instead
+}</pre>
+
+
+<p>This function has two <span class="code">return</span> statements.
+Exactly one of the two <span class="code">return</span> statements is executed to give the
+value of the function.  Some people prefer to use a single <span class="code">return</span>
+statement at the very end of the function when possible. This allows the reader to find the
+<span class="code">return</span> statement easily. You might choose to write <span class="code">nextN()</span>
+like this, for example:</p>
+
+
+<pre>static int nextN(int currentN) {
+   int answer;  // answer will be the value returned
+   if (currentN % 2 == 1)    // test if current N is odd
+      answer = 3*currentN+1; // if so, this is the answer
+   else
+      answer = currentN / 2; // if not, this is the answer
+   return answer;   // (Don't forget to return the answer!)
+}</pre>
+
+
+<p>Here is a subroutine that uses this <span class="code">nextN</span> function. In this case,
+the improvement from the version of this subroutine in <a href="../c4/s3.html">Section&nbsp;4.3</a> is not
+great, but if <span class="code">nextN()</span> were a long function that performed a complex
+computation, then it would make a lot of sense to hide that complexity inside a
+function:</p>
+
+
+<pre>static void print3NSequence(int startingValue) {
+ 
+   int N;       // One of the terms in the sequence.
+   int count;   // The number of terms found.
+   
+   N = startingValue;   // Start the sequence with startingValue.
+   count = 1;
+   
+   System.out.println("The 3N+1 sequence starting from " + N);
+   System.out.println();
+   System.out.println(N);  // print initial term of sequence
+ 
+   while (N &gt; 1) {
+       <span class="newcode">N = nextN( N );   // Compute next term, using the function nextN.</span>
+       count++;          // Count this term.
+       System.out.println(N);  // Print this term.
+   }
+   
+   System.out.println();
+   System.out.println("There were " + count + " terms in the sequence.");
+
+}
+</pre>
+   
+
+<hr class="break">
+
+
+<p>Here are a few more examples of functions. The first one computes a letter
+grade corresponding to a given numerical grade, on a typical grading scale:</p>
+
+
+<pre>/**
+ * Returns the letter grade corresponding to the numerical
+ * grade that is passed to this function as a parameter.
+ */
+ 
+static char letterGrade(int numGrade) {
+   if (numGrade &gt;= 90)
+      return 'A';   // 90 or above gets an A
+   else if (numGrade &gt;= 80)
+      return 'B';   // 80 to 89 gets a B
+   else if (numGrade &gt;= 65)
+      return 'C';   // 65 to 79 gets a C
+   else if (numGrade &gt;= 50)
+      return 'D';   // 50 to 64 gets a D
+   else
+      return 'F';   // anything else gets an F
+   
+}  // end of function letterGrade</pre>
+
+
+<p>The type of the return value of <span class="code">letterGrade()</span> is <span class="ptype">char</span>.
+Functions can return values of any type at all. Here's a function whose return
+value is of type <span class="ptype">boolean</span>. It demonstrates some interesting programming
+points, so you should read the comments:</p>
+
+
+<pre>/**
+ * The function returns true if N is a prime number.  A prime number
+ * is an integer greater than 1 that is not divisible by any positive 
+ * integer, except itself and 1.  If N has any divisor, D, in the range 
+ * 1 &lt; D &lt; N, then it has a divisor in the range 2 to Math.sqrt(N), namely
+ * either D itself or N/D.  So we only test possible divisors from 2 to 
+ * Math.sqrt(N).
+ */
+
+static boolean isPrime(int N) {
+      
+   int divisor;  // A number we will test to see whether it evenly divides N.
+   
+   if (N &lt;= 1)
+      return false;  // No number &lt;= 1 is a prime.
+   
+   int maxToTry;  // The largest divisor that we need to test.
+
+   maxToTry = (int)Math.sqrt(N);
+        // We will try to divide N by numbers between 2 and maxToTry.
+        // If N is not evenly divisible by any of these numbers, then 
+        // N is prime.  (Note that since Math.sqrt(N) is defined to
+        // return a value of type double, the value must be typecast 
+        // to type int before it can be assigned to maxToTry.)
+        
+    for (divisor = 2; divisor &lt;= maxToTry; divisor++) {
+        if ( N % divisor == 0 )  // Test if divisor evenly divides N.
+           return false;         // If so, we know N is not prime.
+                                 // No need to continue testing!
+    }
+    
+    // If we get to this point, N must be prime.  Otherwise,
+    // the function would already have been terminated by
+    // a return statement in the previous loop.
+    
+    return true;  // Yes, N is prime.
+ 
+}  // end of function isPrime</pre>
+
+
+<p>Finally, here is a function with return type <span class="classname">String</span>. This function
+has a <span class="classname">String</span> as parameter. The returned value is a reversed copy of
+the parameter. For example, the reverse of "Hello World" is "dlroW olleH". The
+algorithm for computing the reverse of a string, <span class="code">str</span>, is to start with
+an empty string and then to append each character from <span class="code">str</span>, starting
+from the last character of <span class="code">str</span> and working backwards to the first:</p>
+
+
+<pre>static String reverse(String str) {
+   String copy;  // The reversed copy.
+   int i;        // One of the positions in str, 
+                 //       from str.length() - 1 down to 0.
+   copy = "";    // Start with an empty string.
+   for ( i = str.length() - 1;  i &gt;= 0;  i-- ) {
+            // Append i-th char of str to copy.
+      copy = copy + str.charAt(i);  
+   }
+   return copy;
+}</pre>
+
+
+<p>A <span class="newword">palindrome</span> is a string that reads the same
+backwards and forwards, such as "radar". The <span class="code">reverse()</span> function could
+be used to check whether a string, <span class="code">word</span>, is a palindrome by testing
+"<span class="code">if&nbsp;(word.equals(reverse(word)))</span>".</p>
+
+
+<p>By the way, a typical beginner's error in writing functions is to print out
+the answer, instead of returning it. <b>This represents a fundamental
+misunderstanding.</b> The task of a function is to compute a value and return it to
+the point in the program where the function was called. That's where the value
+is used. Maybe it will be printed out. Maybe it will be assigned to a variable.
+Maybe it will be used in an expression. But it's not for the function to
+decide.</p>
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="subroutines.4.3">4.4.3&nbsp;&nbsp;3N+1 Revisited</a>
+</h3>
+
+
+<p>I'll finish this section with a complete new version of the 3N+1 program.
+This will give me a chance to show the function <span class="code">nextN()</span>, which was
+defined above, used in a complete program. I'll also take the opportunity to
+improve the program by getting it to print the terms of the sequence in
+columns, with five terms on each line. This will make the output more
+presentable. The idea is this: Keep track of how many terms have been printed
+on the current line; when that number gets up to 5, start a new line of output.
+To make the terms line up into neat columns, I use formatted output.</p>
+
+
+<pre>/**
+ * A program that computes and displays several 3N+1 sequences.  Starting
+ * values for the sequences are input by the user.  Terms in the sequence 
+ * are printed in columns, with five terms on each line of output.
+ * After a sequence has been displayed, the number of terms in that 
+ * sequence is reported to the user.
+ */
+
+public class ThreeN2 {
+          
+   
+   public static void main(String[] args) {
+
+      TextIO.putln("This program will print out 3N+1 sequences");
+      TextIO.putln("for starting values that you specify.");
+      TextIO.putln();
+      
+      int K;   // Starting point for sequence, specified by the user.
+      do {
+         TextIO.putln("Enter a starting value;");
+         TextIO.put("To end the program, enter 0: ");
+         K = TextIO.getInt();   // get starting value from user
+         if (K &gt; 0)             // print sequence, but only if K is &gt; 0
+            print3NSequence(K);
+      } while (K &gt; 0);          // continue only if K &gt; 0
+ 
+   } // end main
+ 
+
+   /**
+    * print3NSequence prints a 3N+1 sequence to standard output, using
+    * startingValue as the initial value of N.  It also prints the number 
+    * of terms in the sequence. The value of the parameter, startingValue, 
+    * must be a positive integer.
+    */
+   static void print3NSequence(int startingValue) {
+  
+      int N;       // One of the terms in the sequence.
+      int count;   // The number of terms found.
+      int onLine;  // The number of terms that have been output
+                   //     so far on the current line.
+      
+      N = startingValue;   // Start the sequence with startingValue;
+      count = 1;           // We have one term so far.
+   
+      TextIO.putln("The 3N+1 sequence starting from " + N);
+      TextIO.putln();
+      TextIO.put(N, 8);  // Print initial term, using 8 characters.
+      onLine = 1;        // There's now 1 term on current output line.
+   
+      while (N &gt; 1) {
+          N = nextN(N);  // compute next term
+          count++;   // count this term
+          if (onLine == 5) {  // If current output line is full
+             TextIO.putln();  // ...then output a carriage return
+             onLine = 0;      // ...and note that there are no terms 
+                              //               on the new line.
+          }
+          TextIO.putf("%8d", N);  // Print this term in an 8-char column.
+          onLine++;   // Add 1 to the number of terms on this line.
+      }
+   
+      TextIO.putln();  // end current line of output
+      TextIO.putln();  // and then add a blank line
+      TextIO.putln("There were " + count + " terms in the sequence.");
+   
+   }  // end of Print3NSequence
+   
+   
+   /**
+    * nextN computes and returns the next term in a 3N+1 sequence,
+    * given that the current term is currentN.
+    */
+   static int nextN(int currentN) {
+       if (currentN % 2 == 1)
+          return 3 * currentN + 1;
+       else
+          return currentN / 2;
+   }  // end of nextN()
+   
+} // end of class ThreeN2
+</pre>
+
+
+<p>You should read this program carefully and try to understand how it works.
+Here is an applet version for you to try. (Try using 27 for the starting
+value!)</p>
+
+
+<p align="center">
+<applet code="ThreeN2Console.class" width="600" height="300" archive="ThreeN2Applet.jar" alt="(Applet 'ThreeN2Console' should be displayed here.)"></applet></p>
+
+
+
+
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s3.html">Previous Section</a> |
+           <a href="s5.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

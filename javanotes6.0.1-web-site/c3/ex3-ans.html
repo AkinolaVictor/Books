@@ -1,0 +1,193 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 3, Chapter 3</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 3.3</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 3.3:</h3>
+<p>Write a program that will
+evaluate simple expressions such as 17 + 3 and 3.14159 * 4.7. The expressions
+are to be typed in by the user. The input always consist of a number, followed
+by an operator, followed by another number. The operators that are allowed are
++, -, *, and /. You can read the numbers with <span class="code">TextIO.getDouble()</span> and
+the operator with <span class="code">TextIO.getChar()</span>. Your program should read an
+expression, print its value, read another expression, print its value, and so
+on. The program should end when the user enters 0 as the first number on the
+line.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+
+<p>We need a loop to read and evaluate expressions. It's easiest to use a
+<span class="code">break</span> statement to end the loop at the appropriate time:</p>
+
+
+<pre>Repeat indefinitely:
+    Get the user's input.
+    if the first number is 0:
+        Break out of the loop
+    Find the value of the expression
+    Display the value.</pre>
+
+
+<p>Getting the user's input involves reading three data values. We need three
+variables to store these values. It's best to test whether the first number is
+0 right after we read it, so the user will just have to type a 0 to end the
+program, not a complete expression such as 0 + 0. "Repeat indefinitely" can be
+written as "<span class="code">while (true)</span>":</p>
+
+
+<pre>while (true):
+    Let firstNum = TextIO.getDouble()
+    if firstNum is 0:
+        Break out of the loop
+    Let operator = TextIO.getChar()
+    Let secondNum = TextIO.getlnDouble()
+    Find the value of the expression
+    Display the value.</pre>
+
+
+<p>To evaluate the user's expression, we have to test the <span class="code">operator</span> to
+find out which operation to compute. We can do this with either a multi-way
+<span class="code">if</span> statement or with a <span class="code">switch</span> statement. In the program
+below, I use a <span class="code">switch</span>. The <span class="code">if</span> statement would be:</p>
+
+
+<pre>if ( operator == '+' )
+   value = firstNum + secondNum;
+else if ( operator == '-' )
+   value = firstNum - secondNum;
+else if ( operator == '*' )
+   value = firstNum * secondNum;
+else if ( operator == '/' )
+   value = firstNum / secondNum;
+else {
+   TextIO.putln("Unknown operator: " + operator);
+   continue;  // back to start of loop
+}</pre>
+
+
+<p>The computer won't let you get away without the <span class="code">else</span> part of the
+<span class="code">if</span> statement or the <span class="code">default</span> case in the <span class="code">switch</span>,
+since that would leave a possibility that the variable, <span class="code">value</span>, is not
+assigned a value before it is printed out.  Note that <span class="ptype">char</span> values are
+tested for equality using the <span class="code">==</span> operator.  Chars are not Strings!
+Strings would have to be compared using the <span class="code">equals()</span> method from
+the <span class="classname">String</span> class; <span class="ptype">chars</span> however are primitive
+type values, and they don't even include any methods.</p>
+
+
+<p>This program could be improved by having it print out an error message if
+the user tries to divide by zero.</p>
+
+
+<p>(This program could use a <span class="classname">Scanner</span> instead of <span class="classname">TextIO</span>
+for input, replacing <span class="code">TextIO.getDouble()</span> with <span class="code">stdin.nextDouble()</span>
+and <span class="code">TextIO.getChar()</span> with <span class="code">stdin.nextChar()</span>, where <span class="code">stdin</span>
+is the <span class="classname">Scanner</span>.  (See <a href="../c2/s4.html#basics.4.6">Subsection&nbsp;2.4.6</a>)  One difference between the
+behavior of the two versions of the program would be that the <span class="code">TextIO</span> version
+would accept expressions that have no spaces, such as <span class="code">17+42</span>, whereas the
+<span class="code">Scanner</span> version would give an error for such an expression.)</p>
+
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">public class SimpleCalculator {
+  
+   /*  This program evaluates simple expressions such as 2 + 2
+       and 34.2 * 7.81, consisting of a number, an operator,
+       and another number.  The operators +, -, *, / are allowed.
+       The program will read and evaluate expressions until
+       the user inputs a line that starts with the number 0.
+   */
+
+   public static void main(String[] args) {
+   
+      double firstNum;    // First number in the expression.
+      double secondNum;   // Second number in the expression.
+      char operator;      // The operator in the expression.
+      double value;       // The value of the expression.
+      
+      TextIO.putln("Enter expressions such as  2 + 2  or  34.2 * 7.81");
+      TextIO.putln("using any of the operators +, -, *, /.");
+      TextIO.putln("To end, enter a 0.");
+      TextIO.putln();
+      
+      while (true) {
+          
+          /* Get user's input, ending program if first number is 0. */
+      
+          TextIO.put("? ");
+          firstNum = TextIO.getDouble();
+          if (firstNum == 0)
+             break;
+          operator = TextIO.getChar();
+          secondNum = TextIO.getlnDouble();
+          
+          /* Compute the value of the expression. */
+          
+          switch (operator) {
+              case '+':
+                 value = firstNum + secondNum;
+                 break;
+              case '-':
+                 value = firstNum - secondNum;
+                 break;
+              case '*':
+                 value = firstNum * secondNum;
+                 break;
+              case '/':
+                 value = firstNum / secondNum;
+                 break;
+              default:
+                 TextIO.putln("Unknown operator: " + operator);
+                 continue;  // Back to start of loop!
+          } // end switch
+          
+          /* Display the value. */
+          
+          TextIO.putln("Value is " + value);
+          TextIO.putln();
+                    
+      } // end while
+      
+      TextIO.putln("Good bye");
+   
+   }  // end main()
+
+}  // end class SimpleCalculator</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

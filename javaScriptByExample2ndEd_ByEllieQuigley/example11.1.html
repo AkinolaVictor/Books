@@ -1,0 +1,18 @@
+<html><head><title>Looping through Object Properties</title></head>
+<body>
+ <script type="text/javascript">
+
+	var props=new Array();
+	for ( var property in window.document){
+			props.push(property);
+	}
+	for(i=0;i<props.length; i++){
+
+			document.write( props[i] + " ");
+			if( i>0 && i%4 == 0 ){
+			    document.write("<br />");
+			}
+	}
+</script>
+</body>
+</html>

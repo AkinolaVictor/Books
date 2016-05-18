@@ -1,0 +1,213 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 4, Chapter 4</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 4.4</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 4.4:</h3>
+<p>This exercise builds on <a href="../c4/ex3-ans.html">Exercise&nbsp;4.3</a>.
+Every time you roll the dice repeatedly, trying to get a given
+total, the number of rolls it takes can be different. The question naturally
+arises, what's the average number of rolls to get a given total? Write a function that performs the
+experiment of rolling to get a given total 10000 times. The desired total is a
+parameter to the subroutine. The average number of rolls is the return value.
+Each individual experiment should be done by calling the function you wrote for
+<a href="../c4/ex3-ans.html">Exercise&nbsp;4.3</a>. Now, write a main program that will call your function once for
+each of the possible totals (2, 3, ..., 12). It should make a table of the
+results, something like:</p>
+
+
+<pre>Total On Dice     Average Number of Rolls
+-------------     -----------------------
+       2               35.8382
+       3               18.0607
+       .                .
+       .                .</pre>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>The solution uses the subroutine, <span class="code">rollFor</span>, from
+<a href="../c4/ex3-ans.html">Exercise&nbsp;4.3</a>.  That subroutine will throw an exception if
+its parameter is not valid.  However, in my program, I <b>know</b> that the values
+that I pass to the <span class="code">rollFor</span> subroutine are valid and that no
+exception will occur.  So, there is no need to use a <span class="code">try..catch</span> statement
+to handle the exception.</p>
+
+
+<p>The <span class="code">main()</span> program simply prints a heading for the output, then
+uses a <span class="code">for</span> loop to compute and print the data for each of the possible
+rolls from 2 to 12. It is not difficult to write it, with a little care to get
+the formatting right (using formatted output).</p>
+
+
+<p>The only thing left is to write a function to find the average number of
+rolls to get a given total on the dice. The average will be a real number, so
+the return type of the function is <span class="ptype">double</span>. The subroutine has a
+parameter of type <span class="ptype">int</span> that specifies the number we are rolling for.
+I'll call the parameter "<span class="code">roll</span>". An algorithm for the subroutine is</p>
+
+
+<pre>Let totalRolls = 0
+Repeat 10000 times:
+   Call rollFor(roll) to run the experiment once
+   Add the returned value to totalRolls
+Compute the average by dividing totalRolls by 10000
+Return the average</pre>
+
+
+<p>In my program, I use a <a href="../c4/s7.html#subroutines.7.2">named constant</a>, 
+<span class="code">NUMBER_OF_EXPERIMENTS</span>, to
+specify the number of experiments to be performed. This constant replaces the
+value 10000, making it easier to read the program and easier to change the
+number of experiments if I decide I want to do more experiments or fewer. This
+gives the subroutine:</p>
+
+
+<pre>static double getAverageRollCount( int roll ) {
+    int rollCountThisExperiment;  // Number of rolls in one experiment.
+    int rollTotal;  // Total number of rolls in all the experiments.
+    double averageRollCount;  // Average number of rolls per experiment.
+    rollTotal = 0;
+    for ( int i = 0;  i &lt; NUMBER_OF_EXPERIMENTS;  i++ ) {
+       rollCountThisExperiment = rollFor( roll );
+       rollTotal += rollCountThisExperiment;
+    }
+    averageRollCount = ((double)rollTotal) / NUMBER_OF_EXPERIMENTS;
+    return averageRollCount;
+}</pre>
+
+
+<p>Note that when the average is computed, a type-cast is used to convert
+<span class="code">rollTotal</span> to type <span class="ptype">double</span>. This is necessary since
+<span class="code">rollCount</span> and <span class="code">NUMBER_OF_EXPERIMENTS</span> are integers, and the
+computer would evaluate the quotient <span class="code">rollCount / NUMBER_OF_EXPERIMENTS</span>
+as an integer.</p>
+
+
+<p>By the way, this subroutine could be substantially abbreviated at the
+expense of being somewhat less easy to understand:</p>
+
+
+<pre>static double getAverageRollCount( int roll ) {
+    int rollTotal = 0;  // Total number of rolls in all the experiments.
+    for ( int i = 0;  i &lt; NUMBER_OF_EXPERIMENTS;  i++ )
+       rollTotal += rollFor( roll );
+    return ((double)rollTotal) / NUMBER_OF_EXPERIMENTS;
+}</pre>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+<pre class="exercisecode">/**
+ * This program performs the following type of experiment:  Given a desired 
+ * total roll, such as 7, roll a pair of dice until the given total comes up, 
+ * and count how many rolls are necessary.  Now do the over and over, and
+ * find the average number of rolls.  The number of times the experiment is 
+ * repeated is given by the constant, NUMBER_OF_EXPERIMENTS.  The average is
+ * computed and printed out for each possible roll = 2, 3, ..., 12. 
+ */
+
+public class DiceRollStats {
+
+   /**
+    * The number of times that the experiment "roll for a given total"
+    * is to be repeated.  The program performs this many experiments, and
+    * prints the average of the result, for each possible roll value, 
+    */
+   static final int NUMBER_OF_EXPERIMENTS = 10000;
+
+   public static void main(String[] args) {
+       double average;  // The average number of rolls to get a given total.
+       System.out.println("Total On Dice     Average Number of Rolls");
+       System.out.println("-------------     -----------------------");
+       for ( int dice = 2;  dice &lt;= 12;  dice++ ) {
+          average = getAverageRollCount( dice );
+          System.out.printf("%10d%22.4f\n", dice, average);
+             // Use 10 spaces to output dice, and use 22 spaces to output
+             // average, with 4 digits after the decimal.
+       }
+   } 
+   
+   /**
+    * Find the average number of times a pair of dice must be rolled to get
+    * a given total.  The experiment of rolling for the given total is
+    * repeated NUMBER_OF_EXPERIMENTS times and the average number of rolls
+    * over all the experiments is computed.
+    * Precondition:  The given total must be be between 2
+    * and 12, inclusive.
+    * @param roll the total that we want to get on the dice
+    * @return the average number of rolls that it takes to get the specified
+    *    total
+    */
+   static double getAverageRollCount( int roll ) {
+       int rollCountThisExperiment;  // Number of rolls in one experiment.
+       int rollTotal;  // Total number of rolls in all the experiments.
+       double averageRollCount;  // Average number of rolls per experiment.
+       rollTotal = 0;
+       for ( int i = 0;  i &lt; NUMBER_OF_EXPERIMENTS;  i++ ) {
+          rollCountThisExperiment = rollFor( roll );
+          rollTotal += rollCountThisExperiment;
+       }
+       averageRollCount = ((double)rollTotal) / NUMBER_OF_EXPERIMENTS;
+       return averageRollCount;
+   }
+   
+   /**
+    * Simulates rolling a pair of dice until a given total comes up.
+    * Precondition:  The desired total is between 2 and 12, inclusive.
+    * @param N the total that we want to get on the dice
+    * @return the number of times the dice are rolled before the
+    *    desired total occurs
+    * @throws IllegalArgumentException if the parameter, N, is not a number
+    *    that could possibly come up on a pair of dice
+    */
+   static int rollFor( int N ) {
+       if ( N &lt; 2 || N &gt; 12 )
+          throw new IllegalArgumentException("Impossible total for a pair of dice.");
+       int die1, die2;  // Numbers between 1 and 6 representing the dice.
+       int roll;        // Total showing on dice.
+       int rollCt;      // Number of rolls made.
+       rollCt = 0;
+       do {
+          die1 = (int)(Math.random()*6) + 1;
+          die2 = (int)(Math.random()*6) + 1;
+          roll = die1 + die2;
+          rollCt++;
+       } while ( roll != N );
+       return rollCt;
+   }
+   
+}  // end DiceRollStats</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

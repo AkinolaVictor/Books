@@ -1,0 +1,151 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 3, Chapter 2</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 2.3</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 2.3:</h3>
+<p>Write a program that asks
+the user's name, and then greets the user by name. Before outputting the user's
+name, convert it to upper case letters. For example, if the user's name is
+Fred, then the program should respond "Hello, FRED, nice to meet you!".</p>
+   
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+
+<p>In order to read the name typed in by the user, this program uses one of the
+input routines from the non-standard <span class="classname">TextIO</span> class. So, this program
+can only be run if that class is available to the program.  I will use <span class="code">System.out</span>
+for output, although I could just as easily use <span class="code">TextIO</span> for output as
+well as for input.</p>
+
+
+<p>A name is a sequence of characters, so it is a value of type
+<span class="classname">String</span>. The program must declare a variable of type <span class="classname">String</span> to
+hold the user's name. I declare another variable to hold the user's name with
+all the letters in the name converted to upper case. The conversion might be
+difficult, except that <span class="classname">String</span> objects have a function that let's you do the
+conversion with one line of code. If <span class="code">usersName</span> is the variable that refers to the name that
+the user enters, then the function call <span class="code">usersName.toUpperCase()</span>
+returns the string obtained by replacing any lower case letters in the name
+with upper case letters.</p>
+
+
+<p>There are several functions in the <span class="classname">TextIO</span> class that can be used for
+reading <span class="code">Strings</span>: <span class="code">getWord()</span>, <span class="code">getlnWord()</span>, and
+<span class="code">getln()</span>. The first two routines only read a single word, so if the
+user entered "David J. Eck", they would only read the first name, "David". The
+<span class="code">getln()</span> routine will read the entire line, and so would get the whole
+name. For this program, I use <span class="code">getln()</span>, but you might prefer to use just
+the first name.</p>
+
+
+<p>I also give a version of the program that uses the built-in
+class <span class="classname">Scanner</span>, instead of <span class="classname">TextIO</span>, for
+reading input from the user.  See <a href="../c2/s4.html#basics.4.6">Subsection&nbsp;2.4.6</a> for a discussion of
+the <span class="classname">Scanner</span> class.  In the second version of the program,
+a <span class="classname">Scanner</span> named <span class="code">stdin</span> is created, and
+the user's input is read using the function <span class="code">stdin.nextLine()</span>, which
+has essentially the same functionality as <span class="code">TextIO.getln()</span>.</p>
+
+
+<p>(For this program, by the way, <span class="code">TextIO.getWord()</span> and <span class="code">TextIO.getlnWord()</span>
+would be equivalent. They return the same value. The second version of the
+routine, <span class="code">getlnWord()</span>, would then discard the rest of the user's line
+of input. However, since this program is only doing one input operation, it
+doesn't matter whether it's discarded. It would only matter when it came time
+to read a second value from input.)</p>
+
+   
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">public class Greeting {
+   
+    /*  This program asks the user's name and then
+        greets the user by name.  This program depends
+        on the non-standard class, TextIO.
+    */
+ 
+    public static void main(String[] args) {
+    
+        String usersName;      // The user's name, as entered by the user.
+        String upperCaseName;  // The user's name, converted to upper case letters.
+        
+        System.out.print("Please enter your name: ");
+        usersName = TextIO.getln();
+        
+        upperCaseName = usersName.toUpperCase();
+        
+        System.out.println("Hello, " + upperCaseName + ", nice to meet you!");
+    
+    }  // end main()
+ 
+}  // end class
+</pre>
+
+
+<p>
+<b><u>A version using <span class="classname">Scanner</span> for input:</u></b>
+
+</p>
+
+
+<pre class="exercisecode">
+<span class="newcode">import java.util.Scanner;</span>
+
+public class Greeting {
+    
+    public static void main(String[] args) {
+    
+        <span class="newcode">Scanner stdin = new Scanner( System.in );</span>
+    
+        String usersName;      // The user's name, as entered by the user.
+        String upperCaseName;  // The user's name, converted to upper case letters.
+        
+        System.out.print("Please enter your name: ");
+        usersName = <span class="newcode">stdin.nextLine()</span>;
+        
+        upperCaseName = usersName.toUpperCase();
+        
+        System.out.println("Hello, " + upperCaseName + ", nice to meet you!");
+    
+    }  // end main()
+ 
+}  // end class</pre>
+
+
+   
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

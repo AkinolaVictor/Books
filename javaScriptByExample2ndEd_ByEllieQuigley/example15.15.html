@@ -1,0 +1,17 @@
+<html>
+  <head><title>Removing a Child with the DOM</title>
+  <script type="text/javascript">
+    function removeDiv() {
+       var divMid = document.body.getElementsByTagName("div")[1];
+       divMid.parentNode.removeChild(divMid);//Remove the middle div
+         // alert((document.body.getElementsByTagName("div")).length
+         //         + " divs left");  prints 2
+    }
+  </script>
+</head>
+  <body onload="removeDiv()">
+   <div>this is div1</div>
+   <div>this is div2</div>
+   <div>this is div3</div>
+</body>
+</html>

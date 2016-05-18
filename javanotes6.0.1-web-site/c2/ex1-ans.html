@@ -1,0 +1,101 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 1, Chapter 2</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 2.1</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 2.1:</h3>
+<p>Write a program that will
+print your initials to standard output in letters that are nine lines tall.
+Each big letter should be made up of a bunch of *'s. For example, if your
+initials were "DJE", then the output would look something like:</p>
+
+
+<pre>******           *************        **********
+**    **                **            **
+**     **               **            **
+**      **              **            **
+**      **              **            ********
+**      **       **     **            **
+**     **         **    **            **
+**    **           **  **             **
+*****               ****              ********** </pre>
+   
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+
+<p>This is a very simple program. It consists of nothing but a sequence of
+<span class="code">System.out.println</span> statements. (Alternatively, you could use
+<span class="code">TextIO.putln</span>.) The hard part is designing the letters. You have to
+experiment in your text editor until you get letters that look right to you.
+Add <span class="code">System.out.println("</span> at the beginning of the first line, then
+copy-and-paste it to the beginning of each of the other lines. (You don't need
+to type it out on each line! Creative use of copy-and-paste can save you a lot
+of work.) Then add <span class="code">");</span> to the end of each line. In my program, I've
+also added a <span class="code">System.out.println()</span> statement at the beginning and the
+end. The extra blank lines make the output look better.</p>
+
+
+<p>Don't forget that in order to have a complete program, you have to put the
+program statements in a <span class="code">main</span> subroutine and put that subroutine in a
+<span class="code">public</span> <span class="code">class</span>.</p>
+   
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">
+    public class PrintInitials {
+      
+       /*  This program prints my initials (DJE) in big letters,
+           where each letter is nine lines tall.
+       */
+    
+       public static void main(String[] args) {
+          System.out.println();
+          System.out.println("           ******           *************        **********");
+          System.out.println("           **    **                **            **");
+          System.out.println("           **     **               **            **");
+          System.out.println("           **      **              **            **");
+          System.out.println("           **      **              **            ********");
+          System.out.println("           **      **       **     **            **");
+          System.out.println("           **     **         **    **            **");
+          System.out.println("           **    **           **  **             **");
+          System.out.println("           *****               ****              **********");
+          System.out.println();
+       }  // end main()
+
+    }  // end class</pre>
+   
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

@@ -1,0 +1,33 @@
+
+<html><head><title>Testing for a Valid Zip Code</title>
+<script type="text/javascript">
+	function ok_Zip(zip){
+		var regex=/^\d{5}$/;  // Match for 5 numbers
+		if ( regex.test(zip.value) == false) {
+			alert("Zip code must contain exactly five numbers!");
+			zip.focus();
+			return false;
+		}
+		if ( zip.value == ""){
+			alert("You must enter a zip code");
+			zip.focus();
+			return false;
+		}
+			return true;
+	}
+   </script></head>
+<body>
+<big>
+	<form name="ZipTest" action="/error" >
+		Enter your zip code:
+		<input type="text"
+		       name="zipcode"
+		       size=5>
+		<input type="button"
+		       value="Check zip"
+		        onClick="if( ok_Zip(ZipTest.zipcode)) {alert('Zip is valid.')}">
+	    <br /><input type="reset">
+	</form>
+     </big>
+</body>
+</html>

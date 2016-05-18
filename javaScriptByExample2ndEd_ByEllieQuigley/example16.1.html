@@ -1,0 +1,33 @@
+
+<html>
+<head><title>The escape() Method</title>
+	</head><div align=”center”><h2>URL Encoding </h2>
+	<script type="text/javascript">
+		function seeEncoding(form){
+			var myString = form.input.value;
+			alert(escape(myString));
+		}
+		function seeDecoding(form){
+			var myString = form.input.value;
+			alert(unescape(myString));
+		}
+</script>
+<body background="cookebg.jpg" >
+
+<form name="form1">
+	Type in a string of text:
+	<p>
+	<input type="text" name="input" size=40>
+	<p>
+	<input type="button" 
+			value="See encoding"
+			onClick="seeEncoding(this.form);">
+		<p>
+		<input type="button" 
+			value="See decoding"
+			onClick="seeDecoding(this.form);">
+		<p>
+</form>
+</div>
+</body>
+</html>                          

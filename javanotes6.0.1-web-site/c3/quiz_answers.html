@@ -1,0 +1,350 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Answers for Quiz on Chapter 3</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2 class="quiz_title">Answers for Quiz on Chapter 3</h2>
+<p>
+<span class="start"><big>T</big>his page contains</span> sample answers to the quiz on Chapter 3 of
+           <a href="../index.html"><i>Introduction to Programming Using Java</i></a>.
+           Note that generally, there are lots of correct answers to a given question.</p>
+<table border="1" align="center" cellpadding="8" width="95%">
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;1:</span></td><td>
+<p>What is an <i>algorithm</i>?</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>An algorithm is an unambiguous, step-by-step procedure for performing
+a certain task, which is guaranteed to finish after a finite number of steps.
+(An algorithm is not the same thing as a program, but it can be the <i>idea</i>
+behind a program.)</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;2:</span></td><td>
+<p>Explain briefly what is
+meant by "pseudocode" and how is it useful in the development of
+algorithms.</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>Pseudocode refers to informal
+descriptions of algorithms, written in a language that imitates the structure
+of a programming language, but without the strict syntax. Pseudocode can be
+used in the process of developing an algorithm with stepwise refinement. You
+can start with a brief pseudocode description of the algorithm and then add
+detail to the description through a series of refinements until you have
+something that can be translated easily into a program written in an actual
+programming language.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;3:</span></td><td>
+<p>What is a <i>block
+statement?</i> How are block statements used in Java programs?</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>A block statement is just a
+sequence of Java statements enclosed between braces, { and }. The body of a
+subroutine is a block statement. Block statements are often used in control
+structures. A block statement is generally used to group together several
+statements so that they can be used in a situation that only calls for a single
+statement. For example, the syntax of a while loop calls for a single
+statement: "while (condition) do statement". However, the statement can be a
+block statement, giving the structure: "while (condition) { statement;
+statement;&nbsp;...}".</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;4:</span></td><td>
+<p>What is the main difference
+between a <span class="code">while</span> loop and a <span class="code">do..while</span> loop?</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>Both types of loop repeat a
+block of statements until some condition becomes false. The main difference is
+that in a <span class="code">while</span> loop, the condition is tested at the beginning of the
+loop, and in a <span class="code">do..while</span> loop, the condition is tested at the end of
+the loop. It is possible that the body of a <span class="code">while</span> loop might not be
+executed at all. However, the body of a <span class="code">do..while</span> loop is executed at
+least once since the condition for ending the loop is not tested until the body
+of the loop has been executed.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;5:</span></td><td>
+<p>What does it mean to
+<i>prime</i> a loop?</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>The condition at the beginning
+of a while loop has to make sense even the first time it is tested, before the
+body of the loop is executed. To prime the loop is to set things up before the
+loop starts so that the test makes sense (that is, the variables that it
+contains have reasonable values). For example, if the test in the loop is
+"while the user's response is yes," then you will have to prime the loop by
+getting a response from the user (or making one up) before the loop.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;6:</span></td><td>
+<p>Explain what is meant by an
+<i>animation</i> and how a computer displays an animation.</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>An animation consists of a
+series of "frames." Each frame is a still image, but there are slight
+differences from one frame to the next. When the images are displayed rapidly
+one frame after another, the eye perceives motion. A computer displays an
+animation by showing one image on the screen, then replacing it with the next
+image, then the next, and so on.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;7:</span></td><td>
+<p>Write a <span class="code">for</span> loop
+that will print out all the multiples of 3 from 3 to 36, that is: 3 6 9 12 15
+18 21 24 27 30 33 36.</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>Here are two possible answers.
+Assume that <span class="code">N</span> has been declared to be a variable of type
+<span class="ptype">int</span>:</p>
+
+<pre>        for ( N = 3;  N &lt;= 36;  N = N + 3 ) {
+            System.out.println( N );
+        }
+  
+or
+        for ( N = 3;  N &lt;= 36;  N++ ) {
+            if ( N % 3 == 0 )
+                System.out.println( N );
+        }</pre>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;8:</span></td><td>
+<p>Fill in the following
+<span class="code">main()</span> routine so that it will ask the user to enter an integer, read
+the user's response, and tell the user whether the number entered is even or
+odd. (You can use <span class="code">TextIO.getInt()</span> to read the integer. Recall that an
+integer <span class="code">n</span> is even if <span class="code">n&nbsp;%&nbsp;2&nbsp;==&nbsp;0</span>.)</p>
+
+<pre>public static void main(String[] args) {
+ 
+         // Fill in the body of this subroutine!
+ 
+}</pre>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>The problem already gives an
+outline of the program. The last step, telling the user whether the number is
+even or odd, requires an <span class="code">if</span> statement to decide between the two
+possibilities.</p>
+
+<pre>public static void main (String[] args) {
+
+   int n;  // the number read from the user
+
+   TextIO.put("Type an integer: ");  // ask the use to enter an integer
+ 
+   n = TextIO.getInt();   // read the user's response
+ 
+   if (n % 2 == 0)        // tell the user whether the number is even or odd
+      System.out.println("That's an even number.");
+   else
+      System.out.println("That's an odd number.");
+}</pre>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;9:</span></td><td>
+<p>Suppose that <span class="code">s1</span> and <span class="code">s2</span> are variables of type
+<span class="classname">String</span>, whose values are expected to be string representations
+of values of type <span class="ptype">int</span>.  Write a code segment that will compute and print
+the integer sum of those values, or will print an error message if the values cannot
+successfully be converted into integers.  (Use a <span class="code">try..catch</span> statement.)</p>
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>The function <span class="code">Integer.parseInt</span> can be used to convert the strings
+into integers.  This function will throw an exception of type <span class="classname">NumberFormatException</span>
+if the conversion fails.  A <span class="code">try..catch</span> statement can catch this exception and
+print an error message.  So, the code segment can be written:</p>
+
+<pre>try {
+   int n1, n2;  // The values of s1 and s2 as integers.
+   int sum;     // The sum of n1 and n2.
+   n1 = Integer.parseInt(s1);
+   n2 = Integer.parseInt(s2);
+   sum = n1 + n2;   // (If an exception occurs, we don't get to this point.)
+   System.out.println("The sum is " + sum);
+}
+catch ( NumberFormatException e ) {
+    System.out.println("Error!  Unable to convert strings to integers.);  
+}</pre>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;10:</span></td><td>
+<p>Show the exact output that
+would be produced by the following <span class="code">main()</span> routine:</p>
+
+<pre>public static void main(String[] args) {
+    int N;
+    N = 1;
+    while (N &lt;= 32) {
+       N = 2 * N;
+       System.out.println(N);   
+    }
+}</pre>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>The exact output printed by this
+program is:</p>
+
+<pre>2
+4
+8
+16
+32
+64</pre>
+
+<p>(The hard part to get right is the 64 at the end. The value of N doubles
+each time through the loop. For the final execution of the loop, N starts out
+with the value 32, but N is doubled to 64 before it is printed.)</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;11:</span></td><td>
+<p>Show the exact output
+produced by the following <span class="code">main()</span> routine:</p>
+
+<pre>public static void main(String[] args) {
+   int x,y;
+   x = 5;
+   y = 1;
+   while (x &gt; 0) {
+      x = x - 1;
+      y = y * x;
+      System.out.println(y);
+   }
+}</pre>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>The way to answer this question
+is to trace exactly what the program does, step-by-step. The output is shown
+below on the right. On the left is a table that shows the values of the
+variables x and y as the program is being executed.</p>
+
+<pre> value of x   |   value of y                 OUTPUT
+--------------|--------------             -------------
+      5       |     1  [ before loop]
+      4       |     4  [ = 1*4 ]               4
+      3       |    12  [ = 4*3 ]               12
+      2       |    24  [ = 12*2 ]              24
+      1       |    24  [ = 24*1 ]              24
+      0       |     0  [ = 24*0 ]              0</pre>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;12:</span></td><td>
+<p>What output is produced by
+the following program segment? <b>Why?</b> (Recall that <span class="code">name.charAt(i)</span>
+is the i-th character in the string, <span class="code">name</span>.)</p>
+
+<pre>String name;
+int i;
+boolean startWord;
+
+name = "Richard M. Nixon";
+startWord = true;
+for (i = 0; i &lt; name.length(); i++) {
+   if (startWord)
+      System.out.println(name.charAt(i));
+   if (name.charAt(i) == ' ')
+      startWord = true;
+   else
+      startWord = false;
+}</pre>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>This is a tough one! The output
+from this program consists of the three lines:</p>
+
+<pre>    R
+    M
+    N</pre>
+
+<p>As the <span class="code">for</span> loop in this code segment is executed,
+<span class="code">name.charAt(i)</span> represents each of the characters in the string
+"Richard M. Nixon" in succession. The statement
+<span class="code">System.out.println(name.charAt(i))</span> outputs the single character
+<span class="code">name.charAt(i)</span> on a line by itself. However, this output statement
+occurs inside an <span class="code">if</span> statement, so only some of the characters are
+output. The character is output if <span class="code">startWord</span> is true. This variable is
+initialized to true, so when <span class="code">i</span> is 0, startWord is true, and the first
+character in the string, 'R', is output. Then, since 'R' does not equal ' ',
+<span class="code">startWorld</span> becomes false, so no more characters are output until
+<span class="code">startWord</span> becomes true again. This happens when
+<span class="code">name.charAt(i)</span> is a space, that is, just <i>before</i> the 'M' is
+processed and again just before the 'N' is processed. In fact whatever the
+value of <span class="code">name</span>, this <span class="code">for</span> statement would print the first
+character in <span class="code">name</span> and every character in <span class="code">name</span> that follows a
+space. (It is <i>almost</i> true that this for statement prints the first
+character of each word in the string, but something goes wrong when the first
+character is a space or when there are
+two spaces in a row. What happens in these cases?)
+</p>
+</td>
+</tr>
+</table>
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

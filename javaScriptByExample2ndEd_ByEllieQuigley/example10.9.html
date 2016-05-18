@@ -1,0 +1,29 @@
+<html><head><title>Move a New Window</title>
+ <script type="text/javascript">
+     function directions(){
+	winObj=window.open("myplace.html","myplace",
+			   "width=200,height=300,resizable=no");
+	winObj.moveTo(0, 0); // Move window to top left-hand corner
+	winObj.focus();
+	parent.window.moveTo(215, 0);  // Move the parent window
+	parent.window.resizeTo(400,400);   // Resize browser window
+     }
+     function closeWindow(){
+	winObj.close();
+     }
+  </script>
+</head>
+<body bgColor="lightblue">
+  <h2>We've moved!</h2>
+   For directions to our new place,
+   <br />
+   click the button
+   <form >
+	<input type="button"
+	       value="Simple Directions"
+	       onClick="directions();">
+	<p>When you are ready to close the window, click here<br />
+  </form>
+  <a href="javascript:closeWindow()">Close the window</a>
+</body>
+</html>

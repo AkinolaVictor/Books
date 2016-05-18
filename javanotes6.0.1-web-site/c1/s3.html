@@ -1,0 +1,181 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 1.3 -- The Java Virtual Machine</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s2.html">Previous Section</a> |
+           <a href="s4.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h3 class="section_title">Section 1.3</h3>
+<h2 class="section_title">The Java Virtual Machine</h2>
+<hr class="break">
+    
+
+<p>
+<span class="start"><big>M</big>achine language consists</span> of very simple
+instructions that can be executed directly by the CPU of a computer. Almost all
+programs, though, are written in <span class="newword">high-level programming languages</span> 
+such as Java, Pascal, or C++. A program written in a
+high-level language cannot be run directly on any computer. First, it has to be
+translated into machine language. This translation can be done by a program
+called a <span class="newword">compiler</span>. A compiler takes a
+high-level-language program and translates it into an executable
+machine-language program. Once the translation is done, the machine-language
+program can be run any number of times, but of course it can only be run on one
+type of computer (since each type of computer has its own individual machine
+language). If the program is to run on another type of computer it has to be
+re-translated, using a different compiler, into the appropriate machine
+language.</p>
+
+
+<p>There is an alternative to compiling a high-level language program. Instead
+of using a compiler, which translates the program all at once, you can use an
+<span class="newword">interpreter</span>, which translates it
+instruction-by-instruction, as necessary. An interpreter is a program that acts
+much like a CPU, with a kind of fetch-and-execute cycle. In order to execute a
+program, the interpreter runs in a loop in which it repeatedly reads one
+instruction from the program, decides what is necessary to carry out that
+instruction, and then performs the appropriate machine-language commands to do
+so.</p>
+
+
+<p>One use of interpreters is to execute high-level language programs. For
+example, the programming language Lisp is usually executed by an interpreter
+rather than a compiler. However, interpreters have another purpose: they can
+let you use a machine-language program meant for one type of computer on a
+completely different type of computer. For example, there is a program called
+"Virtual PC" that runs on Mac&nbsp;OS computers. Virtual PC is an interpreter
+that executes machine-language programs written for IBM-PC-clone computers. If
+you run Virtual PC on your Mac&nbsp;OS, you can run any PC program, including
+programs written for Windows. (Unfortunately, a PC program will run much more
+slowly than it would on an actual IBM clone. The problem is that Virtual PC
+executes several Mac&nbsp;OS machine-language instructions for each PC
+machine-language instruction in the program it is interpreting. Compiled
+programs are inherently faster than interpreted programs.)</p>
+
+
+<hr class="break">
+
+
+<p>The designers of Java chose to use a combination of compilation and
+interpretation. Programs written in Java are compiled into machine language,
+but it is a machine language for a computer that doesn't really exist. This
+so-called "virtual" computer is known as the <span class="newword">Java Virtual Machine</span>,
+or JVM.
+The machine language for the Java Virtual Machine is called
+<span class="newword">Java bytecode</span>.  There is no reason why Java
+bytecode couldn't be used as the machine language of a real computer, rather
+than a virtual computer.  But in fact the use of a virtual machine makes possible
+one of the main selling points of Java: the fact that it can actually be
+used on <b>any</b> computer. All that the computer needs is an interpreter for
+Java bytecode. Such an interpreter simulates the JVM in the
+same way that Virtual PC simulates a PC computer.  (The term JVM is also used 
+for the Java bytecode interpreter program that does the simulation, so we say that
+a computer needs a JVM in order to run Java programs.  Technically, it would
+be more correct to say that the interpreter <i>implements</i> the JVM than
+to say that it <i>is</i> a JVM.)</p>
+
+
+<p>Of course, a different Java bytecode interpreter is needed for each type of
+computer, but once a computer has a Java bytecode interpreter, it can run any
+Java bytecode program. And the same Java bytecode program can be run on any
+computer that has such an interpreter. This is one of the essential features of
+Java: the same compiled program can be run on many different types of
+computers.</p>
+
+
+<p align="center">
+<img src="overview_fig3.png" width="447" height="168" alt="" class="bordered"></p>
+
+
+<p>Why, you might wonder, use the intermediate Java bytecode at all? Why not
+just distribute the original Java program and let each person compile it into
+the machine language of whatever computer they want to run it on? There are
+many reasons. First of all, a compiler has to understand Java, a complex
+high-level language. The compiler is itself a complex program. A Java bytecode
+interpreter, on the other hand, is a fairly small, simple program. This makes
+it easy to write a bytecode interpreter for a new type of computer; once that
+is done, that computer can run any compiled Java program. It would be much
+harder to write a Java compiler for the same computer.</p>
+
+
+<p>Furthermore, many Java programs are meant to be downloaded over a network.
+This leads to obvious security concerns: you don't want to download and run a
+program that will damage your computer or your files. The bytecode interpreter
+acts as a buffer between you and the program you download. You are really
+running the interpreter, which runs the downloaded program indirectly. The
+interpreter can protect you from potentially dangerous actions on the part of
+that program.</p>
+
+
+<p>When Java was still a new language, it was criticized for being slow:
+Since Java bytecode was executed by an interpreter, it seemed that Java
+bytecode programs could never run as quickly as programs compiled into
+native machine language (that is, the actual
+machine language of the computer on which the program is running).
+However, this problem has been largely overcome by the use of <span class="newword">just-in-time
+compilers</span> for executing Java bytecode.  A just-in-time compiler
+translates Java bytecode into native machine language.  It does
+this while it is executing the program.  Just as for a normal interpreter,
+the input to a just-in-time compiler is a Java bytecode program, and its task
+is to execute that program.  But as it is executing the program, it also
+translates parts of it into machine language.  The translated parts of the
+program can then be executed much more quickly than they could be interpreted.
+Since a given part of a program is often executed many times as the program
+runs, a just-in-time compiler can significantly speed up the overall 
+execution time.
+</p>
+
+
+<p>I should note that there is no necessary connection between Java and Java
+bytecode. A program written in Java could certainly be compiled into the
+machine language of a real computer. And programs written in other languages
+could be compiled into Java bytecode. However, it is the combination of Java
+and Java bytecode that is platform-independent, secure, and network-compatible
+while allowing you to program in a modern high-level object-oriented
+language.</p>
+
+
+<p>(In the past few years, it has become fairly common to create new programming
+languages, or versions of old languages, that compile into Java bytecode.  The 
+compiled bytecode programs can then be executed by a standard JVM.  New languages
+that have been developed specifically for programming the JVM include
+Groovy, Clojure, and Processing.  Jython and JRuby are versions of older languages,
+Python and Ruby, that target the JVM.  These languages make it possible to
+enjoy many of the advantages of the JVM while avoiding some of the technicalities
+of the Java language.  In fact, the use of other languages with the JVM has
+become important enough that several new features have been added to the
+JVM in Java Version&nbsp;7 specifically to add better support for some of those
+languages.)</p>
+
+
+<hr class="break">
+
+
+<p>I should also note that the really hard part of platform-independence is
+providing a "Graphical User Interface" -- with windows, buttons, etc. -- that
+will work on all the platforms that support Java. You'll see more about this
+problem in <a href="../c1/s6.html">Section&nbsp;1.6</a>.</p>
+
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s2.html">Previous Section</a> |
+           <a href="s4.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

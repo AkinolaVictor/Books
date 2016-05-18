@@ -1,0 +1,25 @@
+
+<html><head><title>String Manipulation</title></head></head>
+<body>
+	<h2>Working with String Manipulation Methods</h2>
+	<script type="text/javascript">
+		function break_tag(){
+			document.write("<br />");
+		}
+		document.write("<h3>");
+		var str1 = new String("The merry, merry month of June...");
+		document.write("In the string:<em> "+ str1 );
+		document.write("</em> the first 'm' is at position " +
+		               str1.indexOf("m"));
+		break_tag();
+		document.write("The last 'm' is at position " +
+		               str1.lastIndexOf("m"));
+		break_tag();
+		document.write("<em>str1.substr(4,5)</em> returns<em> " +
+		               str1.substr(4,5));
+		break_tag();
+		document.write(str1.toUpperCase());
+		document.write("</h3>");
+	</script>
+</body>
+</html>

@@ -1,0 +1,627 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 4.2 -- Static Subroutines and Static Variables</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s1.html">Previous Section</a> |
+           <a href="s3.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#subroutines.2.1">Subroutine Definitions</a>
+<br>
+<a href="#subroutines.2.2">Calling Subroutines</a>
+<br>
+<a href="#subroutines.2.3">Subroutines in Programs</a>
+<br>
+<a href="#subroutines.2.4">Member Variables</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 4.2</h3>
+<h2 class="section_title">Static Subroutines and Static Variables</h2>
+<hr class="break">
+
+
+<p>
+<span class="start"><big>E</big>very subroutine in Java</span> must be defined inside
+some class. This makes Java rather unusual among programming languages, since
+most languages allow free-floating, independent subroutines. One purpose of a
+class is to group together related subroutines and variables. Perhaps the
+designers of Java felt that everything must be related to something. As a less
+philosophical motivation, Java's designers wanted to place firm controls on the
+ways things are named, since a Java program potentially has access to a huge
+number of subroutines created by many different programmers. The fact that those
+subroutines are grouped into named classes (and classes are grouped into named
+"packages") helps control the confusion that might result from so many
+different names.</p>
+
+
+<p>A subroutine that is a member of a class is often called a <span class="newword">method</span>, 
+and "method" is the term that most people prefer for
+subroutines in Java. I will start using the term "method" occasionally;
+however, I will continue to prefer the more general term "subroutine" 
+in this chapter, at least for static subroutines. This chapter will
+deal with static subroutines almost exclusively. We'll turn to non-static
+methods and object-oriented programming in the <a href="../c5/index.html">next
+chapter</a>.</p>
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="subroutines.2.1">4.2.1&nbsp;&nbsp;Subroutine Definitions</a>
+</h3>
+
+
+<p>A subroutine definition in Java takes the form:</p>
+
+
+<pre>
+<span class="bnf">modifiers</span>  <span class="bnf">return-type</span>  <span class="bnf">subroutine-name</span>  ( <span class="bnf">parameter-list</span> ) {
+    <span class="bnf">statements</span>
+}</pre>
+
+
+<p>It will take us a while -- most of the chapter -- to get through what all
+this means in detail. Of course, you've already seen examples of subroutines in
+previous chapters, such as the <span class="code">main()</span> routine of a program and the
+<span class="code">drawFrame()</span> routine of the animation applets in <a href="../c3/s8.html">Section&nbsp;3.8</a>. 
+So you are familiar with the general format.</p>
+
+
+<p>The <span class="bnf">statements</span> between the braces, { and }, in a subroutine definition
+make up the <span class="newword">body</span> of the subroutine. These
+statements are the inside, or implementation part, of the "black box", as
+discussed in the <a href="../c4/s1.html">previous section</a>. They are the
+instructions that the computer executes when the method is called. Subroutines
+can contain any of the statements discussed in <a href="../c2/index.html">Chapter&nbsp;2</a> and
+<a href="../c3/index.html">Chapter&nbsp;3</a>.</p>
+
+
+<p>The <span class="bnf">modifiers</span> that can occur at the
+beginning of a subroutine definition are words that set certain characteristics
+of the subroutine, such as whether it is static or not. The modifiers that you've
+seen so far are "<span class="code">static</span>" and "<span class="code">public</span>". There are only about a
+half-dozen possible modifiers altogether.</p>
+
+
+<p>If the subroutine is a function, whose job is to compute some value, then
+the <span class="bnf">return-type</span> is used to specify the type of
+value that is returned by the function. We'll be looking at functions and
+return types in some detail in <a href="../c4/s4.html">Section&nbsp;4.4</a>. If the
+subroutine is not a function, then the <span class="bnf">return-type</span> is replaced 
+by the special value <span class="code">void</span>,
+which indicates that no value is returned. The term "void" is meant to indicate
+that the return value is empty or non-existent.</p>
+
+
+<p>Finally, we come to the <span class="bnf">parameter-list</span> of
+the method. Parameters are part of the interface of a subroutine. They
+represent information that is passed into the subroutine from outside, to be
+used by the subroutine's internal computations. For a concrete example, imagine
+a class named <span class="classname">Television</span> that includes a method named
+<span class="code">changeChannel()</span>. The immediate question is: What channel should it
+change to? A parameter can be used to answer this question. Since the channel
+number is an integer, the type of the parameter would be <span class="ptype">int</span>, and the
+declaration of the <span class="code">changeChannel()</span> method might look like</p>
+
+
+<pre>public void changeChannel(int channelNum) { ... }</pre>
+
+
+<p>This declaration specifies that <span class="code">changeChannel()</span> has a parameter
+named <span class="code">channelNum</span> of type <span class="ptype">int</span>. However, <span class="code">channelNum</span>
+does not yet have any particular value. A value for <span class="code">channelNum</span> is
+provided when the subroutine is called; for example:
+<span class="code">changeChannel(17);</span>
+</p>
+
+
+<p>The parameter list in a subroutine can be empty, or it can consist of one or
+more parameter declarations of the form <span class="bnf">type</span>&nbsp;<span class="bnf">parameter-name</span>. If there are several
+declarations, they are separated by commas. Note that each declaration can name
+only one parameter. For example, if you want two parameters of type
+<span class="ptype">double</span>, you have to say "<span class="code">double&nbsp;x,&nbsp;double&nbsp;y</span>", rather than
+"<span class="code">double x, y</span>".</p>
+
+
+<p>Parameters are covered in more detail in the <a href="../c4/s3.html">next
+section</a>.</p>
+
+
+<p>Here are a few examples of subroutine definitions, leaving out the
+statements that define what the subroutines do:</p>
+
+
+<pre>public static void playGame() {
+    // "public" and "static" are modifiers; "void" is the 
+    // return-type; "playGame" is the subroutine-name; 
+    // the parameter-list is empty.
+    . . .  // Statements that define what playGame does go here.
+}
+
+int getNextN(int N) {
+    // There are no modifiers; "int" in the return-type
+    // "getNextN" is the subroutine-name; the parameter-list 
+    // includes one parameter whose name is "N" and whose 
+    // type is "int".
+    . . .  // Statements that define what getNextN does go here.
+}
+
+static boolean lessThan(double x, double y) {
+    // "static" is a modifier; "boolean" is the
+    // return-type; "lessThan" is the subroutine-name; the 
+    // parameter-list includes two parameters whose names are 
+    // "x" and "y", and the type of each of these parameters 
+    // is "double".
+    . . .  // Statements that define what lessThan does go here.
+}</pre>
+
+
+<p>In the second example given here, <span class="code">getNextN</span> is a non-static method,
+since its definition does not include the modifier "<span class="code">static</span>" -- and so
+it's not an example that we should be looking at in this chapter! The other
+modifier shown in the examples is "<span class="code">public</span>". This modifier indicates
+that the method can be called from anywhere in a program, even from outside the
+class where the method is defined. There is another modifier,
+"<span class="code">private</span>", which indicates that the method can be called
+<b>only</b> from inside the same class. The modifiers <span class="code">public</span>
+and <span class="code">private</span> are called <span class="newword">access specifiers</span>.
+If no access specifier is given for a method, then by default, that method can
+be called from anywhere in the "package" that contains the class, but not from
+outside that package. (Packages were introduced in <a href="../c2/s6.html#basics.6.4">Subsection&nbsp;2.6.4</a>,
+and you'll learn more about them later in this
+chapter, in <a href="../c4/s5.html">Section&nbsp;4.5</a>.)  There is one other access
+modifier, <span class="code">protected</span>, which will only become relevant when we turn to
+object-oriented programming in <a href="../c5/index.html">Chapter&nbsp;5</a>.</p>
+
+
+<p>Note, by the way, that the <span class="code">main()</span> routine of a program follows the
+usual syntax rules for a subroutine. In</p>
+
+
+<pre>public static void main(String[] args) { ... }</pre>
+
+
+<p>the modifiers are <span class="code">public</span> and <span class="code">static</span>, the return type is
+<span class="code">void</span>, the subroutine name is <span class="code">main</span>, and the parameter list is
+"<span class="code">String[]&nbsp;args</span>". The only question might be about "<span class="code">String[]</span>",
+which has to be a type if it is to match the syntax of a parameter list. In
+fact, <span class="code">String[]</span> represents a so-called "array type", so the syntax is
+valid. We will cover arrays in <a href="../c7/index.html">Chapter&nbsp;7</a>. (The
+parameter, <span class="code">args</span>, represents information provided to the program when
+the <span class="code">main()</span> routine is called by the system. In case you know the term,
+the information consists of any "command-line arguments" specified in the
+command that the user typed to run the program.)</p>
+
+
+<p>You've already had some experience with filling in the implementation of a
+subroutine. In this chapter, you'll learn all about writing your own complete
+subroutine definitions, including the interface part.</p>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="subroutines.2.2">4.2.2&nbsp;&nbsp;Calling Subroutines</a>
+</h3>
+
+
+<p>When you define a subroutine, all you are doing is telling the computer that
+the subroutine exists and what it does. The subroutine doesn't actually get
+executed until it is called. (This is true even for the <span class="code">main()</span> routine
+in a class -- even though <b>you</b> don't call it, it is called by
+the system when the system runs your program.) For example, the
+<span class="code">playGame()</span> method given as an example above could be called using the following
+subroutine call statement:</p>
+
+
+<pre>playGame();</pre>
+
+
+<p>This statement could occur anywhere in the same class that includes the
+definition of <span class="code">playGame()</span>, whether in a <span class="code">main()</span> method or in
+some other subroutine. Since <span class="code">playGame()</span> is a <span class="code">public</span> method,
+it can also be called from other classes, but in that case, you have to tell
+the computer which class it comes from.  Since <span class="code">playGame()</span> is a <span class="code">static</span> method,
+its full name includes the name of the class in which it is defined.  Let's say, for example, that
+<span class="code">playGame()</span> is defined in a class named <span class="code">Poker</span>. Then to call
+<span class="code">playGame()</span> from <b>outside</b> the <span class="code">Poker</span> class, you would
+have to say</p>
+
+
+<pre>Poker.playGame();</pre>
+
+
+<p>The use of the class name here tells the computer which class to look in to
+find the method.  It also lets you distinguish between <span class="code">Poker.playGame()</span>
+and other potential <span class="code">playGame()</span> methods defined in other classes, such
+as <span class="code">Roulette.playGame()</span> or <span class="code">Blackjack.playGame()</span>.</p>
+
+
+<p>More generally, a <span class="newword">subroutine call statement</span> for a <span class="code">static</span>
+subroutine takes the form</p>
+
+
+<pre>
+<span class="bnf">subroutine-name</span>(<span class="bnf">parameters</span>);</pre>
+
+
+<p>if the subroutine that is being called is in the same class, or</p>
+
+
+<pre>
+<span class="bnf">class-name</span>.<span class="bnf">subroutine-name</span>(<span class="bnf">parameters</span>);</pre>
+
+
+<p>if the subroutine is defined elsewhere, in a different
+class. (Non-static methods belong to objects rather than classes, and they are
+called using object names instead of class names. More on that later.) Note
+that the parameter list can be empty, as in the <span class="code">playGame()</span> example,
+but the parentheses must be there even if there is nothing between them.
+The number of parameters that you provide when you call a subroutine must
+match the number listed in the parameter list in the subroutine definition,
+and the types of the parameters in the call statement must match the types
+in the subroutine definition.</p>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="subroutines.2.3">4.2.3&nbsp;&nbsp;Subroutines in Programs</a>
+</h3>
+
+
+<p>It's time to give an example of what a complete program looks like, when it
+includes other subroutines in addition to the <span class="code">main()</span> routine. Let's
+write a program that plays a guessing game with the user. The computer will
+choose a random number between 1 and 100, and the user will try to guess it.
+The computer tells the user whether the guess is high or low or correct. If the
+user gets the number after six guesses or fewer, the user wins the game. After
+each game, the user has the option of continuing with another game.</p>
+
+
+<p>Since playing one game can be thought of as a single, coherent task, it
+makes sense to write a subroutine that will play one guessing game with the
+user. The <span class="code">main()</span> routine will use a loop to call the
+<span class="code">playGame()</span> subroutine over and over, as many times as the user wants
+to play. We approach the problem of designing the <span class="code">playGame()</span>
+subroutine the same way we write a <span class="code">main()</span> routine: Start with an
+outline of the algorithm and apply stepwise refinement. Here is a short
+pseudocode algorithm for a guessing game routine:</p>
+
+
+<pre>Pick a random number
+while the game is not over:
+    Get the user's guess
+    Tell the user whether the guess is high, low, or correct.</pre>
+
+
+<p>The test for whether the game is over is complicated, since the game ends if
+either the user makes a correct guess or the number of guesses is six. As in
+many cases, the easiest thing to do is to use a "<span class="code">while (true)</span>" loop
+and use <span class="code">break</span> to end the loop whenever we find a reason to do so.
+Also, if we are going to end the game after six guesses, we'll have to keep
+track of the number of guesses that the user has made. Filling out the
+algorithm gives:</p>
+
+
+<pre>Let computersNumber be a random number between 1 and 100
+Let guessCount = 0
+while (true):
+    Get the user's guess
+    Count the guess by adding 1 to guess count
+    if the user's guess equals computersNumber:
+        Tell the user he won
+        break out of the loop
+    if the number of guesses is 6:
+        Tell the user he lost
+        break out of the loop
+    if the user's guess is less than computersNumber:
+        Tell the user the guess was low
+    else if the user's guess is higher than computersNumber:
+        Tell the user the guess was high</pre>
+
+
+<p>With variable declarations added and translated into Java, this becomes the
+definition of the <span class="code">playGame()</span> routine. A random integer between 1 and
+100 can be computed as <span class="code">(int)(100&nbsp;* Math.random())&nbsp;+&nbsp;1</span>. I've cleaned up
+the interaction with the user to make it flow better.</p>
+
+
+<pre>static void playGame() {
+    int computersNumber; // A random number picked by the computer.
+    int usersGuess;      // A number entered by user as a guess.
+    int guessCount;      // Number of guesses the user has made.
+    computersNumber = (int)(100 * Math.random()) + 1;
+             // The value assigned to computersNumber is a randomly
+             //    chosen integer between 1 and 100, inclusive.
+    guessCount = 0;
+    TextIO.putln();
+    TextIO.put("What is your first guess? ");
+    while (true) {
+       usersGuess = TextIO.getInt();  // Get the user's guess.
+       guessCount++;
+       if (usersGuess == computersNumber) {
+          TextIO.putln("You got it in " + guessCount
+                  + " guesses!  My number was " + computersNumber);
+          break;  // The game is over; the user has won.
+       }
+       if (guessCount == 6) {
+          TextIO.putln("You didn't get the number in 6 guesses.");
+          TextIO.putln("You lose.  My number was " + computersNumber);
+          break;  // The game is over; the user has lost.
+       }
+       // If we get to this point, the game continues.
+       // Tell the user if the guess was too high or too low.
+       if (usersGuess &lt; computersNumber)
+          TextIO.put("That's too low.  Try again: ");
+       else if (usersGuess &gt; computersNumber)
+          TextIO.put("That's too high.  Try again: ");
+    }
+    TextIO.putln();
+} // end of playGame()</pre>
+
+
+<p>Now, where exactly should you put this? It should be part of the same class
+as the <span class="code">main()</span> routine, but <b>not</b> inside the main routine. It is not
+legal to have one subroutine physically nested inside another. The
+<span class="code">main()</span> routine will <b>call</b> <span class="code">playGame()</span>, but not contain
+it physically. You can put the definition of <span class="code">playGame()</span> either before
+or after the <span class="code">main()</span> routine. Java is not very picky about having the
+members of a class in any particular order.</p>
+
+
+<p>It's pretty easy to write the main routine. You've done things like this
+before. Here's what the complete program looks like (except that a serious
+program needs more comments than I've included here).</p>
+
+
+<pre>public class GuessingGame {
+
+   public static void main(String[] args) {
+      TextIO.putln("Let's play a game.  I'll pick a number between");
+      TextIO.putln("1 and 100, and you try to guess it.");
+      boolean playAgain;
+      do {
+         playGame();  // call subroutine to play one game
+         TextIO.put("Would you like to play again? ");
+         playAgain = TextIO.getlnBoolean();
+      } while (playAgain);
+      TextIO.putln("Thanks for playing.  Goodbye.");
+   } // end of main()            
+   
+   static void playGame() {
+       int computersNumber; // A random number picked by the computer.
+       int usersGuess;      // A number entered by user as a guess.
+       int guessCount;      // Number of guesses the user has made.
+       computersNumber = (int)(100 * Math.random()) + 1;
+                // The value assigned to computersNumber is a randomly
+                //    chosen integer between 1 and 100, inclusive.
+       guessCount = 0;
+       TextIO.putln();
+       TextIO.put("What is your first guess? ");
+       while (true) {
+          usersGuess = TextIO.getInt();  // Get the user's guess.
+          guessCount++;
+          if (usersGuess == computersNumber) {
+             TextIO.putln("You got it in " + guessCount
+                     + " guesses!  My number was " + computersNumber);
+             break;  // The game is over; the user has won.
+          }
+          if (guessCount == 6) {
+             TextIO.putln("You didn't get the number in 6 guesses.");
+             TextIO.putln("You lose.  My number was " + computersNumber);
+             break;  // The game is over; the user has lost.
+          }
+          // If we get to this point, the game continues.
+          // Tell the user if the guess was too high or too low.
+          if (usersGuess &lt; computersNumber)
+             TextIO.put("That's too low.  Try again: ");
+          else if (usersGuess &gt; computersNumber)
+             TextIO.put("That's too high.  Try again: ");
+       }
+       TextIO.putln();
+   } // end of playGame()
+               
+} // end of class GuessingGame</pre>
+
+
+<p>Take some time to read the program carefully and figure out how it works.
+And try to convince yourself that even in this relatively simple case, breaking
+up the program into two methods makes the program easier to understand and
+probably made it easier to write each piece.</p>
+
+   
+
+<p>You can try out a simulation of this program here:</p>
+
+<p align="center">
+<applet code="GuessingGameConsole.class" width="600" height="300" archive="GuessingGameApplet.jar" alt="(Applet 'GuessingGameConsole' should be displayed here.)"></applet></p>
+
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="subroutines.2.4">4.2.4&nbsp;&nbsp;Member Variables</a>
+</h3>
+
+
+<p>A class can include other things besides subroutines. In particular, it can
+also include variable declarations. Of course, you can declare variables
+<b>inside</b> subroutines.  Those are called <span class="newword">local variables.</span> 
+However, you can also have variables that are
+not part of any subroutine. To distinguish such variables from local variables,
+we call them <span class="newword">member variables</span>, since they are
+members of a class.</p>
+
+
+<p>Just as with subroutines, member variables can be either static or
+non-static. In this chapter, we'll stick to static variables. A static member
+variable belongs to the class itself, and it exists as long as the class
+exists. Memory is allocated for the variable when the class is first loaded by
+the Java interpreter. Any assignment statement that assigns a value to the
+variable changes the content of that memory, no matter where that assignment
+statement is located in the program. Any time the variable is used in an
+expression, the value is fetched from that same memory, no matter where the
+expression is located in the program. This means that the value of a static
+member variable can be set in one subroutine and used in another subroutine.
+Static member variables are "shared" by all the static subroutines in the
+class. A local variable in a subroutine, on the other hand, exists only while
+that subroutine is being executed, and is completely inaccessible from outside
+that one subroutine.</p>
+
+
+<p>The declaration of a member variable looks just like the declaration of a
+local variable except for two things: The member variable is declared outside
+any subroutine (although it still has to be inside a class), and the
+declaration can be marked with modifiers such as <span class="code">static</span>,
+<span class="code">public</span>, and <span class="code">private</span>. Since we are only working with static
+member variables for now, every declaration of a member variable in this
+chapter will include the modifier <span class="code">static</span>.  They might also
+be marked as <span class="code">public</span> or <span class="code">private</span>.  For example:</p>
+
+
+<pre>static String usersName;
+public static int numberOfPlayers;
+private static double velocity, time;</pre>
+
+
+<p>A static member variable that is not declared to be <span class="code">private</span> can be
+accessed from outside the class where it is defined, as well as inside. When it
+is used in some other class, it must be referred to with a compound identifier
+of the form <span class="bnf">class-name</span>.<span class="bnf">variable-name</span>. For example, the <span class="classname">System</span> class
+contains the public static member variable named <span class="code">out</span>, and you use this
+variable in your own classes by referring to <span class="code">System.out</span>.   Similarly,
+<span class="code">Math.PI</span> is a public member variable in the <span class="classname">Math</span>
+whose value is the mathematical constant&nbsp;π.  If
+<span class="code">numberOfPlayers</span> is a public static member variable in a class named
+<span class="code">Poker</span>, then subroutines in the <span class="code">Poker</span> class would refer to it
+simply as <span class="code">numberOfPlayers</span>, while subroutines in another class would refer to
+it as <span class="code">Poker.numberOfPlayers</span>.</p>
+
+
+<p>As an example, let's add a static member variable to the
+<span class="code">GuessingGame</span> class that we wrote earlier in this section. This
+variable will be used to keep track of how many games the user wins. We'll call
+the variable <span class="code">gamesWon</span> and declare it with the statement 
+"<span class="code">static&nbsp;int&nbsp;gamesWon;</span>". In the <span class="code">playGame()</span> routine, we add 1 to
+<span class="code">gamesWon</span> if the user wins the game. At the end of the <span class="code">main()</span>
+routine, we print out the value of <span class="code">gamesWon</span>. It would be impossible to
+do the same thing with a local variable, since we need access to the same
+variable from both subroutines.</p>
+
+
+<p>When you declare a local variable in a subroutine, you have to assign a
+value to that variable before you can do anything with it. Member variables, on
+the other hand are automatically initialized with a default value. For numeric
+variables, the default value is zero. For <span class="ptype">boolean</span> variables, the
+default is <span class="code">false</span>. And for <span class="ptype">char</span> variables, it's the
+unprintable character that has Unicode code number zero. (For objects, such as
+<span class="code">Strings</span>, the default initial value is a special value called
+<span class="code">null</span>, which we won't encounter officially until later.)</p>
+
+
+<p>Since it is of type <span class="ptype">int</span>, the static member variable
+<span class="code">gamesWon</span> automatically gets assigned an initial value of zero. This
+happens to be the correct initial value for a variable that is being used as a
+counter. You can, of course, assign a different value to the variable at the
+beginning of the <span class="code">main()</span> routine if you are not satisfied with the
+default initial value.</p>
+
+
+<p>Here's a revised version of <span class="code">GuessingGame.java</span> that includes the
+<span class="code">gamesWon</span> variable. The changes from the above version are shown in
+red:</p>
+
+
+<pre>public class GuessingGame2 {
+ 
+    <span class="newcode">static int gamesWon;      // The number of games won by
+                              //    the user.</span>
+ 
+    public static void main(String[] args) {
+       <span class="newcode">gamesWon = 0;  // This is actually redundant, since 0 is 
+                      //                  the default initial value.</span>
+       TextIO.putln("Let's play a game.  I'll pick a number between");
+       TextIO.putln("1 and 100, and you try to guess it.");
+       boolean playAgain;
+       do {
+          playGame();  // call subroutine to play one game
+          TextIO.put("Would you like to play again? ");
+          playAgain = TextIO.getlnBoolean();
+       } while (playAgain);
+       <span class="newcode">TextIO.putln();
+       TextIO.putln("You won " + gamesWon + " games.");</span>
+       TextIO.putln("Thanks for playing.  Goodbye.");
+    } // end of main()            
+    
+    static void playGame() {
+        int computersNumber; // A random number picked by the computer.
+        int usersGuess;      // A number entered by user as a guess.
+        int guessCount;      // Number of guesses the user has made.
+        computersNumber = (int)(100 * Math.random()) + 1;
+                 // The value assigned to computersNumber is a randomly
+                 //    chosen integer between 1 and 100, inclusive.
+        guessCount = 0;
+        TextIO.putln();
+        TextIO.put("What is your first guess? ");
+        while (true) {
+           usersGuess = TextIO.getInt();  // Get the user's guess.
+           guessCount++;
+           if (usersGuess == computersNumber) {
+              TextIO.putln("You got it in " + guessCount
+                      + " guesses!  My number was " + computersNumber);
+              <span class="newcode">gamesWon++;  // Count this game by incrementing gamesWon.</span>
+              break;       // The game is over; the user has won.
+           }
+           if (guessCount == 6) {
+              TextIO.putln("You didn't get the number in 6 guesses.");
+              TextIO.putln("You lose.  My number was " + computersNumber);
+              break;  // The game is over; the user has lost.
+           }
+           // If we get to this point, the game continues.
+           // Tell the user if the guess was too high or too low.
+           if (usersGuess &lt; computersNumber)
+              TextIO.put("That's too low.  Try again: ");
+           else if (usersGuess &gt; computersNumber)
+              TextIO.put("That's too high.  Try again: ");
+        }
+        TextIO.putln();
+    } // end of playGame()
+                
+} // end of class GuessingGame2</pre>
+ 
+ 
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s1.html">Previous Section</a> |
+           <a href="s3.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

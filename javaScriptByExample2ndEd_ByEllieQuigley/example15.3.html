@@ -1,0 +1,23 @@
+<html><head><title>Working with Tags</title>
+  <style type="text/css">
+    body {background-color:aliceblue;color:green; font-size:larger;}
+    h1{color:darkblue; }
+  </style>
+</head>
+<body>
+	<h1> First</h1>
+	<h1> Second</h1>
+	<h1> Third</h1>
+
+  <script type="text/javascript">
+	var heading1=document.getElementsByTagName("h1");
+	document.write(heading1 + "<br>");
+	document.write("There are "+
+ 	heading1.length+ " H1 tags.<br>");
+        for(i=0; i< heading1.length; i++){
+ 	       document.write( heading1[i].nodeName+": <em>"+
+ 	       heading1[i].childNodes[0].nodeValue+"</em><br />");
+ 	}
+  </script>
+</body>
+</html>			

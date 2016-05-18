@@ -1,0 +1,182 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 5, Chapter 2</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 2.5</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 2.5:</h3>
+<p>If you have <span class="code">N</span>
+eggs, then you have <span class="code">N/12</span> dozen eggs, with <span class="code">N%12</span> eggs left
+over. (This is essentially the definition of the <span class="code">/</span> and <span class="code">%</span>
+operators for integers.) Write a program that asks the user how many eggs she
+has and then tells the user how many dozen eggs she has and how many extra eggs
+are left over.</p>
+
+<p>A gross of eggs is equal to 144 eggs. Extend your program so that it will
+tell the user how many gross, how many dozen, and how many left over eggs she
+has. For example, if the user says that she has 1342 eggs, then your program
+would respond with</p>
+
+
+<pre>Your number of eggs is 9 gross, 3 dozen, and 10</pre>
+
+
+<p>since 1342 is equal to 9*144 + 3*12 + 10.</p>
+   
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+
+<p>All the variables for the program will be of type <span class="ptype">int</span>. The
+quantities that we have to represent are: the number of eggs, the number of
+dozens in that many eggs, and the number of left over eggs. I will declare
+variables named <span class="code">eggs</span>, <span class="code">dozens</span>, and <span class="code">extras</span> to
+represent these quantities.</p>
+
+
+<p>The number of eggs can be read from the user's input using <span class="code">eggs =
+TextIO.getlnInt()</span>.</p>
+
+
+<p>The description of the problem already tells us that <span class="code">dozens</span> can be
+computed as <span class="code">eggs/12</span> and <span class="code">extras</span> can be computed as
+<span class="code">eggs%12</span>. So, the first version of the program is easy to write.</p>
+
+
+<p>The improved version requires a little thought. Given a pile of eggs that
+you want to divide into gross, dozens, and extras, you could first remove as
+many gross as possible, leaving a pile of between 0 and 143 eggs. This is just
+like dividing the pile into dozens, except that the unit of measure is 144 eggs
+instead of 12. So, <span class="code">eggs/144</span> will give the number of gross, and
+<span class="code">eggs%144</span> is the number of eggs left over. Next, the eggs in the left-over
+pile still have to be divided into dozens, plus some extra number of eggs
+between 0 and 11. Of course, we already know how to do this: If there are
+<span class="code">N</span> eggs in the pile, the number of dozens is <span class="code">N/12</span> and the
+number of extra eggs is <span class="code">N%12</span>. This leads to the computation in the
+improved version of the program, shown below. (Note that this program uses the
+variable named <span class="code">aboveGross</span> to represent a quantity that is not
+mentioned explicitly in the problem description. This is far from being
+unusual.)</p>
+   
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">public class Dozens {
+  
+   /*  This program will convert a given number of eggs into
+       the number of dozens plus the number of left over eggs.
+       For example, 57 eggs is 4 dozen eggs plus 9 eggs left over.
+       The number of eggs is input by the user, and the computed
+       results are displayed. 
+   */
+
+   public static void main(String[] args) {
+   
+      int eggs;    // Number of eggs, input by user.
+      int dozens;  // How many dozens in that number of eggs?
+      int extras;  // How many eggs are left over, above an integral
+                   //    number of dozens?  This value is in the
+                   //    range 0 to 11, and it is computed as
+                   //    the remainder when eggs is divided by 12.
+   
+      TextIO.put("How many eggs do you have?  ");
+      eggs = TextIO.getlnInt();
+      
+      dozens = eggs / 12;
+      extras = eggs % 12;
+      
+      TextIO.put("Your number of eggs is ");
+      TextIO.put(dozens);
+      TextIO.put(" dozen and ");
+      TextIO.put(extras);
+      TextIO.putln();
+   
+   }  // end main()
+
+}  // end class
+</pre>
+
+
+<p>
+<b><u>Improved version:</u></b>
+
+</p>
+
+
+<pre class="exercisecode">public class GrossAndDozens {
+  
+   /*  This program will convert a given number of eggs into
+       the number of gross plus the number of dozens plus the
+       number of left over eggs.
+          For example, 1342 eggs is 9 gross plus 3 dozen plus 10.
+       The number of eggs is input by the user, and the computed
+       results are displayed. 
+   */
+
+   public static void main(String[] args) {
+   
+      int eggs;         // Number of eggs, input by user.
+      int gross;        // How many gross in that number of eggs?
+      int aboveGross;   // How many eggs are left over, above an
+                        //    integral number of gross?  This number
+                        //    can be computed as eggs % 144, and is
+                        //    in the range 0 to 143.  This number will
+                        //    be divided into dozens and extras.
+      int dozens;       // How many dozens in aboveGross?
+      int extras;       // How many eggs are left over, above integral
+                        //    numbers of gross and dozens? 
+   
+      TextIO.put("How many eggs do you have?  ");
+      eggs = TextIO.getlnInt();
+      
+      gross = eggs / 144;
+      aboveGross = eggs % 144;
+      
+      dozens = aboveGross / 12;
+      extras = aboveGross % 12;          
+      
+      TextIO.put("Your number of eggs is ");
+      TextIO.put(gross);
+      TextIO.put(" gross, ");
+      TextIO.put(dozens);
+      TextIO.put(" dozen, and ");
+      TextIO.put(extras);
+      TextIO.putln();
+   
+   }  // end main()
+
+}  // end class</pre>
+
+   
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

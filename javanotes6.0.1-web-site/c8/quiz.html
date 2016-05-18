@@ -1,0 +1,145 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Quiz on Chapter 8</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="quiz_answers.html">Quiz Answers</a> | <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2 class="quiz_title">Quiz on Chapter 8</h2>
+<p>
+<span class="start"><big>T</big>his page contains</span> questions on Chapter 8 of
+           <a href="../index.html"><i>Introduction to Programming Using Java</i></a>.
+           You should be able to answer these questions after studying that chapter.
+           Sample answers to these questions can be found <a href="quiz_answers.html">here</a>.</p>
+<table border="1" align="center" cellpadding="8" width="95%">
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;1:</span></td><td>
+<p>What does it mean to say
+that a program is <i>robust</i>?</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;2:</span></td><td>
+<p>Why do programming languages
+require that variables be declared before they are used? What does this have to
+do with correctness and robustness?</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;3:</span></td><td>
+<p>What is a <i>precondition</i>? Give an example.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;4:</span></td><td>
+<p>Explain how preconditions
+can be used as an aid in writing correct programs.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;5:</span></td><td>
+<p>Java has a predefined class
+called <span class="classname">Throwable</span>. What does this class represent? Why does it
+exist?</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;6:</span></td><td>
+<p>Write a method that
+prints out a <span class="code">3N+1</span> sequence starting from a given integer, <span class="code">N</span>.
+The starting value should be a parameter to the method. If the parameter is
+less than or equal to zero, throw an <span class="classname">IllegalArgumentException</span>. If the
+number in the sequence becomes too large to be represented as a value of type
+<span class="ptype">int</span>, throw an <span class="classname">ArithmeticException</span>.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;7:</span></td><td>
+<p>Rewrite the method from the previous question, using <span class="code">assert</span>
+statements instead of exceptions to check for errors.  What is the difference between
+the two versions of the method when the program is run?</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;8:</span></td><td>
+<p>Some classes of exceptions are <i>checked exceptions</i> that
+require <i>mandatory exception handling.</i> Explain what this means.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;9:</span></td><td>
+<p>Consider a subroutine <span class="code">processData()</span> that has the header</p>
+
+
+<pre>static void processData() throws IOException</pre>
+
+
+<p>Write a <span class="code">try..catch</span> statement that calls this subroutine and prints
+an error message if an <span class="classname">IOException</span> occurs.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;10:</span></td><td>
+<p>Why should a subroutine
+throw an exception when it encounters an error? Why not just terminate the
+program?</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;11:</span></td><td>
+<p>Suppose that you have a choice of two algorithms that perform
+the same task.  One has average-case run time that is Θ(n<sup>2</sup>) while the run time
+of the second algorithm has an average-case run time that is Θ(n*log(n)).  Suppose that
+you need to process an input of size n&nbsp;=&nbsp;100.  Which algorithm would
+you choose?  Can you be certain that you are choosing the fastest algorithm for the
+input that you intend to process.
+</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;12:</span></td><td>
+<p>Analyze the run time of the following algorithm.  That is, find a function
+f(n) such that the run time of the algorithm is O(f(n)) or, better, Θ(f(n)).
+Assume that <span class="code">A</span> is an array of integers, and use the length of the array
+as the input size, n.
+</p>
+
+<pre>
+int total = 0;
+for (int i = 0; i &lt; A.length; i++) {
+   if (A[i] &gt; 0)
+      total = total + A[i];
+}
+</pre>
+
+</td>
+</tr>
+</table>
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="quiz_answers.html">Quiz Answers</a> | <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

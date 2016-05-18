@@ -1,0 +1,616 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 9.5 -- A Simple Recursive Descent Parser</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s4.html">Previous Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#recursion.5.1">Backus-Naur Form</a>
+<br>
+<a href="#recursion.5.2">Recursive Descent Parsing</a>
+<br>
+<a href="#recursion.5.3">Building an Expression Tree</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 9.5</h3>
+<h2 class="section_title">A Simple Recursive Descent Parser</h2>
+<hr class="break">
+   
+
+<p>
+<span class="start"><big>I</big> have always</span> been fascinated by language -- both
+natural languages like English and the artificial languages that are used by
+computers. There are many difficult questions about how languages can convey
+information, how they are structured, and how they can be processed. Natural
+and artificial languages are similar enough that the study of programming
+languages, which are pretty well understood, can give some insight into the
+much more complex and difficult natural languages. And programming languages
+raise more than enough interesting issues to make them worth studying in their
+own right. How can it be, after all, that computers can be made to "understand"
+even the relatively simple languages that are used to write programs?
+Computers can only directly use instructions expressed in very
+simple machine language. Higher level languages must be translated into machine
+language. But the translation is done by a compiler, which is just a program.
+How could such a translation program be written?</p>
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="recursion.5.1">9.5.1&nbsp;&nbsp;Backus-Naur Form</a>
+</h3>
+
+
+<p>Natural and artificial languages are similar in that they have a structure
+known as grammar or syntax. Syntax can be expressed by a set of rules that
+describe what it means to be a legal sentence or program. For programming
+languages, syntax rules are often expressed in <span class="newword">BNF</span>
+(Backus-Naur Form), a system that was developed by computer scientists John
+Backus and Peter Naur in the late 1950s. Interestingly, an equivalent system
+was developed independently at about the same time by linguist Noam Chomsky to
+describe the grammar of natural language. BNF cannot express all possible
+syntax rules. For example, it can't express the fact that a variable must be
+defined before it is used. Furthermore, it says nothing about the meaning or
+semantics of the language. The problem of specifying the semantics of a
+language -- even of an artificial programming language -- is one that is still
+far from being completely solved. However, BNF does express the basic structure
+of the language, and it plays a central role in the design of translation
+programs.</p>
+
+
+<p>In English, terms such as "noun", "transitive verb," and "prepositional
+phrase" are <span class="newword">syntactic categories</span> that describe
+building blocks of sentences. Similarly, "statement", "number," and "while
+loop" are syntactic categories that describe building blocks of Java programs.
+In BNF, a syntactic category is written as a word enclosed between
+"<span class="code">&lt;</span>" and&nbsp;"<span class="code">&gt;</span>". For example: <span class="code">&lt;noun&gt;</span>,
+<span class="code">&lt;verb-phrase&gt;</span>, or <span class="code">&lt;while-loop&gt;</span>. A 
+<span class="newword">rule</span> in BNF specifies the structure of an item in a given
+syntactic category, in terms of other syntactic categories and/or basic symbols
+of the language. For example, one BNF rule for the English language might
+be</p>
+
+
+<pre>&lt;sentence&gt;  ::=  &lt;noun-phrase&gt; &lt;verb-phrase&gt;</pre>
+
+
+<p>The symbol "<span class="code">::=</span>" is read "can be", so this rule says that a
+<span class="code">&lt;sentence&gt;</span> can be a <span class="code">&lt;noun-phrase&gt;</span> followed by a
+<span class="code">&lt;verb-phrase&gt;</span>. (The term is "can be" rather than "is" because
+there might be other rules that specify other possible forms for a sentence.)
+This rule can be thought of as a recipe for a sentence: If you want to make a
+sentence, make a noun-phrase and follow it by a verb-phrase. Noun-phrase and
+verb-phrase must, in turn, be defined by other BNF rules.</p>
+
+
+<p>In BNF, a choice between alternatives is represented by the symbol "<span class="code">|</span>",
+which is read "or". For example, the rule</p>
+
+
+<pre>&lt;verb-phrase&gt;  ::=  &lt;intransitive-verb&gt;  |
+                    ( &lt;transitive-verb&gt; &lt;noun-phrase&gt; )</pre>
+
+
+<p>says that a <span class="code">&lt;verb-phrase&gt;</span> can be an
+<span class="code">&lt;intransitive-verb&gt;</span>, or a
+<span class="code">&lt;transitive-verb&gt;</span> followed by a <span class="code">&lt;noun-phrase&gt;</span>.
+Note also that parentheses can be used for grouping. To express the fact that
+an item is optional, it can be enclosed between "<span class="code">[</span>" and "<span class="code">]</span>".
+An optional item that can be repeated any number of times is enclosed between
+"<span class="code">[</span>" and "<span class="code">]...</span>". And a symbol that is an actual part of the
+language that is being described is enclosed in quotes. For example,</p>
+
+
+<pre>&lt;noun-phrase&gt;  ::=  &lt;common-noun&gt; [ "that" &lt;verb-phrase&gt; ]  |
+                    &lt;common-noun&gt; [ &lt;prepositional-phrase&gt; ]...</pre>
+
+
+<p>says that a <span class="code">&lt;noun-phrase&gt;</span> can be a
+<span class="code">&lt;common-noun&gt;</span>, optionally followed by the literal word
+"<span class="code">that</span>" and a <span class="code">&lt;verb-phrase&gt;</span>, or it can be a
+<span class="code">&lt;common-noun&gt;</span> followed by zero or more
+<span class="code">&lt;prepositional-phrase&gt;'s</span>. Obviously, we can describe very
+complex structures in this way. The real power comes from the fact that BNF
+rules can be <b>recursive</b>. In fact, the two preceding rules, taken together, are
+recursive. A <span class="code">&lt;noun-phrase&gt;</span> is defined partly in terms of
+<span class="code">&lt;verb-phrase&gt;</span>, while <span class="code">&lt;verb-phrase&gt;</span> is defined
+partly in terms of <span class="code">&lt;noun-phrase&gt;</span>. For example, a
+<span class="code">&lt;noun-phrase&gt;</span> might be "the rat that ate the cheese", since "ate
+the cheese" is a <span class="code">&lt;verb-phrase&gt;</span>. But then we can, recursively,
+make the more complex <span class="code">&lt;noun-phrase&gt;</span> "the cat that caught the rat
+that ate the cheese" out of the <span class="code">&lt;common-noun&gt;</span> "the cat", the word "that"
+and the <span class="code">&lt;verb-phrase&gt;</span> "caught the rat that ate the cheese".
+Building from there, we can make the <span class="code">&lt;noun-phrase&gt;</span> "the dog that
+chased the cat that caught the rat that ate the cheese". The recursive
+structure of language is one of the most fundamental properties of language,
+and the ability of BNF to express this recursive structure is what makes it so
+useful.</p>
+
+
+<p>BNF can be used to describe the syntax of a programming language such as
+Java in a formal and precise way. For example, a <span class="code">&lt;while-loop&gt;</span>
+can be defined as</p>
+
+
+<pre>&lt;while-loop&gt;  ::=  "while" "(" &lt;condition&gt; ")" &lt;statement&gt;</pre>
+
+
+<p>This says that a <span class="code">&lt;while-loop&gt;</span> consists of the word "while",
+followed by a left parenthesis, followed by a <span class="code">&lt;condition&gt;</span>,
+followed by a right parenthesis, followed by a <span class="code">&lt;statement&gt;</span>. Of
+course, it still remains to define what is meant by a condition and by a
+statement. Since a statement can be, among other things, a <span class="code">while</span> loop,
+we can already see the recursive structure of the Java language. The exact
+specification of an <span class="code">if</span> statement, which is hard to express clearly in
+words, can be given as</p>
+
+
+<pre>&lt;if-statement&gt;  ::=  
+             "if" "(" &lt;condition&gt; ")" &lt;statement&gt;
+             [ "else" "if" "(" &lt;condition&gt; ")" &lt;statement&gt; ]...
+             [ "else" &lt;statement&gt; ]</pre>
+
+
+<p>This rule makes it clear that the "<span class="code">else</span>" part is optional and that
+there can be, optionally, one or more "<span class="code">else if</span>" parts.</p>
+  
+   
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="recursion.5.2">9.5.2&nbsp;&nbsp;Recursive Descent Parsing</a>
+</h3>
+
+
+
+<p>In the rest of this section, I will show how a BNF grammar for a language
+can be used as a guide for constructing a parser. A parser is a program that
+determines the grammatical structure of a phrase in the language. This is the
+first step in determining the meaning of the phrase -- which for a programming
+language means translating it into machine language. Although we will look at
+only a simple example, I hope it will be enough to convince you that compilers
+can in fact be written and understood by mortals and to give you some idea of
+how that can be done.</p>
+
+
+<p>The parsing method that we will use is called <span class="newword">recursive descent parsing</span>. 
+It is not the only possible parsing
+method, or the most efficient, but it is the one most suited for writing
+compilers by hand (rather than with the help of so called "parser generator"
+programs). In a recursive descent parser, every rule of the BNF grammar is the
+model for a subroutine. Not every BNF grammar is suitable for recursive descent
+parsing. The grammar must satisfy a certain property. Essentially, while
+parsing a phrase, it must be possible to tell what syntactic category is coming
+up next just by looking at the next item in the input. Many grammars are
+designed with this property in mind.</p>
+
+
+<p>I should also mention that many variations of BNF are in use. The one that
+I've described here is one that is well-suited for recursive descent
+parsing.</p>
+
+
+<hr class="break">
+
+
+<p>When we try to parse a phrase that contains a syntax error, we need some way
+to respond to the error. A convenient way of doing this is to throw an
+exception. I'll use an exception class called <span class="classname">ParseError</span>, defined as
+follows:</p>
+
+
+<pre>/**
+ * An object of type ParseError represents a syntax error found in 
+ * the user's input.
+ */
+private static class ParseError extends Exception {
+   ParseError(String message) {
+      super(message);
+   }
+} // end nested class ParseError</pre>
+
+
+<p>Another general point is that our BNF rules don't say anything about spaces
+between items, but in reality we want to be able to insert spaces between items
+at will. To allow for this, I'll always call the routine <span class="code">TextIO.skipBlanks()</span>
+before trying to look ahead to see what's coming up next in input.
+<span class="code">TextIO.skipBlanks()</span> skips past any whitespace, such as spaces and tabs, in the input,
+and stops when the next character in the input is either a non-blank character or the
+end-of-line character.</p>
+
+
+<p>Let's start with a very simple example. A "fully parenthesized expression"
+can be specified in BNF by the rules</p>
+
+
+<pre>&lt;expression&gt;  ::=  &lt;number&gt;  |
+                   "(" &lt;expression&gt; &lt;operator&gt; &lt;expression&gt; ")"
+                   
+&lt;operator&gt;  ::=  "+" | "-" | "*" | "/"</pre>
+
+
+<p>where <span class="code">&lt;number&gt;</span> refers to any non-negative real number. An example
+of a fully parenthesized expression is "<span class="code">(((34-17)*8)+(2*7))</span>". Since
+every operator corresponds to a pair of parentheses, there is no ambiguity
+about the order in which the operators are to be applied. Suppose we want a
+program that will read and evaluate such expressions. We'll read the
+expressions from standard input, using <span class="classname">TextIO</span>. To apply recursive
+descent parsing, we need a subroutine for each rule in the grammar.
+Corresponding to the rule for <span class="code">&lt;operator&gt;</span>, we get a subroutine
+that reads an operator. The operator can be a choice of any of four things. Any
+other input will be an error.</p>
+
+
+<pre>/**
+ * If the next character in input is one of the legal operators,
+ * read it and return it.  Otherwise, throw a ParseError.
+ */
+static char getOperator() throws ParseError {
+   TextIO.skipBlanks();
+   char op = TextIO.peek(); // look ahead at the next char, without reading it
+   if ( op == '+' || op == '-' || op == '*' || op == '/' ) {
+      TextIO.getAnyChar();  // read the operator, to remove it from the input
+      return op;
+   }
+   else if (op == '\n')
+      throw new ParseError("Missing operator at end of line.");
+   else
+      throw new ParseError("Missing operator.  Found \"" +
+            op + "\" instead of +, -, *, or /.");
+} // end getOperator()</pre>
+
+
+<p>I've tried to give a reasonable error message, depending on whether the next
+character is an end-of-line or something else. I use <span class="code">TextIO.peek()</span> to
+look ahead at the next character before I read it, and I call
+<span class="code">TextIO.skipBlanks()</span> before testing <span class="code">TextIO.peek()</span> in order to ignore
+any blanks that separate items. I will follow this same pattern in every
+case.</p>
+
+
+<p>When we come to the subroutine for <span class="code">&lt;expression&gt;</span>, things are a
+little more interesting. The rule says that an expression can be either a
+number or an expression enclosed in parentheses. We can tell which it is by
+looking ahead at the next character. If the character is a digit, we have to
+read a number. If the character is a "(", we have to read the "(", followed by
+an expression, followed by an operator, followed by another expression,
+followed by a ")". If the next character is anything else, there is an error.
+Note that we need recursion to read the nested expressions. The routine doesn't
+just read the expression. It also computes and returns its value. This requires
+semantical information that is not specified in the BNF rule.</p>
+
+
+<pre>/**
+ * Read an expression from the current line of input and return its value.
+ * @throws ParseError if the input contains a syntax error
+ */
+private static double expressionValue() throws ParseError {
+   TextIO.skipBlanks();
+   if ( Character.isDigit(TextIO.peek()) ) {
+          // The next item in input is a number, so the expression
+          // must consist of just that number.  Read and return
+          // the number.
+      return TextIO.getDouble();
+   }
+   else if ( TextIO.peek() == '(' ) {
+          // The expression must be of the form 
+          //         "(" &lt;expression&gt; &lt;operator&gt; &lt;expression&gt; ")"
+          // Read all these items, perform the operation, and
+          // return the result.
+      TextIO.getAnyChar();  // Read the "("
+      double leftVal = expressionValue();  // Read and evaluate first operand.
+      char op = getOperator();             // Read the operator.
+      double rightVal = expressionValue(); // Read and evaluate second operand.
+      TextIO.skipBlanks();
+      if ( TextIO.peek() != ')' ) {
+             // According to the rule, there must be a ")" here.
+             // Since it's missing, throw a ParseError.
+         throw new ParseError("Missing right parenthesis.");
+      }
+      TextIO.getAnyChar();  // Read the ")"
+      switch (op) {   //  Apply the operator and return the result. 
+      case '+':  return leftVal + rightVal;
+      case '-':  return leftVal - rightVal;
+      case '*':  return leftVal * rightVal;
+      case '/':  return leftVal / rightVal;
+      default:   return 0;  // Can't occur since op is one of the above.
+                            // (But Java syntax requires a return value.)
+      }
+   }
+   else {  // No other character can legally start an expression.
+      throw new ParseError("Encountered unexpected character, \"" + 
+            TextIO.peek() + "\" in input.");
+   }
+} // end expressionValue()</pre>
+
+
+<p>I hope that you can see how this routine corresponds to the BNF rule. Where
+the rule uses "<span class="code">|</span>" to give a choice between alternatives, there is an
+<span class="code">if</span> statement in the routine to determine which choice to take. Where
+the rule contains a sequence of items, "(" <span class="code">&lt;expression&gt;</span>
+<span class="code">&lt;operator&gt;</span> <span class="code">&lt;expression&gt;</span> ")", there is a sequence
+of statements in the subroutine to read each item in turn.</p>
+
+
+<p>When <span class="code">expressionValue()</span> is called to evaluate the expression
+<span class="code">(((34-17)*8)+(2*7))</span>, it sees the "(" at the beginning of the input, so
+the <span class="code">else</span> part of the <span class="code">if</span> statement is executed. The "(" is
+read. Then the first recursive call to <span class="code">expressionValue()</span> reads and
+evaluates the subexpression <span class="code">((34-17)*8)</span>, the call to
+<span class="code">getOperator()</span> reads the "+" operator, and the second recursive call to
+<span class="code">expressionValue()</span> reads and evaluates the second subexpression
+<span class="code">(2*7)</span>. Finally, the ")" at the end of the expression is read. Of
+course, reading the first subexpression, <span class="code">((34-17)*8)</span>, involves further
+recursive calls to the <span class="code">expressionValue()</span> routine, but it's better not
+to think too deeply about that! Rely on the recursion to handle the
+details.</p>
+
+
+<p>You'll find a complete program that uses these routines in the file 
+<span class="sourceref"><a href="../source/SimpleParser1.java">SimpleParser1.java</a></span>.</p>
+
+
+<hr class="break">
+   
+
+<p>Fully parenthesized expressions aren't very natural for people to use. But
+with ordinary expressions, we have to worry about the question of operator
+precedence, which tells us, for example, that the "<span class="code">*</span>" in the
+expression "<span class="code">5+3*7</span>" is applied before the "<span class="code">+</span>". The complex expression
+"<span class="code">3*6+8*(7+1)/4-24</span>" should be seen as made up of three "terms",
+<span class="code">3*6</span>, <span class="code">8*(7+1)/4</span>, and <span class="code">24</span>, combined with "<span class="code">+</span>" and "<span class="code">-</span>"
+operators. A term, on the other hand, can be made up of several factors
+combined with "<span class="code">*</span>" and "<span class="code">/</span>" operators. For example,
+<span class="code">8*(7+1)/4</span> contains the factors <span class="code">8</span>, <span class="code">(7+1)</span> and
+<span class="code">4</span>. This example also shows that a factor can be either a number or an
+expression in parentheses. To complicate things a bit more, we allow for
+leading minus signs in expressions, as in "<span class="code">-(3+4)</span>" or "<span class="code">-7</span>".
+(Since a <span class="code">&lt;number&gt;</span> is a positive number, this is the only way we
+can get negative numbers. It's done this way to avoid "<span class="code">3&nbsp;*&nbsp;-7</span>", for
+example.) This structure can be expressed by the BNF rules</p>
+
+
+<pre>&lt;expression&gt;  ::=  [ "-" ] &lt;term&gt; [ ( "+" | "-" ) &lt;term&gt; ]...
+&lt;term&gt;  ::=  &lt;factor&gt; [ ( "*" | "/" ) &lt;factor&gt; ]...
+&lt;factor&gt;  ::=  &lt;number&gt;  |  "(" &lt;expression&gt; ")"</pre>
+
+
+<p>The first rule uses the "<span class="code">[&nbsp;]...</span>" notation, which says that the
+items that it encloses can occur zero, one, two, or more times. This means that
+an <span class="code">&lt;expression&gt;</span> can begin, optionally, with a "-". Then there
+must be a <span class="code">&lt;term&gt;</span> which can optionally be followed by one of the
+operators "<span class="code">+</span>" or "<span class="code">-</span>" and another <span class="code">&lt;term&gt;</span>, optionally followed by
+another operator and <span class="code">&lt;term&gt;</span>, and so on. In a subroutine that
+reads and evaluates expressions, this repetition is handled by a <span class="code">while</span>
+loop. An <span class="code">if</span> statement is used at the beginning of the loop to test
+whether a leading minus sign is present:</p>
+
+
+<pre>/**
+ * Read an expression from the current line of input and return its value.
+ * @throws ParseError if the input contains a syntax error
+ */
+private static double expressionValue() throws ParseError {
+   TextIO.skipBlanks();
+   boolean negative;  // True if there is a leading minus sign.
+   negative = false;
+   if (TextIO.peek() == '-') {
+      TextIO.getAnyChar();  // Read the minus sign.
+      negative = true;
+   }
+   double val;  // Value of the expression.
+   val = termValue();
+   if (negative)
+      val = -val;
+   TextIO.skipBlanks();
+   while ( TextIO.peek() == '+' || TextIO.peek() == '-' ) {
+          // Read the next term and add it to or subtract it from
+          // the value of previous terms in the expression.
+      char op = TextIO.getAnyChar();  // Read the operator.
+      double nextVal = termValue(); 
+      if (op == '+')
+         val += nextVal;
+      else
+         val -= nextVal;
+      TextIO.skipBlanks();
+   }
+   return val;
+} // end expressionValue()</pre>
+
+
+<p>The subroutine for <span class="code">&lt;term&gt;</span> is very similar to this, and the
+subroutine for <span class="code">&lt;factor&gt;</span> is similar to the example given above
+for fully parenthesized expressions. A complete program that reads and
+evaluates expressions based on the above BNF rules can be found in the file
+<span class="sourceref"><a href="../source/SimpleParser2.java">SimpleParser2.java</a></span>.</p>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="recursion.5.3">9.5.3&nbsp;&nbsp;Building an Expression Tree</a>
+</h3>
+
+
+<p>Now, so far, we've only evaluated expressions. What does that have to do
+with translating programs into machine language? Well, instead of actually
+evaluating the expression, it would be almost as easy to generate the machine
+language instructions that are needed to evaluate the expression. If we are
+working with a "stack machine," these instructions would be stack operations
+such as "push a number" or "apply a <span class="code">+</span> operation". The program 
+<span class="sourceref"><a href="../source/SimpleParser3.java">SimpleParser3.java</a></span> can both evaluate the
+expression and print a list of stack machine operations for evaluating the
+expression. Here is an applet that simulates the program:</p>
+
+
+
+<p align="center">
+<applet code="SimpleParser3Console.class" width="600" height="350" archive="SimpleParser3.jar" alt="(Applet 'SimpleParser3Console' should be displayed here.)"></applet></p>
+
+   
+
+<p>It's quite a jump from this program to a recursive descent parser that can
+read a program written in Java and generate the equivalent machine language
+code -- but the conceptual leap is not huge.</p>
+
+
+<p>The <span class="code">SimpleParser3</span> program doesn't actually generate the stack
+operations directly as it parses an expression. Instead, it builds an
+expression tree, as discussed in <a href="../c9/s4.html#recursion.4.3">Subsection&nbsp;9.4.3</a>, to
+represent the expression. The expression tree is then used to find the value
+and to generate the stack operations. The tree is made up of nodes belonging to
+classes <span class="classname">ConstNode</span> and <span class="classname">BinOpNode</span> that are similar to those
+given in <a href="../c9/s4.html#recursion.4.3">Subsection&nbsp;9.4.3</a>. Another class, <span class="classname">UnaryMinusNode</span>, has been
+introduced to represent the unary minus operation. I've added a method,
+<span class="code">printStackCommands()</span>, to each class. This method is responsible for
+printing out the stack operations that are necessary to evaluate an expression.
+Here for example is the new <span class="code">BinOpNode</span> class from <span class="sourceref"><a href="../source/SimpleParser3.java">SimpleParser3.java</a></span>:</p>
+
+
+<pre>private static class BinOpNode extends ExpNode {
+   char op;        // The operator.
+   ExpNode left;   // The expression for its left operand.
+   ExpNode right;  // The expression for its right operand.
+   BinOpNode(char op, ExpNode left, ExpNode right) {
+          // Construct a BinOpNode containing the specified data.
+      assert op == '+' || op == '-' || op == '*' || op == '/';
+      assert left != null &amp;&amp; right != null;
+      this.op = op;
+      this.left = left;
+      this.right = right;
+   }
+   double value() {
+          // The value is obtained by evaluating the left and right
+          // operands and combining the values with the operator.
+      double x = left.value();
+      double y = right.value();
+      switch (op) {
+      case '+':  
+         return x + y;
+      case '-':  
+         return x - y;
+      case '*':  
+         return x * y;
+      case '/':  
+         return x / y;
+      default:   
+         return Double.NaN;  // Bad operator!
+      }
+   }
+   void  printStackCommands() {
+          // To evaluate the expression on a stack machine, first do
+          // whatever is necessary to evaluate the left operand, leaving
+          // the answer on the stack.  Then do the same thing for the
+          // second operand.  Then apply the operator (which means popping
+          // the operands, applying the operator, and pushing the result).
+      left.printStackCommands();
+      right.printStackCommands();
+      TextIO.putln("  Operator " + op);
+   }
+}</pre>
+
+
+<p>It's also interesting to look at the new parsing subroutines. Instead of
+computing a value, each subroutine builds an expression tree. For example, the
+subroutine corresponding to the rule for <span class="code">&lt;expression&gt;</span>
+becomes</p>
+
+
+<pre>
+    static ExpNode expressionTree() throws ParseError {
+           // Read an expression from the current line of input and
+           // return an expression tree representing the expression.
+       TextIO.skipBlanks();
+       boolean negative;  // True if there is a leading minus sign.
+       negative = false;
+       if (TextIO.peek() == '-') {
+          TextIO.getAnyChar();
+          negative = true;
+       }
+       ExpNode exp;   // The expression tree for the expression.
+       exp = termTree();  // Start with a tree for first term.
+       if (negative) {
+              // Build the tree that corresponds to applying a
+              // unary minus operator to the term we've
+              // just read.
+          exp = new UnaryMinusNode(exp);
+       }
+       TextIO.skipBlanks();
+       while ( TextIO.peek() == '+' || TextIO.peek() == '-' ) {
+                // Read the next term and combine it with the
+                // previous terms into a bigger expression tree.
+           char op = TextIO.getAnyChar();
+           ExpNode nextTerm = termTree();
+                // Create a tree that applies the binary operator
+                // to the previous tree and the term we just read.
+           exp = new BinOpNode(op, exp, nextTerm);
+           TextIO.skipBlanks();
+       }
+       return exp;
+    } // end expressionTree()
+
+</pre>
+
+
+<p>In some real compilers, the parser creates a tree to represent the program
+that is being parsed. This tree is called a <span class="newword">parse tree</span>. 
+Parse trees are somewhat different in form from expression trees,
+but the purpose is the same. Once you have the tree, there are a number of
+things you can do with it. For one thing, it can be used to generate machine
+language code. But there are also techniques for examining the tree and
+detecting certain types of programming errors, such as an attempt to reference
+a local variable before it has been assigned a value. (The Java compiler, of
+course, will reject the program if it contains such an error.) It's also
+possible to manipulate the tree to <span class="newword">optimize</span> the
+program. In optimization, the tree is transformed to make the program more
+efficient before the code is generated.</p>
+
+
+<p>And so we are back where we started in <a href="../c1/index.html">Chapter&nbsp;1</a>, looking at programming
+languages, compilers, and machine language. But looking at them, I hope, with a
+lot more understanding and a much wider perspective.</p>
+   
+
+   
+
+<hr>
+<div align="center">
+<b><small>End of Chapter 9</small></b>
+</div>
+<hr>
+<p align="center">
+<applet code="TowersOfHanoiGUI.class" width="430" height="143" alt=""></applet></p>
+   
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s4.html">Previous Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<html>
+<head><title>Create A Method</title>
+<script type = "text/javascript">
+   function distance(r, t){  // Define the object
+	this.rate = r;        // Assign properties
+	this.time = t;
+	this.calculate=function(){ return this.rate * this.time; };   // create a method called calc_distance
+   }
+
+
+</script>
+</head>
+<body>
+  <script type="text/javascript">
+     var speed=eval(prompt("What was your speed (miles per hour)? ",""));
+     var time=eval(prompt("How long did the trip take? (hours)?" ,""));
+
+     var d=new distance(speed, time);  // create a new object
+     miles_driven = d.calculate();      // Invoke method
+
+	alert("You drove a distance of " + miles_driven + " miles.");
+</script>
+</body>
+</html>

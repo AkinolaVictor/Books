@@ -1,0 +1,40 @@
+<html>
+  <head><title>Text Boxes</title></head>
+    <body bgcolor="azure">
+	<form name="form1" id="form1">
+	  Enter your name:<br />
+	  <input type="text" name="namefield"
+               id="namefield"
+	       size=30 value="Name: "
+	       onFocus="document.form1.namefield.select()">
+			    <!-- onFocus="this.select()">  -->
+	</form>
+	<br />
+     <font face=arial><big>
+	<script type="text/javascript">
+	// How do we reference the form’s text field in JavaScript?
+	// Go down the document tree: document.form[].element.property
+	    	document.write( "The type of the input device is:<em> "+
+		document.form1.namefield.type);
+	//	document.write( "The type of the input device is:<em> "+
+	//	document["form1"]["namefield"].type);
+	    	document.write( "<br /></em>The textbox is named:<em> "+
+		document.form1.namefield.name);
+	 	document.write("<br /></em>The value in the text field is:<em> "+
+		document.form1.namefield.value);
+ 	  	document.write("<br /></em>The size of the text field is:<em> "+
+		document.form1.namefield.size);
+
+   // Using the id attribute of the element
+		var tfield=document.getElementById("namefield");
+	    	document.write("<br />The id of the textbox is "+tfield.id);
+		document.write("<br />The  name of the textbox is "+
+           	tfield.name+"<br />");
+
+	</script>
+
+</font>
+</big>
+</body>
+<html>
+

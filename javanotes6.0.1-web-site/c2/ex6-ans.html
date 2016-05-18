@@ -1,0 +1,121 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 6, Chapter 2</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 2.6</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 2.6:</h3>
+<p>Suppose that a file named "testdata.txt" contains the following information:
+      The first line of the file is the name of a student.  Each of the next three
+      lines contains an integer.  The integers are the student's scores on three
+      exams.  Write a program that will read the information in the file
+      and display (on standard output) a message the contains the name of
+      the student and the student's average grade on the three exams.
+      The average is obtained by adding up the individual exam grades and
+      then dividing by the number of exams.
+      </p>
+   
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+      
+<p>
+<span class="classname">TextIO</span> can be used to read data from a file; this is discussed
+      in <a href="../c2/s4.html#basics.4.5">Subsection&nbsp;2.4.5</a>.  To read data from a file named
+      "testdata.txt", all you need to do is say <span class="code">TextIO.readFile("testdata.txt")</span>.
+      From then on, the input functions in <span class="classname">TextIO</span> will read from the file
+      instead of reading data typed in by the user.  (Note that this assumes that
+      the file is in the same directory with the program.)  In this case, we
+      can use <span class="code">TextIO.getln()</span> to read the student's name from the first
+      line of the file, and then we can read the exam grades by calling
+      <span class="code">TextIO.getln()</span> three times.</p>
+      
+<p>The average should be computed as a value of type double.  Don't forget
+      that if you divide an integer by an integer in Java, the result is an integer
+      and the remainder of the division is discarded.  To get the correct
+      average in this case, the program divides the sum of the three grades by
+      3.0 rather than by 3.
+      </p>
+      
+<p>One final technicality is that simply outputting a <span class="ptype">double</span>
+      value might print out something like 83.333333333333333.  By default, all
+      significant digits in the number are output.  In this case, one digit
+      after the decimal point is probably sufficient.  The program
+      uses formatted output to achieve this:</p>
+      
+      
+<pre>System.out.printf("The average grade for %s was %1.1f", name, average);</pre>
+    
+      
+<p>The format string
+      "The average grade for %s was %1.1f" is used
+      to format the name and the average.  The name is substituted for the
+      format specifier <span class="code">%s</span>, which means that the name is
+      printed as a string, with no extra spaces.  The average is substituted
+      for <span class="code">%1.1f</span>, which means that the average
+      is printed as a floating point number with no extra spaces and with
+      1 digit after the decimal point.</p>
+      
+<p>You might want to run this program with no data file, or with a
+      data file that is not in the correct format, to see what happens.
+      (The program will crash and print an error message.)</p>
+   
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">public class FindAverage {
+
+   public static void main(String[] args) {
+
+       String name;     // The student's name, from the first line of the file.
+       int exam1, exam2, exam3;     // The student's grades on the three exams.
+       double average;  // The average of the three exam grades.
+
+       TextIO.readFile("testdata.txt");  // Read from the file.
+
+       name = TextIO.getln();  // Reads the entire first line of the file.
+       exam1 = TextIO.getlnInt();
+       exam2 = TextIO.getlnInt();
+       exam3 = TextIO.getlnInt();
+
+       average = ( exam1 + exam2 + exam3 ) / 3.0;
+
+       System.out.printf("The average grade for %s was %1.1f", name, average);
+       System.out.println();
+
+   }
+
+}</pre>
+   
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

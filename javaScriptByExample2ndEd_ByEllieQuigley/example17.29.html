@@ -1,0 +1,17 @@
+<html><head><title>Anchors</title></head>
+<body>
+  <script type="text/javascript">
+   	 var reg_expression = /^[A-Z][a-z]+\s\d$/;
+			// At the beginning of the string, find one uppercase
+			// letter, followed by one or more lowercase letters,
+			// a space, and one digit.
+    	var string=prompt("Enter a name and a number","");
+	if ( reg_expression.test(string)){
+			alert("It Matched!!");
+	}
+	else{
+		alert("No Match!");
+	}
+  </script>
+</body>
+</html>

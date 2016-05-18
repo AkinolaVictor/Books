@@ -1,0 +1,26 @@
+<html>
+<head>
+	<title>The History Object</title>
+	</head>
+	<script type="text/javascript">
+		function loadPage(urlAddress){
+			parent.frames[1].location.href = urlAddress;
+		}
+	</script>
+</head>
+<body bgcolor="F8C473">
+  <big>
+  <form name="form1" id="form1">
+		<input type="button"
+			value="Amazon"
+			onClick="loadPage('http://amazon.com');">
+		<input type="button"
+			value="Borders"
+			onClick="loadPage('http://borders.com');">
+		<input type="button"
+			value="Barnes&Noble"
+			onClick="loadPage('http://barnesandnoble.com');">
+  </form>
+  </big>
+</body>
+</html>

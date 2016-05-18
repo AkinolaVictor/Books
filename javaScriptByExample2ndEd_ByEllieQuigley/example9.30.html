@@ -1,0 +1,19 @@
+<html><head><title>Search and Replace</title>
+	</head>
+	<body bgcolor=lightgreen>
+	<font face="arial" size="+1">
+	Search and Replace Methods<br>
+	<small>
+	<script type="text/javascript">
+		var straddr = "DanielSavage@dadserver.org";
+		document.write( "The original string is "+ straddr + "<br>");
+		document.write( "The new string is "+
+		straddr.replace("Daniel","Jake")+"<br>");
+		var index=straddr.search("dad");
+		document.write("The search() method found \"dad\" at position "+ index +"<br>");
+		var mysubstr=straddr.substr(index,3);
+		document.write("After replacing \"dad\" with \"POP\" <br>");
+		document.write(straddr.replace(mysubstr,"POP")+"<br>");
+	</script>
+    </small>
+	</body></html>

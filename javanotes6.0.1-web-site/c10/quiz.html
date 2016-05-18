@@ -1,0 +1,146 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Quiz on Chapter 10</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="quiz_answers.html">Quiz Answers</a> | <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2 class="quiz_title">Quiz on Chapter 10</h2>
+<p>
+<span class="start"><big>T</big>his page contains</span> questions on Chapter 10 of
+           <a href="../index.html"><i>Introduction to Programming Using Java</i></a>.
+           You should be able to answer these questions after studying that chapter.
+           Sample answers to these questions can be found <a href="quiz_answers.html">here</a>.</p>
+<table border="1" align="center" cellpadding="8" width="95%">
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;1:</span></td><td>
+<p>What is meant by <i>generic
+programming</i> and what is the alternative?</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;2:</span></td><td>
+<p>Why can't you make an object of type <span class="classname">LinkedList&lt;int&gt;</span>?
+What should you do instead?</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;3:</span></td><td>
+<p>What is an <i>iterator</i>
+and why are iterators necessary for generic programming?</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;4:</span></td><td>
+<p>Suppose that
+<span class="code">integers</span> is a variable of type <span class="classname">Collection&lt;Integer&gt;</span>.
+Write a code segment that uses an iterator to compute the sum of all the integer values in 
+the collection.  Write a second code segment that does the same thing using a
+for-each loop.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;5:</span></td><td>
+<p>Interfaces such as
+<span class="classname">List</span>, <span class="classname">Set</span>, and <span class="classname">Map</span> 
+define <i>abstract data types.</i> Explain what this means.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;6:</span></td><td>
+<p>What is the fundamental
+property that distinguishes <span class="classname">Sets</span> from other types of
+<span class="classname">Collections</span>?</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;7:</span></td><td>
+<p>What is the essential
+difference in functionality between a <span class="classname">TreeMap</span> and a
+<span class="classname">HashMap</span>?</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;8:</span></td><td>
+<p>Explain what is meant by a <i>hash code.</i>
+</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;9:</span></td><td>
+<p>Modify the following
+<span class="classname">Date</span> class so that it implements the interface <span class="classname">Comparable&lt;Date&gt;</span>.
+The ordering on objects of type <span class="classname">Date</span> should be the natural,
+chronological ordering.</p>
+
+<pre>class Date {
+   int month;  // Month number in range 1 to 12.
+   int day;    // Day number in range 1 to 31.
+   int year;   // Year number.
+   Date(int m, int d, int y) { 
+      month = m;
+      day = d;
+      year = y;
+   }
+}</pre>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;10:</span></td><td>
+<p>Suppose that
+<span class="code">syllabus</span> is a variable of type <span class="classname">TreeMap&lt;Date,String&gt;</span>,
+where <span class="classname">Date</span> is the class from the preceding exercise.
+Write a code segment that will write
+out the value string for every key that is in the month of December, 2010.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;11:</span></td><td>
+<p>Write a generic class <span class="classname">Stack&lt;T&gt;</span> that can be
+used to represent stacks of objects of type <span class="classname">T</span>.  The class
+should include methods <span class="code">push()</span>, <span class="code">pop()</span>, and
+<span class="code">isEmpty()</span>.  Inside the class, use an <span class="classname">ArrayList</span>
+to hold the items on the stack.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;12:</span></td><td>
+<p>Write a generic method, using a generic type parameter <span class="code">&lt;T&gt;</span>,
+that replaces every occurrence in a <span class="classname">ArrayList&lt;T&gt;</span> of a specified item
+with a specified replacement item.  The list and the two items are parameters to the method.
+Both items are of type <span class="classname">T</span>.
+Take into account the fact that the item that is being replaced might be <span class="code">null</span>.
+For a non-null item, use <span class="code">equals()</span> to do the comparison.</p>
+
+</td>
+</tr>
+</table>
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="quiz_answers.html">Quiz Answers</a> | <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

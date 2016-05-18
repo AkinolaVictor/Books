@@ -1,0 +1,1160 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 12.4 -- Threads and Networking</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s3.html">Previous Section</a> |
+           <a href="s5.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#threads.4.1">The Blocking I/O Problem</a>
+<br>
+<a href="#threads.4.2">An Asynchronous Network Chat Program</a>
+<br>
+<a href="#threads.4.3">A Threaded Network Server</a>
+<br>
+<a href="#threads.4.4">Using a Thread Pool</a>
+<br>
+<a href="#threads.4.5">Distributed Computing</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 12.4</h3>
+<h2 class="section_title">Threads and Networking</h2>
+<hr class="break">
+
+
+<p>
+<span class="start"><big>I</big>n the previous chapter,</span> we looked at several
+examples of network programming.  Those examples showed how to create
+network connections and communicate through them, but they didn't deal
+with one of the fundamental characteristics of network programming,
+the fact that network communication is asynchronous.
+From the point of view of a program on one end of a network connection,
+messages can arrive from the other side of the connection at any time;
+the arrival of a message is an <i>event</i> that is not under the
+control of the program that is receiving the message. Perhaps an
+event-oriented networking API would be a good approach to dealing
+with the asynchronous nature of network communication, but that is
+not the approach that is taken in Java (or, typically, in other languages).
+Instead, network programming in Java typically uses <b>threads</b>.</p>
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="threads.4.1">12.4.1&nbsp;&nbsp;The Blocking I/O Problem</a>
+</h3>
+
+
+<p>A covered in <a href="../c11/s4.html">Section&nbsp;11.4</a>, network programming uses
+sockets.  A socket, in the sense that we are using the term here,
+represents one end of a network connection.
+Every socket has an associated input stream and output stream.
+Data written to the output stream on one end of the connection is
+transmitted over the network and appears in the input stream
+at the other end.</p>
+
+
+<p>A program that wants to read data from a socket's input stream
+calls one of that input stream's input methods.  It is possible
+that the data has already arrived before the input method is called;
+in that case, the input method retrieves the data and returns 
+immediately.  More likely, however, the input method will have
+to wait for data to arrive from the other side of the connection.
+Until the data arrives, the input method and the thread that
+called it will be blocked.</p>
+
+
+<p>It is also possible for an output method in a socket's output
+stream to block.  This can happen if the program tries to output
+data to the socket faster than the data can be transmitted over
+the network.  (It's a little complicated:  a socket uses a
+"buffer" to hold data that is supposed to be transmitted over
+the network.  A buffer is just a block of memory that is
+used like a queue.  The output method drops its data
+into the buffer; lower-level software removes data from
+the buffer and transmits it over the network.  The output
+method will block if the buffer fills up.  Note that when
+the output method returns, it doesn't mean that the data
+has gone out over the network -- it just means that the
+data has gone into the buffer and is scheduled for later
+transmission.)</p>
+
+
+<p>We say that network communication uses <span class="newword">blocking I/O</span>,
+because input and output operations on the network can block for
+indefinite periods of time.  Programs that use the network must
+be prepared to deal with this blocking.  In some cases, it's
+acceptable for a program to simply shut down all other processing
+and wait for input.  (This is what happens when a command line program
+reads input typed by the user.   User input is another type
+of blocking I/O.)  However, threads make it possible for some
+parts of a program to continue doing useful work while other
+parts are blocked.  A network client program that sends requests
+to a server might get by with a single thread, if it has nothing
+else to do while waiting for the server's responses.  
+A network server program, on the other hand, can typically
+be connected to several clients at the same time.  While waiting
+for data to arrive from a client, the server certainly has other
+things that it can do, namely communicate with other clients.
+When a server uses different threads to handle the communication 
+with different clients, the fact that I/O with one client is
+blocked won't stop the server from communicating with other clients.</p>
+
+
+<p>It's important to understand that using threads to deal with
+blocking I/O differs in a fundamental way from using threads to
+speed up computation.  When using threads for speed-up in
+<a href="../c12/s3.html#threads.3.2">Subsection&nbsp;12.3.2</a>, it made sense to use one thread
+for each available processor.  If only one processor is available,
+using more than one thread will yield no speed-up at all; in fact,
+it would slow things down because of the extra overhead involved
+in creating and managing the threads.</p>
+
+
+<p>In the case of blocking I/O, on the other hand, it can make
+sense to have many more threads than there are processors, since
+at any given time many of the threads can be blocked.  Only
+the active, unblocked threads are competing for processing time.
+In the ideal case, to keep all the processors busy, you would
+want to have one <b>active</b> thread per processor (actually
+somewhat less than that, on average, to allow for variations 
+over time in the number of active threads).
+On a network server program, for example, threads generally
+spend <b>most</b> of their time blocked waiting for I/O operations
+to complete.  If threads are blocked, say, about 90% of the time, 
+you'd like to have about ten times as many threads as there
+are processors.  So even on a computer that has just a single
+processor, server programs can make good use of large numbers
+of threads.</p>
+
+
+
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="threads.4.2">12.4.2&nbsp;&nbsp;An Asynchronous Network Chat Program</a>
+</h3>
+
+
+<p>As a first example of using threads for network communication,
+we consider a GUI chat program.</p>
+
+
+<p>The command-line chat programs, <span class="sourceref"><a href="../source/CLChatClient.java">CLChatClient.java</a></span> and
+<span class="sourceref"><a href="../source/CLChatServer.java">CLChatServer.java</a></span>, from the <a href="../c11/s4.html#IO.4.5">Subsection&nbsp;11.4.5</a>
+use a straight-through, step-by-step protocol for communication.
+After a user on one side of a connection enters a message,
+the user must wait for a reply from the other side of the connection.
+An asynchronous chat program would be much nicer.  In such a program,
+a user could just keep typing lines and sending messages without waiting
+for any response.  Messages that arrive -- asynchronously -- from the
+other side would be displayed as soon as they arrive.  It's not easy to do this 
+in a command-line interface, but it's a natural application for a graphical user 
+interface.  The basic idea for a GUI chat program is to create a
+thread whose job is to read messages that arrive from the other side
+of the connection.  As soon as the message arrives, it is displayed to
+the user; then, the message-reading thread blocks until the next incoming
+message arrives.  While it is blocked, however, other threads can continue
+to run.  In particular, the event-handling thread that responds to
+user actions keeps running; that thread can send outgoing messages
+as soon as the user generates them.</p>
+   
+
+
+<p>In case this is not clear to you, here is
+an applet that simulates such a program. Enter a message in the input box at
+the bottom of the applet, and press return (or, equivalently, click the "Send"
+button):</p>
+
+
+<p align="center">
+<applet code="ChatSimulation.class" width="500" height="275" archive="ChatSimulation.jar" alt="(Applet 'ChatSimulation' should be displayed here.)"></applet></p>
+
+
+<p>Both incoming messages and messages that you send are posted to the
+<span class="classname">JTextArea</span> that occupies most of the applet. This is not a real network
+connection. When you send your first message, a separate thread is started by
+the applet. This thread <b>simulates</b> incoming messages from the other
+side of a network connection. In fact, it just chooses the messages at random
+from a pre-set list. At the same time, you can continue to enter and send
+messages.  Of course, this applet doesn't really do any network communication,
+but the same idea can be used to write a GUI network chat program. The program
+<span class="sourceref"><a href="../source/GUIChat.java">GUIChat.java</a></span> allows two-way network chatting that works
+similarly to this simulation, except that the incoming messages really do come
+from the other side of a network connection</p>
+
+
+
+   
+
+<p>The <span class="code">GUIChat</span> program can act as either the client end or the server end
+of a connection. (Refer back to <a href="../c11/s4.html#IO.4.3">Subsection&nbsp;11.4.3</a> for information about how clients
+and servers work.) The program has a "Listen" button that the user can click to create a server socket
+that will listen for an incoming connection request; this makes the program act
+as a server.  It also has a "Connect" button that the user can click to send 
+a connection request; this makes the program act as a client.  As usual, the server
+listens on a specified port number. The client needs to know the computer on which the
+server is running and the port on which the server is listening.  There are
+input boxes in the <span class="code">GUIChat</span> window where the user can enter this
+information.</p>
+
+
+<p>Once a connection has been established between two <span class="code">GUIChat</span>
+windows, each user can send messages to the other.  The window has an input box
+where the user types a message.  Pressing return while typing in this box
+sends the message.  This means that the sending of the message is handled by the
+usual event-handling thread, in response to an event generated by a user action.
+Messages are received by a separate thread that just sits around waiting for
+incoming messages.  This thread blocks while waiting for a message to arrive;
+when a message does arrive, it displays that message to the user.  The window
+contains a large transcript area that displays both incoming and outgoing
+messages, along with other information about the network connection.</p>
+
+
+<p>I urge you to compile the source code, <span class="sourceref"><a href="../source/GUIChat.java">GUIChat.java</a></span>, and
+try the program.  To make it easy to try it on a single computer, you can
+make a connection between one window and another window on the same computer,
+using "localhost" or "127.0.0.1" as the name of the computer.  (Once you
+have one <span class="code">GUIChat</span> window open, you can open a second one by
+clicking the "New" button.)  I also urge you to read the source code.
+I will discuss only parts of it here.</p>
+   
+
+<p>The program uses a nested class, <span class="classname">ConnectionHandler</span>,
+to handle most network-related tasks.  <span class="classname">ConnectionHandler</span>
+is a subclass of <span class="classname">Thread</span>.  The <span class="classname">ConnectionHandler</span>
+thread is responsible for opening the network connection and then for reading
+incoming messages once the connection has been opened.  By putting the connection-opening 
+code in a separate thread,
+we make sure that the GUI is not blocked while the connection is being opened.
+Like reading incoming messages, opening a connection is a blocking operation
+that can take some time to complete.  A <span class="classname">ConnectionHandler</span>
+is created
+when the user clicks the "Listen" or "Connect" button.  The "Listen" button
+should make the thread act as a server, while "Connect" should make it act as
+a client.  To distinguish these two cases, the <span class="classname">ConnectionHandler</span>
+class has two constructors:</p>
+   
+
+<pre>/**
+ * Listen for a connection on a specified port.  The constructor
+ * does not perform any network operations; it just sets some
+ * instance variables and starts the thread.  Note that the
+ * thread will only listen for one connection, and then will
+ * close its server socket.
+ */
+ConnectionHandler(int port) {
+   state = ConnectionState.LISTENING;
+   this.port = port;
+   postMessage("\nLISTENING ON PORT " + port + "\n");
+   start();
+}
+
+/**
+ * Open a connection to a specified computer and port.  The constructor
+ * does not perform any network operations; it just sets some
+ * instance variables and starts the thread.
+ */
+ConnectionHandler(String remoteHost, int port) {
+   state = ConnectionState.CONNECTING;
+   this.remoteHost = remoteHost;
+   this.port = port;
+   postMessage("\nCONNECTING TO " + remoteHost + " ON PORT " + port + "\n");
+   start();
+}</pre>
+   
+
+<p>Here, <span class="code">state</span> is an instance variable whose type is defined by
+an enumerated type</p>
+   
+
+<pre>enum ConnectionState { LISTENING, CONNECTING, CONNECTED, CLOSED };</pre>
+   
+
+<p>The values of this <span class="code">enum</span> represent different possible states
+of the network connection.  It is often useful to treat a network connection
+as a state machine (see <a href="../c6/s5.html#GUI1.5.4">Subsection&nbsp;6.5.4</a>), since the response to various
+events can depend on the state of the connection when the event occurs.
+Setting the <span class="code">state</span> variable to <span class="code">LISTENING</span> or
+<span class="code">CONNECTING</span> tells the thread whether it should act as a server
+or as a client.  Note that the <span class="code">postMessage()</span> method posts
+a message to the transcript area of the window, where it will be visible
+to the user.</p>
+   
+
+<p>Once the thread has been started, it executes the following <span class="code">run()</span>
+method:</p>
+   
+
+<pre>/**
+ * The run() method that is executed by the thread.  It opens a
+ * connection as a client or as a server (depending on which 
+ * constructor was used).
+ */
+public void run() {
+   try {
+      if (state == ConnectionState.LISTENING) {
+            // Open a connection as a server.
+         listener = new ServerSocket(port);
+         socket = listener.accept();
+         listener.close();
+      }
+      else if (state == ConnectionState.CONNECTING) {
+            // Open a connection as a client.
+         socket = new Socket(remoteHost,port);
+      }
+      connectionOpened();  // Sets up to use the connection (including
+                           // creating a BufferedReader, in, for reading
+                           // incoming messages).
+      while (state == ConnectionState.CONNECTED) {
+            // Read one line of text from the other side of
+            // the connection, and report it to the user.
+         String input = in.readLine();
+         if (input == null)
+            connectionClosedFromOtherSide();
+         else
+            received(input);  // Report message to user.
+      }
+   }
+   catch (Exception e) {
+         // An error occurred.  Report it to the user, but not
+         // if the connection has been closed (since the error
+         // might be the expected error that is generated when
+         // a socket is closed).
+      if (state != ConnectionState.CLOSED)
+         postMessage("\n\n ERROR:  " + e);
+   }
+   finally {  // Clean up before terminating the thread.
+      cleanUp();
+   }
+}</pre>
+   
+
+<p>This method calls several other methods to do some of its work, but
+you can see the general outline of how it works.  After opening the
+connection as either a server or client, the <span class="code">run()</span> method enters
+a <span class="code">while</span> loop in which it receives and processes messages from
+the other side of the connection until the connection is closed. It is
+important to understand how the connection can be closed.  The <span class="code">GUIChat</span>
+window has a "Disconnect" button that the user can click to close the connection.
+The program responds to this event by closing the socket that represents
+the connection.  It is likely that when this happens, the connection-handling
+thread is blocked in the <span class="code">in.readLine()</span> method, waiting for an incoming
+message.  When the socket is closed by another thread, this method will fail and
+will throw an exception; this exception causes the thread to terminate.
+(If the connection-handling thread happens to be between calls to <span class="code">in.readLine()</span>
+when the socket is closed, the <span class="code">while</span> loop will terminate because
+the connection state changes from <span class="code">CONNECTED</span> to <span class="code">CLOSED</span>.)
+Note that closing the window will also close the connection in the same way.</p>
+
+
+<p>It is also possible for the user on the other side of the connection to close
+the connection.  When that happens, the stream of incoming messages ends,
+and the <span class="code">in.readLine()</span> on this side of the connection
+returns the value <span class="code">null</span>, which indicates end-of-stream and acts
+as a signal that the connection has been closed by the remote user.</p>
+   
+
+<p>For a final look into the <span class="code">GUIChat</span> code, consider the methods
+that send and receive messages.  These methods are called from different
+threads.  The <span class="code">send()</span> method is called by the event-handling
+thread in response to a user action.  Its purpose is to transmit a
+message to the remote user.  (It is conceivable, though not likely, that
+the data output operation could block, if the socket's output buffer fills up.  A more
+sophisticated program might take this possibility into account.)
+This method uses a <span class="classname">PrintWriter</span>,
+<span class="code">out</span>, that writes to the socket's output stream.
+Synchronization of this method prevents
+the connection state from changing in the middle of the send operation:</p>
+   
+
+<pre>/**
+ * Send a message to the other side of the connection, and post the
+ * message to the transcript.  This should only be called when the
+ * connection state is ConnectionState.CONNECTED; if it is called at
+ * other times, it is ignored.
+ */
+synchronized void send(String message) {
+   if (state == ConnectionState.CONNECTED) {
+      postMessage("SEND:  " + message);
+      out.println(message);
+      out.flush();
+      if (out.checkError()) {
+         postMessage("\nERROR OCCURRED WHILE TRYING TO SEND DATA.");
+         close();  // Closes the connection.
+      }
+   }
+}</pre>
+   
+
+<p>The <span class="code">received()</span> method is called by the connection-handling
+thread <b>after</b> a message
+has been read from the remote user.  Its only job is to display the
+message to the user, but again it is synchronized to avoid the race
+condition that could occur if the connection state were changed by
+another thread while this method is being executed:</p>
+
+
+<pre>/**
+ * This is called by the run() method when a message is received from
+ * the other side of the connection.  The message is posted to the
+ * transcript, but only if the connection state is CONNECTED.  (This
+ * is because a message might be received after the user has clicked
+ * the "Disconnect" button; that message should not be seen by the
+ * user.)
+ */
+synchronized private void received(String message) {
+   if (state == ConnectionState.CONNECTED)
+      postMessage("RECEIVE:  " + message);
+}</pre>
+
+
+
+
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="threads.4.3">12.4.3&nbsp;&nbsp;A Threaded Network Server</a>
+</h3>
+
+
+<p>Threads are often used in network server programs.  They
+allow the server to deal with several clients at the same time.  When a
+client can stay connected for an extended period of time, other clients
+shouldn't have to wait for service.
+Even if the interaction with each client is expected to be very brief,
+you can't always assume that that will be the case.  You have to
+allow for the possibility of a misbehaving client -- one
+that stays connected without sending data that the server expects.
+This can hang up a thread indefinitely, but in a threaded server there
+will be other threads that can carry on with other clients.</p>
+
+
+<p>The <span class="sourceref"><a href="../source/DateServer.java">DateServer.java</a></span> sample program, from
+<a href="../c11/s4.html#IO.4.4">Subsection&nbsp;11.4.4</a>, is an extremely simple network server program.
+It does not use threads, so the server must finish with one client 
+before it can accept a connection from another client.  Let's see
+how we can turn <span class="code">DataServer</span> into a threaded server.
+(This server is so simple that doing so doesn't make a great deal
+of sense.  However, the same techniques will work for more complicated
+servers.  See, for example, <a href="../c12/ex4-ans.html">Exercise&nbsp;12.4</a>.)</p>
+
+
+<p>As a first attempt, consider <span class="sourceref"><a href="../source/DateServerWithThreads.java">DateServerWithThreads.java</a></span>.
+This sample program creates a new thread every time a connection request
+is received.  The main program simply creates the thread and hands the
+connection to the thread.  This takes very little time, and in particular
+will not block.  The <span class="code">run()</span> method of the thread handles the
+connection in exactly the same way that it would be handled by the
+original program.  This is not at all difficult to program.  Here's
+the new version of the program, with significant changes shown in red:</p>
+
+
+
+<pre>import java.net.*;
+import java.io.*;
+import java.util.Date;
+
+/**
+ * This program is a server that takes connection requests on
+ * the port specified by the constant LISTENING_PORT.  When a
+ * connection is opened, the program sends the current time to
+ * the connected socket.  The program will continue to receive
+ * and process connections until it is killed (by a CONTROL-C,
+ * for example). 
+ * 
+ <span class="newcode">* This version of the program creates a new thread for
+ * every connection request.</span>
+ */
+public class DateServerWithThreads {
+
+    public static final int LISTENING_PORT = 32007;
+
+    public static void main(String[] args) {
+
+        ServerSocket listener;  // Listens for incoming connections.
+        Socket connection;      // For communication with the connecting program.
+
+        /* Accept and process connections forever, or until some error occurs. */
+
+        try {
+            listener = new ServerSocket(LISTENING_PORT);
+            System.out.println("Listening on port " + LISTENING_PORT);
+            while (true) {
+                // Accept next connection request and <span class="newcode">create thread to</span> handle it.
+                connection = listener.accept(); 
+                <span class="newcode">ConnectionHandler handler = new ConnectionHandler(connection);
+                handler.start();</span>
+            }
+        }
+        catch (Exception e) {
+            System.out.println("Sorry, the server has shut down.");
+            System.out.println("Error:  " + e);
+            return;
+        }
+
+    }  // end main()
+
+
+    <span class="newcode">/**
+     *  Defines a thread that handles the connection with one
+     *  client.
+     */
+    private static class ConnectionHandler extends Thread {
+        Socket client;
+        ConnectionHandler(Socket socket) {
+            client = socket;
+        }
+        public void run()</span> {
+            String clientAddress = client.getInetAddress().toString();
+            try {
+                System.out.println("Connection from " + clientAddress );
+                Date now = new Date();  // The current date and time.
+                PrintWriter outgoing;   // Stream for sending data.
+                outgoing = new PrintWriter( client.getOutputStream() );
+                outgoing.println( now.toString() );
+                outgoing.flush();  // Make sure the data is actually sent!
+                client.close();
+            }
+            catch (Exception e){
+                <span class="newcode">System.out.println("Error on connection with: " 
+                        + clientAddress + ": " + e);</span>
+            }
+        }
+    <span class="newcode">}</span>
+    
+
+} //end class DateServer</pre>
+
+
+<p>One interesting change is at the end of the <span class="code">run()</span> method, where
+I've added the <span class="code">clientAddress</span> to the output of the error message.
+I did this to identify which connection the error message refers to.
+Since threads run in parallel, it's possible for outputs from different 
+threads to be intermingled in various orders. Messages from
+the same thread don't necessarily come together in the output; they might
+be separated by messages from other threads.  This is just one of the 
+complications that you have to keep in mind when working with threads!
+</p>
+
+
+
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="threads.4.4">12.4.4&nbsp;&nbsp;Using a Thread Pool</a>
+</h3>
+
+
+<p>It's not very efficient to create a new thread for every
+connection, especially when the connections are typically very
+short-lived.  Fortunately, we have an alternative: thread
+pools (<a href="../c12/s3.html#threads.3.2">Subsection&nbsp;12.3.2</a>).</p>
+
+
+<p>
+<span class="sourceref"><a href="../source/DateServerWithThreadPool.java">DateServerWithThreadPool.java</a></span> is an improved
+version of our server that uses a thread pool.  Each thread in the
+pool runs in an infinite loop.  Each time through the loop, it handles
+one connection.  We need a way for the main program to send
+connections to the threads.  It's natural to use a blocking
+queue named <span class="code">connectionQueue</span> for that purpose.  A
+connection-handling thread takes connections from this queue.
+Since it is blocking queue, the thread blocks when the queue is
+empty and wakes up when a connection becomes available in the
+queue.  No other synchronization or communication technique is
+needed; it's all built into the blocking queue.  Here is
+the <span class="code">run()</span> method for the connection-handling threads:</p>
+
+
+<pre>public void run() {
+    while (true) {
+        Socket client;
+        try {
+            client = connectionQueue.take();  // Blocks until item is available.
+        }
+        catch (InterruptedException e) {
+            continue; // (If interrupted, just go back to start of while loop.)
+        }
+        String clientAddress = client.getInetAddress().toString();
+        try {
+            System.out.println("Connection from " + clientAddress );
+            System.out.println("Handled by thread " + this);
+            Date now = new Date();  // The current date and time.
+            PrintWriter outgoing;   // Stream for sending data.
+            outgoing = new PrintWriter( client.getOutputStream() );
+            outgoing.println( now.toString() );
+            outgoing.flush();  // Make sure the data is actually sent!
+            client.close();
+        }
+        catch (Exception e){
+            System.out.println("Error on connection with: " 
+                    + clientAddress + ": " + e);
+        }
+    }
+}</pre>
+
+
+<p>The main program, in the meantime, runs in an infinite loop in which
+connections are accepted and added to the queue:</p>
+
+
+<pre>while (true) {
+        // Accept next connection request and put it in the queue.
+    connection = listener.accept();
+    try {
+        connectionQueue.put(connection); // Blocks if queue is full.
+    }
+    catch (InterruptedException e) {
+    }
+}</pre>
+
+
+<p>The queue in this program is of type <span class="classname">ArrayBlockingQueue&lt;Socket&gt;</span>.
+As such, it has a limited capacity, and the <span class="code">put()</span> operation on the
+queue will block if the queue is full.  But wait -- didn't we want to avoid blocking
+the main program?  When the main program is blocked, the server is no longer accepting
+connections, and clients who are trying to connect are kept waiting.
+Would it be better to use a <span class="classname">LinkedBlockingQueue</span>, with
+an unlimited capacity?</p>
+
+
+<p>In fact, connections in the queue are waiting anyway; they are not being
+serviced.  If the queue grows unreasonably long, connections in the queue will
+have to wait for an unreasonable amount of time.  If the queue keeps growing
+indefinitely, that just means that the server is receiving connection requests
+faster than it can process them.  That could happen for several reasons:
+Your server might simply not be powerful enough to handle the volume of traffic
+that you are getting; you need to buy a new server.  Or perhaps the thread pool 
+doesn't have enough threads to fully utilize your server; you should 
+increase the size of the thread pool to match the server's capabilities.
+Or maybe your server is under a "Denial Of Service" attack, in which some bad guy
+is deliberately sending your server more requests than it can handle in an attempt
+to keep other, legitimate clients from getting service.</p>
+
+
+<p>In any case, <span class="classname">ArrayBlockingQueue</span> with limited capacity
+is the correct choice.  The queue should be short enough so that connections
+in the queue will not have to wait too long for service.
+In a real server, the size of the queue and the number
+of threads in the thread pool should be adjusted to "tune" the server to account
+for the particular hardware and network on which the server is running and for
+the nature of the client requests that it typically processes.  Optimal tuning is,
+in general, a difficult problem.</p>
+
+
+<p>There is, by the way, another way that things can go wrong:
+Suppose that the server needs to read some data from the client, but
+the client doesn't send the expected data.  The thread that is trying
+to read the data can then block indefinitely, waiting for the input.  If a thread pool is
+being used, this could happen to every thread in the pool.  In that
+case, no further processing can ever take place!  The solution to
+this problem is to have connections "time out" if they are inactive for
+an excessive period of time.  Typically, each connection thread will
+keep track of the time when it last received data from the client.
+The server runs another thread (sometimes called a "reaper thread",
+after the Grim Reaper) that wakes up periodically and checks each
+connection thread to see how long it has been inactive.  A connection
+thread that has been waiting too long for input is terminated, and
+a new thread is started in its place.  The question of how long
+the timeout period should be is another difficult tuning issue.</p>
+
+
+
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="threads.4.5">12.4.5&nbsp;&nbsp;Distributed Computing</a>
+</h3>
+
+
+<p>We have seen how threads can be used to
+do parallel processing, where a number of processors work together to complete
+some task.  So far, we have assumed that all the processors were
+inside one multi-processor computer.  But parallel processing can also
+be done using processors that are in different computers, as long as those
+computers are connected to a network over which they can communicate.
+This type of parallel processing -- in which a number of computers
+work together on a task and communicate over a network -- is called
+<span class="newword">distributed computing</span>.</p>
+   
+
+<p>In some sense, the whole Internet is an immense distributed computation,
+but here I am interested in how computers on a network can cooperate to
+solve some computational problem.  There are several approaches to
+distributed computing that are supported in Java.  <span class="newword">RMI</span>
+and <span class="newword">CORBA</span> are standards that enable a program running
+on one computer to call methods in objects that exist on other computers.
+This makes it possible to design an object-oriented program in which
+different parts of the program are executed on different computers.
+RMI (Remote Method Invocation) only supports communication between Java
+objects.  CORBA (Common Object Request Broker Architecture) is a more
+general standard that allows objects written in various programming 
+languages, including Java, to communicate with each other.  As is commonly
+the case in networking, there is the problem of locating services (where
+in this case, a "service" means an object that is available to be called
+over the network).  That is, how can one computer know which computer a service is located
+on and what port it is listening on?  RMI and CORBA solve this problem
+using a "request broker" -- a
+server program running at a known location keeps a list of services that are
+available on other computers.  Computers that offer services register
+those services with the request broker; computers that need services contact the
+broker to find out where they are located.</p>
+   
+
+<p>RMI and CORBA are complex systems that are not very easy to use.  I mention
+them here because they are part of Java's standard network API, but I will not discuss
+them further.  Instead, we will look at a relatively simple demonstration of
+distributed computing that uses only basic networking.</p>
+   
+
+<p>The problem that we will consider is the same one that we used
+in <span class="sourceref"><a href="../source/MultiprocessingDemo1.java">MultiprocessingDemo1.java</a></span>, and its variations,
+in <a href="../c12/s2.html">Section&nbsp;12.2</a> and <a href="../c12/s3.html">Section&nbsp;12.3</a>, namely the
+computation of a complex image.  This is an application that
+uses the simplest type of parallel programming, in which
+the problem can be broken down into tasks that can be performed independently,
+with no communication between the tasks.  To apply distributed computing to
+this type of problem, we can use one "master" program that divides the problem
+into tasks and sends those tasks over the network to "worker" programs
+that do the actual work.  The worker programs send their results back to
+the master program, which combines the results from all the tasks into
+a solution of the overall problem.  In this context, the worker programs
+are often called "slaves," and the program uses the so-called
+<span class="newword">master/slave</span> approach to distributed computing.</p>
+   
+
+<p>The demonstration program is defined by three source code files:
+<span class="sourceref"><a href="../source/CLMandelbrotMaster.java">CLMandelbrotMaster.java</a></span> defines the master program;
+<span class="sourceref"><a href="../source/CLMandelbrotWorker.java">CLMandelbrotWorker.java</a></span> defines the worker programs;
+and <span class="sourceref"><a href="../source/CLMandelbrotTask.java">CLMandelbrotTask.java</a></span> defines the class,
+<span class="classname">CLMandelbrotTask</span>, that represents
+an individual task that is performed by the workers.  To run the
+demonstration, you must start the <span class="code">CLMandelbrotWorker</span>
+program on several computers (probably by running it on the command line).
+This program uses <span class="classname">CLMandelbrotTask</span>,
+so both class files, <span class="code">CLMandelbrotWorker.class</span> 
+and <span class="code">CLMandelbrotTask.class</span>, must be present on the worker
+computers.  You can then run <span class="code">CLMandelbrotMaster</span> on
+the master computer.  Note that this program also requires the
+class <span class="classname">CLMandelbrotTask</span>.
+You must specify the host name or IP address
+of each of the worker computers as command line arguments for
+<span class="code">CLMandelbrotMaster</span>.  A worker program listens for
+connection requests from the master program, and the master
+program must be told where to send those requests.
+For example, if the worker
+program is running on three computers with IP addresses
+172.30.217.101, 172.30.217.102, and 172.30.217.103, then you
+can run <span class="code">CLMandelbrotMaster</span> with the command
+</p>
+
+
+<pre>java  CLMandelbrotMaster  172.30.217.101  172.30.217.102  172.30.217.103</pre>
+   
+
+<p>The master will make a network connection to the worker at each IP
+address; these connections will be used for communication between the master
+program and the workers.</p>
+   
+
+<p>It is possible to run several copies of <span class="code">CLMandelbrotWorker</span> on
+the same computer, but they must listen for network connections on different
+ports.  It is also possible to run <span class="code">CLMandelbrotWorker</span> on
+the same computer as <span class="code">CLMandelbrotMaster</span>.  You might even see some
+speed-up when you do this, if your computer has several processors. See the
+comments in the program source code files for more information, but here are
+some commands that you can use to run the master program and two copies of the worker
+program on the same computer.  Give these commands in separate command windows:</p>
+   
+
+<pre>java  CLMandelbrotWorker                             (Listens on default port)
+   
+java  CLMandelbrotWorker  2501                       (Listens on port 2501)
+   
+java  CLMandelbrotMaster  localhost  localhost:2501</pre>
+   
+
+<p>Every time <span class="code">CLMandelbrotMaster</span> is run, it solves exactly
+the same problem.  (For this demonstration, the nature of the problem is not
+important, but the problem is to compute the data needed for a picture
+of a small piece of the famous "Mandelbrot Set."  If you are interested in
+seeing the picture that is produced, uncomment the call to the <span class="code">saveImage()</span>
+method at the end of the <span class="code">main()</span> routine in <span class="sourceref"><a href="../source/CLMandelbrotMaster.java">CLMandelbrotMaster.java</a></span>.)</p>
+
+
+<p>You can run <span class="code">CLMandelbrotMaster</span> with different numbers of worker programs
+to see how the time required to solve the problem depends on the number of workers.
+(Note that the worker programs continue to run after the master program exists,
+so you can run the master program several times without having to restart the workers.)
+In addition, if you run <span class="code">CLMandelbrotMaster</span> with no command line
+arguments, it will solve the entire problem on its own, so you can see how long
+it takes to do so without using distributed computing.  In a trial that I
+ran on some rather old, slow computers, it took 40 seconds for <span class="code">CLMandelbrotMaster</span> to solve the
+problem on its own.  Using just one worker, it took 43 seconds.  The extra
+time represents extra work involved in using the network; it takes time to
+set up a network connection and to send messages over the network.  Using
+two workers (on different computers), the problem was solved in 22 seconds.  In this case, each worker
+did about half of the work, and their computations were performed in parallel,
+so that the job was done in about half the time.  With larger numbers of
+workers, the time continued to decrease, but only up to a point.  The master
+program itself has a certain amount of work to do, no matter how many
+workers there are, and the total time to solve the problem can never be
+less than the time it takes for the master program to do its part.  In this
+case, the minimum time seemed to be about five seconds.</p>
+
+
+<hr class="break">
+   
+
+<p>Let's take a look at how this distributed application is programmed.
+The master program divides the overall problem into a set of tasks.
+Each task is represented by an object of type <span class="classname">CLMandelbrotTask</span>.
+These tasks have to be communicated to the worker programs, and the worker
+programs must send back their results.  Some protocol is needed for this
+communication.  I decided to use character streams.  The master
+encodes a task as a line of text, which is sent to a worker.  The worker
+decodes the text (into an object of type <span class="classname">CLMandelbrotTask</span>)
+to find out what task it is supposed to perform.
+It performs the assigned task.  It encodes the results as another line of
+text, which it sends back to the master program.  Finally, the master decodes
+the results and combines them with the results from other tasks.  After
+all the tasks have been completed and their results have been combined,
+the problem has been solved.</p>
+   
+
+<p>A worker receives
+not just one task, but a sequence of tasks.  Each time it finishes a task and
+sends back the result, it is assigned a new task.  After all tasks are complete,
+the worker receives a "close" command that tells it to close the connection.
+In <span class="sourceref"><a href="../source/CLMandelbrotWorker.java">CLMandelbrotWorker.java</a></span>, all this is done in 
+a method named <span class="code">handleConnection()</span> that is called to handle
+a connection that has already been opened to the master program.  It uses
+a method <span class="code">readTask()</span> to decode a task that it receives from
+the master and a method <span class="code">writeResults()</span> to encode the results
+of the task for transmission back to the master.  It must also handle
+any errors that occur:</p>  
+   
+
+<pre>private static void handleConnection(Socket connection) {
+   try {
+      BufferedReader in = new BufferedReader( 
+                new InputStreamReader( connection.getInputStream()) );
+      PrintWriter out = new PrintWriter(connection.getOutputStream());
+      while (true) {
+         String line = in.readLine();  // Message from the master.
+         if (line == null) {
+               // End-of-stream encountered -- should not happen.
+            throw new Exception("Connection closed unexpectedly.");
+         }
+         if (line.startsWith(CLOSE_CONNECTION_COMMAND)) {
+               // Represents the normal termination of the connection.
+            System.out.println("Received close command.");
+            break;
+         }
+         else if (line.startsWith(TASK_COMMAND)) {
+               // Represents a CLMandelbrotTask that this worker is
+               // supposed to perform.
+            CLMandelbrotTask task = readTask(line);  // Decode the message.
+            task.compute();  // Perform the task.
+            out.println(writeResults(task));  //  Send back the results.
+            out.flush();  // Make sure data is sent promptly!
+         }
+         else {
+               // No other messages are part of the protocol.
+            throw new Exception("Illegal command received.");
+         }
+      }
+   }
+   catch (Exception e) {
+      System.out.println("Client connection closed with error " + e);
+   }
+   finally {
+      try {
+         connection.close();  // Make sure the socket is closed.
+      }
+      catch (Exception e) {
+      }
+   }
+}</pre>
+   
+
+<p>Note that this method is <b>not</b> executed in a separate thread.  The
+worker has only one thing to do at a time and does not need to be multithreaded.
+</p>
+   
+   
+
+<p>Turning to the master program, <span class="sourceref"><a href="../source/CLMandelbrotMaster.java">CLMandelbrotMaster.java</a></span>,
+we encounter a more complex situation.  The master program must communicate
+with several workers over several network connections.  To accomplish this,
+the master program is multi-threaded, with one thread to manage communication
+with each worker.  A pseudocode outline of the <span class="code">main()</span> routine
+is quite simple:</p>
+   
+
+<pre>create a list of all tasks that must be performed
+if there are no command line arguments {
+      // The master program does all the tasks itself.
+   Perform each task.
+}
+else {
+      // The tasks will be performed by worker programs.
+   for each command line argument:
+      Get information about a worker from command line argument.
+      Create and start a thread to communicate with the worker.
+   Wait for all threads to terminate.
+}
+// All tasks are now complete (assuming no error occurred).</pre>
+
+
+<p>The list of tasks is stored in a variable, <span class="code">tasks</span>, of type
+<span class="classname">ConcurrentBlockingQueue&lt;CLMandelbrotTask&gt;</span>, <span class="code">tasks</span>. 
+(See <a href="../c12/s3.html#threads.3.2">Subsection&nbsp;12.3.2</a>.) The
+communication threads take tasks from this list and send them
+to worker programs.  The method <span class="code">tasks.poll()</span> is used to remove
+a task from the queue.  If the queue is empty, it returns
+<span class="code">null</span>, which acts as a signal that all tasks have
+been assigned and the communication thread can terminate.</p>
+   
+
+<p>The job of a thread is to send a sequence of tasks to a worker
+thread and to receive the results that the worker sends back.  The thread
+is also responsible for opening the connection in the first place.  A
+pseudocode outline for the process executed by the thread might
+look like:</p>
+         
+
+<pre>Create a socket connected to the worker program.
+Create input and output streams for communicating with the worker.
+while (true) {
+   Let task = tasks.poll().
+   If task == null
+      break;  // All tasks have been assigned.  
+   Encode the task into a message and transmit it to the worker.
+   Read the response from the worker.
+   Decode and process the response.
+}
+Send a "close" command to the worker.
+Close the socket.</pre>
+   
+
+<p>This would work OK.  However, there are a few subtle points.  First of
+all, the thread must be ready to deal with a network error.  For example,
+a worker might shut down unexpectedly. But if that happens, the master
+program can continue, provided other workers are still available.
+(You can try this when you run the program:  Stop one of the
+worker programs, with <span class="code">CONTROL-C</span>, and observe that the
+master program still completes successfully.)  A difficulty arises
+if an error occurs while the thread is working on a task:  If the
+problem as a whole is going to be completed, that task will have
+to be reassigned to another worker.  I take care of this by putting
+the uncompleted task back into the task list.  (Unfortunately, my
+program does not handle all possible errors.  If the last worker thread
+fails, there will be no one left to take over the uncompleted task.
+Also, if a network connection
+"hangs" indefinitely without actually generating an error, my program
+will also hang, waiting for a response from a worker that will never
+arrive.  A more robust program would have some way of detecting
+the problem and reassigning the task.)</p>
+   
+
+<p>Another defect in the procedure outlined above is that it leaves
+the worker program idle while the thread is processing the
+worker's response.  It would be nice to get a new task to the 
+worker before processing the response from the previous task.
+This would keep the worker busy and allow two operations to
+proceed simultaneously instead of sequentially.  (In this example,
+the time it takes to process a response is so short that keeping
+the worker waiting while it is done probably makes no significant
+difference.  But as a general principle, it's desirable to have
+as much parallelism as possible in the algorithm.)  We can modify
+the procedure to take this into account:</p>
+   
+
+<pre>try {
+   Create a socket connected to the worker program.
+   Create input and output streams for communicating with the worker.
+   Let currentTask = tasks.poll().
+   Encode currentTask into a message and send it to the worker.
+   while (true) {
+      Read the response from the worker.
+      Let nextTask = tasks.poll().
+      If nextTask != null {
+            // Send nextTask to the worker before processing the
+            // response to currentTask.
+         Encode nextTask into a message and send it to the worker.
+      }
+      Decode and process the response to currentTask.
+      currentTask = nextTask.
+      if (currentTask == null)
+         break; // All tasks have been assigned.
+   }
+   Send a "close" command to the worker.
+   Close the socket.
+}
+catch (Exception e) {
+   Put uncompleted task, if any, back into the task queue.
+}
+finally {
+   Close the connection.
+}</pre>
+   
+
+<p>Finally, here is how this translates into Java.  The pseudocode
+presented above becomes the <span class="code">run()</span> method in the
+class that defines the communication threads used by the
+master program:</p>
+   
+
+<pre>/**
+ * This class represents one worker thread.  The job of a worker thread
+ * is to send out tasks to a CLMandelbrotWorker program over a network
+ * connection, and to get back the results computed by that program.
+ */
+private static class WorkerConnection extends Thread {
+    
+    int id;        // Identifies this thread in output statements.
+    String host;   // The host to which this thread will connect.
+    int port;      // The port number to which this thread will connect.
+    
+    /**
+     * The constructor just sets the values of the instance
+     * variables id, host, and port and starts the thread.
+     */
+    WorkerConnection(int id, String host, int port) {
+        this.id = id;
+        this.host = host;
+        this.port = port;
+        start();
+    }
+    
+    /**
+     * The run() method of the thread opens a connection to the host and
+     * port specified in the constructor, then sends tasks to the
+     * CLMandelbrotWorker program on the other side of that connection.
+     * If the thread terminates normally, it outputs  the number of tasks
+     * that it processed.  If it terminates with an error, it outputs
+     * an error message.
+     */
+    public void run() {
+        
+        int tasksCompleted = 0; // How many tasks has this thread handled.
+        Socket socket;  // The socket for the connection.
+        
+        try {
+            socket = new Socket(host,port);  // open the connection.
+        }
+        catch (Exception e) {
+            System.out.println("Thread " + id + 
+                    " could not open connection to " + host + ":" + port);
+            System.out.println("   Error: " + e);
+            return;
+        }
+                    
+        CLMandelbrotTask currentTask = null;
+        CLMandelbrotTask nextTask = null;
+
+        try {
+            PrintWriter out = new PrintWriter(socket.getOutputStream());
+            BufferedReader in = new BufferedReader(
+                             new InputStreamReader(socket.getInputStream()) );
+            currentTask = tasks.poll();
+            if (currentTask != null) {
+                   // Send first task to the worker program.
+                String taskString = writeTask(currentTask);
+                out.println(taskString);
+                out.flush();
+            }
+            while (currentTask != null) {
+                String resultString = in.readLine(); // Get results for currentTask.
+                if (resultString == null)
+                    throw new IOException("Connection closed unexpectedly.");
+                if (! resultString.startsWith(RESULT_COMMAND))
+                    throw new IOException("Illegal string received from worker.");
+                nextTask = tasks.poll();  // Get next task and send it to worker.
+                if (nextTask != null) {
+                       // Send nextTask to worker before processing results for 
+                       // currentTask, so that the worker can work on nextTask
+                       // while the currentTask results are processed.
+                    String taskString = writeTask(nextTask);
+                    out.println(taskString);
+                    out.flush();
+                }
+                readResults(resultString, currentTask); 
+                finishTask(currentTask);  // Process results from currentTask.
+                tasksCompleted++;
+                currentTask = nextTask;   // We are finished with old currentTask.
+                nextTask = null;
+            }
+            out.println(CLOSE_CONNECTION_COMMAND);  // Send close command to worker.
+            out.flush();
+        }
+        catch (Exception e) {
+            System.out.println("Thread " + id + " terminated because of an error");
+            System.out.println("   Error: " + e);
+            e.printStackTrace();
+               // Put uncompleted tasks, if any, back into the task list.
+            if (currentTask != null)
+                reassignTask(currentTask);
+            if (nextTask != null)
+                reassignTask(nextTask);
+        }
+        finally {
+            System.out.println("Thread " + id + " ending after completing " + 
+                    tasksCompleted + " tasks");
+            try {
+                socket.close();
+            }
+            catch (Exception e) {
+            }
+        }
+        
+    } //end run()
+    
+} // end nested class WorkerConnection</pre>
+
+
+
+
+
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s3.html">Previous Section</a> |
+           <a href="s5.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

@@ -1,0 +1,56 @@
+
+<html><head><title>Validating a Form</title>
+<script type="text/javascript">
+	function ok_Email(emform){
+		var regex=/^(([\-\w]+)\.?)+@(([\-\w]+)\.?)+\.[a-zA-Z]{2,4}$/;
+		if(regex.test(myform.user_email.value)){
+			return true;
+		}
+		else{
+			alert("Enter a valid email address");
+			return false;
+		}
+    }
+	function ok_Phone(phform){
+		var regex = /^\(?\d{3}\)?-?\s*\d{3}\s*-?\d{4}$/;
+		if(regex.test(phform.value)){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+	function ok_Form(myform){
+		if (ok_Email(myform.user_email)== false){
+			alert( "Invalid email address");
+			myform.user_email.focus();
+			myform.user_email.select();
+			return false;
+		}
+		if (ok_Phone(myform.user_phone) == false){
+			alert( "Invalid phone number");
+			myform.user_phone.focus();
+			myform.user_phone.select();
+			return false;
+		}
+		return true;
+	}
+</script>
+</head>
+<hr>
+<body bgcolor="lightgreen"> <font face="arial" size="+1">
+<h2> Checking Form Input</h2>
+   <form name="myform"
+		action="http://localhost/cgi-bin/environ.pl" method="post"
+		onSubmit="return ok_Form(this);">
+	<p>
+	Please enter your email address: <BR>
+	<input type="text" size=40 name="user_email">
+	<p>
+	Please enter your phone number: <BR>
+	<input type="text" size=12 name="user_phone">
+	<p>
+	<input type=submit value="Send">
+   </form>
+</body>
+</html>

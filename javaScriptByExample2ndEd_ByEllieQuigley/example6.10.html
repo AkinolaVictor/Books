@@ -1,0 +1,16 @@
+<script type="text/javascript">
+
+
+outerLoop: for ( var row = 0; row < 10; row++){
+      innerLoop: for ( var col=0; col <= row; col++){
+           document.write("row "+ row +"|column " + col, "</br>");
+           if(col==3){
+	          document.write("Breaking out of both loops at column "+col +"</br>");
+	          break outerLoop;
+	       }
+	    }
+
+ document.write("************</br>");
+ }
+
+ </script>

@@ -1,0 +1,438 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 2, Chapter 5</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 5.2</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 5.2:</h3>
+<p>A common programming task
+is computing statistics of a set of numbers. (A statistic is a number that
+summarizes some property of a set of data.) Common statistics include the mean
+(also known as the average) and the standard deviation (which tells how spread
+out the data are from the mean). I have written a little class called
+<span class="classname">StatCalc</span> that can be used to compute these statistics, as well as the
+sum of the items in the dataset and the number of items in the dataset. You can
+read the source code for this class in the file <span class="sourceref"><a href="../source/StatCalc.java">StatCalc.java</a></span>.
+If <span class="code">calc</span> is a variable of
+type <span class="classname">StatCalc</span>, then the following methods are defined:</p>
+
+
+<ul>
+
+<li>
+<span class="code">calc.enter(item)&nbsp;</span> where
+<span class="code">item</span> is a number, adds the item to the dataset.</li>
+
+
+<li>
+<span class="code">calc.getCount()&nbsp;</span> is a function
+that returns the number of items that have been added to the dataset.</li>
+
+
+<li>
+<span class="code">calc.getSum()&nbsp;</span> is a function
+that returns the sum of all the items that have been added to the dataset.</li>
+
+
+<li>
+<span class="code">calc.getMean()&nbsp;</span> is a function
+that returns the average of all the items.</li>
+
+
+<li>
+<span class="code">calc.getStandardDeviation()&nbsp;</span> is
+a function that returns the standard deviation of the items.</li>
+
+</ul>
+
+
+<p>Typically, all the data are added one after the other by calling the
+<span class="code">enter()</span> method over and over, as the data become available. After all
+the data have been entered, any of the other methods can be called to get
+statistical information about the data. The methods <span class="code">getMean()</span> and
+<span class="code">getStandardDeviation()</span> should only be called if the number of items is
+greater than zero.</p>
+
+
+<p>Modify the current source code, <span class="sourceref"><a href="../source/StatCalc.java">StatCalc.java</a></span>, to add instance
+methods <span class="code">getMax()</span> and <span class="code">getMin()</span>. The <span class="code">getMax()</span> method
+should return the largest of all the items that have been added to the dataset,
+and <span class="code">getMin()</span> should return the smallest. You will need to add two new
+instance variables to keep track of the largest and smallest items that have
+been seen so far.</p>
+
+
+<p>Test your new class by using it in a program to compute statistics for a set
+of non-zero numbers entered by the user. Start by creating an object of type
+<span class="classname">StatCalc</span>:</p>
+
+
+<pre>StatCalc  calc;   // Object to be used to process the data.
+calc = new StatCalc();</pre>
+
+
+<p>Read numbers from the user and add them to the dataset. Use 0 as a sentinel
+value (that is, stop reading numbers when the user enters 0). After all the
+user's non-zero numbers have been entered, print out each of the six statistics
+that are available from <span class="code">calc</span>.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+
+<p>For the <span class="classname">StatCalc</span> class to handle minimums and maximums, some of
+what must be added to the class is obvious. We needs two new instance
+variables, <span class="code">min</span> and <span class="code">max</span>, and two getter methods to return the values
+of those instance variables. So, we can add these lines to the class
+definition:</p>
+
+
+<pre>private double min;   // Smallest item that has been entered.
+private double max;   // Largest item that has been entered.
+
+public double getMin() {
+   return min;
+}
+
+public double getMax() {
+   return max;
+}</pre>
+
+
+<p>But then there is the problem of making sure that <span class="code">min</span> and
+<span class="code">max</span> have the right values. <span class="code">min</span> records the smallest number
+seen so far.  Every time we have a new number to add to
+the dataset there is a possibility that <span class="code">min</span> will change, so
+we have to compare <span class="code">min</span> with the newly added number. If the new number is
+smaller than the current <span class="code">min</span>, then the number becomes the new value of
+<span class="code">min</span> (since the new number is now the smallest number we have seen so
+far). We do something similar for <span class="code">max</span>. This has to be done whenever a
+number is entered into the dataset, so it has to be added to the
+<span class="code">enter()</span> method, giving:</p>
+
+
+<pre>public void enter(double num) {
+   count++;
+   sum += num;
+   squareSum += num*num;
+   if (num &gt; max)          // We have a new maximum.
+      max = num;
+   if (num &lt; min)          // We have a new minimum.
+      min = num;
+}</pre>
+
+
+<p>Unfortunately, if this is all we do, there is a <b>bug in our
+program</b>! For example, if the dataset consists of the numbers 21, 17,
+and 4, the computer will insist that the minimum is 0, rather than 4. The
+problem is that the variables <span class="code">min</span> and <span class="code">max</span> are initialized to
+zero. (If no initial value is provided for a numerical instance variable, it
+gets the default initial value, zero.) Since <span class="code">min</span> is 0, none of the
+numbers in the dataset pass the test "<span class="code">if&nbsp;(num&nbsp;&lt;&nbsp;min)</span>", so the value
+of <span class="code">min</span> never changes. A similar problem holds for <span class="code">max</span>, but it
+will only show up if all the numbers in the dataset are less than zero. For the
+other instance variables, <span class="code">count</span>, <span class="code">sum</span>, and <span class="code">squareSum</span>,
+the default initial value of zero is correct. For <span class="code">min</span> and
+<span class="code">max</span>, we have to do something different.</p>
+
+
+<p>One possible way to fix the problem is to treat the first number entered as
+a special case. When only one number has been entered, it's certainly the
+largest number so far and also the smallest number so far, so it should be
+assigned to both <span class="code">min</span> and <span class="code">max</span>. This can be handled in the
+<span class="code">enter()</span> method:</p>
+
+
+<pre>public void enter(double num) {
+      // (This is NOT the version I used in my final answer.)
+   count++;
+   sum += num;
+   squareSum += num*num;
+   if (count == 1) {  // This is the first number.
+      max = num;
+      min = num;
+   }
+   else {
+      if (num &gt; max)     // We have a new maximum.
+         max = num;
+      if (num &lt; min)     // We have a new minimum.
+         min = num;
+   }
+}</pre>
+
+
+<p>This works fine. However, I decided to use an alternative approach. We would
+be OK if we could initialize <span class="code">min</span> to have a value that is bigger than
+any possible number. Then, when the first number is entered, it will have to
+satisfy the test "<span class="code">if (num &lt; min)</span>", and it will become the value of
+<span class="code">min</span>. But to be "bigger than any possible number," <span class="code">min</span> would
+have to be infinity. The initial value for <span class="code">max</span> has to be smaller than
+any possible number, so <span class="code">max</span> has to be initialized to negative
+infinity. And that's what we'll do!</p>
+
+
+<p>Recall that the standard class <span class="classname">Double</span> contains constants
+<span class="code">Double.POSITIVE_INFINITY</span> and <span class="code">Double.NEGATIVE_INFINITY</span> that
+represent positive and negative infinity.  We can
+use these named constants to provide initial values for the instance variables
+<span class="code">min</span> and <span class="code">max</span>. So, the declarations become:</p>
+
+
+<pre>private double max = Double.NEGATIVE_INFINITY;  // Largest item seen.
+private double min = Double.POSITIVE_INFINITY;  // Smallest item seen.</pre>
+
+
+<p>With this change, the <span class="classname">StatCalc</span> class works correctly. The complete
+class is shown below.  (By the way, you might think about what happens if <span class="code">getMin()</span>
+or <span class="code">getMax()</span> is called before any data has been entered.  What actually happens?
+What should happen?  What is the minimum or maximum of a set of numbers that contains no
+numbers at all?)</p>
+
+
+<p>The main program is fairly straightforward, so just for fun I decided to
+use a <span class="classname">Scanner</span> instead of <span class="classname">TextIO</span>
+to read the user's input (see <a href="../c2/s4.html#basics.4.6">Subsection&nbsp;2.4.6</a>.
+The user's data are read and
+entered into the <span class="classname">StatCalc</span> object in a loop:</p>
+
+
+<pre>do {
+   System.out.print("? ");
+   item = in.nextDouble();  // (in is the Scanner.)
+   if (item != 0)
+      calc.enter(item);
+} while ( item != 0 );</pre>
+
+
+<p>The subroutine call "<span class="code">calc.enter(item);</span>" enters the user's item.
+That is, it does all the processing necessary to include this data item in the
+statistics it is computing. After all the data have been entered, the
+statistics can be obtained by using function calls such as
+"<span class="code">calc.getMean()</span>". The statistics are output in statements such as:</p>
+
+
+<pre>System.out.println("   Average:            " + calc.getMean());</pre>
+
+
+<p>Note that a function call represents a value, and so can be used anyplace
+where a variable or literal value could be used. I don't have to assign the
+value of the function to a variable. I can use the function call directly in
+the output statement.  Another note: In this program, I decided not to use
+formatted output, since it seems appropriate to print the answers with
+as much accuracy as possible.  For formatted output, the statement
+used to print the mean could be something like:</p>
+
+
+<pre>System.out.printf("    Average:            %10.3f\n", calc.getMean());</pre>
+
+
+<p>The complete main program is shown below.</p>
+
+
+<hr class="break">
+
+
+<p>Although that completes the exercise, one might wonder: Instead of modifying
+the source code of <span class="classname">StatCalc</span>, could we make a subclass of
+<span class="classname">StatCalc</span> and put the modifications in that? The answer is yes, but we
+need to use the slightly obscure special variable <span class="code">super</span> that was
+discussed in <a href="../c5/s6.html#OOP.6.2">Subsection&nbsp;5.6.2</a>.</p>
+
+
+<p>The new instance variables and instance methods can simply be put into the
+subclass. The problem arises with the <span class="code">enter()</span> method. We have to
+redefine this method so that it will update the values of <span class="code">min</span> and
+<span class="code">max</span>. But it also has to do all the processing that is done by the
+original <span class="code">enter()</span> method in the <span class="classname">StatCalc</span> class. This is what
+<span class="code">super</span> is for. It lets us call a method from the superclass of the
+class we are writing. So, the subclass can be written:</p>
+
+
+<pre>class StatCalcWithMinMax extends StatCalc {
+
+   private double max = Double.NEGATIVE_INFINITY;  // Largest item seen.
+   private double min = Double.POSITIVE_INFINITY;  // Smallest item seen.
+
+   public void enter(double num) {
+      super.enter(num);  // Call the enter method from the StatCalc class.
+      if (num &gt; max)  // Then do the extra processing for min and max.
+         max = num;
+      if (num &lt; min)
+         min = num;
+   }
+ 
+   public double getMin() {
+      return min;
+   }
+   
+   public double getMax() {
+      return max;
+   }
+
+}  // end class StatCalcWithMinMax</pre>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">
+<b><span class="newcode">Revised StatCalc Class</span></b>
+
+     /* 
+      * An object of class StatCalc can be used to compute several simple statistics
+      * for a set of numbers.  Numbers are entered into the dataset using
+      * the enter(double) method.  Methods are provided to return the following
+      * statistics for the set of numbers that have been entered: The number
+      * of items, the sum of the items, the average, the standard deviation,
+      * the maximum, and the minimum.
+      */
+     
+     public class StatCalc {
+     
+        private int count;   // Number of numbers that have been entered.
+        private double sum;  // The sum of all the items that have been entered.
+        private double squareSum;  // The sum of the squares of all the items.
+        private double max = Double.NEGATIVE_INFINITY;  // Largest item seen.
+        private double min = Double.POSITIVE_INFINITY;  // Smallest item seen.
+     
+        /**
+         * Add a number to the dataset.  The statistics will be computed for all
+         * the numbers that have been added to the dataset using this method.
+         */
+        public void enter(double num) {
+           count++;
+           sum += num;
+           squareSum += num*num;
+           if (num &gt; max)
+              max = num;
+           if (num &lt; min)
+              min = num;
+        }
+     
+        /**
+         * Return the number of items that have been entered into the dataset.
+         */
+        public int getCount() {
+           return count;
+        }
+     
+        /**
+         * Return the sum of all the numbers that have been entered.
+         */
+        public double getSum() {
+           return sum;
+        }
+     
+        /**
+         * Return the average of all the items that have been entered.
+         * The return value is Double.NaN if no numbers have been entered.
+         */
+        public double getMean() {
+           return sum / count;  
+        }
+     
+        /**
+         * Return the standard deviation of all the items that have been entered.
+         * The return value is Double.NaN if no numbers have been entered.
+         */
+        public double getStandardDeviation() {  
+           double mean = getMean();
+           return Math.sqrt( squareSum/count - mean*mean );
+        }
+        
+        /**
+         * Return the smallest item that has been entered.
+         * The return value will be infinity if no numbers have been entered. 
+         */
+        public double getMin() {
+           return min;
+        }
+        
+        /**
+         * Return the largest item that has been entered.
+         * The return value will be -infinity if no numbers have been entered. 
+         */
+        public double getMax() {
+           return max;
+        }
+     
+     }  // end class StatCalc
+
+
+
+<b><span class="newcode">Main Program</span></b>
+
+     /**
+      * Computes and display several statistics for a set of non-zero
+      * numbers entered by the user.  (Input ends when user enters 0.)
+      * This program uses StatCalc.java.
+      */
+     
+     import java.util.Scanner;
+
+     public class SimpleStats {
+   
+       public static void main(String[] args) {
+   
+          Scanner in = new Scanner(System.in);
+   
+          StatCalc calc; // Computes stats for numbers entered by user.
+          calc = new StatCalc();
+   
+          double item; // One number entered by the user.
+   
+          System.out.println("Enter your numbers.  Enter 0 to end.");
+          System.out.println();
+   
+          do {
+             System.out.print("? ");
+             item = in.nextDouble();
+             if (item != 0)
+                calc.enter(item);
+          } while (item != 0);
+   
+          System.out.println("\nStatistics about your calc:\n");
+          System.out.println("   Count:              " + calc.getCount());
+          System.out.println("   Sum:                " + calc.getSum());
+          System.out.println("   Minimum:            " + calc.getMin());
+          System.out.println("   Maximum:            " + calc.getMax());
+          System.out.println("   Average:            " + calc.getMean());
+          System.out.println("   Standard Deviation: "
+                 + calc.getStandardDeviation());
+   
+       } // end main()
+   
+    } // end SimpleStats
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

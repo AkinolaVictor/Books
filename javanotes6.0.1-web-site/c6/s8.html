@@ -1,0 +1,751 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 6.8 -- Menus and Dialogs</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s7.html">Previous Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#GUI1.8.1">Menus and Menubars</a>
+<br>
+<a href="#GUI1.8.2">Dialogs</a>
+<br>
+<a href="#GUI1.8.3">Fine Points of Frames</a>
+<br>
+<a href="#GUI1.8.4">Creating Jar Files</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 6.8</h3>
+<h2 class="section_title">Menus and Dialogs</h2>
+<hr class="break">
+
+
+<p>
+<span class="start"><big>W</big>e have already encountered</span> many of the basic
+aspects of GUI programming, but professional programs use many
+additional features.  We will cover some of the advanced features
+of Java GUI programming in <a href="../c13/index.html">Chapter&nbsp;13</a>, but in this
+section we look briefly at a few more basic features that are
+essential for writing GUI programs.  I will discuss these features
+in the context of this "MosaicDraw" program:</p>
+   
+
+<p align="center">
+<applet code="MosaicDrawApplet" width="400" height="425" archive="MosaicDraw.jar" alt="Applet 'MosaicDrawApplet' should appear here"></applet></p>
+   
+
+<p>Try clicking and dragging on the large black drawing area.  As you move the mouse,
+you will leave a trail of little colored squares.  There is some random variation in the color of the squares.  (This is meant
+to make the picture look a little more like a real mosaic, which is a picture made out of 
+small colored stones in which there would be some natural color variation.)
+There is a menu bar above the drawing area.  The "Control" menu contains
+commands for filling and clearing the drawing area, along with a few options that affect
+the appearance of the picture.  The "Color" menu lets the user select the color that will
+be used when the user draws.  The "Tools" menu affects the behavior of the mouse.
+Using the default "Draw" tool, the mouse leaves a trail of single squares.  Using the
+"Draw&nbsp;3x3" tool, the mouse leaves a swath of colored squares that is three squares wide.
+There are also "Erase" tools, which let the user set squares back to their default
+black color.</p>
+   
+
+<p>The drawing area of the program is a panel that belongs to the <span class="classname">MosaicPanel</span>
+class, a subclass of <span class="classname">JPanel</span> that is defined in <span class="sourceref"><a href="../source/MosaicPanel.java">MosaicPanel.java</a></span>.
+<span class="classname">MosaicPanel</span> is a highly reusable class for representing mosaics of colored
+rectangles.  It does not directly support drawing on the mosaic, but it does support setting
+the color of each individual square.  The MosaicDraw program installs a mouse listener on
+the panel; the mouse listener responds to mousePressed and mouseDragged events on the
+panel by setting the color of the square that contains the mouse.  This is a nice example of
+applying a listener to an object to do something that was not programmed into the object
+itself.</p>
+
+
+<p>Most of the programming for MosaicDraw can be found in <span class="sourceref"><a href="../source/MosaicDrawController.java">MosaicDrawController.java</a></span>.
+(It could have gone into the <span class="classname">MosaicPanel</span> class, if I had not decided to
+use that pre-existing class in unmodified form.)  It is the <span class="classname">MosaicDrawController</span>
+class that creates a <span class="classname">MosaicPanel</span> object and adds a mouse listener to
+it.  It also creates the menu bar that is shown at the top of the program and implements all
+the commands in the menu bar.  It has an instance method <span class="code">getMosaicPanel()</span> that
+returns a reference to the mosaic panel that it has created, and it has another instance
+method <span class="code">getMenuBar()</span> that returns a menu bar for the program.  These methods are
+used to obtain the panel and menu bar so that they can be added to an applet or a frame.</p>
+   
+
+<p>To get a working program, an object of type <span class="classname">JApplet</span> or
+<span class="classname">JFrame</span> is needed.  The files <span class="sourceref"><a href="../source/MosaicDrawApplet.java">MosaicDrawApplet.java</a></span>
+and <span class="sourceref"><a href="../source/MosaicDrawFrame.java">MosaicDrawFrame.java</a></span> define the applet and frame versions of the
+program.  These are rather simple classes; they simply create a <span class="classname">MosaicDrawController</span>
+object and use its mosaic panel and menu bar.  I urge you to study these files,
+along with <span class="sourceref"><a href="../source/MosaicDrawController.java">MosaicDrawController.java</a></span>.  I will not be discussing all aspects
+of the code here, but you should be able to understand it all after reading this section. As for
+<span class="sourceref"><a href="../source/MosaicPanel.java">MosaicPanel.java</a></span>, it uses some techniques that you would not understand at this
+point, but I encourage you to at least read the comments in this file to learn about the API
+for mosaic panels.</p>
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="GUI1.8.1">6.8.1&nbsp;&nbsp;Menus and Menubars</a>
+</h3>
+   
+
+<p>MosaicDraw is the first example that we have seen that uses a menu bar.  Fortunately,
+menus are very easy to use in Java.  The items in a menu are represented by the
+class <span class="classname">JMenuItem</span> (this class and other menu-related classes are
+in package <span class="code">javax.swing</span>).  Menu items are used in almost exactly the
+same way as buttons.  In fact, <span class="classname">JMenuItem</span> and <span class="classname">JButton</span>
+are both subclasses of a class, <span class="classname">AbstractButton</span>, that defines their
+common behavior. In particular, a <span class="classname">JMenuItem</span> is created using
+a constructor that specifies the text of the menu item, such as:</p>
+   
+
+<pre>JMenuItem fillCommand = new JMenuItem("Fill");</pre>
+   
+
+<p>You can add an <span class="classname">ActionListener</span> to a <span class="classname">JMenuItem</span>
+by calling the menu item's <span class="code">addActionListener()</span> method.  
+The <span class="code">actionPerformed()</span> method of the
+action listener is called when the user selects the item from the menu.  
+You can change the text of the item by calling its <span class="code">setText(String)</span> method,
+and you can enable it and disable it using the <span class="code">setEnabled(boolean)</span> method.
+All this works in exactly the same way as for a <span class="classname">JButton</span>.</p>
+   
+
+<p>The main difference between a menu item and a button, of course, is that a menu
+item is meant to appear in a menu rather than in a panel.  A menu in Java is
+represented by the class <span class="classname">JMenu</span>.  A <span class="classname">JMenu</span> has a name,
+which is specified in the constructor, and it has an <span class="code">add(JMenuItem)</span> method that
+can be used to add a <span class="classname">JMenuItem</span> to the menu.  So, the "Tools"
+menu in the MosaicDraw program could be created as follows, where <span class="code">listener</span>
+is a variable of type <span class="code">ActionListener</span>:</p>
+
+
+<pre>JMenu toolsMenu = new JMenu("Tools");  // Create a menu with name "Tools"
+
+JMenuItem drawCommand = new JMenuItem("Draw");   // Create a menu item.
+drawCommand.addActionListener(listener);         // Add listener to menu item.
+toolsMenu.add(drawCommand);                      // Add menu item to menu.
+
+JMenuItem eraseCommand = new JMenuItem("Erase"); // Create a menu item.
+eraseCommand.addActionListener(listener);        // Add listener to menu item.
+toolsMenu.add(eraseCommand);                     // Add menu item to menu.
+   .
+   .  // Create and add other menu items.
+   .</pre>
+   
+
+<p>Once a menu has been created, it must be added to a menu bar.  A menu bar is represented
+by the class <span class="classname">JMenuBar</span>.  A menu bar is just a container for menus.
+It does not have a name, and its constructor does not have any parameters. It has an
+<span class="code">add(JMenu)</span> method that can be used to add menus to the menu bar.  The name of
+the menu then appears in the menu bar.  For example,
+the MosaicDraw program uses three menus, <span class="code">controlMenu</span>, <span class="code">colorMenu</span>,
+and <span class="code">toolsMenu</span>.  We could create a menu bar and add the menus to it with
+the statements:</p>
+   
+
+<pre>JMenuBar menuBar = new JMenuBar();
+menuBar.add(controlMenu);
+menuBar.add(colorMenu);
+menuBar.add(toolsMenu);</pre>
+
+
+<p>The final step in using menus is to use the menu bar in a <span class="classname">JApplet</span>
+or <span class="classname">JFrame</span>.  We have already seen that an applet or frame has a
+"content pane."  The menu bar is another component of the applet or frame, 
+not contained inside the content pane.  Both the
+<span class="classname">JApplet</span> and the <span class="classname">JFrame</span> classes include
+an instance method <span class="code">setMenuBar(JMenuBar)</span> that can be used to set the menu bar.
+(There can only be one, so this is a "set" method rather than an "add" method.)
+In the MosaicDraw program, the menu bar is created by a <span class="classname">MosaicDrawController</span>
+object and can be obtained by calling that object's <span class="code">getMenuBar()</span> method.
+Here is the basic code that is used (in somewhat modified form) to set up the interface
+both in the applet and in the frame version of the program:</p>
+
+
+<pre>MosaicDrawController controller = new MosaicDrawController();
+
+MosaicPanel content = controller.getMosaicPanel();
+setContentPane( content );  // Use panel from controller as content pane.
+   
+JMenuBar menuBar = controller.getMenuBar();
+setJMenuBar( menuBar );    // Use the menu bar from the controller.</pre>
+     
+
+<p>Using menus always follows the same general pattern:  Create a menu bar.  Create menus
+and add them to the menu bar.  Create menu items and add them to the menus (and set up
+listening to handle action events from the menu items).  Use the menu bar in a
+<span class="classname">JApplet</span> or <span class="classname">JFrame</span> by calling the
+<span class="code">setJMenuBar()</span> method of the applet or frame.</p>
+   
+
+<hr class="break">
+   
+
+<p>There are other kinds of menu items, defined by subclasses of <span class="classname">JMenuItem</span>,
+that can be added to menus.  One of these is <span class="classname">JCheckBoxMenuItem</span>,
+which represents menu items that can be in one of two states, selected or not selected.
+A <span class="classname">JCheckBoxMenuItem</span> has the same functionality and is used in
+the same way as a <span class="classname">JCheckBox</span> (see <a href="../c6/s6.html#GUI1.6.3">Subsection&nbsp;6.6.3</a>).
+Three <span class="classname">JCheckBoxMenuItems</span> are used in the "Control" menu
+of the MosaicDraw program.  One can be used to turn the random color variation of
+the squares on and off.  Another turns a symmetry feature on and off; when symmetry is
+turned on, the user's drawing is reflected horizontally and vertically to produce
+a symmetric pattern.  And the third checkbox menu item shows and hides the
+"grouting" in the mosaic; the grouting is the gray lines that are drawn around each
+of the little squares in the mosaic.  The menu item that corresponds to the
+"Use Randomness" option in the "Control" menu could be set up with the statements:</p>
+       
+
+<pre>JMenuItem useRandomnessToggle = new JCheckBoxMenuItem("Use Randomness");
+useRandomnessToggle.addActionListener(listener);  // Set up a listener.
+useRandomnessToggle.setSelected(true);  // Randomness is initially turned on.
+controlMenu.add(useRandomnessToggle);   // Add the menu item to the menu.</pre>
+   
+
+<p>The "Use Randomness" <span class="classname">JCheckBoxMenuItem</span>
+corresponds to a boolean-valued instance variable named <span class="code">useRandomness</span>
+in the <span class="classname">MosaicDrawController</span> class.
+This variable is part of the state of the controller object.
+Its value is tested whenever the user draws one
+of the squares, to decide whether or not to add a random variation to the color of
+the square.  When the user selects the "Use Randomness" command
+from the menu, the state of the <span class="classname">JCheckBoxMenuItem</span> is reversed,
+from selected to not-selected or from not-selected to selected.  The <span class="classname">ActionListener</span>
+for the menu item checks whether the menu item is selected or not, and it changes the
+value of <span class="code">useRandomness</span> to match.  Note that selecting the menu command
+does not have any immediate effect on the picture that is shown in the window.  It just
+changes the state of the program so that future drawing operations on the part of
+the user will have a different effect.  The "Use Symmetry" option in the "Control"
+menu works in much the same way.  The "Show Grouting" option is a little different.
+Selecting the "Show Grouting" option does have an immediate effect: The picture is
+redrawn with or without the grouting, depending on the state of the menu item.</p>
+   
+
+<p>My program uses a single <span class="classname">ActionListener</span> to respond to
+all of the menu items in all the menus.  This is not a particularly good design, but it
+is easy to implement for a small program like this one.  The <span class="code">actionPerformed()</span> method
+of the listener object uses the statement</p>
+
+
+<pre>String command = evt.getActionCommand();</pre>
+   
+
+<p>to get the action command of the source of the event; this will be the text of
+the menu item.  The listener tests the value of <span class="code">command</span> to determine
+which menu item was selected by the user.  If the menu item is a
+<span class="classname">JCheckBoxMenuItem</span>, the listener must check the state of
+the menu item.  The menu item is the source of the event that is being processed.
+The listener can get its hands on the menu item object by
+calling <span class="code">evt.getSource()</span>.  Since the return value of <span class="code">getSource()</span>
+is of type <span class="classname">Object</span>, the return value must be type-cast to
+the correct type.  Here, for example, is the code that handles the "Use Randomness"
+command:</p>
+      
+
+<pre>if (command.equals("Use Randomness")) {
+        // Set the value of useRandomness depending on the menu item's state.
+   JCheckBoxMenuItem toggle = (JCheckBoxMenuItem)evt.getSource();
+   useRandomness = toggle.isSelected();
+}</pre>
+
+
+<p>(The <span class="code">actionPerformed()</span> method uses a rather long <span class="code">if..then..else</span>
+statement to check all the possible action commands.  This would be a natural place to
+use a <span class="code">switch</span> statement with <span class="code">command</span> as the selector and
+all the possible action commands as cases.  However, this can only be done if you are
+sure that the program will be run using Java&nbsp;7 or later, since <span class="classname">Strings</span>
+were not allowed in <span class="code">switch</span> statements in earlier versions of Java.)</p>
+   
+
+<hr class="break">
+
+
+<p>In addition to menu items, a menu can contain lines that separate the menu items
+into groups.  In the MosaicDraw program, the "Control" menu contains such a separator.
+A <span class="classname">JMenu</span> has an instance method <span class="code">addSeparator()</span>
+that can be used to add a separator to the menu.  For example, the separator in the
+"Control" menu was created with the statement:</p>
+   
+
+<pre>controlMenu.addSeparator();</pre>
+   
+
+<p>A menu can also contain a submenu.  The name of the submenu appears as an item
+in the main menu.  When the user moves the mouse over the submenu name, the submenu
+pops up.  (There is no example of this in the MosaicDraw program.)  It is very easy
+to do this in Java:  You can add one <span class="classname">JMenu</span> to another
+<span class="classname">JMenu</span> using a statement such as
+<span class="code">mainMenu.add(submenu)</span>.</p>
+
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="GUI1.8.2">6.8.2&nbsp;&nbsp;Dialogs</a>
+</h3>
+ 
+
+<p>One of the commands in the "Color" menu of the MosaicDraw program is
+"Custom Color...".  When the user selects this command, a new window
+appears where the user can select a color.  This window is an example
+of a <span class="newword">dialog</span> or <span class="newword">dialog box</span>.
+A dialog is a type of window that is generally
+used for short, single purpose interactions with the user. For example, a
+dialog box can be used to display a message to the user, to ask the user a
+question, to let the user select a file to be opened,
+or to let the user select a color. In Swing, a dialog box is
+represented by an object belonging to the class <span class="classname">JDialog</span>
+or to a subclass.</p>
+
+
+<p>The <span class="classname">JDialog</span> class is very similar to <span class="classname">JFrame</span>
+and is used in much the same way.
+Like a frame, a dialog box is a separate window. Unlike a frame, however, a
+dialog is not completely independent. Every dialog is associated with a
+frame (or another dialog), which is called its <span class="newword">parent window</span>. 
+The dialog box is dependent on its parent. For
+example, if the parent is closed, the dialog box will also be closed. It is
+possible to create a dialog box without specifying a parent, but in that case
+an invisible frame is created by the system to serve as the parent.</p>
+
+
+<p>Dialog boxes can be either <span class="newword">modal</span> or
+<span class="newword">modeless</span>. When a modal dialog is created, its
+parent frame is blocked. That is, the user will not be able to interact with
+the parent until the dialog box is closed. Modeless dialog boxes do not block
+their parents in the same way, so they seem a lot more like independent
+windows. In practice, modal dialog boxes are easier to use and are much more
+common than modeless dialogs. All the examples we will look at are modal.</p>
+
+
+<p>Aside from having a parent, a <span class="classname">JDialog</span> can be created and used in
+the same way as a <span class="classname">JFrame</span>. However, I will not give any examples here of using
+<span class="classname">JDialog</span> directly. Swing has many convenient methods for creating 
+common types of dialog boxes. For example, the color choice dialog that appears
+when the user selects the "Custom Color" command in the MosaicDraw program belongs
+to the class <span class="classname">JColorChooser</span>, which is a subclass of
+<span class="classname">JDialog</span>.  The <span class="classname">JColorChooser</span> class has
+a static method that makes color choice dialogs very easy to use:</p>
+
+
+<pre>Color JColorChooser.showDialog(Component parentComp, 
+                                        String title, Color initialColor)</pre>
+
+
+<p>When you call this method, a dialog box appears that allows the user to
+select a color. The first parameter specifies the parent of the dialog; the parent
+window of the dialog will be the window (if any) that contains <span class="code">parentComp</span>;
+this parameter can be <span class="code">null</span> and it can itself be a frame or dialog object.
+The second parameter is a string that appears in the title bar of the dialog box.
+And the third parameter, <span class="code">initialColor</span>, specifies the color that is
+selected when the color choice dialog first appears.
+The dialog has a sophisticated interface that allows the user to
+change the selected color. When the user presses an "OK" button, the dialog box
+closes and the selected color is returned as the value of the method. The user
+can also click a "Cancel" button or close the dialog box in some other way; in
+that case, <span class="code">null</span> is returned as the value of the method. This is a modal
+dialog, and the <span class="code">showDialog()</span> does not return until the user dismisses
+the dialog box in some way.  By using this
+predefined color chooser dialog, you can write one line of code that will let
+the user select an arbitrary color.  Swing also has a <span class="classname">JFileChooser</span>
+class that makes it almost as easy to show a dialog box that lets the user select
+a file to be opened or saved.</p>
+
+
+
+<p>The following applet demonstrates a <span class="classname">JColorChooser</span> dialog and three
+other, simpler standard dialog boxes. When you click one of the buttons, a
+dialog box appears. The label at the top of the applet gives you some feedback
+about what is happening:</p>
+
+
+<p align="center">
+<applet code="SimpleDialogDemo.class" width="450" height="140" alt="Applet 'SimpleDialogDemo' should appear here."></applet></p>
+
+
+<p>The three simple dialogs in this applet are created by static methods in the
+class <span class="classname">JOptionPane</span>. This class includes many methods for making dialog
+boxes, but they are all variations on the three basic types shown here: a
+"message" dialog, a "confirm" dialog, and an "input" dialog. (The variations
+allow you to provide a title for the dialog box, to specify the icon that
+appears in the dialog, and to add other components to the dialog box. I will
+only cover the most basic forms here.)</p>
+
+   
+
+
+
+<p>A message dialog simply displays a message string to the user. The user
+(hopefully) reads the message and dismisses the dialog by clicking the "OK"
+button. A message dialog can be shown by calling the static method:</p>
+
+
+<pre>void JOptionPane.showMessageDialog(Component parentComp, String message)</pre>
+
+
+<p>The message can be more than one
+line long. Lines in the message should be separated by newline characters, <span class="code">\n</span>.
+New lines will not be inserted automatically, even if the message is very
+long.</p>
+
+
+<p>An input dialog displays a question or request and lets the user type in a
+string as a response. You can show an input dialog by calling:</p>
+
+
+<pre>String JOptionPane.showInputDialog(Component parentComp, String question)</pre>
+
+
+<p>Again,  the question can include newline
+characters. The dialog box will contain an input box, an "OK" button, and a
+"Cancel" button. If the user clicks "Cancel", or closes the dialog box in some
+other way, then the return value of the method is <span class="code">null</span>. If the user
+clicks "OK", then the return value is the string that was entered by the user.
+Note that the return value can be an empty string (which is not the same as a
+<span class="code">null</span> value), if the user clicks "OK" without typing anything in the
+input box. If you want to use an input dialog to get a numerical value from the
+user, you will have to convert the return value into a number; see <a href="../c3/s7.html#control.7.2">Subsection&nbsp;3.7.2</a>.</p>
+
+
+<p>Finally, a confirm dialog presents a question and three response buttons:
+"Yes", "No", and "Cancel". A confirm dialog can be shown by calling:</p>
+
+
+<pre>int JOptionPane.showConfirmDialog(Component parentComp, String question)</pre>
+
+
+<p>The return value tells you the user's response. It is one of the following
+constants:</p>
+
+
+<ul>
+
+<li>
+<span class="code">JOptionPane.YES_OPTION</span>  --  the user clicked the "Yes" button</li>
+
+<li>
+<span class="code">JOptionPane.NO_OPTION</span>  --  the user clicked the "No" button</li>
+
+<li>
+<span class="code">JOptionPane.CANCEL_OPTION</span>  --  the user clicked the "Cancel" button</li>
+
+<li>
+<span class="code">JOptionPane.CLOSE_OPTION</span>  --  the dialog was closed in some other way.</li>
+
+</ul>
+
+
+<p>By the way, it is possible to omit the Cancel button from a confirm dialog
+by calling one of the other methods in the <span class="code">JOptionPane</span> class. Just
+call:</p>
+
+
+<pre>JOptionPane.showConfirmDialog(
+                parent, question, title, JOptionPane.YES_NO_OPTION )</pre>
+
+
+<p>The final parameter is a constant which specifies that only a "Yes" button
+and a "No" button should be used. The third parameter is a string that will be
+displayed as the title of the dialog box window.</p>
+
+
+<p>If you would like to see how dialogs are created and used in the sample
+applet, you can find the source code in the file <span class="sourceref"><a href="../source/SimpleDialogDemo.java">SimpleDialogDemo.java</a></span>.</p>
+ 
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="GUI1.8.3">6.8.3&nbsp;&nbsp;Fine Points of Frames</a>
+</h3>
+   
+
+<p>In previous sections, whenever I used a frame, I created a <span class="classname">JFrame</span>
+object in a <span class="code">main()</span> routine and installed a panel as the content pane of
+that frame.  This works fine, but a more object-oriented approach is to define a subclass
+of <span class="classname">JFrame</span> and to set up the contents of the frame in the constructor
+of that class.  This is what I did in the case of the
+MosaicDraw program.  <span class="classname">MosaicDrawFrame</span> is defined as a subclass of
+<span class="classname">JFrame</span>.  The definition of this class is very short, but it illustrates
+several new features of frames that I want to discuss:</p>
+   
+
+<pre>public class MosaicDrawFrame extends JFrame {
+   
+   public static void main(String[] args) {
+      JFrame window = new MosaicDrawFrame();
+      window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      window.setVisible(true);
+   }
+   
+   public MosaicDrawFrame() {
+      super("Mosaic Draw");
+      MosaicDrawController controller = new MosaicDrawController();
+      setContentPane( controller.getMosaicPanel() );
+      setJMenuBar( controller.getMenuBar() );
+      pack();
+      Dimension screensize = Toolkit.getDefaultToolkit().getScreenSize();
+      setLocation( (screensize.width - getWidth())/2, 
+                                 (screensize.height - getHeight())/2 );
+   }
+   
+}</pre>
+   
+
+<p>The constructor in this class begins with the statement <span class="code">super("Mosaic Draw")</span>,
+which calls the constructor in the superclass, <span class="classname">JFrame</span>.  The parameter
+specifies a title that will appear in the title bar of the window.  The next three lines
+of the constructor set up the contents of the window; a <span class="classname">MosaicDrawController</span>
+is created, and the content pane and menu bar of the window are obtained from the
+controller.  The next line is something new.  If <span class="code">window</span> is a variable of
+type <span class="classname">JFrame</span> (or <span class="classname">JDialog</span>), then the
+statement <span class="code">window.pack()</span> will resize the window so that its size matches
+the preferred size of its contents.  (In this case, of course, "<span class="code">pack()</span>"
+is equivalent to "<span class="code">this.pack()</span>"; that is, it refers to the window that is
+being created by the constructor.)  The <span class="code">pack()</span> method is usually the best
+way to set the size of a window.  Note that it will only work correctly if every
+component in the window has a correct preferred size.  This is only a problem in
+two cases:  when a panel is used as a drawing surface and when a panel is used as
+a container with a <span class="code">null</span> layout manager.  In both these cases there is no
+way for the system to determine the correct preferred size automatically, and you should
+set a preferred size by hand.  For example:</p>
+   
+
+<pre>panel.setPreferredSize( new Dimension(400, 250) );</pre>
+   
+
+<p>The last two lines in the constructor position the window so that it is exactly
+centered on the screen. The line</p>
+   
+
+<pre>Dimension screensize = Toolkit.getDefaultToolkit().getScreenSize();</pre>
+   
+
+<p>determines the size of the screen.  The size of the screen is <span class="code">screensize.width</span>
+pixels in the horizontal direction and <span class="code">screensize.height</span> pixels in the vertical
+direction. The <span class="code">setLocation()</span> method of the frame sets the position of the
+upper left corner of the frame on the screen.  The expression "<span class="code">screensize.width&nbsp;-&nbsp;getWidth()</span>"
+is the amount of horizontal space left on the screen after subtracting the width of the window.
+This is divided by 2 so that half of the empty space will be to the left of the window, leaving
+the other half of the space to the right of the window.
+Similarly, half of the extra vertical space is above the window, and half is below.</p>
+
+
+<p>Note that the constructor has created the window and set its size and position, but that
+at the end of the constructor, the window is not yet visible on the screen.  (More exactly,
+the constructor has created the window <i>object</i>, but the visual representation of
+that object on the screen has not yet been created.)  To show the window on the screen,
+it will be necessary to call its instance method, <span class="code">window.setVisible(true)</span>.</p>
+   
+
+<p>In addition to the constructor, the <span class="classname">MosaicDrawFrame</span> class includes
+a <span class="code">main()</span> routine.  This makes it possible to run <span class="classname">MosaicDrawFrame</span>
+as a stand-alone application.  (The <span class="code">main()</span> routine, as a <span class="code">static</span> method,
+has nothing to do with the function of a <span class="classname">MosaicDrawFrame</span> object, and it
+could (and perhaps should) be in a separate class.)  The <span class="code">main()</span> routine
+creates a <span class="classname">MosaicDrawFrame</span> and makes it visible on the screen.  It
+also calls</p>
+   
+
+<pre>window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);</pre>
+   
+
+<p>which means that the program will end when the user closes the window.  Note that this
+is not done in the constructor because doing it there would make <span class="classname">MosaicDrawFrame</span>
+less flexible.  It is possible, for example, to write a program that lets the user
+open multiple MosaicDraw windows.  In that case, we don't want to end the program just
+because the user has closed <i>one</i> of the windows.  Furthermore, it is possible for an
+applet to create a frame, which will open as a separate window on the screen.
+An applet is not allowed to "terminate the program" (and it's not even clear what that
+should mean in the case of an applet), and attempting to do so will produce an exception.
+There are other possible values for the default close operation of a window:</p>
+   
+
+<ul>
+
+<li>
+<span class="code">JFrame.DO_NOTHING_ON_CLOSE</span>  --  the user's attempts to close the window by
+clicking its close box will be ignored.</li>
+
+<li>
+<span class="code">JFrame.HIDE_ON_CLOSE</span>  --   when the user clicks its close box,
+the window will be hidden just as if <span class="code">window.setVisible(false)</span> were called.
+The window can be made visible again by calling <span class="code">window.setVisible(true)</span>.
+This is the value that is used if you do not
+specify another value by calling <span class="code">setDefaultCloseOperation</span>.</li>
+
+<li>
+<span class="code">JFrame.DISPOSE_ON_CLOSE</span>  --  the window is closed and any operating
+system resources used by the window are released.  It is not possible to make the
+window visible again.  (This is the proper way to permanently get rid of a window without
+ending the program.
+You can accomplish the same thing by calling the instance method
+<span class="code">window.dispose()</span>.)</li>
+
+</ul>
+   
+
+<p>I've written an applet version of the MosaicDraw program that appears on a Web page
+as a single button.  When the user clicks the button, the applet opens a
+<span class="classname">MosaicDrawFrame</span>.  In this case, the applet sets
+the default close operation of the window to <span class="code">JFrame.DISPOSE_ON_CLOSE</span>.
+You
+can try the applet here:</p>
+   
+
+
+<p align="center">
+<applet code="MosaicDrawLauncherApplet.class" width="280" height="40" archive="MosaicDraw.jar" alt="Applet 'MosaicDrawLauncherApplet.class' should appear here"></applet></p>
+
+   
+
+<p>The file <span class="sourceref"><a href="../source/MosaicDrawLauncherApplet.java">MosaicDrawLauncherApplet.java</a></span> contains the source code
+for the applet.  One interesting point in the applet is that the text of the button
+changes depending on whether a window is open or not.  If there is no window, the
+text reads "Launch MosaicDraw". When the window is open, it changes to "Close
+MosaicDraw", and clicking the button will close the window.  The change is implemented
+by attaching a <span class="classname">WindowListener</span> to the window.  The listener
+responds to <span class="classname">WindowEvents</span> that are generated when the 
+window opens and closes.  Although I will not discuss window events further here,
+you can look at the source code for an example of how they can be used.</p>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="GUI1.8.4">6.8.4&nbsp;&nbsp;Creating Jar Files</a>
+</h3>
+   
+
+<p>As the final topic for this chapter, we look again at jar files.  Recall
+that a jar file is a "java archive" that can contain a number of class files. When creating
+a program that uses more than one class, it's usually a good idea to place all the classes that
+are required by the program into a jar file.  If that is done, then a user will only need that
+one file to run the program.  <a href="../c6/s2.html#GUI1.2.4">Subsection&nbsp;6.2.4</a> discusses
+how a jar file can be used for an applet.  Jar files can also be used for stand-alone
+applications.  In fact, it is possible to make a so-called <span class="newword">executable
+jar file</span>.  A user can run an executable jar file in much the same way
+as any other application, usually by double-clicking the icon of the jar file.
+(The user's computer must have a correct version of Java installed, and the computer
+must be configured correctly for this to work.  The configuration is usually done automatically when
+Java is installed, at least on Windows and Mac OS.)</p>
+   
+
+<p>The question, then, is how to create a jar file.  The answer depends on what
+programming environment you are using.  The two basic types of programming environment -- command line
+and IDE -- were discussed in <a href="../c2/s6.html">Section&nbsp;2.6</a>.  Any IDE (Integrated Programming Environment)
+for Java should have a command for creating jar files.  In the Eclipse IDE, for example,
+it can be done as follows:  In the Package Explorer pane, select the programming project (or just
+all the individual source code files that you need).  Right-click on the selection, and
+choose "Export" from the menu that pops up.  In the window that appears, select "JAR file"
+and click "Next".  In the window that appears next, enter a name for the jar file in
+the box labeled "JAR file".  (Click the "Browse" button next to this box to select the
+file name using a file dialog box.)  The name of the file should end with ".jar".
+If you are creating a regular jar file, not an executable
+one, you can hit "Finish" at this point, and the jar file will be created.  You could do this,
+for example, if the jar file contains an applet but no main program.  To create an
+executable file, hit the "Next" button <i>twice</i> to get to the "Jar Manifest
+Specification" screen.  At the bottom of this screen is an input box labeled "Main class".
+You have to enter the name of the class that contains the <span class="code">main()</span> routine
+that will be run when the jar file is executed.  If you hit the "Browse" button next to
+the "Main class" box, you can select the class from a list of classes that contain
+<span class="code">main()</span> routines.  Once you've selected the main class, you can
+click the "Finish" button to create the executable jar file.  (Note that newer versions of Eclipse
+also have an option for exporting an executable Jar file in fewer steps.)</p>
+
+
+<p>It is also possible to create jar files on the command line.  The Java Development Kit
+includes a command-line program named <span class="code">jar</span> that can be used to create jar files.
+If all your classes are in the default package (like most of the examples in this book), then
+the <span class="code">jar</span> command is easy to use.  To create a non-executable jar file on the command line,
+change to the directory that contains the class files that you want to include in the jar.
+Then give the command</p>
+   
+
+<pre>jar  cf  JarFileName.jar  *.class</pre>
+   
+
+<p>where <span class="code">JarFileName</span> can be any name that you want to use for the jar file.
+The "<span class="code">*</span>" in "<span class="code">*.class</span>" is a wildcard that makes <span class="code">*.class</span> match every class
+file in the current directory.  This means that all the class files in the directory will be
+included in the jar file.  If you want to include only certain class files, you
+can name them individually, separated by spaces.  (Things get more complicated if your classes are not in the
+default package.  In that case, the class files must be in subdirectories of the
+directory in which you issue the <span class="code">jar</span> command.  See <a href="../c2/s6.html#basics.6.4">Subsection&nbsp;2.6.4</a>.)</p>
+   
+
+<p>Making an executable jar file on the command line is  more complicated.
+There has to be some way of specifying which class contains the <span class="code">main()</span>
+routine.  This is done by creating a <span class="newword">manifest file</span>.  The manifest
+file can be a plain text file containing a single line of the form</p>
+
+
+<pre>Main-Class: ClassName</pre>
+
+
+<p>where <span class="code">ClassName</span> should be replaced by the name of the class that contains
+the <span class="code">main()</span> routine.  For example, if the <span class="code">main()</span> routine is in
+the class <span class="classname">MosaicDrawFrame</span>, then the manifest file should read
+"<span class="code">Main-Class: MosaicDrawFrame</span>".  You can give the manifest file any name
+you like.  Put it in the same directory where you will issue the <span class="code">jar</span> command,
+and use a command of the form</p>
+   
+
+<pre>jar  cmf  ManifestFileName  JarFileName.jar  *.class</pre>
+   
+
+<p>to create the jar file.  (The <span class="code">jar</span> command is capable of performing a
+variety of different operations.  The first parameter to the command, such as "<span class="code">cf</span>"
+or "<span class="code">cmf</span>", tells it which operation to perform.)</p>
+   
+
+<p>By the way, if you have successfully created an executable jar file, you can run
+it on the command line using the command "<span class="code">java&nbsp;-jar</span>".  For example:</p>
+   
+
+<pre>java  -jar  JarFileName.jar</pre>
+
+
+
+
+<hr>
+<div align="center">
+<b><small>End of Chapter 6</small></b>
+</div>
+<hr>
+<p align="center">
+<applet code="TrackLines" width="300" height="200" archive="TrackLines.jar" alt=""><param name="rows" value="8"><param name="columns" value="12"></applet></p>
+
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s7.html">Previous Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

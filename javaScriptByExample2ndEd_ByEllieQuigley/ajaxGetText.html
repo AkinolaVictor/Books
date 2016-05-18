@@ -1,0 +1,39 @@
+ <html><head><title>First Ajax Script</title>
+  <link rel="stylesheet" type="text/css" href="ajaxStyle.css" />
+  <script type="text/javascript" src="ajaxCreateRequest.js"></script>
+   <script type="text/javascript">
+    function goAjax(){
+	   var ajaxRequest=createRequestObject();  /* Cross browser check;
+           Get a new XMLHttpRequest object */
+       if( ajaxRequest != false){ /* If we got back a request object
+          Create callback function to check state of the request*/
+	      ajaxRequest.onreadystatechange = function(){
+		     if(ajaxRequest.readyState == 4){
+               if(ajaxRequest.status==200){
+                document.getElementById("message").innerHTML=
+                     ajaxRequest.responseText;
+		         }
+             }
+	      } // End callback function
+	    yourname=document.getElementById("username").value;
+	    ajaxRequest.open("GET", "http://localhost/serverTime.php?name="+yourname+"&random=" +
+          Math.random()
+         );
+         ajaxRequest.send(null);
+      } //End if
+	  else{ alert("Browser problem was encounered!");}
+    } // End ajaxFunction()
+    </script>
+    </head>
+    <body>
+     <form name='myForm'>
+      Your name: <input type='text' onKeyUp="goAjax();"
+                   name='username' id='username' /> <br />
+      <p>
+        <div id="message" class="divStyle">
+             <!-- This is where the Ajax output will be displayed -->
+          </div>
+     </p>
+    </form>
+  </body>
+ </html

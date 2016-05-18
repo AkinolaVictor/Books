@@ -1,0 +1,29 @@
+
+<html><head><title>The this keyword</title>
+   <script type="text/javascript">
+	function display_formval(myform){
+		alert("text box value is: " + myform.namestring.value );
+	}
+	function display_buttonval(mybutton){
+		alert("button value is: " + mybutton.value);
+	}
+   </script>
+</head>
+<body><b> 
+   <hr>
+   <form name="simple_form">
+   <p>
+	Type your name here:
+	<input type="text" name="namestring" size="50">
+	<p>
+
+	<input type="button"
+	       value="Print Form Stuff"
+	       onClick="display_formval(this.form);" >
+	<input type="button"
+	       value="Print Button Stuff"
+	       onClick="display_buttonval(this);" >
+	<input type="reset" value="Clear">
+   </form>
+</body>
+</html>

@@ -1,0 +1,179 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Quiz on Chapter 7</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="quiz_answers.html">Quiz Answers</a> | <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2 class="quiz_title">Quiz on Chapter 7</h2>
+<p>
+<span class="start"><big>T</big>his page contains</span> questions on Chapter 7 of
+           <a href="../index.html"><i>Introduction to Programming Using Java</i></a>.
+           You should be able to answer these questions after studying that chapter.
+           Sample answers to these questions can be found <a href="quiz_answers.html">here</a>.</p>
+<table border="1" align="center" cellpadding="8" width="95%">
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;1:</span></td><td>
+<p>What does the computer do
+when it executes the following statement? Try to give as complete an answer as
+possible.</p>
+
+<pre>Color[]  palette  =  new  Color[12];</pre>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;2:</span></td><td>
+<p>What is meant by the <i>basetype</i> of an array?</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;3:</span></td><td>
+<p>What does it mean to sort an array?</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;4:</span></td><td>
+<p>What is the main advantage of binary search over linear search?  What is the
+main disadvantage?</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;5:</span></td><td>
+<p>What is meant by a
+<i>dynamic array?</i> What is the advantage of a dynamic array over a regular
+array?</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;6:</span></td><td>
+<p>Suppose that a variable <span class="code">strlst</span> has been declared as</p>
+
+<pre>ArrayList&lt;String&gt; strlst = new ArrayList&lt;String&gt;();</pre>
+
+<p>Assume that the list is not empty and that all the items in the list
+are non-null. Write a code segment that will find and print the string in the list
+that comes first in lexicographic order.  How would your answer change
+if <span class="code">strlst</span> were declared to be of type <span class="classname">ArrayList</span>
+instead of <span class="atype">ArrayList&lt;String&gt;</span>?</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;7:</span></td><td>
+<p>What is the purpose of the
+following subroutine? What is the meaning of the value that it returns, in
+terms of the value of its parameter?</p>
+
+<pre>static String concat( String[] str ) {
+   if (str == null)
+      return "";
+   String ans = "";
+   for (int i = 0; i &lt; str.length; i++) {
+      ans = ans + str[i];
+   return ans;
+}</pre>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;8:</span></td><td>
+<p>Show the exact output
+produced by the following code segment.</p>
+
+<pre>char[][] pic = new char[6][6];
+for (int i = 0; i &lt; 6; i++)
+   for (int j = 0; j &lt; 6; j++) {
+      if ( i == j  ||  i == 0  ||  i == 5 )
+         pic[i][j] = '*';
+      else
+         pic[i][j] = '.';
+   }
+for (int i = 0; i &lt; 6; i++) {
+   for (int j = 0; j &lt; 6; j++)
+      System.out.print(pic[i][j]);
+   System.out.println();
+}</pre>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;9:</span></td><td>
+<p>Write a complete static method
+that finds the largest value in an array of <span class="code">ints</span>. The method
+should have one parameter, which is an array of type <span class="code">int[]</span>. The
+largest number in the array should be returned as the value of the
+method.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;10:</span></td><td>
+<p>Suppose that temperature
+measurements were made on each day of 1999 in each of 100 cities. The
+measurements have been stored in an array</p>
+
+<pre>int[][]  temps  =  new  int[100][365];</pre>
+
+<p>where <span class="code">temps[c][d]</span> holds the measurement for city number <span class="code">c</span>
+on the <span class="code">d</span><sup>th</sup> day of the year. Write a code segment that will
+print out the average temperature, over the course of the whole year, for each
+city. The average temperature for a city can be obtained by adding up all 365
+measurements for that city and dividing the answer by 365.0.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;11:</span></td><td>
+<p>Suppose that a class,
+<span class="classname">Employee,</span> is defined as follows:</p>
+
+<pre>class Employee {
+   String lastName;
+   String firstName;
+   double hourlyWage;
+   int yearsWithCompany;
+}</pre>
+
+<p>Suppose that data about 100 employees is <b>already</b> stored in an
+array:</p>
+
+<pre>Employee[] employeeData = new Employee[100];</pre>
+
+<p>Write a code segment that will output the first name, last name, and hourly
+wage of each employee who has been with the company for 20 years or more.</p>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;12:</span></td><td>
+<p>Suppose that <span class="code">A</span> has
+been declared and initialized with the statement</p>
+
+<pre>double[] A = new double[20];</pre>
+
+<p>and suppose that <span class="code">A</span> has <b>already</b> been filled with 20 values.
+Write a program segment that will find the average of all the <b>non-zero</b>
+numbers in the array. (The average is the sum of the numbers, divided by the
+number of numbers. Note that you will have to count the number of non-zero
+entries in the array.) Declare any variables that you use.</p>
+
+</td>
+</tr>
+</table>
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="quiz_answers.html">Quiz Answers</a> | <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

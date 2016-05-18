@@ -1,0 +1,782 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 7.5 -- Multi-dimensional Arrays</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s4.html">Previous Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#arrays.5.1">Creating Two-dimensional Arrays</a>
+<br>
+<a href="#arrays.5.2">Using Two-dimensional Arrays</a>
+<br>
+<a href="#arrays.5.3">Example: Checkers</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 7.5</h3>
+<h2 class="section_title">Multi-dimensional Arrays</h2>
+<hr class="break">
+   
+
+
+<p>
+<span class="start"><big>A</big>ny type can be used</span> as the base type of an array.
+You can have an array of <span class="ptype">ints</span>, an array of <span class="classname">Strings</span>, an array
+of <span class="classname">Objects</span>, and so on. In particular, since an array type is a
+first-class Java type, you can have an array of arrays. For example, an array
+of <span class="ptype">ints</span> has type <span class="atype">int[]</span>. This means that there is
+automatically another type, <span class="atype">int[][]</span>, which represents an "array of
+arrays of <span class="atype">ints</span>". Such an array is said to be a 
+<span class="newword">two-dimensional array</span>. Of course once you have the type
+<span class="atype">int[][]</span>, there is nothing to stop you from forming the type
+<span class="atype">int[][][]</span>, which represents a <span class="newword">three-dimensional 
+array</span> -- and so on. There is no limit on the number of dimensions that
+an array type can have. However, arrays of dimension three or higher are fairly
+uncommon, and I concentrate here mainly on two-dimensional arrays. The type
+<span class="atype">BaseType[][]</span> is usually read "two-dimensional array of
+<span class="classname">BaseType</span>" or "<span class="classname">BaseType</span> array array".</p>
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="arrays.5.1">7.5.1&nbsp;&nbsp;Creating Two-dimensional Arrays</a>
+</h3>
+
+
+<p>The declaration statement "<span class="code">int[][] A;</span>" declares a variable named
+<span class="code">A</span> of type <span class="atype">int[][]</span>. This variable can hold a reference to an
+object of type <span class="atype">int[][]</span>. The assignment statement "<span class="code">A&nbsp;=&nbsp;new&nbsp;int[3][4];</span>" 
+creates a new two-dimensional array object and sets <span class="code">A</span>
+to point to the newly created object. As usual, the declaration and assignment
+could be combined in a single declaration statement "<span class="code">int[][]&nbsp;A&nbsp;= new&nbsp;int[3][4];</span>". 
+The newly created object is an array of
+arrays-of-<span class="ptype">ints</span>. The notation <span class="code">int[3][4]</span> indicates that there
+are 3 arrays-of-<span class="code">ints</span> in the array <span class="code">A</span>, and that there are 4
+<span class="ptype">ints</span> in each array-of-<span class="ptype">ints</span>. However, trying to think in such
+terms can get a bit confusing -- as you might have already noticed. So it is
+customary to think of a two-dimensional array of items as a rectangular
+<span class="newword">grid</span> or <span class="newword">matrix</span> of
+items. The notation "<span class="code">new&nbsp;int[3][4]</span>" can then be taken to describe a
+grid of <span class="code">ints</span> with 3 rows and 4 columns. The following picture might
+help:</p>
+
+
+<p align="center">
+<img src="two-dimensional-array.png" width="435" height="325" alt="(Illustration of 3-by-4 array as a grid and as an array of arrays)"></p>
+
+
+
+<p>For the most part, you can ignore the reality and keep the picture of a grid
+in mind. Sometimes, though, you will need to remember that each row in the grid
+is really an array in itself. These arrays can be referred to as <span class="code">A[0]</span>,
+<span class="code">A[1]</span>, and <span class="code">A[2]</span>. Each row is in fact a value of type
+<span class="atype">int[]</span>. It could, for example, be passed to a subroutine that asks for
+a parameter of type <span class="atype">int[]</span>.</p>
+
+
+<p>The notation <span class="code">A[1]</span> refers to one of the rows of the array
+<span class="code">A</span>. Since <span class="code">A[1]</span> is itself an array of <span class="ptype">ints</span>, you can
+use another subscript to refer to one of the positions in that row. For
+example, <span class="code">A[1][3]</span> refers to item number 3 in row number 1. Keep in
+mind, of course, that both rows and columns are numbered starting from zero.
+So, in the above example, <span class="code">A[1][3]</span> is 5. More generally,
+<span class="code">A[i][j]</span> refers to the grid position in row number <span class="code">i</span> and
+column number <span class="code">j</span>. The 12 items in <span class="code">A</span> are named as follows:</p>
+
+
+<pre>A[0][0]    A[0][1]     A[0][2]     A[0][3]
+A[1][0]    A[1][1]     A[1][2]     A[1][3]
+A[2][0]    A[2][1]     A[2][2]     A[2][3]</pre>
+
+
+<p>
+<span class="code">A[i][j]</span> is actually a variable of type <span class="ptype">int</span>. You can assign
+integer values to it or use it in any other context where an integer variable
+is allowed.</p>
+
+
+<p>It might be worth noting that <span class="code">A.length</span> gives the number of rows of
+<span class="code">A</span>. To get the number of columns in <span class="code">A</span>, you have to ask how
+many <span class="code">ints</span> there are in a row; this number would be given by
+<span class="code">A[0].length</span>, or equivalently by <span class="code">A[1].length</span> or
+<span class="code">A[2].length</span>. (There is actually no rule that says that all the rows of
+an array must have the same length, and some advanced applications of arrays
+use varying-sized rows. But if you use the <span class="code">new</span> operator to create an
+array in the manner described above, you'll always get an array with
+equal-sized rows.)</p>
+
+
+<p>Three-dimensional arrays are treated similarly. For example, a
+three-dimensional array of <span class="code">ints</span> could be created with the declaration
+statement "<span class="code">int[][][] B = new int[7][5][11];</span>". It's possible to
+visualize the value of <span class="code">B</span> as a solid 7-by-5-by-11 block of cells. Each
+cell holds an <span class="ptype">int</span> and represents one position in the three-dimensional
+array. Individual positions in the array can be referred to with variable names of
+the form <span class="code">B[i][j][k]</span>. Higher-dimensional arrays follow the same
+pattern, although for dimensions greater than three, there is no easy way to
+visualize the structure of the array.</p>
+
+
+
+
+<p>It's possible to fill a multi-dimensional array with specified items at the
+time it is declared. Recall that when an ordinary one-dimensional array
+variable is declared, it can be assigned an "array initializer," which is just
+a list of values enclosed between braces, { and }. Array initializers can also
+be used when a multi-dimensional array is declared. An initializer for a
+two-dimensional array consists of a list of one-dimensional array initializers,
+one for each row in the two-dimensional array. For example, the array
+<span class="code">A</span> shown in the picture above could be created with:</p>
+
+
+<pre>int[][]  A  =  {  {  1,  0, 12, -1 },
+                  {  7, -3,  2,  5 },
+                  { -5, -2,  2, -9 }
+               };</pre>
+
+
+<p>If no initializer is provided for an array, then when the array is created
+it is automatically filled with the appropriate value: zero for numbers,
+<span class="code">false</span> for boolean, and <span class="code">null</span> for objects.</p>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="arrays.5.2">7.5.2&nbsp;&nbsp;Using Two-dimensional Arrays</a>
+</h3>
+
+
+<p>Just as in the case of one-dimensional arrays, two-dimensional arrays are
+often processed using <span class="code">for</span> statements. To process all the items in a
+two-dimensional array, you have to use one <span class="code">for</span> statement nested inside
+another. If the array <span class="code">A</span> is declared as</p>
+
+
+<pre>int[][]  A  =  new int[3][4];</pre>
+
+
+<p>then you could store a 17 into each location in <span class="code">A</span> with:</p>
+
+
+<pre>for (int row = 0;  row &lt; 3;  row++) {
+   for (int column = 0;  column &lt; 4;  column++) {
+      A[row][column] = 17;
+   }
+}</pre>
+
+
+<p>The first time the outer <span class="code">for</span> loop executes (with <span class="code">row</span>&nbsp;=&nbsp;0),
+the inner for loop fills in the four values in the first row of A, namely
+<span class="code">A[0][0]&nbsp;=&nbsp;17</span>, <span class="code">A[0][1]&nbsp;=&nbsp;17</span>, <span class="code">A[0][2]&nbsp;=&nbsp;17</span>, and
+<span class="code">A[0][3]&nbsp;=&nbsp;17</span>. The next execution of the outer <span class="code">for</span> loop fills
+in the second row of <span class="code">A</span>. And the third and final execution of the outer
+loop fills in the final row of&nbsp;<span class="code">A</span>.</p>
+
+
+<p>Similarly, you could add up all the items in <span class="code">A</span> with:</p>
+
+
+<pre>int sum = 0;
+for (int i = 0; i &lt; 3; i++)
+   for (int j = 0; j &lt; 4; j++)
+      sum = sum + A[i][j];</pre>
+   
+
+<p>This could even be done with nested for-each loops.  Keep in mind that
+the elements in <span class="code">A</span> are objects of type <span class="atype">int[]</span>,
+while the elements in each row of <span class="code">A</span> are of type <span class="ptype">int</span>:</p>
+   
+
+<pre>int sum = 0;
+for ( int[] row : A ) {       // For each row in A...
+   for ( int item : row )     // For each item in that row...
+      sum = sum + item;       // Add item to the sum.
+}</pre>
+
+
+<p>To process a three-dimensional array, you would, of course, use triply
+nested <span class="code">for</span> loops.</p>
+   
+
+<hr class="break">
+
+
+<p>A two-dimensional array can be used whenever the data that is being represented can
+be arranged into rows and columns in a natural way. Often, the grid is built into the
+problem. For example, a chess board is a grid with 8 rows and 8 columns. If a
+class named <span class="classname">ChessPiece</span> is available to represent individual chess
+pieces, then the contents of a chess board could be represented by a
+two-dimensional array:</p>
+
+
+<pre>ChessPiece[][]  board  =  new ChessPiece[8][8];</pre>
+
+
+<p>Or consider the "mosaic" of colored rectangles used in an example in
+<a href="../c4/s6.html#subroutines.6.2">Subsection&nbsp;4.6.2</a>. The mosaic is implemented by a class
+named <span class="sourceref"><a href="../source/MosaicCanvas.java">MosaicCanvas.java</a></span>. The data
+about the color of each of the rectangles in the mosaic is stored in an
+instance variable named <span class="code">grid</span> of type <span class="atype">Color[][]</span>. Each position
+in this grid is occupied by a value of type <span class="classname">Color</span>. There is one
+position in the grid for each colored rectangle in the mosaic. The actual
+two-dimensional array is created by the statement:</p>
+
+
+<pre>grid  =  new Color[ROWS][COLUMNS];</pre>
+
+
+<p>where <span class="code">ROWS</span> is the number of rows of rectangles in the mosaic and
+<span class="code">COLUMNS</span> is the number of columns. The value of the <span class="code">Color</span>
+variable <span class="code">grid[i][j]</span> is the color of the rectangle in row number
+<span class="code">i</span> and column number <span class="code">j</span>. When the color of that rectangle is
+changed to some color, <span class="code">c</span>, the value stored in
+<span class="code">grid[i][j]</span> is changed with a statement of the form "<span class="code">grid[i][j]&nbsp;=&nbsp;c;</span>".
+When the mosaic is redrawn, the values stored in the two-dimensional
+array are used to decide what color to make each rectangle. Here is a
+simplified version of the code from the <span class="classname">MosaicCanvas</span> class that draws
+all the colored rectangles in the grid. You can see how it uses the array:</p>
+
+
+<pre>int rowHeight = getHeight() / ROWS;
+int colWidth = getWidth() / COLUMNS;
+for (int row = 0; row &lt; ROWS; row++) {
+   for (int col = 0; col &lt; COLUMNS; col++) {
+       <span class="newcode">g.setColor( grid[row][col] ); // Get color from array.</span>
+       g.fillRect( col*colWidth, row*rowHeight, 
+                                    colWidth, rowHeight );
+   }  
+}</pre>
+
+
+<p>Sometimes two-dimensional arrays are used in problems in which the grid is
+not so visually obvious. Consider a company that owns 25 stores. Suppose that
+the company has data about the profit earned at each store for each month in
+the year 2010. If the stores are numbered from 0 to 24, and if the twelve
+months from January '10 through December '10 are numbered from 0 to 11, then
+the profit data could be stored in an array, <span class="code">profit</span>, constructed as
+follows:</p>
+
+
+<pre>double[][]  profit  =  new double[25][12];</pre>
+
+
+<p>
+<span class="code">profit[3][2]</span> would be the amount of profit earned at store number 3
+in March, and more generally, <span class="code">profit[storeNum][monthNum]</span> would be the
+amount of profit earned in store number <span class="code">storeNum</span> in month number
+<span class="code">monthNum</span>. In this example, the one-dimensional array
+<span class="code">profit[storeNum]</span> has a very useful meaning: It is just the profit data
+for one particular store for all the months in the whole year.</p>
+
+
+<p>Let's assume that the <span class="code">profit</span> array has already been filled with
+data. This data can be processed in a lot of interesting ways. For example, the
+total profit for the company -- for the whole year from all its stores -- can
+be calculated by adding up all the entries in the array:</p>
+
+
+<pre>double totalProfit;  // Company's total profit in 2010.
+
+totalProfit = 0;
+for (int store = 0; store &lt; 25; store++) {
+   for (int month = 0; month &lt; 12; month++)
+      totalProfit += profit[store][month];
+}</pre>
+
+
+<p>Sometimes it is necessary to process a single row or a single column of an
+array, not the entire array. For example, to compute the total profit earned by
+the company in December, that is, in month number 11, you could use the
+loop:</p>
+
+
+<pre>double decemberProfit = 0.0;
+for (storeNum = 0; storeNum &lt; 25; storeNum++)
+   decemberProfit += profit[storeNum][11];</pre>
+
+
+<p>Let's extend this idea to create a one-dimensional array that contains the
+total profit for each month of the year:</p>
+
+
+<pre>double[] monthlyProfit;  // Holds profit for each month.
+monthlyProfit = new double[12];
+
+for (int month = 0; month &lt; 12; month++) {
+   // compute the total profit from all stores in this month.
+   monthlyProfit[month] = 0.0;
+   for (int store = 0; store &lt; 25; store++) {
+         // Add the profit from this store in this month
+         // into the total profit figure for the month.
+      monthlyProfit[month] += profit[store][month];
+   }
+}</pre>
+
+
+<p>As a final example of processing the profit array, suppose that we wanted to
+know which store generated the most profit over the course of the year. To do
+this, we have to add up the monthly profits for each store. In array terms,
+this means that we want to find the sum of each row in the array. As we do
+this, we need to keep track of which row produces the largest total.</p>
+
+
+<pre>double maxProfit; // Maximum profit earned by a store.
+int bestStore;    // The number of the store with the
+                  //   maximum profit.
+
+double total;    // Total profit for one store.
+ 
+// First compute the profit from store number 0.
+ 
+total = 0.0;
+for (month = 0;  month &lt; 12; month++)
+   total += profit[0][month];
+
+bestStore = 0;      // Start by assuming that the best
+maxProfit = total;  //     store is store number 0.
+
+// Now, go through the other stores, and whenever we
+// find one with a bigger profit than maxProfit, revise
+// the assumptions about bestStore and maxProfit.
+
+for (store = 1; store &lt; 25; store++) {
+   
+    // Compute this store's profit for the year.
+   
+    total = 0.0;
+    for (month = 0; month &lt; 12; month++)
+       total += profit[store][month];
+      
+    // Compare this store's profits with the highest
+    // profit we have seen among the preceding stores.
+      
+    if (total &gt; maxProfit) {
+       maxProfit = total;    // Best profit seen so far!
+       bestStore = store;    // It came from this store.
+    }
+   
+} // end for
+
+// At this point, maxProfit is the best profit of any
+// of the 25 stores, and bestStore is a store that
+// generated that profit.  (Note that there could also be
+// other stores that generated exactly the same profit.)</pre>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="arrays.5.3">7.5.3&nbsp;&nbsp;Example: Checkers</a>
+</h3>
+
+
+
+<p>For the rest of this section, we'll look at a more substantial example. We look
+at a program that lets two users play checkers against each other. A player
+moves by clicking on the piece to be moved and then on the empty square to
+which it is to be moved. The squares that the current player can legally click
+are highlighted. The square containing a piece that has been selected to be moved is surrounded by a
+white border. Other pieces that can legally be moved are surrounded by a
+cyan-colored border. If a piece has been selected, each empty square that it
+can legally move to is highlighted with a green border. The game enforces the rule
+that if the current player can jump one of the opponent's pieces, then the
+player must jump. When a player's piece becomes a king, by reaching the
+opposite end of the board, a big white "K" is drawn on the piece.
+Here is an applet version of the program:</p>
+
+
+<p align="center">
+<applet code="CheckersApplet.class" width="350" height="250" archive="Checkers.jar" alt="(Applet 'Checkers' should be displayed here.)"></applet></p>
+
+
+<p>I will only cover a part of the programming of this applet. I encourage you
+to read the complete source code, <span class="sourceref"><a href="../source/Checkers.java">Checkers.java</a></span>. At over 750 lines, this is a more
+substantial example than anything you've seen before in this course, but it's
+an excellent example of state-based, event-driven programming.</p>
+
+
+<p>The data about the pieces on the board are stored in a two-dimensional
+array. Because of the complexity of the program, I wanted to divide it into
+several classes. In addition to the main class, there are several nested classes.
+One of these classes is <span class="classname">CheckersData</span>, which handles
+the data for the board. It is mainly this class that I want to talk about.</p>
+
+
+<p>The <span class="classname">CheckersData</span> class has an instance variable named
+<span class="code">board</span> of type <span class="code">int[][]</span>. The value of board is set to "<span class="code">new&nbsp;int[8][8]</span>", 
+an 8-by-8 grid of integers. The values stored in the grid are
+defined as constants representing the possible contents of a square on a
+checkerboard:</p>
+
+
+<pre>static final int
+          EMPTY = 0,           // Value representing an empty square.
+          RED = 1,             // A regular red piece.
+          RED_KING = 2,        // A red king.
+          BLACK = 3,           // A regular black piece.
+          BLACK_KING = 4;      // A black king.</pre>
+
+
+<p>The constants <span class="code">RED</span> and <span class="code">BLACK</span> are also used in my program
+(or, perhaps, misused) to represent the two players in the game. When a game is
+started, the values in the variable, <span class="code">board</span>, are set to represent the
+initial state of the board. The grid of values looks like</p>
+
+
+<p align="center">
+<img src="checkerboard_contents.png" width="551" height="257" alt="Illustration of initial setup of a checkerboard"></p>
+
+
+<p>A regular black piece can only move "down" the grid. That is, the row number of the
+square it moves to must be greater than the row number of the square it comes
+from. A regular red piece can only move up the grid. Kings of either color, of course,
+can move in both directions.</p>
+
+
+<p>One function of the <span class="classname">CheckersData</span> class is to take care of all the
+details of making moves on the board. An instance method named
+<span class="code">makeMove()</span> is provided to do this. When a player moves a piece from
+one square to another, the values stored at two positions in the array are
+changed. But that's not all. If the move is a jump, then the piece that was
+jumped is removed from the board. (The method checks whether the move is a jump
+by checking if the square to which the piece is moving is two rows away from
+the square where it starts.) Furthermore, a <span class="code">RED</span> piece that moves to
+row 0 or a <span class="code">BLACK</span> piece that moves to row 7 becomes a king. This is
+good programming: the rest of the program doesn't have to worry about any of
+these details. It just calls this <span class="code">makeMove()</span> method:</p>
+
+
+<pre>/**
+ * Make the move from (fromRow,fromCol) to (toRow,toCol).  It is
+ * ASSUMED that this move is legal!  If the move is a jump, the
+ * jumped piece is removed from the board.  If a piece moves
+ * to the last row on the opponent's side of the board, the 
+ * piece becomes a king.
+ */
+void makeMove(int fromRow, int fromCol, int toRow, int toCol) {
+
+   board[toRow][toCol] = board[fromRow][fromCol]; // Move the piece.
+   board[fromRow][fromCol] = EMPTY;
+
+   if (fromRow - toRow == 2 || fromRow - toRow == -2) {
+         // The move is a jump.  Remove the jumped piece from the board.
+      int jumpRow = (fromRow + toRow) / 2; // Row of the jumped piece.
+      int jumpCol = (fromCol + toCol) / 2; // Column of the jumped piece.
+      board[jumpRow][jumpCol] = EMPTY;
+   }
+
+   if (toRow == 0 &amp;&amp; board[toRow][toCol] == RED)
+      board[toRow][toCol] = RED_KING;  // Red piece becomes a king.
+   if (toRow == 7 &amp;&amp; board[toRow][toCol] == BLACK)
+      board[toRow][toCol] = BLACK_KING;  // Black piece becomes a king.
+
+}  // end makeMove()</pre>
+
+
+<p>An even more important function of the <span class="classname">CheckersData</span> class is to
+find legal moves on the board. In my program, a move in a Checkers game is
+represented by an object belonging to the following class:</p>
+
+
+<pre>/**
+ * A CheckersMove object represents a move in the game of
+ * Checkers.  It holds the row and column of the piece that is 
+ * to be moved and the row and column of the square to which 
+ * it is to be moved.  (This class makes no guarantee that 
+ * the move is legal.)
+ */
+private static class CheckersMove {
+     
+   int fromRow, fromCol;  // Position of piece to be moved.
+   int toRow, toCol;      // Square it is to move to.
+   
+   CheckersMove(int r1, int c1, int r2, int c2) {
+        // Constructor.  Set the values of the instance variables.
+      fromRow = r1;
+      fromCol = c1;
+      toRow = r2;
+      toCol = c2;
+   }
+   
+   boolean isJump() {
+        // Test whether this move is a jump.  It is assumed that
+        // the move is legal.  In a jump, the piece moves two
+        // rows.  (In a regular move, it only moves one row.)
+      return (fromRow - toRow == 2 || fromRow - toRow == -2);
+   }
+   
+}  // end class CheckersMove.</pre>
+
+
+<p>The <span class="classname">CheckersData</span> class has an instance method which finds all the
+legal moves that are currently available for a specified player. This method is
+a function that returns an array of type <span class="atype">CheckersMove[]</span>. The array
+contains all the legal moves, represented as <span class="classname">CheckersMove</span> objects. The
+specification for this method reads</p>
+
+
+<pre>/**
+ * Return an array containing all the legal CheckersMoves
+ * for the specified player on the current board.  If the player
+ * has no legal moves, null is returned.  The value of player
+ * should be one of the constants RED or BLACK; if not, null
+ * is returned.  If the returned value is non-null, it consists
+ * entirely of jump moves or entirely of regular moves, since
+ * if the player can jump, only jumps are legal moves.
+ */
+CheckersMove[] getLegalMoves(int player)</pre>
+
+
+<p>A brief pseudocode algorithm for the method is</p>
+
+
+<pre>Start with an empty list of moves
+Find any legal jumps and add them to the list
+if there are no jumps:
+   Find any other legal moves and add them to the list
+if the list is empty:
+   return null
+else:
+   return the list</pre>
+
+
+<p>Now, what is this "list"? We have to return the legal moves in an array. But
+since an array has a fixed size, we can't create the array until we know how
+many moves there are, and we don't know that until near the end of the method,
+after we've already made the list! A neat solution is to use an
+<span class="classname">ArrayList</span> instead of an array to hold the moves as we find them. 
+In fact, I use an object defined by the parameterized type
+<span class="atype">ArrayList&lt;CheckersMove&gt;</span> so that the list is
+restricted to holding objects of type <span class="classname">CheckersMove</span>.  As we
+add moves to the list, it will grow just as large as necessary. At the end of
+the method, we can create the array that we really want and copy the data into
+it:</p>
+
+
+<pre>Let "moves" be an empty ArrayList&lt;CheckerMove&gt;
+Find any legal jumps and add them to moves
+if moves.size() is 0:
+   Find any other legal moves and add them to moves
+if moves.size() is 0:
+   return null
+else:
+   Let moveArray be an array of CheckersMoves of length moves.size()
+   Copy the contents of moves into moveArray
+   return moveArray</pre>
+
+
+<p>Now, how do we find the legal jumps or the legal moves? The information we
+need is in the <span class="code">board</span> array, but it takes some work to extract it. We
+have to look through all the positions in the array and find the pieces that
+belong to the current player. For each piece, we have to check each square that
+it could conceivably move to, and check whether that would be a legal move.
+If we are looking for legal jumps, we want to look at squares that
+are two rows and two columns away from the piece. There are four squares to consider.
+Thus, the line in the
+algorithm that says "Find any legal jumps and add them to moves" expands
+to:</p>
+
+
+<pre>For each row of the board:
+   For each column of the board:
+      if one of the player's pieces is at this location:
+         if it is legal to jump to row + 2, column + 2
+             add this move to moves
+         if it is legal to jump to row - 2, column + 2
+             add this move to moves
+         if it is legal to jump to row + 2, column - 2
+             add this move to moves
+         if it is legal to jump to row - 2, column - 2
+             add this move to moves</pre>
+
+
+<p>The line that says "Find any other legal moves and add them to moves"
+expands to something similar, except that we have to look at the four squares
+that are one column and one row away from the piece. Testing whether a player
+can legally move from one given square to another given square is itself
+non-trivial. The square the player is moving to must actually be on the board,
+and it must be empty. Furthermore, regular red and black pieces can only move
+in one direction. I wrote the following utility method to check whether a
+player can make a given non-jump move:</p>
+
+
+<pre>/**
+ * This is called by the getLegalMoves() method to determine 
+ * whether the player can legally move from (r1,c1) to (r2,c2).
+ * It is ASSUMED that (r1,c1) contains one of the player's 
+ * pieces and that (r2,c2) is a neighboring square.
+ */
+private boolean canMove(int player, int r1, int c1, int r2, int c2) {
+      
+   if (r2 &lt; 0 || r2 &gt;= 8 || c2 &lt; 0 || c2 &gt;= 8)
+      return false;  // (r2,c2) is off the board.
+      
+   if (board[r2][c2] != EMPTY)
+      return false;  // (r2,c2) already contains a piece.
+
+   if (player == RED) {
+      if (board[r1][c1] == RED &amp;&amp; r2 &gt; r1)
+          return false;  // Regular red piece can only move down.
+       return true;  // The move is legal.
+   }
+   else {
+      if (board[r1][c1] == BLACK &amp;&amp; r2 &lt; r1)
+          return false;  // Regular black piece can only move up.
+       return true;  // The move is legal.
+   }
+   
+}  // end canMove()</pre>
+
+
+<p>This method is called by my <span class="code">getLegalMoves()</span> method to check whether
+one of the possible moves that it has found is actually legal. I have a similar
+method that is called to check whether a jump is legal. In this case, I pass to
+the method the square containing the player's piece, the square that the player
+might move to, and the square between those two, which the player would be
+jumping over. The square that is being jumped must contain one of the
+opponent's pieces. This method has the specification:</p>
+
+
+<pre>/**
+ * This is called by other methods to check whether
+ * the player can legally jump from (r1,c1) to (r3,c3).
+ * It is assumed that the player has a piece at (r1,c1), that
+ * (r3,c3) is a position that is 2 rows and 2 columns distant
+ * from (r1,c1) and that (r2,c2) is the square between (r1,c1)
+ * and (r3,c3).
+ */
+private boolean canJump(int player, int r1, int c1, 
+                                   int r2, int c2, int r3, int c3) { . . .</pre>
+
+
+<p>Given all this, you should be in a position to understand the complete
+<span class="code">getLegalMoves()</span> method. It's a nice way to finish off this chapter,
+since it combines several topics that we've looked at: one-dimensional arrays,
+<span class="classname">ArrayLists</span>, and two-dimensional arrays:</p>
+
+
+<pre>CheckersMove[] getLegalMoves(int player) {
+
+   if (player != RED &amp;&amp; player != BLACK)
+      return null;
+
+   int playerKing;  // The constant for a King belonging to the player.
+   if (player == RED)
+      playerKing = RED_KING;
+   else
+      playerKing = BLACK_KING;
+
+   ArrayList&lt;CheckersMove&gt; moves = new ArrayList&lt;CheckersMove&gt;();  
+               // Moves will be stored in this list.
+   
+   /*  First, check for any possible jumps.  Look at each square on
+       the board.  If that square contains one of the player's pieces, 
+       look at a possible jump in each of the four directions from that 
+       square.  If there is a legal jump in that direction, put it in 
+       the moves ArrayList.
+   */
+
+   for (int row = 0; row &lt; 8; row++) {
+      for (int col = 0; col &lt; 8; col++) {
+        if (board[row][col] == player || board[row][col] == playerKing) {
+            if (canJump(player, row, col, row+1, col+1, row+2, col+2))
+               moves.add(new CheckersMove(row, col, row+2, col+2));
+            if (canJump(player, row, col, row-1, col+1, row-2, col+2))
+               moves.add(new CheckersMove(row, col, row-2, col+2));
+            if (canJump(player, row, col, row+1, col-1, row+2, col-2))
+               moves.add(new CheckersMove(row, col, row+2, col-2));
+            if (canJump(player, row, col, row-1, col-1, row-2, col-2))
+               moves.add(new CheckersMove(row, col, row-2, col-2));
+        }
+      }
+   }
+   
+   /*  If any jump moves were found, then the user must jump, so we 
+       don't add any regular moves.  However, if no jumps were found, 
+       check for any legal regular moves.  Look at each square on 
+       the board.  If that square contains one of the player's pieces,
+       look at a possible move in each of the four directions from 
+       that square.  If there is a legal move in that direction, 
+       put it in the moves ArrayList.
+   */
+   
+   if (moves.size() == 0) {
+      for (int row = 0; row &lt; 8; row++) {
+         for (int col = 0; col &lt; 8; col++) {
+           if (board[row][col] == player || board[row][col] == playerKing) {
+              if (canMove(player,row,col,row+1,col+1))
+                 moves.add(new CheckersMove(row,col,row+1,col+1));
+              if (canMove(player,row,col,row-1,col+1))
+                 moves.add(new CheckersMove(row,col,row-1,col+1));
+              if (canMove(player,row,col,row+1,col-1))
+                 moves.add(new CheckersMove(row,col,row+1,col-1));
+              if (canMove(player,row,col,row-1,col-1))
+                 moves.add(new CheckersMove(row,col,row-1,col-1));
+           }
+         }
+      }
+   }
+   
+   /* If no legal moves have been found, return null.  Otherwise, create
+      an array just big enough to hold all the legal moves, copy the
+      legal moves from the ArrayList into the array, and return the array. 
+   */
+   
+   if (moves.size() == 0)
+      return null;
+   else {
+      CheckersMove[] moveArray = new CheckersMove[moves.size()];
+      for (int i = 0; i &lt; moves.size(); i++)
+         moveArray[i] = moves.get(i);
+      return moveArray;
+   }
+
+}  // end getLegalMoves</pre>
+
+
+
+   
+
+
+<hr>
+<div align="center">
+<b><small>End of Chapter 7</small></b>
+</div>
+<hr>
+<p align="center">
+<applet code="KaleidoAnimate.class" width="200" height="200" archive="KaleidoAnimate.jar" alt=""></applet></p>
+
+
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s4.html">Previous Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

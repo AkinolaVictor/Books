@@ -1,0 +1,834 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 2.4 -- Text Input and Output</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s3.html">Previous Section</a> |
+           <a href="s5.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#basics.4.1">A First Text Input Example</a>
+<br>
+<a href="#basics.4.2">Text Output</a>
+<br>
+<a href="#basics.4.3">TextIO Input Functions</a>
+<br>
+<a href="#basics.4.4">Formatted Output</a>
+<br>
+<a href="#basics.4.5">Introduction to File I/O</a>
+<br>
+<a href="#basics.4.6">Using Scanner for Input</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 2.4</h3>
+<h2 class="section_title">Text Input and Output</h2>
+<hr class="break">
+
+
+<p>
+<span class="start"><big>F</big>or some unfathomable reason</span>, Java 
+has never made it very easy to read data typed in by the user of a program.
+You've already seen that output can be displayed to the user using the
+subroutine <span class="code">System.out.print</span>. This subroutine is part of a pre-defined
+object called <span class="code">System.out</span>. The purpose of this object is precisely to
+display output to the user.  There is a corresponding object called
+<span class="code">System.in</span> that exists to read data input by the user, but it provides
+only very primitive input facilities, and it requires some advanced Java
+programming skills to use it effectively.</p>
+
+
+<p>Java 5.0 finally made input from any source a little easier with a
+new <span class="classname">Scanner</span> class. However, it requires some knowledge of
+object-oriented programming to use this class, so it's not appropriate for use
+here at the beginning of this course.  Java&nbsp;6 introduced the <span class="classname">Console</span>
+class, specifically for communicating with the user, but again, using <span class="classname">Console</span>
+requires more knowledge about objects than you have at this point.  (Furthermore, in my opinion,
+<span class="classname">Scanner</span> and <span class="classname">Console</span> still don't get things quite right.
+Nevertheless, I will introduce <span class="classname">Scanner</span> briefly at the end of this
+section, in case you want to start using it now.)</p>
+
+
+<p>There is some excuse for this lack of concern with input, since Java is
+meant mainly to write programs for Graphical User Interfaces, and those
+programs have their own style of input/output, which <b>is</b> implemented quite well in Java.
+However, basic support is needed for input/output in old-fashioned non-GUI
+programs. Fortunately, it is possible to <b>extend</b> Java by
+creating new classes that provide subroutines that are not available in the
+standard part of the language. As soon as a new class is
+available, the subroutines that it contains can be used in exactly the same way
+as built-in routines.</p>
+
+
+<p>Along these lines, I've written a class called <span class="classname">TextIO</span> that defines
+subroutines for reading values typed by the user of a non-GUI program. The subroutines in this class
+make it possible to get input from the standard input object,
+<span class="code">System.in</span>, without knowing about the advanced aspects of Java that are
+needed to use <span class="classname">Scanner</span>
+or to use <span class="code">System.in</span> directly. <span class="classname">TextIO</span> also contains a set
+of output subroutines. The output subroutines are similar to those provided in
+<span class="code">System.out</span>, but they provide a few additional features.  For displaying
+output to the user, you can use either <span class="code">System.out</span> or <span class="code">TextIO</span>,
+and you can even mix them in the same program.</p>
+
+
+<p>To use the <span class="classname">TextIO</span> class, you must make sure that the class is
+available to your program. What this means depends on the Java programming
+environment that you are using.  In general, you just have to
+add the source code file, <span class="sourceref"><a href="../source/TextIO.java">TextIO.java</a></span>, to the same directory that contains
+your main program.   See <a href="../c2/s6.html">Section&nbsp;2.6</a>
+for more information about how to use <span class="classname">TextIO</span>.</p>
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="basics.4.1">2.4.1&nbsp;&nbsp;A First Text Input Example</a>
+</h3>
+
+
+<p>The input routines in the <span class="classname">TextIO</span> class are static member functions.
+(Static member functions were introduced in the <a href="../c2/s3.html">previous section</a>.) 
+Let's suppose that you want your program to read an integer typed
+in by the user. The <span class="classname">TextIO</span> class contains a static member function
+named <span class="code">getlnInt</span> that you can use for this purpose. Since this function is
+contained in the <span class="classname">TextIO</span> class, you have to refer to it in your program
+as <span class="code">TextIO.getlnInt</span>. The function has no parameters, so a complete call to the
+function takes the form "<span class="code">TextIO.getlnInt()</span>". This function call
+represents the <span class="ptype">int</span> value typed by the user, and you have to do
+something with the returned value, such as assign it to a variable. For
+example, if <span class="code">userInput</span> is a variable of type <span class="ptype">int</span> (created with
+a declaration statement "<span class="code">int userInput;</span>"), then you could use the
+assignment statement</p>
+
+
+<pre>userInput = TextIO.getlnInt();</pre>
+
+
+<p>When the computer executes this statement, it will wait for the user to type
+in an integer value. That value will then be returned by the function, and it
+will be stored in the variable, <span class="code">userInput</span>. Here is a complete program
+that uses <span class="code">TextIO.getlnInt</span> to read a number typed by the user and then
+prints out the square of the number that the user types:</p>
+
+
+<pre>/**
+ * A program that reads an integer that is typed in by the
+ * user and computes and prints the square of that integer.
+ */
+ 
+public class PrintSquare {
+    
+     public static void main(String[] args) {
+ 
+        int userInput;  // The number input by the user.
+        int square;     // The userInput, multiplied by itself.
+        
+        System.out.print("Please type a number: ");
+        userInput = TextIO.getlnInt();
+        square = userInput * userInput;
+        System.out.print("The square of that number is ");
+        System.out.println(square);
+        
+     } // end of main()
+  
+} //end of class PrintSquare</pre>
+
+
+<p>When you run this program, it
+will display the message "Please type a number:" and will pause until you type
+a response, including a carriage return after the number.
+ Here is an applet that simulates the program.
+(<b>Note:</b>  If the applet does not respond to your typing, you might have to
+click on it to activate it.  In some browsers, you might also need to leave the
+mouse cursor inside the applet for it to recognize your typing.)</p>
+
+
+<p align="center">
+<applet code="PrintSquareConsole" width="450" height="200" archive="PrintSquareApplet.jar" alt="(Applet 'PrintSquareConsole' should be displayed here.)"></applet></p>
+
+   
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="basics.4.2">2.4.2&nbsp;&nbsp;Text Output</a>
+</h3>
+   
+
+<p>The <span class="classname">TextIO</span> class contains static member subroutines
+<span class="code">TextIO.put</span> and <span class="code">TextIO.putln</span> that can be used in the same way
+as <span class="code">System.out.print</span> and <span class="code">System.out.println</span>. For example,
+although there is no particular advantage in doing so in this case, you could
+replace the two lines</p>
+
+
+<pre>
+<b>System.out.print</b>("The square of that number is ");
+<b>System.out.println</b>(square);</pre>
+
+
+<p>with</p>
+
+
+<pre>
+<b>TextIO.put</b>("The square of that number is ");
+<b>TextIO.putln</b>(square);</pre>
+
+
+<p>For the next few chapters, I will use <span class="classname">TextIO</span> for input in all my
+examples, and I will often use it for output. Keep in mind that <span class="classname">TextIO</span>
+can only be used in a program if it is available to that
+program. It is not built into Java in the way that the <span class="classname">System</span> class is.</p>
+
+
+
+<p>Let's look a little more closely at the built-in output subroutines
+<span class="code">System.out.print</span> and <span class="code">System.out.println</span>.  Each of these
+subroutines can be used with one parameter, where the parameter can be a
+value of any of the primitive types <span class="ptype">byte</span>, <span class="ptype">short</span>, <span class="ptype">int</span>, <span class="ptype">long</span>,
+<span class="ptype">float</span>, <span class="ptype">double</span>, <span class="ptype">char</span>, or <span class="ptype">boolean</span>.
+The parameter can also be a <span class="classname">String</span>, a value belonging to an enum type,
+or indeed any object.  That is, you can say "<span class="code">System.out.print(x);</span>" or
+"<span class="code">System.out.println(x)</span>;", where <span class="code">x</span> is any expression
+whose value is of any type whatsoever.  The expression can be a constant, a variable,
+or even something more complicated such as <span class="code">2*distance*time</span>.  Now, in fact,
+the <span class="classname">System</span> class actually includes several different subroutines to handle different
+parameter types. There is one <span class="code">System.out.print</span> for printing values of
+type <span class="ptype">double</span>, one for values of type <span class="ptype">int</span>, another for values
+that are objects, and so on. These subroutines can have the same name
+since the computer can tell which one you mean in a given subroutine call
+statement, depending on the type of parameter that you supply. Having several
+subroutines of the same name that differ in the types of their parameters is
+called <span class="newword">overloading</span>. Many programming languages do
+not permit overloading, but it is common in Java programs.</p>
+
+
+<p>The difference between <span class="code">System.out.print</span> and
+<span class="code">System.out.println</span> is that the <span class="code">println</span> version outputs a
+carriage return after it outputs the specified parameter value. There is a
+version of <span class="code">System.out.println</span> that has no parameters. This version
+simply outputs a carriage return, and nothing else.  A subroutine
+call statement for this version of the subroutine looks like
+"<span class="code">System.out.println();</span>", with empty parentheses. Note that
+"<span class="code">System.out.println(x)</span>;" is exactly equivalent to
+"<span class="code">System.out.print(x); System.out.println();</span>"; the carriage
+return comes <b>after</b> the value of <span class="code">x</span>.  (There is no version of
+<span class="code">System.out.print</span> without parameters. Do you see why?)</p>
+
+
+<p>As mentioned above, the <span class="classname">TextIO</span> subroutines <span class="code">TextIO.put</span> and
+<span class="code">TextIO.putln</span> can be used as replacements for <span class="code">System.out.print</span>
+and <span class="code">System.out.println</span>.  The <span class="classname">TextIO</span> functions work in
+exactly the same way as the <span class="classname">System</span> functions, except that, as we will
+see below, <span class="classname">TextIO</span> can also be used to write to other destinations.</p>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="basics.4.3">2.4.3&nbsp;&nbsp;TextIO Input Functions</a>
+</h3>
+
+
+<p>The <span class="classname">TextIO</span> class is a little more versatile at doing output than is
+<span class="code">System.out</span>. However, it's input for which we really need it.</p>
+
+
+<p>With <span class="classname">TextIO</span>, input is done using functions. For example,
+<span class="code">TextIO.getlnInt()</span>, which was discussed above, makes the user type in a
+value of type <span class="ptype">int</span> and returns that input value so that you can use it
+in your program. <span class="classname">TextIO</span> includes several functions for reading
+different types of input values.  Here are examples of the ones that you are
+most likely to use:</p>
+
+
+<pre>j = TextIO.getlnInt();     // Reads a value of type int.
+y = TextIO.getlnDouble();  // Reads a value of type double.
+a = TextIO.getlnBoolean(); // Reads a value of type boolean.
+c = TextIO.getlnChar();    // Reads a value of type char.
+w = TextIO.getlnWord();    // Reads one "word" as a value of type String.
+s = TextIO.getln();        // Reads an entire input line as a String.</pre>
+
+
+<p>For these statements to be legal, the variables on the left side of each
+assignment statement must already be declared and must be of the same type as 
+that returned by the function on the right side.  Note carefully that
+these functions do not have parameters.  The values that they return come
+from outside the program, typed in by the user as the program is running.
+To "capture" that data so that you can use it in your program, you have
+to assign the return value of the function to a variable.  You will then
+be able to refer to the user's input value by using the name of the variable.</p>
+
+
+<p>When you call one of these functions, you are guaranteed that it will return
+a legal value of the correct type. If the user types in an illegal value as
+input -- for example, if you ask for an <span class="ptype">int</span> and the user types in a
+non-numeric character or a
+number that is outside the legal range of values that can be stored
+in a variable of type <span class="ptype">int</span> -- then the computer will
+ask the user to re-enter the value, and your program never sees the first,
+illegal value that the user entered.  For <span class="code">TextIO.getlnBoolean()</span>,
+the user is allowed to type in any of the following: true, false, t, f, yes, no, y,
+n, 1, or 0.  Furthermore, they can use either upper or lower case letters.
+In any case, the user's input is interpreted as a true/false value.  It's
+convenient to use <span class="code">TextIO.getlnBoolean()</span> to read the user's
+response to a Yes/No question.</p>
+
+
+<p>You'll notice that there are two input functions that return Strings. The
+first, <span class="code">getlnWord()</span>, returns a string consisting of non-blank characters
+only. When it is called, it skips over any spaces and carriage returns typed in
+by the user. Then it reads non-blank characters until it gets to the next space
+or carriage return. It returns a <span class="classname">String</span> consisting of all the
+non-blank characters that it has read. The second input function,
+<span class="code">getln()</span>, simply returns a string consisting of all the characters
+typed in by the user, including spaces, up to the next carriage return. It gets
+an entire line of input text. The carriage return itself is not returned as
+part of the input string, but it is read and discarded by the computer. Note
+that the String returned by this function might be the <span class="newword">empty string</span>, 
+<span class="code">""</span>, which contains no characters at
+all.  You will get this return value if the user simply presses return, without
+typing anything else first.</p>
+
+
+<p>All the other input functions listed -- <span class="code">getlnInt()</span>, 
+<span class="code">getlnDouble()</span>, <span class="code">getlnBoolean()</span>, and
+<span class="code">getlnChar()</span> -- behave like <span class="code">getWord()</span> in that they will skip
+past any blanks and carriage returns in the input before reading a value.</p>
+
+
+<p>Furthermore, if the user types extra characters on the line after the
+input value, <b>all the extra characters will be discarded, along with
+the carriage return at the end of the line</b>.  If the
+program executes another input function, the user will have to type in
+another line of input.  It might not sound like a good idea to discard any
+of the user's input, but it turns out to be the safest thing to do in most
+programs.  Sometimes, however, you do want to read more than one value
+from the same line of input.  <span class="classname">TextIO</span> provides the following
+alternative input functions to allow you to do this:</p>
+
+
+<pre>j = TextIO.getInt();     // Reads a value of type int.
+y = TextIO.getDouble();  // Reads a value of type double.
+a = TextIO.getBoolean(); // Reads a value of type boolean.
+c = TextIO.getChar();    // Reads a value of type char.
+w = TextIO.getWord();    // Reads one "word" as a value of type String.</pre>
+   
+
+<p>The names of these functions start with "get" instead of "getln".
+"Getln" is short for "get line" and should remind you that the functions
+whose names begin with "getln" will get an entire line of data.  A function
+without the "ln" will read an input value in the same way, but will then
+save the rest of the input line in a  chunk of internal memory
+called the  <span class="newword">input buffer</span>.
+The next time the computer wants to read an input value, it will look
+in the input buffer before prompting the user for input.  This allows the
+computer to read several values from one line of the user's input.
+Strictly speaking, the computer actually reads <b>only</b> from the input buffer.
+The first time the program tries to read input from the user, the
+computer will wait while the user types in an entire line of
+input. <span class="classname">TextIO</span> stores that line in the input buffer until
+the data on the line has been read or discarded (by one of the "getln"
+functions).  The user only gets to
+type when the buffer is empty.</p>
+   
+
+<p>Clearly, the semantics of input is much more complicated than the semantics of output!
+Fortunately, for the majority of applications, it's pretty straightforward in practice.
+You only need to follow the details if you want to do something fancy.  In particular,
+I <b>strongly</b> advise you to use the "getln" versions of
+the input routines, rather than the "get" versions, unless you really want to
+read several items from the same line of input, precisely because the semantics
+of the "getln" versions is much simpler.
+</p>
+   
+
+<p>Note, by the way, that although the <span class="classname">TextIO</span> input functions will
+skip past blank spaces and carriage returns while looking for input, they will 
+<b>not</b> skip past other characters.  For example, if you try
+to read two <span class="ptype">int</span>s and the user types "2,3", the computer will read the
+first number correctly, but when it tries to read the second number, it will
+see the comma. It will regard this as an error and will force the user to
+retype the number. If you want to input several numbers from one line, you
+should make sure that the user knows to separate them with spaces, not commas.
+Alternatively, if you want to require a comma between the numbers, use
+<span class="code">getChar()</span> to read the comma before reading the second number.</p>
+
+
+<p>There is another character input function, <span class="code">TextIO.getAnyChar()</span>,
+which does not skip past blanks or carriage returns. It simply reads and
+returns the next character typed by the user, even if it's a blank or 
+carriage return. If the user typed a carriage return,
+then the <span class="ptype">char</span> returned by <span class="code">getAnyChar()</span> is the special linefeed
+character '\n'. There is also a function, <span class="code">TextIO.peek()</span>, that lets
+you look ahead at the next character in the input without actually reading it.
+After you "peek" at the next character, it will still be there when you read
+the next item from input. This allows you to look ahead and see what's coming
+up in the input, so that you can take different actions depending on what's
+there.</p>
+
+
+<p>The <span class="classname">TextIO</span> class provides a number of other functions.  To
+learn more about them, you can look at the comments in the source code file,
+<span class="sourceref"><a href="../source/TextIO.java">TextIO.java</a></span>.</p>
+
+
+<p>(You might be wondering why there are only two output routines, <span class="code">print</span>
+and <span class="code">println</span>, which can output data values of any type, while there is a
+separate input routine for each data type. As noted above, in reality there are
+many <span class="code">print</span> and <span class="code">println</span> routines, one for each data type. 
+The computer can tell them apart
+based on the type of the parameter that you provide. However, the input
+routines don't have parameters, so the different input routines can only be
+distinguished by having different names.)</p>
+
+
+<hr class="break">
+
+
+<p>Using <span class="classname">TextIO</span> for input and output, we can now improve the program
+from <a href="../c2/s2.html">Section&nbsp;2.2</a> for computing the value of an investment.
+We can have the user type in the initial value of the investment and the
+interest rate. The result is a much more useful program -- for one thing, it
+makes sense to run it more than once!</p>
+
+
+<pre>/**
+ * This class implements a simple program that will compute
+ * the amount of interest that is earned on an investment over
+ * a period of one year.  The initial amount of the investment
+ * and the interest rate are input by the user.  The value of
+ * the investment at the end of the year is output.  The
+ * rate must be input as a decimal, not a percentage (for
+ * example, 0.05 rather than 5).
+ */
+
+public class Interest2 {
+
+   public static void main(String[] args) {
+   
+       double principal;  // The value of the investment.
+       double rate;       // The annual interest rate.
+       double interest;   // The interest earned during the year.
+       
+       TextIO.put("Enter the initial investment: ");
+       principal = TextIO.getlnDouble();
+       
+       TextIO.put("Enter the annual interest rate (decimal, not percentage!): ");
+       rate = TextIO.getlnDouble();
+       
+       interest = principal * rate;       // Compute this year's interest.
+       principal = principal + interest;  // Add it to principal.
+       
+       TextIO.put("The value of the investment after one year is $");
+       TextIO.putln(principal);
+       
+   } // end of main()
+      
+} // end of class Interest2</pre>
+
+
+
+<p>Try out an equivalent applet here. (If the applet does not respond to your
+typing, you might have to click on it to activate it.)</p>
+
+
+<p align="center">
+<applet code="Interest2Console" width="600" height="250" archive="Interest2Applet.jar" alt="(Applet 'Interest2Console' should be displayed here.)"></applet></p>
+
+
+<p>(By the way, remember that this applet only <i>simulates</i> the program.
+The program as given above does not run on a web page; it interacts with the user
+through standard input and output.)
+</p>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="basics.4.4">2.4.4&nbsp;&nbsp;Formatted Output</a>
+</h3>
+
+
+<p>If you ran the preceding <span class="code">Interest2</span> example, you might have noticed that
+the answer is not always written in the format that is usually used for dollar amounts.
+In general, dollar amounts are written with two digits after the decimal point.
+But the program's output can be a number like 1050.0 or 43.575.  It would be better
+if these numbers were printed as 1050.00 and 43.58.</p>
+   
+
+<p>Java 5.0 introduced a formatted output capability that makes it much easier than
+it used to be to control the format of output numbers.  A lot of formatting options
+are available.  I will cover just a few of the simplest and most commonly used
+possibilities here.</p>
+   
+
+<p>You can use the function <span class="code">System.out.printf</span> to produce formatted
+output.  (The name "printf," which stands for "print formatted," is copied from
+the C and C++ programming languages, which have always had a similar formatting
+capability).  <span class="code">System.out.printf</span> takes two or more parameters.
+The first parameter is a <span class="classname">String</span> that specifies the format of the
+output.  This parameter is called the <span class="newword">format string</span>.
+The remaining parameters specify the values that are to be output.  Here is
+a statement that will print a number in the proper format for a dollar amount,
+where <span class="code">amount</span> is a variable of type <span class="ptype">double</span>:
+</p>
+   
+
+<pre>System.out.printf( "%1.2f", amount );</pre>
+   
+
+<p>
+<span class="classname">TextIO</span> can also do formatted output. The function <span class="code">TextIO.putf</span>
+has the same functionality as <span class="code">System.out.printf</span>.  Using <span class="classname">TextIO</span>,
+the above example would be: <span class="code">TextIO.putf("%1.2f",amount);</span>
+and you could say <span class="code">TextIO.putf("%1.2f",principal);</span> instead of 
+<span class="code">TextIO.putln(principal);</span> in the <span class="code">Interest2</span> program to get
+the output in the right format.
+</p>
+   
+
+<p>The output format of a value is specified by a <span class="newword">format specifier</span>.
+The format string (in the simple cases that I cover here) contains one format specifier for
+each of the values that is to be output.  Some typical format specifiers are 
+<span class="code">%d</span>, <span class="code">%12d</span>, <span class="code">%10s</span>, <span class="code">%1.2f</span>, <span class="code">%15.8e</span> and <span class="code">%1.8g</span>.
+Every format specifier begins with a percent sign (<span class="code">%</span>) and ends with a letter, possibly with
+some extra formatting information in between.  The letter specifies the type of output
+that is to be produced.  For example, in <span class="code">%d</span> and <span class="code">%12d</span>,
+the "d" specifies that an integer is to be written.  The "12" in <span class="code">%12d</span>
+specifies the minimum number of spaces that should be used for the output.  If the
+integer that is being output takes up fewer than 12 spaces, extra blank spaces
+are added in front of the integer to bring the total up to 12.  We say that the
+output is "right-justified in a field of length 12."  The value is not forced into
+12 spaces; if the value has more than 12 digits, all the digits will be printed, with
+no extra spaces.  The specifier <span class="code">%d</span> means the same as <span class="code">%1d</span> -- that is, 
+an integer will be printed using just as many spaces as necessary.
+(The "d," by the way, stands for "decimal" -- that is, base-10 -- numbers.  You can replace the "d" with an "x" to
+output an integer value in hexadecimal form.)
+</p>
+   
+
+<p>The letter "s" at the end of a format specifier can be used with any type of value.
+It means that the value should be output in its default format, just as it would be
+in unformatted output.  A number, such as the "10" in <span class="code">%10s</span> can
+be added to specify the (minimum) number of characters.  The "s" stands for "string,"
+meaning that the value is converted into a <span class="classname">String</span> value in the usual way.</p>
+   
+
+<p>The format specifiers for values of type <span class="ptype">double</span> are even more complicated.
+An "f", as in <span class="code">%1.2f</span>, is used to output a number in "floating-point" form,
+that is with digits after the decimal point.  In <span class="code">%1.2f</span>, the "2" specifies
+the number of digits to use after the decimal point.  The "1" specifies the (minimum)
+number of characters to output, which effectively means that just as many characters
+as are necessary should be used.  Similarly, <span class="code">%12.3f</span> would specify a
+floating-point format with 3 digits after the decimal point, right-justified in a
+field of length 12.</p>
+   
+
+<p>Very large and very small numbers should be written in exponential format, such
+as 6.00221415e23, representing "6.00221415 times 10 raised to the power 23."
+A format specifier such as <span class="code">%15.8e</span> specifies an output in exponential
+form, with the "8" telling how many digits to use after the decimal point.
+If you use "g" instead of "e", the output will be in floating-point form for
+small values and in exponential form for large values.  In <span class="code">%1.8g</span>,
+the 8 gives the total number of digits in the answer, including both the
+digits before the decimal point and the digits after the decimal point.</p>
+
+
+<p>For numeric output, the format specifier can include a comma&nbsp;(","), 
+which will cause the digits of the number to be separated into groups, to
+make it easier to read big numbers.  In the United States, groups of three
+digits are separated by commas.  For example, if <span class="code">x</span> is one billion,
+then <span class="code">System.out.printf("%,d",x)</span> will output 1,000,000,000.
+In other countries, the separator character and the
+number of digits per group might be different.  The comma should come at the
+beginning of the format specifier, before the field width; for example: 
+<span class="code">%,12.3f</span>.
+</p>
+   
+
+<p>In addition to format specifiers, the format string in a <span class="code">printf</span> statement
+can include other characters.  These extra characters are just copied to the
+output.  This can be a convenient way to insert values into the middle of an
+output string.  For example, if <span class="code">x</span> and <span class="code">y</span> are variables
+of type <span class="ptype">int</span>, you could say</p>
+   
+
+<pre>System.out.printf("The product of %d and %d is %d", x, y, x*y);</pre>
+   
+
+<p>When this statement is executed, the value of <span class="code">x</span> is substituted for the
+first <span class="code">%d</span> in the string, the value of <span class="code">y</span> for the second
+<span class="code">%d</span>, and the value of the expression <span class="code">x*y</span> for the third,
+so the output would be something like "The product of 17 and 42 is 714" (quotation
+marks not included in output!).
+</p>
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="basics.4.5">2.4.5&nbsp;&nbsp;Introduction to File I/O</a>
+</h3>
+   
+
+<p>
+<span class="code">System.out</span> sends its output to the output destination known as
+"standard output."  But standard output is just one possible output destination.
+For example, data can be written to a <span class="newword">file</span> that
+is stored on the user's hard drive.  The advantage to this, of course, is that
+the data is saved in the file even after the program ends, and the user can
+print the file, email it to someone else, edit it with another program, and so
+on.</p>
+   
+
+<p>
+<span class="classname">TextIO</span> has the ability to write data to files and to read data
+from files.  When you write output using the <span class="code">put</span>, <span class="code">putln</span>,
+or <span class="code">putf</span> method in <span class="classname">TextIO</span>, the output is sent to
+the <span class="newword">current output destination.</span>  By default,
+the current output destination is standard output.  However, <span class="classname">TextIO</span>
+has some subroutines that can be used to change the current output destination.
+To write to a file named "result.txt", for example, you would use the
+statement:</p>
+ 
+
+<pre>TextIO.writeFile("result.txt");</pre>
+   
+
+<p>After this statement is executed, any output from <span class="classname">TextIO</span> output
+statements will be sent to the file named "result.txt" instead of to standard
+output.  The file should be created in the same directory that contains 
+the program.  Note that if a file with the same name already exists, its previous
+contents will be erased!   In many cases, you want to let the user select
+the file that will be used for output.  The statement</p>
+   
+
+<pre>TextIO.writeUserSelectedFile();</pre>
+   
+
+<p>will open a typical graphical-user-interface file selection dialog where
+the user can specify the output file.  If you want to go back to sending output
+to standard output, you can say</p>
+   
+
+<pre>TextIO.writeStandardOutput();</pre>
+
+
+<p>You can also specify the input source for <span class="classname">TextIO's</span> various
+"get" functions.  The default input source is standard input.  You can use
+the statement <span class="code">TextIO.readFile("data.txt")</span> to read from
+a file named "data.txt" instead, or you can let the user select the
+input file by saying <span class="code">TextIO.readUserSelectedFile()</span>.
+You can go back to reading from standard input with
+<span class="code">TextIO.readStandardInput()</span>.</p>
+   
+
+<p>When your program is reading from standard input, the user gets
+a chance to correct any errors in the input.  This is not possible
+when the program is reading from a file.  If illegal data is found
+when a program tries to read from a file, an error occurs that
+will crash the program. (Later, we will see that it is possible
+to "catch" such errors and recover from them.)  Errors can also
+occur, though more rarely, when writing to files.</p>
+   
+
+<p>A complete understanding of file input/output in Java requires
+a knowledge of object oriented programming.  We will return to
+the topic later, in <a href="../c11/index.html">Chapter&nbsp;11</a>.
+The file I/O capabilities in <span class="classname">TextIO</span> are rather
+primitive by comparison.  Nevertheless, they are sufficient 
+for many applications, and they will allow you to get some
+experience with files sooner rather than later.
+</p>
+   
+
+<p>As a simple example, here is a program that asks the user some
+questions and outputs the user's responses to a file named
+"profile.txt":</p>
+   
+
+<pre>public class CreateProfile {
+    
+    public static void main(String[] args) {
+    
+        String name;     // The user's name.
+        String email;    // The user's email address.
+        double salary;   // the user's yearly salary.
+        String favColor; // The user's favorite color.
+  
+        TextIO.putln("Good Afternoon!  This program will create");
+        TextIO.putln("your profile file, if you will just answer");
+        TextIO.putln("a few simple questions.");
+        TextIO.putln();
+  
+        /* Gather responses from the user. */
+      
+        TextIO.put("What is your name?           ");
+        name = TextIO.getln();
+        TextIO.put("What is your email address?  ");
+        email = TextIO.getln();
+        TextIO.put("What is your yearly income?  ");
+        salary = TextIO.getlnDouble();
+        TextIO.put("What is your favorite color? ");
+        favColor = TextIO.getln();
+    
+        /* Write the user's information to the file named profile.txt. */
+      
+        TextIO.writeFile("profile.txt");  // subsequent output goes to the file
+        TextIO.putln("Name:            " + name); 
+        TextIO.putln("Email:           " + email);
+        TextIO.putln("Favorite Color:  " + favColor);
+        TextIO.putf( "Yearly Income:   %,1.2f\n", salary);
+                   // The "/n" in the previous line is a carriage return, and the
+                   // comma in %,1.2f adds separators between groups of digits.
+       
+        /* Print a final message to standard output. */
+          
+        TextIO.writeStandardOutput();
+        TextIO.putln("Thank you.  Your profile has been written to profile.txt.");
+        
+    }
+    
+}</pre>
+
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="basics.4.6">2.4.6&nbsp;&nbsp;Using Scanner for Input</a>
+</h3>
+
+
+<p>
+<span class="classname">TextIO</span> makes it easy to get input from the user.
+However, since it is not a standard class, you have to remember to add
+<span class="code">TextIO.java</span> to a program that uses it.  One advantage of
+using the <span class="classname">Scanner</span> class for input is that it's
+a standard part of Java and so is always there when you want it.</p>
+
+
+<p>It's not that hard to use a <span class="classname">Scanner</span> for user input, but doing so requires some
+syntax that will not be introduced until <a href="../c4/index.html">Chapter&nbsp;4</a> and 
+<a href="../c5/index.html">Chapter&nbsp;5</a>.  I'll tell you how to do it here, without explaining why
+it works.  You won't understand all the syntax at this point.
+(<span class="classname">Scanners</span> will be covered in more detail in <a href="../c11/s1.html#IO.1.5">Subsection&nbsp;11.1.5</a>.)</p>
+
+
+<p>First, you should add the following
+line to your program at the beginning of the source code file, <b>before</b> the "public class...":</p>
+
+
+<pre>import java.util.Scanner;</pre>
+
+
+<p>Then include the following statement at the beginning of your <span class="code">main()</span> routine:</p>
+
+
+<pre>Scanner stdin = new Scanner( System.in );</pre>
+
+
+<p>This creates a variable named <span class="code">stdin</span> of type <span class="classname">Scanner</span>.
+(You can use a different name for the variable if you want; "stdin" stands for "standard input.")
+You can then use <span class="code">stdin</span> in your program to access a variety of subroutines for
+reading user input.  For example, the function <span class="code">stdin.nextInt()</span> reads one value of type
+<span class="ptype">int</span> from the user and returns it.  It is almost the same as <span class="code">TextIO.getInt()</span>
+except for two things:  If the value entered by the user is not a legal <span class="ptype">int</span>, then
+<span class="code">stdin.nextInt()</span> will crash rather than prompt the user to re-enter the value.
+And the integer entered by the user must be followed by a blank space or by an end-of-line,
+whereas <span class="code">TextIO.getInt()</span> will stop reading at any character that is not a digit.
+</p>
+
+
+<p>There are corresponding methods for reading other types of data, including
+<span class="code">stdin.nextDouble()</span>, <span class="code">stdin.nextLong()</span>, and <span class="code">stdin.nextBoolean()</span>.
+(<span class="code">stdin.nextBoolean()</span> will only accept "true" or "false" as input.)  The method
+<span class="code">stdin.nextLine()</span> is equivalent to <span class="code">TextIO.getln()</span>, and
+<span class="code">stdin.next()</span>, like <span class="code">TextIO.getWord()</span>, returns a string of 
+non-blank characters.</p>
+
+
+<p>As a simple example, here is a version of the sample program <span class="sourceref"><a href="../source/Interest2.java">Interest2.java</a></span>
+that uses <span class="classname">Scanner</span> instead of <span class="classname">TextIO</span> for user
+input:
+</p>
+
+
+<pre>
+<span class="newcode">import java.util.Scanner;</span>  // Make the Scanner class available.
+
+public class Interest2WithScanner {
+   
+   public static void main(String[] args) {
+      
+      <span class="newcode">Scanner stdin = new Scanner( System.in );</span>  // Create the Scanner.
+      
+      double principal;  // The value of the investment.
+      double rate;       // The annual interest rate.
+      double interest;   // The interest earned during the year.
+      
+      System.out.print("Enter the initial investment: ");
+      <span class="newcode">principal = stdin.nextDouble();</span>
+      
+      System.out.print("Enter the annual interest rate (decimal, not percent!): ");
+      <span class="newcode">rate = stdin.nextDouble();</span>
+      
+      interest = principal * rate;       // Compute this year's interest.
+      principal = principal + interest;  // Add it to principal.
+      
+      System.out.print("The value of the investment after one year is $");
+      System.out.println(principal);
+      
+   } // end of main()
+   
+} // end of class Interest2With Scanner</pre>
+
+
+<p>Note the inclusion of the two lines given above and the substitution of
+<span class="code">stdin.nextDouble()</span> for <span class="code">TextIO.getlnDouble()</span>.  (In fact,
+<span class="code">stdin.nextDouble()</span> is really equivalent to <span class="code">TextIO.getDouble()</span>
+rather than to the "getln" version, but this will not affect the behavior of the
+program as long as the user types just one number on each line of input.)</p>
+
+
+<p>I will continue to use <span class="classname">TextIO</span> for input for the time
+being, but I will give a few more examples of using <span class="classname">Scanner</span>
+in the on-line solutions to the end-of-chapter exercises.  There will be more
+detailed coverage of <span class="classname">Scanner</span> later in the book.</p>
+
+
+
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s3.html">Previous Section</a> |
+           <a href="s5.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

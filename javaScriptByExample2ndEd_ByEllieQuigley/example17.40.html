@@ -1,0 +1,16 @@
+<html>
+<head<title>Removing Parens</title></head>
+<body bgcolor="magenta">
+   <big>
+   <font face="arial">
+   <h2>Removing Unwanted Parentheses, Spaces, and Dashes</h2>
+   <script type= "text/javascript">
+	var string="(408)-332-1234"
+	var regex = /[() -]+/g;
+	var newString=string.replace(regex, "");
+	document.write("The original string: "+string);
+	document.write("<br>The new string: "+ newString +"<br>");
+   </script>
+   </big>
+</body>
+</html>

@@ -1,0 +1,14 @@
+<html><head><title>The exec() method</title>
+<script language = "JavaScript">
+		var myString="My lovely gloves are worn for wear, Love.";
+		var regex = /love/i;    // Create a regular expression object
+		var array=regex.exec(myString);
+		if (regex.exec(myString)){
+			alert("Matched! " + array);
+		}
+		else{
+			alert("No match.");
+		}
+</script>
+<body></body>
+</html>

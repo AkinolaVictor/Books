@@ -1,0 +1,335 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 1, Chapter 6</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 6.1</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 6.1:</h3>
+<p>In the <span class="classname">SimpleStamperPanel</span> example from
+<a href="../c6/s4.html#GUI1.4.2">Subsection&nbsp;6.4.2</a>, a rectangle or oval is drawn on the panel when
+the user clicks the mouse, except that when the user shift-clicks, the panel is cleared
+instead.  Modify this class so that the modified version will continue to draw figures as the user
+drags the mouse.  That is, the mouse will leave a trail of figures as the user
+drags.  However, if the user shift-clicks, the panel should simply be
+cleared and no figures should be drawn even if the user drags the mouse after
+shift-clicking. Use your panel either in an applet or in a stand-alone application
+(or both).  Here is an applet version of my solution:</p>
+
+<p align="center">
+<applet code="SimpleStamperAppletWithDrag.class" width="350" height="250" archive="SimpleStamperWithDrag.jar" alt=""></applet></p>
+
+<p>The source code for the original panel class is <span class="sourceref"><a href="../source/SimpleStamperPanel.java">SimpleStamperPanel.java</a></span>.
+An applet that uses this class can be found in <span class="sourceref"><a href="../source/SimpleStamperApplet.java">SimpleStamperApplet.java</a></span>,
+and a main program that uses the panel in a frame is in <span class="sourceref"><a href="../source/SimpleStamper.java">SimpleStamper.java</a></span>.
+See the discussion of dragging in <a href="../c6/s4.html#GUI1.4.4">Subsection&nbsp;6.4.4</a>.
+(Note that in the original version, I drew a black outline around each shape.
+In the modified version, I decided that it would look better to draw a gray
+outline instead.)</p>
+
+<p>If you want to make the problem a little more challenging, when drawing shapes
+during a drag operation, make sure that the shapes that are drawn are at least, say,
+5 pixels apart.  To implement this, you have to keep track of the position of the
+last shape that was drawn.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>In order to implement dragging in the new version, we need a
+<span class="classname">MouseMotionListener</span> in addition to the <span class="classname">MouseListener</span>
+that is already present in the original version.  In the original, the panel
+class itself implements <span class="classname">MouseListener</span>, so I just added
+<span class="classname">MouseMotionListener</span>:</p>
+
+<pre>public class SimpleStamperPanelWithDrag extends JPanel 
+                          implements MouseListener, MouseMotionListener { . . .</pre>
+
+<p>Of course, the mouse motion listener has to be registered with the panel
+in order for it to hear any events from the panel.  This is done by adding the line</p>
+
+<pre>addMouseMotionListener(this);</pre>
+
+<p>to the constructor.  Here "this" refers to the panel object itself and is used because
+the panel itself implements <span class="classname">MouseMotionListener</span>, and it
+will listen for mouse motion events from itself.</p>
+
+<p>To finish the implementation of the mouse motion listener interface, 
+the <span class="code">mouseMoved</span> and <span class="code">mouseDragged</span> methods must be added to
+the class.  The program does not respond when the user moves the mouse without holding
+down any mouse button, so the <span class="code">mouseMoved</span> method is empty.
+The <span class="code">mouseDragged</span> method must draw a figure at the current mouse
+position; the code for this is almost identical to the existing drawing code in
+the <span class="code">mousePressed</span> routine and can be copied from there.  However,
+nothing should be drawn in the <span class="code">mouseDragged</span> method if the user
+started the mouse drag gesture by shift-clicking. The discussion of
+dragging in <a href="../c6/s4.html#GUI1.4.4">Subsection&nbsp;6.4.4</a>, suggests that the program should use an 
+instance variable named <span class="code">dragging</span> to keep track of whether or not to
+draw anything in the <span class="code">mouseDragged</span> method.  In the <span class="code">mousePressed</span>
+routine, this variable is set to <span class="code">false</span> if the user shift-clicked, and
+to <span class="code">true</span> otherwise.  The <span class="code">mouseDragged</span> routine checks the
+value of <span class="code">dragging</span>; if the value is <span class="code">false</span>, it means that
+the drag started with a shift-click and therefore nothing should be drawn.
+The complete source code is shown below.</p>
+
+<hr class="break">
+
+<p>The picture produced by the program would look better if there were always
+at least a few pixels between the shapes that are drawn as the user drags the
+mouse, as suggested at the end of the exercise.  It is not difficult to make
+the change.  The panel needs two new instance variables, <span class="code">prevX</span>
+and <span class="code">prevY</span>, of type <span class="ptype">int</span>, to store the position of
+the shape that was drawn most recently.  Their values should be set after
+drawing a shape in both <span class="code">mousePressed()</span> and <span class="code">mouseDragged()</span>
+with the statements</p>
+
+<pre>prevX = x;
+prevY = y;</pre>
+
+<p>The values of <span class="code">prevX</span> and <span class="code">prevY</span> can then be
+tested at the beginning of the <span class="code">mouseDragged()</span> method to decide
+whether or not to draw a shape.  The shape should be drawn only if either
+the x-coordinate or the y-coordinate has changed by at least 5 pixels since
+the last time a shape was drawn.  For example, <span class="code">mouseDragged()</span>
+could make the test as follows:</p>
+
+<pre>public void mouseDragged(MouseEvent evt) {
+      if (dragging == false)
+         return;
+      int x = evt.getX();  // x-coordinate where user clicked.
+      int y = evt.getY();  // y-coordinate where user clicked.
+      <span class="newcode">if ( Math.abs( prevX - x ) &lt; 5 &amp;&amp; Math.abs( prevY - y) &lt; 5 )
+         return;</span>
+      .
+      .
+      .</pre>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+<p>Here is the code for the modified panel class, with changes from the
+original (<span class="sourceref"><a href="../source/SimpleStamperPanel.java">SimpleStamperPanel.java</a></span>) shown in red 
+(except for the change for black to gray for the outlines of the shapes):</p>
+
+<pre class="exercisecode">import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+/**
+ * A simple demonstration of MouseEvents.  Shapes are drawn
+ * on a black background when the user clicks the panel.  <span class="newcode">If the user
+ * drags the mouse (except after a shift click, an additional shape is
+ * drawn at each new position of the mouse).</span>  If
+ * the user Shift-clicks, the applet is cleared.  If the user
+ * right-clicks the applet, a red rectangle is drawn.  Otherwise,
+ * when the user clicks, a blue oval is drawn.  The contents of
+ * the panel are not persistent.  For example, they might disappear 
+ * if the panel is resized or is covered and uncovered.
+ */
+public class SimpleStamperPanelWithDrag extends JPanel 
+                    implements MouseListener<span class="newcode">, MouseMotionListener</span> {
+   
+   <span class="newcode">/**
+    * This variable is set to true during a drag operation, unless the
+    * user was holding down the shift key when the mouse was first
+    * pressed (since in that case, the mouse gesture simply clears the
+    * panel and no figures should be drawn if the user drags the mouse).
+    */
+   private boolean dragging;</span>
+   
+   /**
+    * This constructor simply sets the background color of the panel to be black
+    * and sets the panel to listen for mouse events on itself.
+    */
+   public SimpleStamperPanelWithDrag() {
+      setBackground(Color.BLACK);
+      addMouseListener(this);
+      <span class="newcode">addMouseMotionListener(this);</span>
+   }
+   
+   
+   /**
+    *  Since this panel has been set to listen for mouse events on itself, 
+    *  this method will be called when the user clicks the mouse on the panel.
+    *  This method is part of the MouseListener interface.
+    */
+   public void mousePressed(MouseEvent evt) {
+      
+      if ( evt.isShiftDown() ) {
+            // The user was holding down the Shift key.  Just repaint the panel.  Since 
+            // this class does not define a paintComponent() method, the method from the 
+            // superclass, JPanel, is called.  That  method simply fills the panel with 
+            // its background color, which is black.  The effect is to clear the panel.
+         repaint();
+         return;
+      }
+      
+      <span class="newcode">dragging = true;  // If the shift was not down, start a drag operation during
+                        // which additional shapes will be drawn as the mouse moves.</span>
+      
+      int x = evt.getX();  // x-coordinate where user clicked.
+      int y = evt.getY();  // y-coordinate where user clicked.
+      
+      Graphics g = getGraphics();  // Graphics context for drawing directly on this JPanel.
+                                   // NOTE:  This is considered to be bad style!
+      
+      if ( evt.isMetaDown() ) {
+            // User right-clicked at the point (x,y). Draw a blue oval centered 
+            // at the point (x,y). (A gray outline around the oval will make it 
+            // more distinct when ovals and rects overlap.)
+         g.setColor(Color.BLUE);  // Blue interior.
+         g.fillOval( x - 30, y - 15, 60, 30 );
+         g.setColor(Color.GRAY); // Gray outline.
+         g.drawOval( x - 30, y - 15, 60, 30 );
+      }
+      else {
+            // User left-clicked (or middle-clicked) at (x,y). 
+            // Draw a red rectangle centered at (x,y).
+         g.setColor(Color.RED);   // Red interior.
+         g.fillRect( x - 30, y - 15, 60, 30 );
+         g.setColor(Color.GRAY); // Gray outline.
+         g.drawRect( x - 30, y - 15, 60, 30 );
+      }
+      
+      g.dispose();  // We are finished with the graphics context, so dispose of it.
+      
+   } // end mousePressed();
+   
+   
+   <span class="newcode">/**
+    * This method is called when the user drags the mouse while holding down
+    * a mouse button.  If the mousePressed routine started a draw (rather
+    * than simply erasing the panel), then a figure is added to the panel
+    * at the current position of the mouse.
+    */
+   public void mouseDragged(MouseEvent evt) {
+      if (dragging == false)
+         return;
+      int x = evt.getX();  // x-coordinate where user clicked.
+      int y = evt.getY();  // y-coordinate where user clicked.
+      Graphics g = getGraphics();  // Graphics context for drawing directly on this JPanel.
+                                   // NOTE:  This is considered to be bad style!
+      if ( evt.isMetaDown() ) {
+            // The right mouse button is down. Draw a blue oval centered 
+            // at the point (x,y). (A gray outline around the oval will make it 
+            // more distinct when ovals and rects overlap.)
+         g.setColor(Color.BLUE);  // Blue interior.
+         g.fillOval( x - 30, y - 15, 60, 30 );
+         g.setColor(Color.GRAY); // Gray outline.
+         g.drawOval( x - 30, y - 15, 60, 30 );
+      }
+      else {
+            // Draw a red rectangle centered at (x,y).
+         g.setColor(Color.RED);   // Red interior.
+         g.fillRect( x - 30, y - 15, 60, 30 );
+         g.setColor(Color.GRAY); // Gray outline.
+         g.drawRect( x - 30, y - 15, 60, 30 );
+      }
+      g.dispose();
+   }</span>
+   
+
+   <span class="newcode">/**
+    * When the user released the mouse, dragging is set equal to false.
+    */
+   public void mouseReleased(MouseEvent evt) { 
+      dragging = false;
+   }</span>
+
+   
+   // The next three empty routines are required by the MouseListener interface.
+   // Since they don't do anything in this class, so their definitions are empty.
+   
+   public void mouseEntered(MouseEvent evt) { }
+   public void mouseExited(MouseEvent evt) { }
+   public void mouseClicked(MouseEvent evt) { }
+   
+   <span class="newcode">// The next empty routine is required by the MouseMotionListener interface.
+   
+   public void mouseMoved(MouseEvent evt) { }</span>
+   
+} // end class SimpleStamperPanelWithDrag
+</pre>
+
+<p>In order to use this panel, it must be placed in either a <span class="classname">JFrame</span>
+or a <span class="classname">JApplet</span>.  Here is the source code for a main program
+that uses the <span class="classname">JFrame</span> version.  This is a very simple modification
+of the original version, <span class="sourceref"><a href="../source/SimpleStamper.java">SimpleStamper.java</a></span>:</p>
+
+<pre class="exercisecode">import javax.swing.JFrame;
+
+/**
+ * A stand-alone application that opens a window containing a
+ * SimpleStamperPanelWithDrag.  When the user clicks the panel, a red
+ * rectangle is added to the window.  When the user right-clicks,
+ * a blue oval is added.  When the user shift-clicks, the drawing
+ * is cleared.  If the user drags the mouse (except after a shift-click),
+ * another figure is drawn at each new position of the mouse.
+ * The program ends when the user closes the window by clicking its close box. 
+ */
+public class SimpleStamperWithDrag {
+
+   public static void main(String[] args) {
+         JFrame window = new JFrame("Simple Stamper With Drag");
+         <span class="newcode">SimpleStamperPanelWithDrag content = new SimpleStamperPanelWithDrag();</span>
+         window.setContentPane(content);
+         window.setSize(350,250);
+         window.setLocation(100,100);
+         window.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+         window.setVisible(true);
+      }
+
+}
+</pre>
+
+<p>And here is the source code for an applet that uses the modified version.
+ This is a very simple modification
+of the original version, <span class="sourceref"><a href="../source/SimpleStamperApplet.java">SimpleStamperApplet.java</a></span>:</p>
+
+<pre class="exercisecode">import javax.swing.JApplet;
+
+/**
+ * An applet that shows a SimpleStamperPanelWitheDrag.  When the user clicks the 
+ * panel, a red rectangle is added to the window.  When the user right-clicks,
+ * a blue oval is added.  When the user shift-clicks, the drawing is cleared. 
+ * If the user drags the mouse (except after shift-clicking), another figure
+ * is drawn at each new position of the mouse.
+ */
+public class SimpleStamperAppletWithDrag extends JApplet {
+
+   public void init() {
+      <span class="newcode">SimpleStamperPanelWithDrag content = new SimpleStamperPanelWithDrag();</span>
+      setContentPane(content);
+   }
+}
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

@@ -1,0 +1,306 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Answers for Quiz on Chapter 12</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2 class="quiz_title">Answers for Quiz on Chapter 12</h2>
+<p>
+<span class="start"><big>T</big>his page contains</span> sample answers to the quiz on Chapter 12 of
+           <a href="../index.html"><i>Introduction to Programming Using Java</i></a>.
+           Note that generally, there are lots of correct answers to a given question.</p>
+<table border="1" align="center" cellpadding="8" width="95%">
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;1:</span></td><td>
+<p>Write a complete subclass of <span class="classname">Thread</span> to represent
+a thread that writes out the numbers from 1 to 10.  Then write some code that
+would create and start a thread belonging to that class.</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>The class that defines the thread:</p>
+
+<pre>public class CountingThread extends Thread {
+   public static run() {
+      for (int i = 0; i &lt; 10; i++)
+         System.out.println(i);
+   }
+}</pre>
+
+<p>Code to create an object of type <span class="classname">CountingThread</span> and start the thread:</p>
+
+<pre>CountingThread counter;     // Declare a variable to represent a thread.
+counter = new CountingThread();  // Create the thread object.
+counter.thread();                // Start the thread running.</pre>
+
+<p>(Note that it's possible to create a new thread and start it with one statement:</p>
+
+<pre>new CountingThread().start();</pre>
+
+<p>Because of the precedence of the <span class="code">new</span> operator, this is equivalent to
+<span class="code">(new&nbsp;CountingThread()).start()</span>, and the effect is to create a new
+object of type <span class="classname">CountingThread</span> and then to call the
+<span class="code">start()</span> method in that object.)</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;2:</span></td><td>
+<p>Suppose that <span class="code">thrd</span> is an object of type <span class="classname">Thread</span>.
+Explain the difference between calling <span class="code">thrd.start()</span> and calling <span class="code">thrd.run()</span>.</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>Calling <span class="code">thrd.start()</span> creates a new thread of control and returns immediately after doing so;
+then the thread's <span class="code">run()</span> method is called in the new thread of control.  The code in the <span class="code">run()</span> method is
+executed at the same time, in parallel, with the code that follows the call to <span class="code">thrd.start()</span>.</p>
+
+<p>The statement <span class="code">thrd.run()</span> calls the run method in the usual way: The <span class="code">run()</span> method is
+executed in the same thread of control as the method that called <span class="code">run()</span>.  Only  after
+the <span class="code">run()</span> method returns will the code that follows <span class="code">thrd.run()</span> be executed.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;3:</span></td><td>
+<p>What is a <i>race condition</i>?</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>A race condition is a problem that can occur in a multithreaded program.
+Suppose that a thread takes a sequence of actions in which one action can depend on
+the result of a previous action.  A race condition occurs if its possible for another thread
+to change or invalidate the result of the previous action, before the first thread completes the
+sequence.  For example, there is a race condition in the simple assignment statement
+<span class="code">count&nbsp;=&nbsp;count+1</span> because it is executed as a sequence of steps.
+The old value of <span class="code">count</span> is read, one is added to that value, and the new value is stored
+back into <span class="code">count</span>.  A race condition occurs if it is possible for another thread to
+increment the value of <span class="code">count</span> between the time when the first thread reads the old value
+and the time when it stores the new value.  In this case, the race condition can result in an
+incorrect value for <span class="code">count</span> -- <span class="code">count</span> might be increased by one
+when it was supposed to be increased by two.  Another example occurs in the if statement</p>
+
+<pre>if ( ! list.isEmpty() )
+    return list.removeFirst();</pre>
+
+<p>There is a race condition if it is possible for another thread to empty the list
+between the time when the first thread tests whether the list is empty and the
+time when the first thread tries to remove an element from the list.  In this case,
+the race condition can result in an exception when the first thread tries to remove
+an item from an empty list.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;4:</span></td><td>
+<p>How does synchronization prevent race conditions, and what does it mean to say
+that synchronization only provides <i>mutual</i> exclusion?</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>Synchronization makes it possible for a thread to complete a sequence of actions
+without interference from another thread.  Two threads cannot be synchronized on the
+same object at the same time.  While one thread is executing a synchronized block of
+code, it's impossible for another thread to be executing the same block of code, or
+any other block of code that is synchronized on the same object.  For example, if
+a thread executes</p>
+
+<pre>synchronized(list) {
+   if ( ! list.isEmpty() )
+      return list.removeFirst();
+}</pre>
+
+<p>then, assuming that all code that manipulates <span class="code">list</span> is properly
+synchronized, it can be sure that no other thread will be able to empty the list
+between the time when the first thread tests whether the list is empty and the
+time when it removes the first element from the list.</p>
+
+<p>Synchronization provides only <i>mutual</i> exclusion because it only protects
+a thread from other threads that are <i>also synchronized</i>.  In the example,
+the code has exclusive access to <span class="code">list</span> only if all the code
+segments that manipulate <span class="code">list</span> are synchronized. There is no
+protection against a thread that executes the statement <span class="code">list.clear()</span> without 
+synchronization.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;5:</span></td><td>
+<p>Suppose that a program uses a single thread that takes 4 seconds to run.
+Now suppose that the program creates two threads and divides the same work between the
+two threads.  What can be said about the expected execution time of the program
+that uses two threads?</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>The execution time will depend on whether the program is being run on a
+computer that has more than one processor.  If so, the execution time could be
+as little as 2 seconds, since each of two processors can do half of the 4-seconds
+worth of work.  If the computer has only one processor, however, the two-threaded
+program will still take 4 seconds, since all the work will have to be done
+by the single processor.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;6:</span></td><td>
+<p>What is an <span class="classname">ArrayBlockingQueue</span>  and how does it
+solve the producer/consumer problem?</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>An <span class="classname">ArrayBlockingQueue</span> is a queue in which the operations
+of adding and removing items can block.  Adding an item will block if the queue is full;
+removing an item will block if the queue is empty.  (Furthermore, operations on the
+queue are properly synchronized for use in a multithreaded program.)</p>
+
+<p>The producer/consumer problem is the problem of safely and efficiently 
+getting items that are produced by one group of threads to a second group of
+threads that consume the items.  If the items are sent through a blocking queue,
+then the threads in the second group will block when there are no items
+available for them to consume, and threads in the first group will block if
+they are producing items faster than they can be consumed.  (Furthermore, the
+synchronization guarantees that no item will be lost or consumed twice.)</p>
+
+<p>In an application in which only the consuming threads should block, a
+<span class="classname">LinkedBlockingQueue</span>, which has unlimited capacity,
+can be used.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;7:</span></td><td>
+<p>What is a <i>thread pool</i>?</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>Thread pools are used when a large number of tasks are to be performed,
+as an alternative to creating a new thread to execute each task.  A thread pool
+is a relatively small collection of threads that are available for performing
+tasks.  When a task becomes available, instead of creating a new thread for
+the task, the task is assigned to one of the threads from the pool.  When
+the task is complete, the thread goes back into the pool so that more
+tasks can be assigned to it.</p>
+
+<p>Typically, tasks are placed into a queue as they become available.  Each thread
+in the pool runs in an infinite loop in which it repeatedly takes a task from the queue
+and executes it.  (Blocking queues work well for this application.)</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;8:</span></td><td>
+<p>Network server programs are
+often <i>multithreaded.</i> Explain what this means and why it is true.</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>A multi-threaded server uses threads to handle the client connections that it accepts. A server program
+is generally designed to process connection requests from many clients. It runs
+in an infinite loop in which it accepts a connection request and processes it.
+If the processing takes a significant amount of time, it's not a good idea to
+make the other clients wait while the current client is processed. The solution
+is for the server to make a new thread to handle each client connection, or to 
+use a thread pool of threads that can handle the client connections. The
+server can continue to accept more client connections even while the first
+client is being serviced.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;9:</span></td><td>
+<p>Why does a multithreaded network server program often use 
+many times more threads than the number of available processors?</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>Network operations can <i>block</i>, which means that a thread
+that handles communication with a client will often spend most of its
+time sleeping.  In order to keep all the processors busy, the number
+of <b>active</b> threads should be comparable to the number of processors.
+If at any given time, the number of active threads is only a fraction of
+the total number of threads, then the total number of threads should
+be several times the number of processors.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;10:</span></td><td>
+<p>Consider the <span class="classname">ThreadSafeCounter</span> example from
+<a href="../c12/s1.html#threads.1.3">Subsection&nbsp;12.1.3</a>:</p>
+
+<pre>public class ThreadSafeCounter {
+   
+   private int count = 0;  // The value of the counter.
+   
+   synchronized public void increment() {
+      count = count + 1;
+   }
+   
+   synchronized public int getValue() {
+      return count;
+   }
+   
+}</pre>
+
+<p>The <span class="code">increment()</span> method is synchronized so that the caller of the method can
+complete the three steps of the operation "Get value of count," "Add 1 to value,"
+"Store new value in count" without being interrupted by another thread. 
+But <span class="code">getValue()</span> consists of a single,
+simple step.  Why is <span class="code">getValue()</span> synchronized?  (This is a deep and
+tricky question.)</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>The <span class="code">getValue()</span> method has to be synchronized because of the
+caching of local data that was discussed in <a href="../c12/s1.html#threads.1.4">Subsection&nbsp;12.1.4</a>.
+If <span class="code">getValue()</span> were not synchronized, it is possible that a thread
+that calls <span class="code">getValue()</span> would see an old, cached value of <span class="code">count</span>
+rather than the most current value.  Synchronization ensures that the most
+current value of <span class="code">count</span> will be seen.  If <span class="code">count</span> were
+declared to be a <span class="code">volatile</span> variable, then <span class="code">getValue()</span> would
+not have to be synchronized.  However, <span class="code">increment()</span> would still need
+to be synchronized to prevent the race condition.</p>
+
+</td>
+</tr>
+</table>
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

@@ -1,0 +1,57 @@
+
+<html><head><title>Making Cookies</title>
+<script type="text/javascript">
+    function makeCookie(form){
+		var when = new Date();
+		when.setTime(when.getTime() + 24 * 60 * 60 * 1000);
+                                        // 24 hours from now
+		when.setFullYear(when.getFullYear() + 1);
+                                        // One year from now
+		yname=form.yourname.value;
+        favcolor=form.yourcolor.value;
+		document.cookie=escape("visitor")+"="+escape(yname)+
+				";expires="+when.toGMTString();
+        document.cookie=escape("color")+"="+escape(favcolor)+
+				";expires="+when.toGMTString();
+		alert(document.cookie);
+	}
+	function welcome(myForm){
+		you=myForm.yourname.value;
+		var position=document.cookie.indexOf("name=");
+		if ( position != -1){
+			var begin = position + 5;
+			var end=document.cookie.indexOf(";", begin);
+			if(end == -1){ end=document.cookie.length;}
+			you= unescape(document.cookie.substring(begin, end));
+			alert("Welcome " + you);
+		}
+
+		else{ alert("No cookies today");}
+	}
+	</script>
+	</head>
+	<body onLoad="document.form1.reset()" >
+	<div align="center">
+	<h2> Got milk?</h2>
+	<form name="form1">
+		What is your name?
+		<br />
+		<input type="text" name="yourname" >
+        <br />
+        What is your favorite color?
+		<br />
+		<input type="text" name="yourcolor">
+		<br />
+		<p>
+		<input type="button" value="Make cookie"
+			onClick="makeCookie(this.form);">
+
+        </p>
+        <p>
+		<input type="button"
+			value="Get Cookie" onClick="welcome(this.form);">
+		</p>
+	</form>
+     </div>
+	</body>
+	</html>

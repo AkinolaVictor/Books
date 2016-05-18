@@ -1,0 +1,29 @@
+<html>
+<head><title>working with literal objects</title>
+  <script type="text/javascript">
+   var soldier = {
+      name: undefined,
+      rank: "captain",
+      picture: "keeweeboy.jpg",
+      fallIn: function() {
+         alert("At attention, arms at the side, head and eyes forward.");
+       },
+      fallOut: function() {
+          alert("Drop out of formation, step back, about face!");
+       }
+    };
+    </script>
+  </head>
+  <body>
+    <big>
+    <script type="text/javascript">
+     soldier.name="Tina Savage";  // Assign value to object property
+     document.write("The soldier's name is ", soldier.name,".<br/>");
+      document.write(soldier.name+"'s rank is ",soldier.rank+."<br/>”);
+     document.write("<img src='"+soldier.picture+"'>")
+    soldier.fallIn();  //call object’s methods
+    soldier.fallOut();
+   </script>
+  </big>
+ </body>
+ </html>

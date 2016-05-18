@@ -1,0 +1,17 @@
+<html><head><title>Countdown 'till Christmas</title></head>
+<body bgColor="#00FF99">
+<font face="arial" size=5 color=red>
+   <script type="text/javascript">
+	var today = new Date();
+	var fullyear = today.getFullYear();
+	var future = new Date("December 25, "+ fullyear);
+	var diff = future.getTime() - today.getTime();  
+		// Number of milliseconds
+	var days = Math.floor(diff / (1000 * 60 * 60 * 24 )); 
+		// Convert to days
+	var str="Only <u>" + days + "</u>  shopping days left 'til Christmas! ";
+	document.write(str+"<br>");
+   </script>
+</font>
+</body>
+</html>        

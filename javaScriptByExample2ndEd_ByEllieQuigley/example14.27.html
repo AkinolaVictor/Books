@@ -1,0 +1,49 @@
+ <html><head><title>Stylesheets</title>
+  <style type="text/css">
+    @import url("parastyle.css");
+  </style>
+  <script type="text/javascript">
+      function changeStyle(){
+        // alert(document.styleSheets.length);
+         document.styleSheets[0].disabled=false;  // now visible
+         document.styleSheets[1].disabled=true;
+      }
+      function enableOldStyle(){
+         document.styleSheets[0].disabled=true;
+         if(document.styleSheets[1].cssRules){  // W3C
+             document.styleSheets[1].cssRules[1].style.color="purple";     
+         }
+         else{ //Microsoft Internet Explorer
+            document.styleSheets[1].rules[1].style.color="purple";    
+            document.styleSheets[1].disabled=false;
+         }
+         document.styleSheets[1].disabled=false; // now visible
+      }
+   </script>
+   <style type="text/css">
+       p { background-color:darkblue;
+           font-weight:bold ;
+           font-size: 12pt;
+           font-family:arial;
+           color:yellow; }
+       h1{color:red;}
+   </style>
+  </head>
+  <body>
+  <h1>Hello</h1>
+  <form>
+      <input type="radio"     
+         onclick="javascript:changeStyle()">new style</br>
+      <input type="radio" 
+         onclick="javascript:enableOldStyle()">old style</br>
+  </form>
+  <p>
+   This is the changing style sheet. Notice when we click on the    
+     radio   button,how the style for the whole page changes. That's 
+     because we disabled one stylesheet and replaced it with another.
+ </p>
+ <h1>Goodbye</h1>
+ </body>
+ </html>
+
+	

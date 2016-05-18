@@ -1,0 +1,25 @@
+<html>
+  <head><title>Event Object and Incompatible Browsers</title>
+  <script>
+  function whichEvent(e) { // passing e is for Firefox
+     if(!e){ var e=window.event;} // Microsoft IE
+     if(e.target) {targ=e.currentTarget; targ=targ.id;}  //Firefox
+     else if(e.srcElement) {targ=e.srcElement.id;} //Microsof IE
+     alert(targ +" has recieved a "+e.type);
+  }
+  </script>
+  </head>
+ <body id="main" onload="whichEvent(event);">
+  <br/>
+ <div style="background-color:lightgreen">
+    <form id="form1" onclick="whichEvent(event);">
+     <br/>
+     <input type="text" id="textbox1" onkeypress="whichEvent(event);" />
+     <br/><br/>
+     <input type="button" value="rollover me" id="button1"
+                  onmouseout="whichEvent(event);" />
+     <br />
+   </form>
+  </div>
+ </body>
+</html>

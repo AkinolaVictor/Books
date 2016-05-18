@@ -1,0 +1,843 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 7, Chapter 7</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 7.7</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 7.7:</h3>
+<p>The game of Go Moku (also
+known as Pente or Five Stones) is similar to Tic-Tac-Toe, except that it played
+on a much larger board and the object is to get five squares in a row rather
+than three. Players take turns placing pieces on a board. A piece can be placed
+in any empty square. The first player to get five pieces in a row -- horizontally, 
+vertically, or diagonally -- wins. If all squares are filled
+before either player wins, then the game is a draw. Write a program that lets
+two players play Go Moku against each other.</p>
+
+
+<p>Your program will be simpler than the <span class="classname">Checkers</span> program from
+<a href="../c7/s5.html#arrays.5.3">Subsection&nbsp;7.5.3</a>. Play alternates strictly between the two players,
+and there is no need to highlight the legal moves. You will only need two classes,
+a short panel class to set up the interface and a <span class="classname">Board</span> class to draw
+the board and do all the work of the game. Nevertheless, you will probably want
+to look at the source code for the checkers program,
+<span class="sourceref"><a href="../source/Checkers.java">Checkers.java</a></span>, for ideas about the general
+outline of the program.</p>
+
+
+<p>The hardest part of the program is checking whether the move that a player
+makes is a winning move. To do this, you have to look in each of the four
+possible directions from the square where the user has placed a piece. You have
+to count how many pieces that player has in a row in that direction. If the
+number is five or more in any direction, then that player wins. As a hint, here
+is part of the code from my applet. This code counts the number of pieces that
+the user has in a row in a specified direction. The direction is specified by
+two integers, <span class="code">dirX</span> and <span class="code">dirY</span>. The values of these variables
+are 0, 1, or -1, and at least one of them is non-zero. For example, to look in
+the horizontal direction, <span class="code">dirX</span> is 1 and <span class="code">dirY</span> is 0.</p>
+
+
+<pre>int ct = 1;  // Number of pieces in a row belonging to the player.
+
+int r, c;    // A row and column to be examined
+
+r = row + dirX;  // Look at square in specified direction.
+c = col + dirY;
+while ( r &gt;= 0 &amp;&amp; r &lt; 13 &amp;&amp; c &gt;= 0 &amp;&amp; c &lt; 13 
+                                  &amp;&amp; board[r][c] == player ) {
+        // Square is on the board, and it 
+        // contains one of the players's pieces.
+   ct++;
+   r += dirX;  // Go on to next square in this direction.
+   c += dirY;
+}
+
+r = row - dirX;  // Now, look in the opposite direction.
+c = col - dirY;
+while ( r &gt;= 0 &amp;&amp; r &lt; 13 &amp;&amp; c &gt;= 0 &amp;&amp; c &lt; 13 
+                                 &amp;&amp; board[r][c] == player ) {
+   ct++;
+   r -= dirX;   // Go on to next square in this direction.
+   c -= dirY;
+}</pre>
+
+
+<p>Here is  an applet version of my program
+It uses a 13-by-13 board. You can do the same or use a normal 8-by-8 checkerboard.</p>
+
+
+<p align="center">
+<applet code="GoMoku$Applet.class" width="350" height="240" archive="GoMoku.jar" alt=""></applet></p>
+
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>This is a fairly complicated program, but it's possible to design and build
+it in stages, testing each stage separately. The first stage, the general
+layout of the applet, is already done in the 
+<span class="sourceref"><a href="../source/Checkers.java">Checkers.java</a></span> program With just a few changes, the
+main panel class, the layout of the panel, and the button and message
+handling come directly from that program Let's take the rest of the Go Moku
+game one stage at a time.</p>
+
+
+<p>A two-dimensional array is used to store the contents of the board. This
+array is of type <span class="atype">int[][]</span> and is named <span class="code">board</span>. It is defined as
+an instance variable in the <span class="classname">Board</span> class, and it is initialized
+in the constructor of that class to be a 13-by-13 array. The value in each
+position of the array is one of three constants: <span class="code">EMPTY</span>,
+<span class="code">WHITE</span>, or <span class="code">BLACK</span>. When a game begins, each of the entries in
+the array is set to empty. When a player clicks on an empty square, the
+corresponding entry in the array is changed from <span class="code">EMPTY</span> to the player's
+color, <span class="code">BLACK</span> or <span class="code">WHITE</span>. In the <span class="code">paintComponent()</span>
+method, the contents of the <span class="code">board</span> array are used to decide what pieces
+to draw on the board.</p>
+
+
+
+
+<p>
+<b><u>Drawing the Board</u></b>
+</p>
+
+
+<p>We need a <span class="code">paintComponent()</span> method for the <span class="classname">Board</span> class that
+can draw the board. The board has 13 rows and 13 columns of spaces. How wide
+should the board be? If each square in the board is <span class="code">x</span> pixels wide, we
+need a total of <span class="code">13*x</span> pixels just for the spaces. But there are also
+lines between the spaces. These require another 12 pixels. And there is a
+2-pixel border on each side, for another 4 pixels added to the width. So, with
+squares of side <span class="code">x</span>, we need a board that is <span class="code">13*x+16</span> pixels
+wide. Since I wanted something about the same size as the original
+checkerboard, I choose <span class="code">x</span> to be 12, giving a board width of 172 pixels. The
+height is also 172. The dimension of the board is actually set in the constructor for the
+main class, which uses a null layout and so has to set the sizes of all the components
+that it contains by hand.</p>
+
+
+<p>The left edge of the <span class="code">col</span>-th column of squares in the board is
+<span class="code">2+13*col</span>. This allows for the two-pixel border on the left and for 13
+pixels for each of the preceding columns of squares. (That's 12 pixels for the
+square plus one pixel for the line between that column and the next.) The lines
+between the columns are drawn one pixel to the left of each column, at
+<span class="code">x</span> values <span class="code">1&nbsp;+&nbsp;13*i</span>, for <span class="code">i</span> from 1 to 12. Rows work the
+same way. To draw a piece in row number <span class="code">row</span> and column number
+<span class="code">col</span>, the command</p>
+
+
+<pre>g.fillOval(3 + 13*col, 3 + 13*row, 10, 10);</pre>
+
+
+<p>can be used. This allows a one-pixel border between the oval that represents
+that piece and the side of the square. In my program, I defined a method to draw
+a piece:</p>
+
+
+<pre>private void drawPiece(Graphics g, int piece, int row, int col) {
+   if (piece == WHITE)
+      g.setColor(Color.WHITE);
+   else
+      g.setColor(Color.BLACK);
+   g.fillOval(3 + 13*col, 3 + 13*row, 10, 10);
+}</pre>
+
+
+<p>The background of the canvas is gray, so the <span class="code">paintComponent()</span>
+method only has to draw the black border around the board, the lines between
+the squares, and all the pieces on the board. Remember that the piece in a
+given row and column is recorded in the <span class="code">board</span> array as
+<span class="code">board[row][col]</span>. The board can be drawn by the following
+<span class="code">paintComponent()</span> method:</p>
+
+
+<pre>public void paintComponent(Graphics g) {
+
+   super.paintComponent(g); // Fill with background color, lightGray.
+   
+   /* Draw grid lines in dark gray.  */
+   
+   g.setColor(Color.DARK_GRAY);
+   for (int i = 1; i &lt; 13; i++) {
+      g.drawLine(1 + 13*i, 0, 1 + 13*i, getSize().height);
+      g.drawLine(0, 1 + 13*i, getSize().width, 1 + 13*i);
+   }
+   
+   /* Draw a two-pixel black border around the edges of the board. */
+
+   g.setColor(Color.BLACK;
+   g.drawRect(0,0,getSize().width-1,getSize().height-1);
+   g.drawRect(1,1,getSize().width-3,getSize().height-3);
+   
+   /* Draw the pieces that are on the board. */
+   
+   for (int row = 0; row &lt; 13; row++)
+      for (int col = 0; col &lt; 13; col++)
+         if (board[row][col] != EMPTY)
+            drawPiece(g, board[row][col], row, col);
+            
+}  // end paintComponent()</pre>
+
+
+<hr class="break">
+
+
+<p>
+<b><u>Playing the Game</u></b>
+</p>
+
+
+<p>The logic of the GoMoku game itself is mostly in the method "<span class="code">void
+doClickSquare(int row, int&nbsp;col)</span>", which is called by the
+<span class="code">mousePressed()</span> method when the user clicks on the square in row number
+<span class="code">row</span> and column number <span class="code">col</span>. This method must check whether the
+move is legal. If so, the move is made. The method then checks whether the move
+wins the game. If so, the game ends. The game will also end if the board has
+become completely full. Otherwise, play passes to the other player.</p>
+
+
+<p>The current player is recorded in an instance variable named
+<span class="code">currentPlayer</span>. The value of this variable is one of the two constants
+<span class="code">WHITE</span> or <span class="code">BLACK</span>. The game can be ended by calling a method
+named <span class="code">gameOver()</span>. I wrote a <span class="ptype">boolean</span>-valued method called
+<span class="code">winner()</span> to check whether a move wins the game. (When I first wrote
+this method, it did nothing but "<span class="code">return false</span>". This let me try out
+the program at this stage of development, before I started working on the
+difficult problem of testing for a winner.) The <span class="code">doClickSquare()</span> method
+can be written:</p>
+
+
+<pre>void doClickSquare(int row, int col) {
+       // This is called by mousePressed() when a player clicks 
+       // on the square in the specified row and col.  It has already 
+       // been checked that a game is, in fact, in progress.
+       
+    /* Check that the user clicked an empty square.  If not, show an
+       error message and exit. */
+       
+    if ( board[row][col] != EMPTY ) {
+       if (currentPlayer == BLACK)
+          message.setText("BLACK:  Please click an empty square.");
+       else
+          message.setText("WHITE:  Please click an empty square.");
+       return;
+    }
+    
+    /* Make the move.  Check if the board is full or if the move
+       is a winning move.  If so, the game ends.  If not, then it's
+       the other user's turn. */
+       
+    board[row][col] = currentPlayer;  // Make the move.
+    repaint();
+    
+    if (winner(row,col)) {  // First, check for a winner.
+       if (currentPlayer == WHITE)
+          gameOver("WHITE wins the game!");
+       else
+          gameOver("BLACK wins the game!");
+       return;
+    }
+    
+    boolean emptySpace = false;     // Check if the board is full.
+    for (int i = 0; i &lt; 13; i++)
+       for (int j = 0; j &lt; 13; j++)
+          if (board[i][j] == EMPTY)
+             emptySpace = true;  // The board contains an empty space.
+    if (emptySpace == false) {
+       gameOver("The game ends in a draw.");
+       return;
+    }
+    
+    /* Continue the game.  It's the other player's turn. */
+    
+    if (currentPlayer == BLACK) {
+       currentPlayer = WHITE;
+       message.setText("WHITE:  Make your move.");
+    }
+    else {  
+       currentPlayer = BLACK;
+       message.setText("BLACK:  Make your move.");
+    }
+ 
+}  // end doClickSquare()</pre>
+
+
+<hr class="break">
+
+
+<p>
+<b><u>Determining the Winner</u></b>
+</p>
+
+
+<p>The <span class="code">winner()</span> method is certainly the hardest part of the program.
+The method must look in each of the four possible directions from the square
+where the user has placed a piece. If the player has five or more pieces in a
+row in that direction, then the player has won. As indicated in the exercise, a
+direction can be indicated by two variables, <span class="code">dirX</span> and <span class="code">dirY</span>.
+The values of these variables for each of the four directions are:</p>
+
+
+<pre>                      dirX    dirY    Why?
+                      ----    ----    --------------------------------
+horizontal direction    1       0       Only x changes.
+vertical direction      0       1       Only y changes.
+falling diagonal        1       1       Both x and y change.
+rising diagonal         1      -1       Change in opposing directions.</pre>
+
+
+<p>I wrote a method "<span class="code">int count(int player, int row, int col, int dirX, int
+dirY)</span> that counts the number of pieces the specified player has in a row,
+starting from the square in row number <span class="code">row</span> and column number
+<span class="code">col</span> and looking in the direction indicated by <span class="code">dirX</span> and
+<span class="code">dirY</span>. This method contains the code given in the exercise. It returns
+the number of pieces found. My <span class="code">winner</span> method just calls this method
+for each of the four directions:</p>
+
+
+<pre>/**
+ * This is called just after a piece has been played on the
+ * square in the specified row and column.  It determines
+ * whether that was a winning move by counting the number
+ * of squares in a line in each of the four possible
+ * directions from (row,col).  If there are 5 squares (or more)
+ * in a row in any direction, then the game is won.
+ */
+private boolean winner(int row, int col) {
+     
+   if (count( board[row][col], row, col, 1, 0 ) &gt;= 5)
+      return true;
+   if (count( board[row][col], row, col, 0, 1 ) &gt;= 5)
+      return true;
+   if (count( board[row][col], row, col, 1, -1 ) &gt;= 5)
+      return true;
+   if (count( board[row][col], row, col, 1, 1 ) &gt;= 5)
+      return true;
+      
+   /* When we get to this point, we know that the game is not won. */
+
+   return false;
+   
+}  // end winner()</pre>
+
+
+<p>When I first wrote this method, I checked whether the number of pieces was
+"<span class="code">== 5</span>" instead of "<span class="code">&gt;= 5</span>". This was a bug. It's possible
+for a player to get more than 5 pieces in a row, if the player plays a piece in
+an empty square that joins two shorter rows of pieces together.</p>
+
+
+<hr class="break">
+
+
+<p>
+<b><u>Marking the Winning Pieces</u></b>
+</p>
+
+
+<p>In my program, when a player wins, the row of pieces that wins the game is
+marked with a red line. To do this, I added four instance variables of type
+<span class="ptype">int</span> to the <span class="classname">Board</span> class. The instance variables are
+named <span class="code">win_r1</span>, <span class="code">win_c1</span>, <span class="code">win_r2</span>, and <span class="code">win_c2</span>.
+If the game has not yet been won, then the value of <span class="code">win_r1</span> is <span class="code">-1</span>. The
+<span class="code">paintComponent()</span> method uses this value as a signal that it should not
+draw any red line. After a player has won the game, the values of these
+variables are set to mark the squares at the two ends of the winning row of
+pieces. The positions of these squares are given by <span class="code">(win_r1,win_c1)</span>
+and <span class="code">(win_r2,win_c2)</span>. If <span class="code">win_r1</span> is greater than -1, then the
+<span class="code">paintComponent()</span> method draws a red line between these two
+squares.</p>
+
+
+<p>I added some code to the <span class="code">winner()</span> and <span class="code">count()</span> methods to
+set the values of these variables properly. As the <span class="code">count()</span> method
+counts pieces in a row, it sets <span class="code">win_r1</span>, <span class="code">win_c1</span>,
+<span class="code">win_r2</span>, and <span class="code">win_c2</span> to mark the location of the last piece it
+finds in the two directions it checks. If the game is won, this will set the
+values correctly. To handle the case where the game is not won, I added the
+line "<span class="code">win_r1&nbsp;=&nbsp;-1;</span>" to the <span class="code">winner()</span> method, just before the
+"<span class="code">return false;</span>" statement. This ensures that the value of this
+variable will be <span class="code">-1</span> whenever the game is not yet won. (Perhaps this is all too
+tricky, but I really wanted to mark the winning pieces...)</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;    
+
+/**
+ * This panel lets two users play GoMoku (a.k.a Pente) against each 
+ * other.  Black always starts the game.  When a player gets five-in-a-row,
+ * that player wins.  The game ends in a draw if the board is filled
+ * before either player wins.
+ *
+ * The class has a main() routine that lets it be run as a stand-alone
+ * application.  The application just opens a window that uses an object
+ * of type GoMoku as its content pane.
+ * 
+ * This panel could also be used as the content pane of an applet.  The 
+ * applet size should be 350-by-250 (or very close to that).
+ */
+
+public class GoMoku extends JPanel {
+   
+   /**
+    * Main routine makes it possible to run GoMoku as a stand-alone
+    * application.  Opens a window showing a GoMoku panel; the program
+    * ends when the user closes the window.
+    */
+   public static void main(String[] args) {
+      JFrame window = new JFrame("GoMoku");
+      GoMoku content = new GoMoku();
+      window.setContentPane(content);
+      window.pack();
+      Dimension screensize = Toolkit.getDefaultToolkit().getScreenSize();
+      window.setLocation( (screensize.width - window.getWidth())/2,
+            (screensize.height - window.getHeight())/2 );
+      window.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+      window.setResizable(false);  
+      window.setVisible(true);
+   }
+   
+
+   private JButton newGameButton;  // Button for starting a new game.
+
+   private JButton resignButton;   // Button that a player can use to end the 
+                                   //   game by resigning.
+   
+   private JLabel message;  // Label for displaying messages to the user.
+   
+   
+   /**
+    *  The constructor lays out the panel.  The work of
+    *  the game is all done in the Board object.  A null layout
+    *  is used, and all setup of sizes and positions is done here.
+    */
+   public GoMoku() {
+      
+      setLayout(null);  // I will do the layout myself.
+      
+      setPreferredSize( new Dimension(350,250) );
+      
+      setBackground(new Color(0,150,0));  // Dark green background.
+      
+      /* Create the components and add them to the applet. */
+      
+      Board board = new Board();  // Note: The constructor for the
+                                  //   board also creates the buttons
+                                  //   and label.
+      add(board);
+      add(newGameButton);
+      add(resignButton);
+      add(message);
+      
+      /* Set the position and size of each component by calling
+         its setBounds() method. */
+      
+      board.setBounds(16,16,172,172); // Note:  size MUST be 172-by-172 !
+      newGameButton.setBounds(210, 60, 120, 30);
+      resignButton.setBounds(210, 120, 120, 30);
+      message.setBounds(0, 200, 350, 30);
+   }
+   
+   
+   // ----------------------- Nested class -----------------------------------
+   
+   /**
+    * This panel displays a 168-by-168 pixel checkerboard pattern with
+    * a 2-pixel black border.  It is assumed that the size of the
+    * canvas is set to exactly 172-by-172 pixels.  This class does
+    * the work of letting the users play GoMoku, and it displays
+    * the checkerboard.  In this program, the board has 13 rows and
+    * columns of squares.
+    */
+   class Board extends JPanel implements ActionListener, MouseListener {
+      
+      int[][] board;   // The data for the board is kept here.  The values
+                      //   in this array are chosen from the following constants.
+      
+      static final int EMPTY = 0,       // Represents an empty square.
+                       WHITE = 1,       // A white piece.
+                       BLACK = 2;       // A black piece.
+      
+      boolean gameInProgress; // Is a game currently in progress?
+      
+      int currentPlayer;      // Whose turn is it now?  The possible values
+                              //    are WHITE and BLACK.  (This is valid only while
+                              //    a game is in progress.)
+      
+      int win_r1, win_c1, win_r2, win_c2;  // When a player wins by getting five or more
+                                           // pieces in a row, the squares at the
+                                           // ends of the row are (win_r1,win_c1)
+                                           // and (win_r2,win_c2).  A red line is
+                                           // drawn between these squares.  When there
+                                           // are not five pieces in a row, the value of
+                                           // win_r1 is -1.  The values are set in the
+                                           // count() method.  The value of win_r1 is
+                                           // tested in the paintComponent() method.
+      
+      /**
+       * Constructor.  Create the buttons and label.  Listen for mouse
+       * clicks and for clicks on the buttons.  Create the board and
+       * start the first game.
+       */
+      public Board() {
+         setBackground(Color.LIGHT_GRAY);
+         addMouseListener(this);
+         resignButton = new JButton("Resign");
+         resignButton.addActionListener(this);
+         newGameButton = new JButton("New Game");
+         newGameButton.addActionListener(this);
+         message = new JLabel("",JLabel.CENTER);
+         message.setFont(new  Font("Serif", Font.BOLD, 14));
+         message.setForeground(Color.GREEN);
+         board = new int[13][13];
+         doNewGame();
+      }
+      
+
+      /**
+       * Respond to user's click on one of the two buttons.
+       */
+      public void actionPerformed(ActionEvent evt) {
+         Object src = evt.getSource();
+         if (src == newGameButton)
+            doNewGame();
+         else if (src == resignButton)
+            doResign();
+      }
+      
+      
+      /**
+       * Begin a new game; this is called by the actionPerformed()
+       * method when a user clicks the New Game button.
+       */
+      void doNewGame() {
+         if (gameInProgress == true) {
+               // This should not be possible because New Game button
+               // is enabled only when it is legal to use it, but it doesn't 
+               // hurt to check.
+            message.setText("Finish the current game first!");
+            return;
+         }
+         for (int row = 0; row &lt; 13; row++)       // Fill the board with EMPTYs
+            for (int col = 0; col &lt; 13; col++)
+               board[row][col] = EMPTY;
+         currentPlayer = BLACK;   // BLACK moves first.
+         message.setText("BLACK:  Make your move.");
+         gameInProgress = true;
+         newGameButton.setEnabled(false);
+         resignButton.setEnabled(true);
+         win_r1 = -1;  // This value indicates that no red line is to be drawn.
+         repaint();
+      }
+      
+      
+      /**
+       * Current player resigns; this is called by the actionPerformed()
+       * method when a user clicks the Resign button.  Game ends, and
+       * opponent wins.
+       */
+      void doResign() {
+         if (gameInProgress == false) {
+                // This should not be possible.
+            message.setText("There is no game in progress!");
+            return;
+         }
+         if (currentPlayer == WHITE)
+            message.setText("WHITE resigns.  BLACK wins.");
+         else
+            message.setText("BLACK resigns.  WHITE wins.");
+         newGameButton.setEnabled(true);
+         resignButton.setEnabled(false);
+         gameInProgress = false;
+      }
+      
+      
+      /**
+       * This method is called whenever the game ends.  The parameter, str,
+       * is displayed as a message, and the buttons are enabled/disabled
+       * to reflect the fact that a game is not currently in progress.
+       */
+      void gameOver(String str) {
+         message.setText(str);
+         newGameButton.setEnabled(true);
+         resignButton.setEnabled(false);
+         gameInProgress = false;
+      }
+      
+      
+      /**
+       * This is called by mousePressed() when a player clicks on the
+       * square in the specified row and col.  It has already been checked
+       * that a game is, in fact, in progress.
+       */
+      void doClickSquare(int row, int col) {
+         
+         /* Check that the user clicked an empty square.  If not, show an
+          error message and exit. */
+         
+         if ( board[row][col] != EMPTY ) {
+            if (currentPlayer == BLACK)
+               message.setText("BLACK:  Please click an empty square.");
+            else
+               message.setText("WHITE:  Please click an empty square.");
+            return;
+         }
+         
+         /* Make the move.  Check if the board is full or if the move
+          is a winning move.  If so, the game ends.  If not, then it's
+          the other user's turn. */
+         
+         board[row][col] = currentPlayer;  // Make the move.
+         repaint();
+         
+         if (winner(row,col)) {  // First, check for a winner.
+            if (currentPlayer == WHITE)
+               gameOver("WHITE wins the game!");
+            else
+               gameOver("BLACK wins the game!");
+            return;
+         }
+         
+         boolean emptySpace = false;     // Check if the board is full.
+         for (int i = 0; i &lt; 13; i++)
+            for (int j = 0; j &lt; 13; j++)
+               if (board[i][j] == EMPTY)
+                  emptySpace = true;
+         if (emptySpace == false) {
+            gameOver("The game ends in a draw.");
+            return;
+         }
+         
+         /* Continue the game.  It's the other player's turn. */
+         
+         if (currentPlayer == BLACK) {
+            currentPlayer = WHITE;
+            message.setText("WHITE:  Make your move.");
+         }
+         else {  
+            currentPlayer = BLACK;
+            message.setText("BLACK:  Make your move.");
+         }
+         
+      }  // end doClickSquare()
+      
+      
+      /**
+       * This is called just after a piece has been played on the
+       * square in the specified row and column.  It determines
+       * whether that was a winning move by counting the number
+       * of squares in a line in each of the four possible
+       * directions from (row,col).  If there are 5 squares (or more)
+       * in a row in any direction, then the game is won.
+       */
+      private boolean winner(int row, int col) {
+         
+         if (count( board[row][col], row, col, 1, 0 ) &gt;= 5)
+            return true;
+         if (count( board[row][col], row, col, 0, 1 ) &gt;= 5)
+            return true;
+         if (count( board[row][col], row, col, 1, -1 ) &gt;= 5)
+            return true;
+         if (count( board[row][col], row, col, 1, 1 ) &gt;= 5)
+            return true;
+         
+         /* When we get to this point, we know that the game is not
+          won.  The value of win_r1, which was changed in the count()
+          method, has to be reset to -1, to avoid drawing a red line
+          on the board. */
+         
+         win_r1 = -1;
+         return false;
+         
+      }  // end winner()
+      
+      
+      /**
+       * Counts the number of the specified player's pieces starting at
+       * square (row,col) and extending along the direction specified by
+       * (dirX,dirY).  It is assumed that the player has a piece at
+       * (row,col).  This method looks at the squares (row + dirX, col+dirY),
+       * (row + 2*dirX, col + 2*dirY), ... until it hits a square that is
+       * off the board or is not occupied by one of the players pieces.
+       * It counts the squares that are occupied by the player's pieces.
+       * Furthermore, it sets (win_r1,win_c1) to mark last position where
+       * it saw one of the player's pieces.  Then, it looks in the
+       * opposite direction, at squares (row - dirX, col-dirY),
+       * (row - 2*dirX, col - 2*dirY), ... and does the same thing.
+       * Except, this time it sets (win_r2,win_c2) to mark the last piece.
+       * Note:  The values of dirX and dirY must be 0, 1, or -1.  At least
+       * one of them must be non-zero.
+       */
+      private int count(int player, int row, int col, int dirX, int dirY) {
+         
+         int ct = 1;  // Number of pieces in a row belonging to the player.
+         
+         int r, c;    // A row and column to be examined
+         
+         r = row + dirX;  // Look at square in specified direction.
+         c = col + dirY;
+         while ( r &gt;= 0 &amp;&amp; r &lt; 13 &amp;&amp; c &gt;= 0 &amp;&amp; c &lt; 13 &amp;&amp; board[r][c] == player ) {
+            // Square is on the board and contains one of the players's pieces.
+            ct++;
+            r += dirX;  // Go on to next square in this direction.
+            c += dirY;
+         }
+         
+         win_r1 = r - dirX;  // The next-to-last square looked at.
+         win_c1 = c - dirY;  //    (The LAST one looked at was off the board or
+         //    did not contain one of the player's pieces.
+         
+         r = row - dirX;  // Look in the opposite direction.
+         c = col - dirY;
+         while ( r &gt;= 0 &amp;&amp; r &lt; 13 &amp;&amp; c &gt;= 0 &amp;&amp; c &lt; 13 &amp;&amp; board[r][c] == player ) {
+            // Square is on the board and contains one of the players's pieces.
+            ct++;
+            r -= dirX;   // Go on to next square in this direction.
+            c -= dirY;
+         }
+         
+         win_r2 = r + dirX;
+         win_c2 = c + dirY;
+         
+         // At this point, (win_r1,win_c1) and (win_r2,win_c2) mark the endpoints
+         // of the line of pieces belonging to the player.
+         
+         return ct;
+         
+      }  // end count()
+      
+      
+      /**
+       * Draws the board and the pieces on the board.  If the game has
+       * been won by getting five or more pieces in a row, draws a red line
+       * through the pieces.
+       */
+      public void paintComponent(Graphics g) {
+         
+         super.paintComponent(g); // Fill with background color, lightGray
+         
+         /* Draw a two-pixel black border around the edges of the canvas,
+          and draw grid lines in darkGray.  */
+         
+         g.setColor(Color.DARK_GRAY);
+         for (int i = 1; i &lt; 13; i++) {
+            g.drawLine(1 + 13*i, 0, 1 + 13*i, getSize().height);
+            g.drawLine(0, 1 + 13*i, getSize().width, 1 + 13*i);
+         }
+         g.setColor(Color.BLACK);
+         g.drawRect(0,0,getSize().width-1,getSize().height-1);
+         g.drawRect(1,1,getSize().width-3,getSize().height-3);
+         
+         /* Draw the pieces that are on the board. */
+         
+         for (int row = 0; row &lt; 13; row++)
+            for (int col = 0; col &lt; 13; col++)
+               if (board[row][col] != EMPTY)
+                  drawPiece(g, board[row][col], row, col);
+         
+         /* If the game has been won, then win_r1 &gt;= 0.  Draw a line to mark
+          the five winning pieces. */
+         
+         if (win_r1 &gt;= 0)
+            drawWinLine(g);
+         
+      }  // end paintComponent()
+      
+      
+      /**
+       * Draw a piece in the square at (row,col).  The color is specified
+       * by the piece parameter, which should be either BLACK or WHITE.
+       */
+      private void drawPiece(Graphics g, int piece, int row, int col) {
+         if (piece == WHITE)
+            g.setColor(Color.WHITE);
+         else
+            g.setColor(Color.BLACK);
+         g.fillOval(3 + 13*col, 3 + 13*row, 10, 10);
+      }
+      
+      
+      /**
+       * Draw a 2-pixel wide red line from the middle of the square at
+       * (win_r1,win_c1) to the middle of the square at (win_r2,win_c2).
+       * This routine is called to mark the 5 pieces that won the game.
+       * The values of the variables are set in the count() method.
+       */
+      private void drawWinLine(Graphics g) {
+         g.setColor(Color.RED);
+         g.drawLine( 8 + 13*win_c1, 8 + 13*win_r1, 8 + 13*win_c2, 8 + 13*win_r2 );
+         if (win_r1 == win_r2)
+            g.drawLine( 8 + 13*win_c1, 7 + 13*win_r1, 8 + 13*win_c2, 7 + 13*win_r2 );
+         else
+            g.drawLine( 7 + 13*win_c1, 8 + 13*win_r1, 7 + 13*win_c2, 8 + 13*win_r2 );
+      }
+      
+      
+      /**
+       * Respond to a user click on the board.  If no game is
+       * in progress, show an error message.  Otherwise, find
+       * the row and column that the user clicked and call
+       * doClickSquare() to handle it.
+       */
+      public void mousePressed(MouseEvent evt) {
+         if (gameInProgress == false)
+            message.setText("Click \"New Game\" to start a new game.");
+         else {
+            int col = (evt.getX() - 2) / 13;
+            int row = (evt.getY() - 2) / 13;
+            if (col &gt;= 0 &amp;&amp; col &lt; 13 &amp;&amp; row &gt;= 0 &amp;&amp; row &lt; 13)
+               doClickSquare(row,col);
+         }
+      }
+      
+      
+      public void mouseReleased(MouseEvent evt) { }
+      public void mouseClicked(MouseEvent evt) { }
+      public void mouseEntered(MouseEvent evt) { }
+      public void mouseExited(MouseEvent evt) { }
+      
+      
+   }  // end nested class Board
+   
+   
+   
+} // end class GoMoku
+
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

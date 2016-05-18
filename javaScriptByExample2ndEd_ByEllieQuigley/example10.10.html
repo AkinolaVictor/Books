@@ -1,0 +1,26 @@
+
+<html><head><title>The setTimeout method</title>
+<script type="text/javascript">
+   function changeStatusBar(){
+	window.status = "See me now before I disappear!";
+	timeout =setTimeout("window.status=''", 6000);
+			// alert(timeout);  This value differs in Mozilla and IE
+		}
+</script>
+<body>
+  <div align="center">
+    <font face="arial" size="3" color="blue">
+	The timeout is set for 6 seconds.<br />
+	<img src="alarm.jpg" border=2>
+	<p>
+	Watch the status bar
+	<br>
+
+    <form>
+  	<input type="button"
+	       value="click here"
+	       onClick="changeStatusBar();">
+   </form>
+  </div>
+</body>
+</html>

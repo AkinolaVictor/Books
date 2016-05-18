@@ -1,0 +1,35 @@
+
+<html><head><title>Preloading Images</title></head>
+  <script type="text/javascript">
+		ImageHome=new Array(3);
+		for(var i=0; i<3; i++){
+			ImageHome[i]=new Image();
+		}
+		ImageHome[0].src="baby1.jpg";
+		ImageHome[1].src="baby2.jpg";
+		ImageHome[2].src="baby3.jpg";
+		function myRandom(){
+			var n=ImageHome.length - 1;
+ 			var randnum=Math.floor(Math.random() * (n + 1));
+			document.images["display"].src = ImageHome[randnum].src;
+		}
+  </script>
+</head>
+
+<body bgcolor="cornflowerblue">
+    <center>
+	<h2>&nbsp;&nbsp;This Is Baby William</h2>
+	<img name="display" id="display"
+		src="baby.jpg"
+		border=5
+		width="200" height="250" >
+	<p>
+	<form>
+	      <input type="button"
+		     value="Click Here for Baby Picture"
+		     onClick="myRandom()"
+		/>
+	</form>
+    </center>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<html><head><title>Delete an Element with the DO</title>
+<style type="text/css">
+   p { font-style:arial;
+       color:darkblue;
+       font-size:18
+     }
+</style>
+<script type="text/javascript">
+	function remove(f){ 
+        for(var i=0; i<f.choice.length; i++){
+         	if(f.choice[i].checked){ 
+                   //Find the paragraph that was checked
+         	   var p_element=document.getElementById(f.choice[i].value);
+    			  document.body.removeChild(p_element)
+         	}
+    	   }
+	}
+</script>
+</head>
+<body>
+	<script type="text/javascript">
+	    // Create three paragraphs with text
+		for(var i=1; i <= 3; i++){
+		    var aPara=document.createElement("p");
+		    var aBR = document.createElement("br");
+		    var aTXT1=document.createTextNode("Hello, world. ");
+		    var aTXT2=
+      		    document.createTextNode("I really don't want to be deleted! ");
+		    var aTXT3=document.createTextNode("I am paragraph " + i);
+		    aPara.setAttribute("id","aPara" + i);
+
+		    document.body.appendChild(aPara);
+		    aPara.appendChild(aTXT1);   //Put paragraph in the doc
+		    aPara.appendChild(aBR);
+		    aPara.appendChild(aTXT2);
+		    aPara.appendChild(aBR);
+		    aPara.appendChild(aTXT3);
+	 	}
+	</script>
+	<form>
+	   Which paragraph do you want to remove? <br/>
+	   <input type="radio" name="choice" 
+              value="aPara1">Paragraph 1<br/>
+	   <input type="radio" name="choice" 
+              value="aPara2">Paragraph 2<br/>
+	   <input type="radio" name="choice" 
+               value="aPara3">Paragraph 3<br/>
+       <input type=button value="click for paragraph to remove"    
+               onClick="remove(this.form);">
+	 </form>
+</body>
+</html>

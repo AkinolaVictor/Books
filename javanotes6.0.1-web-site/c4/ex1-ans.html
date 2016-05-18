@@ -1,0 +1,209 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 1, Chapter 4</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 4.1</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 4.1:</h3>
+<p>To "capitalize" a string
+means to change the first letter of each word in the string to upper case (if
+it is not already upper case). For example, a capitalized version of "Now is
+the time to act!" is "Now Is The Time To Act!". Write a subroutine named
+<span class="code">printCapitalized</span> that will print a capitalized version of a string to
+standard output. The string to be printed should be a parameter to the
+subroutine. Test your subroutine with a <span class="code">main()</span> routine that gets a
+line of input from the user and applies the subroutine to it.</p>
+
+<p>Note that a letter is the first letter of a word if it is not immediately
+preceded in the string by another letter. Recall that there is a standard
+<span class="ptype">boolean</span>-valued function <span class="code">Character.isLetter(char)</span> that can be
+used to test whether its parameter is a letter. There is another standard
+<span class="ptype">char</span>-valued function, <span class="code">Character.toUpperCase(char)</span>, that
+returns a capitalized version of the single character passed to it as a
+parameter. That is, if the parameter is a letter, it returns the upper-case
+version. If the parameter is not a letter, it just returns a copy of the
+parameter.</p>
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>We are told the name of the subroutine and that it has one parameter of type
+<span class="classname">String</span>. The name of the parameter is not specified. I will use
+<span class="code">str</span>. The return type is <span class="code">void</span> because the subroutine does not
+return a value. (It displays a value to the user, but to <b>return</b> a value means
+to return it to the line in the program where the function is called. The value
+returned by a function is generally <b>not</b> displayed to the user
+by the function.) The first line of the subroutine definition will be:</p>
+
+
+<pre>static  void  printCapitalized( String str )</pre>
+
+
+<p>The subroutine must look at each character in <span class="code">str</span> and decide
+whether to capitalize it or not. An algorithm for the subroutine is</p>
+
+
+<pre>for each character in str:
+    if the character is the first letter of a word:
+        Print a capitalized version of the character
+    else:
+        Print the character
+Print a carriage return to end the line of output</pre>
+
+
+<p>The test as to whether a character is the first letter of a word is
+surprisingly complicated. A test that almost works is: "If the character is a
+letter and the preceding character is not a letter." The problem is that if the
+character is the first character is the string, then there is no preceding
+character! If the character is <span class="code">str.charAt(i)</span>, then the preceding
+character would be <span class="code">str.charAt(i-1)</span>, but <span class="code">str.charAt(i-1)</span>
+doesn't exist if <span class="code">i</span> is <span class="code">0</span>. You should notice the
+problem when you look at <span class="code">str.charAt(i-1)</span> and remember that
+the <span class="code">charAt()</span> method has the precondition that its parameter
+must be greater than or equal to zero.  When <span class="code">i</span> is zero in
+<span class="code">str.charAt(i-1)</span>, that precondition is not satisfied.
+</p>
+
+
+<p>Let's look at Java code that suffers
+from this bug. Recall that the operator "<span class="code">!</span>" stands for "not."</p>
+
+
+<pre>for ( i = 0;  i &lt; str.length();  i++ ) {        // <span class="newcode">BUGGY CODE!</span>
+    ch = str.charAt( i );
+    if ( Character.isLetter(ch) &amp;&amp; ! Character.isLetter(str.charAt(i-1)) )
+        System.out.print( Character.toUpperCase(ch) );
+    else
+        System.out.print( ch );
+}
+System.out.println();</pre>
+
+
+<p>This will crash when <span class="code">i</span> is zero. There are several ways to work
+around the problem, and all of them are techniques that are worth knowing. The
+first is to use a more complicated test in the <span class="code">if</span> statement: "if the
+character is a letter and either it's the first character in the string or the
+previous character is not a letter". In Java, this is:</p>
+
+
+<pre>if (Character.isLetter(ch) &amp;&amp; (i==0 || ! Character.isLetter(str.charAt(i-1))))</pre>
+   
+
+<p>But it can be difficult to get
+such a complicated test right. Another possibility is a bit sneaky: Add an
+extra character onto the beginning of <span class="code">str</span>, and then start the
+<span class="code">for</span> loop with <span class="code">i=1</span>. Any character will do, as long as it's not
+a letter. For example, you could say "<span class="code">str&nbsp;=&nbsp;"."&nbsp;+&nbsp;str;</span>" Since the
+<span class="code">for</span> loop starts at <span class="code">i=1</span>, the "." is not copied to output, and
+the problem of <span class="code">i&nbsp;==&nbsp;0</span> doesn't arise. The method that I will use is
+similar, but it doesn't require any modification of <span class="code">str</span>. I'll use
+another variable to represent the preceding character in the string, except
+that at the beginning of the string, I'll set it to the arbitrary value, '.'.
+At the end of the loop, the character that we have just processed becomes the
+"previous character" in the next iteration of the loop. Here is the complete
+subroutine, using this method:</p>
+
+
+<pre>static void printCapitalized( String str ) {
+   char ch;       // One of the characters in str.
+   char prevCh;   // The character that comes before ch in the string.
+   int i;         // A position in str, from 0 to str.length()-1.
+   prevCh = '.';  // Prime the loop with any non-letter character.
+   for ( i = 0;  i &lt; str.length();  i++ ) {
+      ch = str.charAt(i);
+      if ( Character.isLetter(ch)  &amp;&amp;  ! Character.isLetter(prevCh) )
+          System.out.print( Character.toUpperCase(ch) );
+      else
+          System.out.print( ch );
+      prevCh = ch;  // prevCh for next iteration is ch.
+   }
+   System.out.println();
+}</pre>
+
+
+<p>Keeping track of a previous value in a loop is a very common programming pattern.
+This doesn't exhaust the possibilities. Another idea, for example, would be
+to use a boolean variable to keep track of whether the previous character was a
+letter.</p>
+
+
+<p>Finally, we should add a <a href="../c4/s5.html#subroutines.5.4">Javadoc comment</a> to document the subroutine.
+Writing a <span class="code">main()</span> routine to test this subroutine on a line of input
+is easy.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">
+/**
+ * This program will get a line of input from the user and will print a copy
+ * of the line in which the first character of each word has been changed to 
+ * upper case.  The program was written to test the printCapitalized
+ * subroutine.  It depends on the non-standard TextIO class.
+ */
+
+public class CapitalizeOneString {
+  
+   public static void main(String[] args) {
+      String line;  // Line of text entered by user.
+      TextIO.putln("Enter a line of text.");
+      line = TextIO.getln();
+      TextIO.putln();
+      TextIO.putln("Capitalized version:");
+      printCapitalized( line );
+   }
+   
+   /**
+    *  Print a copy of a string to standard output, with the first letter
+    *  of each word in the string changed to upper case.
+    *  @param str the string that is to be output in capitalized form
+    */
+   static void printCapitalized( String str ) {
+      char ch;       // One of the characters in str.
+      char prevCh;   // The character that comes before ch in the string.
+      int i;         // A position in str, from 0 to str.length()-1.
+      prevCh = '.';  // Prime the loop with any non-letter character.
+      for ( i = 0;  i &lt; str.length();  i++ ) {
+         ch = str.charAt(i);
+         if ( Character.isLetter(ch)  &amp;&amp;  ! Character.isLetter(prevCh) )
+            System.out.print( Character.toUpperCase(ch) );
+         else
+            System.out.print( ch );
+         prevCh = ch;  // prevCh for next iteration is ch.
+      }
+      System.out.println();
+   }
+ 
+} // end CapitalizeOneString</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

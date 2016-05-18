@@ -1,0 +1,15 @@
+
+<html><head><title>Function Object</title></head>
+<body bgcolor=lightgreen>
+   <font face="arial" size="+1">
+   <div align="center">
+   Anonymous Functions and the Function Constructor<p>
+   <script type="text/javascript">
+		var sum = new Function("a","b", "return a + b; ");
+		window.onload =  new Function ( "document.bgColor='yellow';");
+		document.write( "The sum is " + sum(5,10)+ "<br>");
+		document.write( "The background color is yellow<br>");
+    </script>
+    </div>
+</body>
+</html> 

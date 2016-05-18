@@ -1,0 +1,29 @@
+<html><head><title>Validating E-Mail Addresses</title>
+  <script type="text/javascript">
+	function ok_Email(eform){
+		var regex = /^(([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5}){1,25})+([;.](([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5}){1,25})+)*$/;  // this got the highest rating at regexlib.com!!
+		if(regex.test(eform.user_email.value)){
+
+			return true;
+		}
+		else{
+			alert("Enter a valid email address");
+			return false;
+		}
+	}
+  </script>
+</head>
+<hr>
+<body>
+<h2> Checking for Valid Email Address </h2>
+  <form name="formtest"
+		action="http://localhost/cgi-bin/environ.pl"
+		method="post"
+		onSubmit="return ok_Email(this);">
+	<p>
+	Please enter your email address: <BR>
+   <input type="text" size=40 name="user_email">
+	<p>
+   <input type=submit value="Send">
+</body>
+</html>

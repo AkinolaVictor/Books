@@ -1,0 +1,711 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 9.4 -- Binary Trees</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s3.html">Previous Section</a> |
+           <a href="s5.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#recursion.4.1">Tree Traversal</a>
+<br>
+<a href="#recursion.4.2">Binary Sort Trees</a>
+<br>
+<a href="#recursion.4.3">Expression Trees</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 9.4</h3>
+<h2 class="section_title">Binary Trees</h2>
+<hr class="break">
+
+
+<p>
+<span class="start"><big>W</big>e have seen</span> in the two previous sections how
+objects can be linked into lists. When an object contains two pointers to
+objects of the same type, structures can be created that are much more
+complicated than linked lists. In this section, we'll look at one of the most
+basic and useful structures of this type: <span class="newword">binary trees</span>. 
+Each of the objects in a binary tree contains two pointers,
+typically called <span class="code">left</span> and <span class="code">right</span>. In addition to these
+pointers, of course, the nodes can contain other types of data. For example, a
+binary tree of integers could be made up of objects of the following type:</p>
+
+
+<pre>class TreeNode {
+   int item;        // The data in this node.
+   TreeNode left;   // Pointer to the left subtree.
+   TreeNode right;  // Pointer to the right subtree.
+}</pre>
+
+
+<p>The <span class="code">left</span> and
+<span class="code">right</span> pointers in a <span class="code">TreeNode</span> can be <span class="code">null</span> or can
+point to other objects of type <span class="code">TreeNode</span>. A node that points to another
+node is said to be the <span class="newword">parent</span> of that node, and
+the node it points to is called a <span class="newword">child</span>. In the
+picture below, for example, node 3 is the parent of node 6, and nodes 4
+and 5 are children of node 2. Not every linked structure made up of tree nodes
+is a binary tree. A binary tree must have the following properties: There is
+exactly one node in the tree which has no parent. This node is called the
+<span class="newword">root</span> of the tree. Every other node in the tree has
+exactly one parent. Finally, there can be no loops in a binary tree. That is,
+it is not possible to follow a chain of pointers starting at some node and
+arriving back at the same node.</p>
+
+
+<p align="center">
+<img src="treeLinks.png" width="269" height="355" alt="TreeNodes linked to make a tree"></p> 
+
+
+<p>A node that has no children is called a <span class="newword">leaf</span>. A
+leaf node can be recognized by the fact that both the left and right pointers
+in the node are <span class="code">null</span>. In the standard picture of a binary tree, the
+root node is shown at the top and the leaf nodes at the bottom -- which doesn't
+show much respect for the analogy to real trees. But at least you can see the
+branching, tree-like structure that gives a binary tree its name.</p>
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="recursion.4.1">9.4.1&nbsp;&nbsp;Tree Traversal</a>
+</h3>
+
+
+<p>Consider any node in a binary tree. Look at that node together with all its
+descendants (that is, its children, the children of its children, and so on).
+This set of nodes forms a binary tree, which is called a 
+<span class="newword">subtree</span> of the original tree. For example, in the picture,
+nodes 2, 4, and 5 form a subtree. This subtree is called the 
+<span class="newword">left subtree</span> of the root. Similarly, nodes 3 and 6 make up the
+<span class="newword">right subtree</span> of the root. We can consider any
+non-empty binary tree to be made up of a root node, a left subtree, and a right
+subtree. Either or both of the subtrees can be empty. This is a recursive
+definition, matching the recursive definition of the <span class="classname">TreeNode</span> class.
+So it should not be a surprise that recursive subroutines are often used to
+process trees.</p>
+
+
+<p>Consider the problem of counting the nodes in a binary tree.  (As an exercise,
+you might try to come up with a non-recursive algorithm to do the counting,
+but you shouldn't expect to find one easily.)  The
+heart of the problem is keeping track of which nodes remain to be counted. It's not
+so easy to do this, and in fact it's not even possible without an auxiliary
+data structure such as a stack or queue. With recursion, however, the algorithm
+is almost trivial. Either the tree is empty or it consists of a root and two
+subtrees. If the tree is empty, the number of nodes is zero. (This is the base
+case of the recursion.) Otherwise, use recursion to count the nodes in each
+subtree. Add the results from the subtrees together, and add one to count the
+root. This gives the total number of nodes in the tree. Written out in
+Java:</p>
+
+
+<pre>/**
+ * Count the nodes in the binary tree to which root points, and
+ * return the answer.  If root is null, the answer is zero.
+ */
+static int countNodes( TreeNode root ) {
+   if ( root == null )
+      return 0;  // The tree is empty.  It contains no nodes.
+   else {
+      int count = 1;   // Start by counting the root.
+      count += countNodes(root.left);  // Add the number of nodes
+                                       //     in the left subtree.
+      count += countNodes(root.right); // Add the number of nodes
+                                       //    in the right subtree.
+      return count;  // Return the total.
+   }
+} // end countNodes()</pre>
+
+
+<p>Or, consider the problem of printing the items in a binary tree. If the tree
+is empty, there is nothing to do. If the tree is non-empty, then it consists of
+a root and two subtrees. Print the item in the root and use recursion to print
+the items in the subtrees. Here is a subroutine that prints all the items on
+one line of output:</p>
+
+
+<pre>/**
+ * Print all the items in the tree to which root points.
+ * The item in the root is printed first, followed by the
+ * items in the left subtree and then the items in the
+ * right subtree.
+ */
+static void preorderPrint( TreeNode root ) {
+   if ( root != null ) {  // (Otherwise, there's nothing to print.)
+      System.out.print( root.item + " " );  // Print the root item.
+      preorderPrint( root.left );   // Print items in left subtree.
+      preorderPrint( root.right );  // Print items in right subtree.
+   }
+} // end preorderPrint()</pre>
+
+
+<p>This routine is called "preorderPrint" because it uses a 
+<span class="newword">preorder traversal</span> of the tree. In a preorder traversal, the
+root node of the tree is processed first, then the left subtree is traversed,
+then the right subtree. In a <span class="newword">postorder traversal</span>,
+the left subtree is traversed, then the right subtree, and then the root node
+is processed. And in an <span class="newword">inorder traversal</span>, the
+left subtree is traversed first, then the root node is processed, then the
+right subtree is traversed. Printing subroutines that use postorder and inorder
+traversal differ from <span class="code">preorderPrint</span> only in the placement of the
+statement that outputs the root item:</p>
+
+
+<pre>/**
+ * Print all the items in the tree to which root points.
+ * <span class="newcode">The item in the left subtree printed first, followed</span>
+ * <span class="newcode">by the items in the right subtree and then the item</span>
+ * <span class="newcode">in the root node.</span>
+ */
+static void postorderPrint( TreeNode root ) {
+   if ( root != null ) {  // (Otherwise, there's nothing to print.)
+      postorderPrint( root.left );   // Print items in left subtree.
+      postorderPrint( root.right );  // Print items in right subtree.
+      <span class="newcode">System.out.print( root.item + " " );  // Print the root item.</span>
+   }
+} // end postorderPrint()
+     
+     
+/**
+ * Print all the items in the tree to which root points.
+ * <span class="newcode">The item in the left subtree printed first, followed</span>
+ * <span class="newcode">by the item in the root node and then the items</span>
+ * <span class="newcode">in the right subtree.</span>
+ */
+static void inorderPrint( TreeNode root ) {
+   if ( root != null ) {  // (Otherwise, there's nothing to print.)
+      inorderPrint( root.left );   // Print items in left subtree.
+      <span class="newcode">System.out.print( root.item + " " );  // Print the root item.</span>
+      inorderPrint( root.right );  // Print items in right subtree.
+   }
+} // end inorderPrint()</pre>
+
+
+<p>Each of these subroutines can be applied to the binary tree shown in the
+illustration at the beginning of this section. The order in which the items are
+printed differs in each case:</p>
+
+
+<pre>preorderPrint outputs:   1  2  4  5  3  6
+
+postorderPrint outputs:  4  5  2  6  3  1
+
+inorderPrint outputs:    4  2  5  1  3  6</pre>
+
+
+<p>In <span class="code">preorderPrint</span>, for example, the item at the root of the tree,
+<span class="code">1</span>, is output before anything else. But the preorder printing also
+applies to each of the subtrees of the root. The root item of the left subtree,
+<span class="code">2</span>, is printed before the other items in that subtree, <span class="code">4</span> and
+<span class="code">5</span>. As for the right subtree of the root, <span class="code">3</span> is output before
+<span class="code">6</span>. A preorder traversal applies at all levels in the tree. The other
+two traversal orders can be analyzed similarly.</p>
+
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="recursion.4.2">9.4.2&nbsp;&nbsp;Binary Sort Trees</a>
+</h3>
+
+
+<p>One of the examples in <a href="../c9/s2.html">Section&nbsp;9.2</a> was a linked list of
+strings, in which the strings were kept in increasing order. While a linked
+list works well for a small number of strings, it becomes inefficient for a
+large number of items. When inserting an item into the list, searching for that
+item's position requires looking at, on average, half the items in the list.
+Finding an item in the list requires a similar amount of time. If the strings
+are stored in a sorted array instead of in a linked list, then searching
+becomes more efficient because binary search can be used.
+However, inserting a new item into the array
+is still inefficient since it means moving, on average, half of the items in
+the array to make a space for the new item. A binary tree can be used to store
+an ordered list of strings, or other items, in a way that makes both searching
+and insertion efficient. A binary tree used in this way is called a
+<span class="newword">binary sort tree.</span>
+</p>
+
+
+<p>A binary sort tree is a binary tree with the following property: For every
+node in the tree, the item in that node is greater than every item in the left
+subtree of that node, and it is less than or equal to all the items in the
+right subtree of that node. Here for example is a binary sort tree containing
+items of type <span class="classname">String</span>. (In this picture, I haven't bothered to draw all
+the pointer variables. Non-null pointers are shown as arrows.)</p>
+
+
+<p align="center">
+<img src="sortTree.png" width="418" height="347" alt="A binary sort tree"></p>
+
+
+
+<p>Binary sort trees have this useful property: An inorder traversal of the
+tree will process the items in increasing order. In fact, this is really just
+another way of expressing the definition. For example, if an inorder traversal
+is used to print the items in the tree shown above, then the items will be in
+alphabetical order. The definition of an inorder traversal guarantees that all
+the items in the left subtree of "judy" are printed before "judy", and all the
+items in the right subtree of "judy" are printed after "judy". But the binary
+sort tree property guarantees that the items in the left subtree of "judy" are
+precisely those that precede "judy" in alphabetical order, and all the items in
+the right subtree follow "judy" in alphabetical order. So, we know that "judy"
+is output in its proper alphabetical position. But the same argument applies to
+the subtrees. "Bill" will be output after "alice" and before "fred" and its
+descendents. "Fred" will be output after "dave" and before "jane" and "joe".
+And so on.</p>
+
+
+<p>Suppose that we want to search for a given item in a binary search tree.
+Compare that item to the root item of the tree. If they are equal, we're done.
+If the item we are looking for is less than the root item, then we need to
+search the left subtree of the root -- the right subtree can be eliminated
+because it only contains items that are greater than or equal to the root.
+Similarly, if the item we are looking for is greater than the item in the root,
+then we only need to look in the right subtree. In either case, the same
+procedure can then be applied to search the subtree. Inserting a new item is
+similar: Start by searching the tree for the position where the new item
+belongs. When that position is found, create a new node and attach it to the
+tree at that position.</p>
+
+
+<p>Searching and inserting are efficient operations on a binary search tree,
+provided that the tree is close to being <span class="newword">balanced</span>.
+A binary tree is balanced if for each node, the left subtree of that node
+contains approximately the same number of nodes as the right subtree. In a
+perfectly balanced tree, the two numbers differ by at most one. Not all binary
+trees are balanced, but if the tree is created by inserting items in a random
+order, there is a high
+probability that the tree is approximately balanced. (If the order of insertion
+is not random, however, it's quite possible for the tree to be very unbalanced.)
+During a search of any
+binary sort tree, every comparison eliminates one of two subtrees from further
+consideration. If the tree is balanced, that means cutting the number of items
+still under consideration in half. This is exactly the same as the binary
+search algorithm, and the result is a similarly efficient algorithm.
+</p>
+   
+
+<p>In terms of asymptotic analysis (<a href="../c8/s5.html">Section&nbsp;8.5</a>), searching, inserting,
+and deleting in a binary search tree have average case run time Θ(log(n)).
+The problem size, n, is the number of items in the tree, and the average is
+taken over all the different orders in which the items could have been inserted into the tree.
+As long the actual insertion order is random, the actual run time can be expected
+to be close to the average.  However, the worst case run time for binary
+search tree operations is Θ(n), which is much worse than Θ(log(n)).
+The worst case occurs for  particular insertion orders.  For example,
+if the items are inserted into the tree in order of increasing size, then every
+item that is inserted moves always to the right as it moves down the tree.
+The result is a "tree" that looks more like a linked list, since it consists
+of a linear string of nodes strung together by their <span class="code">right</span> child
+pointers.  Operations on such a tree have the same performance as operations
+on a linked list.  Now, there are data structures that are similar to simple binary
+sort trees, except that insertion and deletion of nodes are implemented in
+a way that will always keep the tree balanced, or almost balanced.  For
+these data structures, searching, inserting, and deleting have both average case 
+and worst case run times that are Θ(log(n)).  Here, however, we will
+look at only the simple versions of inserting and searching.</p>
+
+
+<p>The sample program <span class="sourceref"><a href="../source/SortTreeDemo.java">SortTreeDemo.java</a></span> is a demonstration of
+binary sort trees. The program includes subroutines that implement inorder
+traversal, searching, and insertion. We'll look at the latter two subroutines
+below. The <span class="code">main()</span> routine tests the subroutines by letting you type in
+strings to be inserted into the tree. Here is an applet that simulates this
+program:</p>
+
+
+<p align="center">
+<applet code="SortTreeConsole.class" width="600" height="300" archive="SortTree.jar" alt="(Applet 'SortTreeConsole' should be displayed here.)"></applet></p>
+
+
+<p>In this program, nodes in the binary tree are represented using the
+following static nested class, including a simple constructor that makes creating nodes
+easier:</p>
+
+
+<pre>
+/**
+ * An object of type TreeNode represents one node in a binary tree of strings.
+ */
+private static class TreeNode {
+   String item;      // The data in this node.
+   TreeNode left;    // Pointer to left subtree.
+   TreeNode right;   // Pointer to right subtree.
+   TreeNode(String str) {
+          // Constructor.  Make a node containing str.
+      item = str;
+   }
+}  // end class TreeNode</pre>
+
+
+<p>A static member variable of type <span class="classname">TreeNode</span> points to the binary sort
+tree that is used by the program:</p>
+
+
+<pre>private static TreeNode root;  // Pointer to the root node in the tree.
+                               // When the tree is empty, root is null.</pre>
+
+
+<p>A recursive subroutine named <span class="code">treeContains</span> is used to search for a
+given item in the tree. This routine implements the search algorithm for binary
+trees that was outlined above:</p>
+
+
+<pre>/**
+ * Return true if item is one of the items in the binary
+ * sort tree to which root points.   Return false if not.
+ */
+static boolean treeContains( TreeNode root, String item ) {
+   if ( root == null ) {
+          // Tree is empty, so it certainly doesn't contain item.
+      return false;
+   }
+   else if ( item.equals(root.item) ) {
+          // Yes, the item has been found in the root node.
+      return true;
+   }
+   else if ( item.compareTo(root.item) &lt; 0 ) {
+          // If the item occurs, it must be in the left subtree.
+      return treeContains( root.left, item );
+   }
+   else {
+          // If the item occurs, it must be in the right subtree.
+      return treeContains( root.right, item );
+   }
+}  // end treeContains()</pre>
+
+
+<p>When this routine is called in the <span class="code">main()</span> routine, the first
+parameter is the static member variable <span class="code">root</span>, which points to the root
+of the entire binary sort tree.</p>
+
+
+<p>It's worth noting that recursion is not really essential in this case. A
+simple, non-recursive algorithm for searching a binary sort tree follows
+the rule: Start at the root and move down the tree until you find the item or reach a null pointer.
+Since the search follows a single path down the tree, it can be implemented as
+a <span class="code">while</span> loop. Here is a non-recursive version of the search routine:</p>
+
+
+<pre>private static boolean treeContainsNR( TreeNode root, String item ) {
+   TreeNode runner;  // For "running" down the tree.
+   runner = root;    // Start at the root node.
+   while (true) {
+      if (runner == null) {
+            // We've fallen off the tree without finding item.
+         return false;  
+      }
+      else if ( item.equals(node.item) ) {
+            // We've found the item.
+         return true;
+      }
+      else if ( item.compareTo(node.item) &lt; 0 ) {
+            // If the item occurs, it must be in the left subtree,
+            // So, advance the runner down one level to the left.
+         runner = runner.left;
+      }
+      else {
+            // If the item occurs, it must be in the right subtree.
+            // So, advance the runner down one level to the right.
+         runner = runner.right;
+      }
+   }  // end while
+} // end treeContainsNR();</pre>
+
+
+<p>The subroutine for inserting a new item into the tree turns out to be more
+similar to the non-recursive search routine than to the recursive. The
+insertion routine has to handle the case where the tree is empty. In that case,
+the value of <span class="code">root</span> must be changed to point to a node that contains the
+new item:</p>
+
+
+<pre>root = new TreeNode( newItem ); </pre>
+
+
+<p>But this means, effectively, that the root can't be passed as a parameter to
+the subroutine, because it is impossible for a subroutine to change the value
+stored in an actual parameter. (I should note that this is something that
+<b>is</b> possible in other languages.) Recursion uses parameters in an
+essential way. There are ways to work around the problem, but the easiest thing
+is just to use a non-recursive insertion routine that accesses the static
+member variable <span class="code">root</span> directly. One difference between inserting an
+item and searching for an item is that we have to be careful not to fall off
+the tree. That is, we have to stop searching just <b>before</b> <span class="code">runner</span>
+becomes <span class="code">null</span>. When we get to an empty spot in the tree, that's where
+we have to insert the new node:</p>
+
+
+<pre>/**
+ * Add the item to the binary sort tree to which the global variable 
+ * "root" refers.  (Note that root can't be passed as  a parameter to 
+ * this routine because the value of root might change, and a change 
+ * in the value of a formal parameter does not change the actual parameter.)
+ */
+private static void treeInsert(String newItem) {
+   if ( root == null ) {
+          // The tree is empty.  Set root to point to a new node containing
+          // the new item.  This becomes the only node in the tree.
+      root = new TreeNode( newItem );
+      return;
+   }
+   TreeNode runner;  // Runs down the tree to find a place for newItem.
+   runner = root;   // Start at the root.
+   while (true) {
+      if ( newItem.compareTo(runner.item) &lt; 0 ) {
+             // Since the new item is less than the item in runner,
+             // it belongs in the left subtree of runner.  If there
+             // is an open space at runner.left, add a new node there.
+             // Otherwise, advance runner down one level to the left.
+         if ( runner.left == null ) {
+            runner.left = new TreeNode( newItem );
+            return;  // New item has been added to the tree.
+         }
+         else
+            runner = runner.left;
+      }
+      else {
+             // Since the new item is greater than or equal to the item in
+             // runner, it belongs in the right subtree of runner.  If there
+             // is an open space at runner.right, add a new node there.
+             // Otherwise, advance runner down one level to the right.
+         if ( runner.right == null ) {
+            runner.right = new TreeNode( newItem );
+            return;  // New item has been added to the tree.
+         }
+         else
+            runner = runner.right;
+      }
+   } // end while
+}  // end treeInsert()</pre>
+
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="recursion.4.3">9.4.3&nbsp;&nbsp;Expression Trees</a>
+</h3>
+
+
+<p>Another application of trees is to store mathematical expressions such as
+<span class="code">15*(x+y)</span> or <span class="code">sqrt(42)+7</span> in a convenient form. Let's stick for
+the moment to expressions made up of numbers and the operators <span class="code">+</span>, <span class="code">-</span>,
+<span class="code">*</span>, and <span class="code">/</span>. Consider the expression
+<span class="code">3*((7+1)/4)+(17-5)</span>. This expression is made up of two subexpressions,
+<span class="code">3*((7+1)/4)</span> and <span class="code">(17-5)</span>, combined with the operator "<span class="code">+</span>". When
+the expression is represented as a binary tree, the root node holds the
+operator <span class="code">+</span>, while the subtrees of the root node represent the subexpressions
+<span class="code">3*((7+1)/4)</span> and <span class="code">(17-5)</span>. Every node in the tree holds either a
+number or an operator. A node that holds a number is a leaf node of the tree. A
+node that holds an operator has two subtrees representing the operands to which
+the operator applies. The tree is shown in the illustration below. I will refer
+to a tree of this type as an <span class="newword">expression tree</span>.</p>
+
+
+<p>Given an expression tree, it's easy to find the value of the expression that
+it represents. Each node in the tree has an associated value. If the node is a
+leaf node, then its value is simply the number that the node contains. If the
+node contains an operator, then the associated value is computed by first
+finding the values of its child nodes and then applying the operator to those
+values. The process is shown by the upward-directed arrows in the illustration. The value
+computed for the root node is the value of the expression as a whole. There are
+other uses for expression trees. For example, a postorder traversal of the tree
+will output the postfix form of the expression.</p>
+
+
+<p align="center">
+<img src="expressionTree.png" width="477" height="413" alt="An expression tree"></p>
+
+
+
+<p>An expression tree contains two types of nodes: nodes that contain numbers
+and nodes that contain operators. Furthermore, we might want to add other types
+of nodes to make the trees more useful, such as nodes that contain variables.
+If we want to work with expression trees in Java, how can we deal with this
+variety of nodes? One way -- which will be frowned upon by object-oriented
+purists -- is to include an instance variable in each node object to record
+which type of node it is:</p>
+
+
+<pre>enum NodeType { NUMBER, OPERATOR }   // Possible kinds of node.
+   
+class ExpNode {  // A node in an expression tree.
+
+    NodeType kind;  // Which type of node is this?
+    double number;  // The value in a node of type NUMBER.
+    char op;        // The operator in a node of type OPERATOR.
+    ExpNode left;   // Pointers to subtrees,
+    ExpNode right;  //     in a node of type OPERATOR.
+    
+    ExpNode( double val ) {
+          // Constructor for making a node of type NUMBER.
+       kind = NodeType.NUMBER;
+       number = val;
+    }
+ 
+    ExpNode( char op, ExpNode left, ExpNode right ) {
+          // Constructor for making a node of type OPERATOR.
+       kind = NodeType.OPERATOR;
+       this.op = op;
+       this.left = left;
+       this.right = right;
+    }
+ 
+ } // end class ExpNode</pre>
+
+
+<p>Given this definition, the following recursive subroutine will find the
+value of an expression tree:</p>
+
+
+<pre>static double getValue( ExpNode node ) {
+       // Return the value of the expression represented by
+       // the tree to which node refers.  Node must be non-null.
+    if ( node.kind == NodeType.NUMBER ) {
+          // The value of a NUMBER node is the number it holds.
+       return node.number;
+    }
+    else {  // The kind must be OPERATOR.
+            // Get the values of the operands and combine them
+            //    using the operator.
+       double leftVal = getValue( node.left );
+       double rightVal = getValue( node.right );
+       switch ( node.op ) {
+          case '+':  return leftVal + rightVal;
+          case '-':  return leftVal - rightVal;
+          case '*':  return leftVal * rightVal;
+          case '/':  return leftVal / rightVal;
+          default:   return Double.NaN;  // Bad operator.
+       }
+    }
+ } // end getValue()</pre>
+
+
+<p>Although this approach works, a more object-oriented approach is to note
+that since there are two types of nodes, there should be two classes to
+represent them, <span class="classname">ConstNode</span> and <span class="classname">BinOpNode</span>. To represent the
+general idea of a node in an expression tree, we need another class,
+<span class="classname">ExpNode</span>. Both <span class="classname">ConstNode</span> and <span class="classname">BinOpNode</span> will be
+subclasses of <span class="classname">ExpNode</span>. Since any actual node will be either a
+<span class="code">ConstNode</span> or a <span class="classname">BinOpNode</span>, <span class="classname">ExpNode</span> should be an
+abstract class. (See <a href="../c5/s5.html#OOP.5.5">Subsection&nbsp;5.5.5</a>.) Since one of the
+things we want to do with nodes is find their values, each class should have an
+instance method for finding the value:</p>
+
+
+<pre>abstract class ExpNode {
+       // Represents a node of any type in an expression tree.
+       
+    abstract double value();  // Return the value of this node.
+    
+} // end class ExpNode
+
+
+class ConstNode extends ExpNode {
+       // Represents a node that holds a number.
+       
+    double number;  // The number in the node.
+    
+    ConstNode( double val ) {
+          // Constructor.  Create a node to hold val.
+       number = val;
+    }
+ 
+    double value() {
+          // The value is just the number that the node holds.
+       return number;
+    }
+ 
+ } // end class ConstNode
+ 
+ 
+ class BinOpNode extends ExpNode {
+       // Represents a node that holds an operator.
+  
+    char op;        // The operator.
+    ExpNode left;   // The left operand.
+    ExpNode right;  // The right operand.
+ 
+    BinOpNode( char op, ExpNode left, ExpNode right ) {
+          // Constructor.  Create a node to hold the given data.
+       this.op = op;
+       this.left = left;
+       this.right = right;
+    }
+ 
+    double value() {
+          // To get the value, compute the value of the left and
+          // right operands, and combine them with the operator.
+        double leftVal = left.value();
+        double rightVal = right.value();
+        switch ( op ) {
+            case '+':  return leftVal + rightVal;
+            case '-':  return leftVal - rightVal;
+            case '*':  return leftVal * rightVal;
+            case '/':  return leftVal / rightVal;
+            default:   return Double.NaN;  // Bad operator.
+         }
+    }
+ 
+ } // end class BinOpNode</pre>
+
+
+<p>Note that the left and right operands of a <span class="classname">BinOpNode</span> are of type
+<span class="classname">ExpNode</span>, not <span class="classname">BinOpNode</span>. This allows the operand to be either
+a <span class="classname">ConstNode</span> or another <span class="classname">BinOpNode</span> -- or any other type of
+<span class="classname">ExpNode</span> that we might eventually create. Since every <span class="classname">ExpNode</span>
+has a <span class="code">value()</span> method, we can call <span class="code">left.value()</span> to compute the
+value of the left operand. If <span class="code">left</span> is in fact a <span class="classname">ConstNode</span>,
+this will call the <span class="code">value()</span> method in the <span class="classname">ConstNode</span> class. If
+it is in fact a <span class="classname">BinOpNode</span>, then <span class="code">left.value()</span> will call the
+<span class="code">value()</span> method in the <span class="classname">BinOpNode</span> class. Each node knows how to
+compute its own value.</p>
+
+
+<p>Although it might seem more complicated at first, the object-oriented
+approach has some advantages. For one thing, it doesn't waste memory. In the
+original <span class="classname">ExpNode</span> class, only some of the instance variables in each
+node were actually used, and we needed an extra instance variable to keep track
+of the type of node. More important, though, is the fact that new types of
+nodes can be added more cleanly, since it can be done by creating a new
+subclass of <span class="classname">ExpNode</span> rather than by modifying an existing class.</p>
+
+
+<p>We'll return to the topic of expression trees in the next section, where
+we'll see how to create an expression tree to represent a given expression.</p>
+   
+
+
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s3.html">Previous Section</a> |
+           <a href="s5.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

@@ -1,0 +1,402 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Answers for Quiz on Chapter 10</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2 class="quiz_title">Answers for Quiz on Chapter 10</h2>
+<p>
+<span class="start"><big>T</big>his page contains</span> sample answers to the quiz on Chapter 10 of
+           <a href="../index.html"><i>Introduction to Programming Using Java</i></a>.
+           Note that generally, there are lots of correct answers to a given question.</p>
+<table border="1" align="center" cellpadding="8" width="95%">
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;1:</span></td><td>
+<p>What is meant by <i>generic
+programming</i> and what is the alternative?</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>Generic programming means
+writing data structures and subroutines that can be used for many different
+types of data. The alternative would be to write a new data structure or
+subroutine for each different type of data, even when they would all be
+essentially identical except for the type name. For example, a single generic
+sort routine can be used for sorting lists that contain data of any type.
+The alternative is one routine for sorting lists of integers, one for sorting
+lists of strings, one for storing arrays of real numbers, and so on.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;2:</span></td><td>
+<p>Why can't you make an object of type <span class="classname">LinkedList&lt;int&gt;</span>?
+What should you do instead?</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>
+<span class="classname">LinkedList&lt;int&gt;</span> is an attempt to use a generic
+class with a type parameter of type <span class="ptype">int</span>, which is a primitive type.
+Generic programming in Java works only for objects, and not for the primitive types,
+so a type parameter of primitive type is not allowed.  However, it is possible
+to use the wrapper class <span class="classname">Integer</span> in place of <span class="ptype">int</span>.
+An object of type <span class="classname">LinkedList&lt;Integer&gt;</span> can be used almost
+as if it were actually a list of <span class="ptype">ints</span>.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;3:</span></td><td>
+<p>What is an <i>iterator</i>
+and why are iterators necessary for generic programming?</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>One of the principle features of
+Java's generic programming framework is <span class="classname">Collections</span>. There are several types of
+collection (including <span class="classname">LinkedList</span>, <span class="classname">ArrayList</span>, 
+<span class="classname">TreeSet</span>, and <span class="classname">HashSet</span>). In order
+to deal with all the different types of collection in a generic way, we need a
+generic way to access all the elements in a collection. An iterator makes this
+possible. An iterator is an object associated with a collection that makes it
+possible to traverse the collection (that is, to visit each of the items in the
+collection in turn). Code written using iterators will work for any type of
+collection.  (Note, however, that explicit use of an iterator can often be
+avoided by using a for-each loop.)</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;4:</span></td><td>
+<p>Suppose that
+<span class="code">integers</span> is a variable of type <span class="classname">Collection&lt;Integer&gt;</span>.
+Write a code segment that uses an iterator to compute the sum of all the integer values in 
+the collection.  Write a second code segment that does the same thing using a
+for-each loop.</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>Using an iterator:</p>
+
+<pre>int sum = 0;
+Iterator&lt;Integer&gt;  iter = integers.iterator();
+while ( iter.hasNext() ) {
+   sum += iter.next();
+}</pre>
+
+<p>The statement "<span class="code">sum += iter.next()</span>" relies on the automatic conversion
+from type <span class="classname">Integer</span> to type <span class="ptype">int</span>.  It could
+also be written "<span class="code">sum += iter.next().intValue()</span>".</p>
+
+<p>Using a for-each loop:</p>
+
+<pre>int sum = 0;
+for ( int number : integers ) {   // ( Could also use "Integer number : integers". )
+   sum += number;
+}</pre>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;5:</span></td><td>
+<p>Interfaces such as
+<span class="classname">List</span>, <span class="classname">Set</span>, and <span class="classname">Map</span> 
+define <i>abstract data types.</i> Explain what this means.</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>An abstract data type is defined
+by the operations that can be performed on it, not by the way the data is
+actually stored or by the way the operations are implemented. An interface such
+as <span class="classname">List</span> defines operations that can be performed, but says nothing
+about how they are to be implemented. In fact, there can be many different
+implementations. For example, both <span class="classname">LinkedList</span> and <span class="classname">ArrayList</span>
+implement the <span class="classname">List</span> interface. They are different "concrete" data types
+that implement the same abstract data type.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;6:</span></td><td>
+<p>What is the fundamental
+property that distinguishes <span class="classname">Sets</span> from other types of
+<span class="classname">Collections</span>?</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>A <span class="classname">Set</span> cannot contain
+duplicate elements.  Adding an item to the
+set has no effect if that item is already in the set.  (Note that exactly what it means to say that two
+items are the same depends on the type of set.  For <span class="classname">HashSet</span>,
+two items are tested for equality using the <span class="code">equals()</span> method.
+For a <span class="classname">TreeSet</span>, the test for equality uses the
+<span class="code">compareTo()</span> method.)</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;7:</span></td><td>
+<p>What is the essential
+difference in functionality between a <span class="classname">TreeMap</span> and a
+<span class="classname">HashMap</span>?</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>The key/value pairs in a
+<span class="classname">TreeMap</span> are sorted so that the keys are in ascending order. (For this
+reason, it must be possible to compare the keys in a <span class="classname">TreeMap</span>, using
+a <span class="classname">compareTo()</span> method.  Either the keys must implement the
+<span class="classname">Comparable</span> interface or a <span class="classname">Comparator</span> must
+be provided to do the comparison.)</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;8:</span></td><td>
+<p>Explain what is meant by a <i>hash code.</i>
+</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>The hash code of an object is an
+integer that tells where that object should be stored in a hash table. A hash
+table is an array of linked lists. When an object is stored in a hash table, it
+is added to one of these linked lists. The object's hash code is the index of
+the position in the array where the object is stored. All objects with the same
+hash code go into the same linked list.  In Java, every object <span class="code">obj</span> has a method
+<span class="code">obj.hashCode()</span> that is used to compute hash codes for the object.
+If the object is to be stored in a hash table of size <span class="code">N</span>, then
+the hash code that is used for the object is <span class="code">Math.abs(obj.hashCode())%N</span>.</p>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;9:</span></td><td>
+<p>Modify the following
+<span class="classname">Date</span> class so that it implements the interface <span class="classname">Comparable&lt;Date&gt;</span>.
+The ordering on objects of type <span class="classname">Date</span> should be the natural,
+chronological ordering.</p>
+
+<pre>class Date {
+   int month;  // Month number in range 1 to 12.
+   int day;    // Day number in range 1 to 31.
+   int year;   // Year number.
+   Date(int m, int d, int y) { 
+      month = m;
+      day = d;
+      year = y;
+   }
+}</pre>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>The interface <span class="classname">Comparable&lt;Date&gt;</span> specifies the method
+<span class="code">"public int compareTo(Date d)"</span>, which will be used to compare
+two objects of type <span class="classname">Date</span>. The
+<span class="code">compareTo()</span> method 
+must be added to the class, and the class must be declared to implement the
+interface. To compare two dates, first try comparing the
+years. If the years are equal, try comparing the months. If the months are also
+equal, compare the days.</p>
+
+<pre>class Date implements Comparable&lt;Date&gt; {
+   int month;  // Month number in range 1 to 12.
+   int day;    // Day number in range 1 to 31.
+   int year;   // Year number.
+   Date(int m, int d, int y) {
+      month = m;
+      day = d;
+      year = y;
+   }
+   public int compareTo( Date otherDate ) {
+           // Returns 1, 0, or -1 if this date is greater than, equal to,
+           // or less than otherDate, respectively.
+      if (year &lt; otherDate.year)
+         return -1;
+      else if (year &gt; otherDate.year)
+         return 1;
+      else { // Years are equal; compare months.
+         if (month &lt; otherDate.month)
+            return -1;
+         else if (month &gt; otherDate.month)
+            return 1;
+         else { // Years and months are equal; compare days.
+            if (day &lt; otherDate.day)
+               return -1;
+            else if (day &gt; otherDate.day)
+               return 1;
+            else 
+               return 0;
+         }
+      }
+   }
+}</pre>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;10:</span></td><td>
+<p>Suppose that
+<span class="code">syllabus</span> is a variable of type <span class="classname">TreeMap&lt;Date,String&gt;</span>,
+where <span class="classname">Date</span> is the class from the preceding exercise.
+Write a code segment that will write
+out the value string for every key that is in the month of December, 2010.</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>I will give two solutions. One
+of them simply looks up each date in December, 2010 in the map and prints the
+corresponding value, if there is one. The other iterates though a submap that
+contains all the entries for dates in that month.</p>
+
+<pre>
+A solution using the map's get() method:
+
+      for (int day = 1; day &lt;= 31; day++) {
+           // Get the info for one day in December, 2010
+         Date date = new Date(12,day,2010); // The key.
+         String info = syllabus.get(date); // Get the value for that key.
+                                           // (Can be null if there is no
+                                           // entry in the map for this date.)
+         if (info != null)
+            System.out.println("December " + day + ": " + info);
+      }
+
+
+A solution using a submap (harder, but more efficient):
+
+      Date startDate = new Date(12,1,2010); // Starting date for submap.
+      Date endDate = new Date(1,1,2011);    // Ending date for submap.
+                                            // (Remember that the end date
+                                            // is not included.)
+      Map&lt;Date,String&gt; decemberData = syllabus.subMap(startDate, endDate);
+      for ( Map.Entry&lt;Date,String&gt; entry : decemberData ) {
+         Date date = entry.getKey();
+         String info = entry.getValue();
+         System.out.println("December " + data.day + ": " + info);
+      }</pre>
+
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;11:</span></td><td>
+<p>Write a generic class <span class="classname">Stack&lt;T&gt;</span> that can be
+used to represent stacks of objects of type <span class="classname">T</span>.  The class
+should include methods <span class="code">push()</span>, <span class="code">pop()</span>, and
+<span class="code">isEmpty()</span>.  Inside the class, use an <span class="classname">ArrayList</span>
+to hold the items on the stack.</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<pre>public class Stack&lt;T&gt; {
+   ArrayList&lt;T&gt; stack = new ArrayList&lt;T&gt;();
+   public void push( T newItem ) {
+      stack.add(newItem);
+   }  
+   public T pop() {
+      int top = stack.size() - 1;  // location of top item
+      return stack.remove(top);    // remove and return top item
+   }
+   public boolean isEmpty() {
+      return stack.size() == 0;
+   }
+}</pre>
+</td>
+</tr>
+<tr class="question">
+<td valign="top"><span class="question">Question&nbsp;12:</span></td><td>
+<p>Write a generic method, using a generic type parameter <span class="code">&lt;T&gt;</span>,
+that replaces every occurrence in a <span class="classname">ArrayList&lt;T&gt;</span> of a specified item
+with a specified replacement item.  The list and the two items are parameters to the method.
+Both items are of type <span class="classname">T</span>.
+Take into account the fact that the item that is being replaced might be <span class="code">null</span>.
+For a non-null item, use <span class="code">equals()</span> to do the comparison.</p>
+
+</td>
+</tr>
+<tr class="answer">
+<td valign="top"><span class="answer">Answer:</span></td><td>
+<p>Since the method operates on <span class="classname">ArrayLists</span>, it can
+use indexed access with the <span class="code">get(i)</span> and <span class="code">set(i,item)</span> methods.
+These operations are efficient for array lists.  I also give a second version of
+the method that uses a list iterator and is efficient for any type of list.</p>
+
+<pre>public static &lt;T&gt; void replaceAll(ArrayList&lt;T&gt; list, T oldItem, T newItem) {
+   if (oldItem == null) {
+      for (int i = 0; i &lt; list.size(); i++) {
+         if ( null == list.get(i) )
+            list.set( i, newItem );
+      }
+   }
+   else {
+      for (int i = 0; i &lt; list.size(); i++) {
+         if ( oldItem.equals(list.get(i)) )
+            list.set( i, newItem );
+      }
+   }
+}
+
+
+public static &lt;T&gt; void replaceAll(List&lt;T&gt; list, T oldItem, T newItem) {
+   ListIterator&lt;T&gt; iter = list.listIterator();
+   while (iter.hasNext()) {
+      T listItem = iter.next();
+      if ( oldItem == null ) {
+         if ( listItem == null )
+            iter.set(newItem);
+      }
+      else {
+         if ( oldItem.equals(listItem) )
+            iter.set(newItem);
+      }
+   }
+}</pre>
+
+<p>(Note, by the way, that a <span class="code">replaceAll</span> method is already defined
+as a static method in class <span class="classname">Collections</span>.)</p>
+
+</td>
+</tr>
+</table>
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

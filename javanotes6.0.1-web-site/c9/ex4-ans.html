@@ -1,0 +1,354 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 4, Chapter 9</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 9.4</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 9.4:</h3>
+<p>
+<a href="../c9/s4.html#recursion.4.1">Subsection&nbsp;9.4.1</a> 
+explains how to use recursion to print out the items in a binary tree
+in various orders. That section also notes that a non-recursive subroutine can
+be used to print the items, provided that a stack or queue is used as an
+auxiliary data structure. Assuming that a queue is used, here is an algorithm
+for such a subroutine:</p>
+
+<pre>Add the root node to an empty queue
+while the queue is not empty:
+   Get a node from the queue
+   Print the item in the node
+   if node.left is not null:
+      add it to the queue
+   if node.right is not null:
+      add it to the queue</pre>
+
+<p>Write a subroutine that implements this algorithm, and write a program to
+test the subroutine. Note that you will need a queue of <span class="classname">TreeNodes</span>, so
+you will need to write a class to represent such queues.</p>
+
+<p>(Note that the order in which items are printed by this algorithm is different
+from all three of the orders considered in <a href="../c9/s4.html#recursion.4.1">Subsection&nbsp;9.4.1</a>.)</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>There's really not a lot to think about here, since such a complete
+algorithm is given. However, we do have to assemble the pieces. I use the
+standard binary tree node from <a href="../c9/s4.html">Section&nbsp;9.4</a> (except that
+I changed the name of the tree node class to <span class="classname">StrTreeNode</span>). The
+algorithm needs a queue of tree nodes. To implement this, I copied the
+<span class="classname">QueueOfInts</span> class from <a href="../c9/s3.html#recursion.3.2">Subsection&nbsp;9.3.2</a> and changed
+the type of the items in the queue to <span class="classname">StrTreeNode</span>. I also changed the
+name to <span class="classname">TreeQueue</span>. I did this literally by copying the class from a
+Web browser window and pasting it into my source code file. With these classes
+in hand, the algorithm given in the exercise can be coded as:</p>
+
+
+<pre>/**
+ * Use a queue to print all the strings in the tree to which
+ * root points.  (The nodes will be listed in "level order",
+ * that is:  first the root, then children of the root, then
+ * grandchildren of the root, and so on.)
+ */
+static void levelOrderPrint(StrTreeNode root) {
+    if (root == null)
+       return;  // There is nothing to print in an empty tree.
+    TreeQueue queue;   // The queue.
+    queue = new TreeQueue();
+    queue.enqueue(root);
+    while ( queue.isEmpty() == false ) {
+       StrTreeNode node = queue.dequeue();
+       System.out.println( node.item );
+       if ( node.left != null )
+          queue.enqueue( node.left );
+       if ( node.right != null )
+          queue.enqueue( node.right );
+    }
+} // end levelOrderPrint()</pre>
+
+
+<p>The name of this routine comes from the order in which it prints out the
+nodes of the tree. Think of the root of the tree as being on the top "level" of
+the tree, the children of the root on the second level, the children of the
+children of the root on the third level, and so on. Then the subroutine prints
+the items in <span class="newword">level order</span>. That is, all the nodes
+on one level are printed before any of the nodes on the next level. This is a
+consequence of the way the algorithm processes the items. As items from one
+level are removed from the queue and printed, their children (which are the
+nodes on the next level) are added to the <b>back</b> of the queue. Just after
+all the items from one level have been processed, the queue contains all the
+children of those items, ready to be processed next. Level-order tree
+traversals can't be done by recursion, and they are a standard application of
+queues.</p>
+
+
+<p>To test my subroutine, I wanted a reasonably large tree whose structure I
+knew, so I could check whether the nodes are printed in the correct order.
+(Since you didn't know about level-order traversals until now, on the other
+hand, you should have been mainly concerned with checking that all the nodes in
+the tree are printed, period.) I decided to create the binary sort tree shown
+in <a href="../c9/s4.html#recursion.4.2">Subsection&nbsp;9.4.2</a>. To do this, I copied the
+<span class="code">treeInsert()</span>subroutine from that section and used it to add names to
+the tree in an order that would produce the tree I wanted. Finally, I called
+<span class="code">levelOrderPrint()</span> to output the names from the tree. (It worked!)</p>
+
+
+<p>By the way, you might notice that the <span class="code">levelOrderPrint()</span> routine is
+very similar to the technique used in the grid-marking applet in the sample program
+<span class="sourceref"><a href="../source/DepthBreadth.java">DepthBreadth.java</a></span> from
+<a href="../c9/s3.html#recursion.3.2">Subsection&nbsp;9.3.2</a>. In fact they are just variations on the same idea.
+One difference is that in <span class="sourceref"><a href="../source/DepthBreadth.java">DepthBreadth.java</a></span>, the squares of the grid had to be
+marked as "visited" as they were processed to avoid going into an infinite
+loop. The <span class="code">levelOrderPrint()</span> subroutine doesn't have to do the same
+type of marking because it is working on a tree. One of the defining properties
+of a tree is that it cannot contain a loop of nodes. That is, it is not
+possible for a node to be its own descendant. This restriction guarantees that
+<span class="code">levelOrderPrint()</span> will not go into an infinite loop. The same property
+guarantees that all of our recursive tree-processing methods will not suffer
+from infinite recursion when they are applied to a tree. You should note,
+however, that it is possible to connect tree nodes into data structures that
+contain loops and are therefore not trees at all. 
+While these data structures are not trees, they might have other
+uses. Many of the subroutines we've looked will fail if applied to these loopy
+structures.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">/**
+ * This program includes a non-recursive subroutine that prints the
+ * nodes of a binary tree, using a queue.  The main program simply
+ * tests that routine.  (The nodes are printed in what is called
+ * "level order".)
+ * 
+ * This file defines the queue and tree classes as nested classes.
+ * Since they are general-purpose classes, it would really be better
+ * to put them in separate files.
+ */
+   
+
+public class TreePrintNonRecursive {  
+
+
+   //--------------------------------- NESTED CLASSES -----------------------
+   
+   /**
+    * An object in this class is a node in a binary tree
+    * in which the nodes contain items of type String.
+    */
+   static class StrTreeNode {
+         // 
+      String item;  // The item
+      StrTreeNode left;  // Pointer to left subtree.
+      StrTreeNode right; // Pointer to right subtree.
+      StrTreeNode( String str ) {
+            // Constructor.  Make a node to contain str.
+         item = str;
+      }
+   } // end class StrTreeNode
+   
+   
+   /**
+    * An object of this type represents a queue of StrTreeNodes,
+    * with the usual operations: dequeue, enqueue, isEmpty.
+    */
+   static class TreeQueue {
+   
+      /**
+       * An object of type Node holds one of the items
+       * in the linked list that represents the queue.
+       */
+      private static class Node {
+         StrTreeNode item;
+         Node next;
+      }
+   
+      private Node head = null;  // Points to first Node in the queue.
+                                 // The queue is empty when head is null.
+      
+      private Node tail = null;  // Points to last Node in the queue.
+   
+      /**
+       * Add N to the back of the queue.
+       */
+      void enqueue( StrTreeNode tree ) {
+         Node newTail = new Node();  // A Node to hold the new item.
+         newTail.item = tree;
+         if (head == null) {
+               // The queue was empty.  The new Node becomes
+               // the only node in the list.  Since it is both
+               // the first and last node, both head and tail
+               // point to it.
+            head = newTail;
+            tail = newTail;
+         }
+         else {
+               // The new node becomes the new tail of the list.
+               // (The head of the list is unaffected.)
+            tail.next = newTail;
+            tail = newTail;
+         }
+      }
+   
+      /**
+       * Remove and return the front item in the queue.
+       * Throws an IllegalStateException if the queue is empty.
+       */
+      StrTreeNode dequeue() {
+         if ( head == null)
+             throw new IllegalStateException("Can't dequeue from an empty queue."); 
+         StrTreeNode firstItem = head.item;
+         head = head.next;  // The previous second item is now first.
+         if (head == null) {
+               // The queue has become empty.  The Node that was
+               // deleted was the tail as well as the head of the
+               // list, so now there is no tail.  (Actually, the
+               // class would work fine without this step.)
+            tail = null;
+         } 
+         return firstItem;
+      }
+      
+      /**
+       * Return true if the queue is empty, false if contains one
+       * or more items
+       */
+      boolean isEmpty() {
+         return (head == null);
+      }
+         
+   } // end class TreeQueue
+ 
+   
+   //-------------------- END OF NESTED CLASSES ---------------------------
+   
+
+   static StrTreeNode root;  // A pointer to the root of the binary tree.
+   
+   
+   /**
+    * Use a queue to print all the strings in the tree to which
+    * root points.  (The nodes will be listed in "level order",
+    * that is:  first the root, then children of the root, then
+    * grandchildren of the root, and so on.)
+    */
+   static void levelOrderPrint(StrTreeNode root) {
+       if (root == null)
+          return;  // There is nothing to print in an empty tree.
+       TreeQueue queue;   // The queue, which will only hold non-null nodes.
+       queue = new TreeQueue();
+       queue.enqueue(root);
+       while ( queue.isEmpty() == false ) {
+          StrTreeNode node = queue.dequeue();
+          System.out.println( node.item );
+          if ( node.left != null )
+             queue.enqueue( node.left );
+          if ( node.right != null )
+             queue.enqueue( node.right );
+       }
+   } // end levelOrderPrint()
+   
+   
+   /**
+    * Add the word to the binary sort tree to which the
+    * global variable "root" refers.  I will use this 
+    * routine only to create the sample tree on which
+    * I will test levelOrderPrint().
+    */
+   static void treeInsert(String newItem) {
+      if ( root == null ) {
+              // The tree is empty.  Set root to point to a new node 
+              // containing the new item.
+          root = new StrTreeNode( newItem );
+          return;
+       }
+       StrTreeNode runner; // Runs down the tree to find a place for newItem.
+       runner = root;   // Start at the root.
+       while (true) {
+          if ( newItem.compareTo(runner.item) &lt; 0 ) {
+                   // Since the new item is less than the item in runner,
+                   // it belongs in the left subtree of runner.  If there
+                   // is an open space at runner.left, add a node there.
+                   // Otherwise, advance runner down one level to the left.
+             if ( runner.left == null ) {
+                runner.left = new StrTreeNode( newItem );
+                return;  // New item has been added to the tree.
+             }
+             else
+                runner = runner.left;
+          }
+          else {
+                   // Since the new item is greater than or equal to the 
+                   // item in runner, it belongs in the right subtree of
+                   // runner.  If there is an open space at runner.right, 
+                   // add a new node there.  Otherwise, advance runner
+                   // down one level to the right.
+             if ( runner.right == null ) {
+                runner.right = new StrTreeNode( newItem );
+                return;  // New item has been added to the tree.
+             }
+             else
+                runner = runner.right;
+           }
+       } // end while
+   }  // end treeInsert()
+   
+   
+   /**
+    * Make a tree with a known form, then call levelOrderPrint()
+    * for that tree.  (I want to check that all the items from
+    * the tree are printed, and I want to see the order in which
+    * they are printed.  The expected order of output is
+    * judy bill mary alice fred tom dave jane joe.  The
+    * tree that is built here is from an illustration in
+    * Section 9.4.)
+    */
+   public static void main(String[] args) {
+      treeInsert("judy");
+      treeInsert("bill");
+      treeInsert("fred");
+      treeInsert("mary");
+      treeInsert("dave");
+      treeInsert("jane");
+      treeInsert("alice");
+      treeInsert("joe");
+      treeInsert("tom");
+      levelOrderPrint(root);
+   } // end main()
+
+
+} // end class TreePrintNonRecursive
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

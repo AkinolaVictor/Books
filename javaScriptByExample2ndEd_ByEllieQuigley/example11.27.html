@@ -1,0 +1,53 @@
+
+<html><head><title>Verifying a Name</title>
+<script language="JavaScript">
+	function validate(form){
+		if(alpha(form.first) == false){
+			   	alert ("First name is invalid");
+			   return false;
+		}
+		if(alpha(form.last) == false){
+			    alert("Last name is invalid");
+			    return false;
+		}
+		return true;
+	}
+	function alpha(textField ){
+		if( textField.value.length != 0){
+ 		   for (var i = 0; i < textField.value.length;i++){
+			   var ch= textField.value.charAt(i);
+	           /* alert(ch);  Using alert to see what characters 
+			                        are coming in
+                   */
+	        	if((ch < "A" || ch > "Z") && (ch< "a" || ch >"z")){
+			          return false;   
+			}
+		   }
+		}
+		else {
+			return true;  
+		}
+	}
+</script>
+</head>
+<body bgcolor="lightgreen">
+   <font face=verdana>
+   <b>
+   <form name="alphachk" onSubmit="return validate(this);">
+	Enter your first name:
+	<br>
+	<input name="first"
+		type="text"
+		size=60>
+	<p>
+	Enter your last name:
+	<br>
+	<input name="last"
+		type="text"
+		size=60>
+	<p>
+	<input type=submit value="Check it out">
+	<input type=reset>
+   </form>
+</body>
+</html>

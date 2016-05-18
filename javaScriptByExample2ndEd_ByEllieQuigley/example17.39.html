@@ -1,0 +1,16 @@
+<html>
+<head><title>Removing Spaces and Dashes</title>
+</head>
+<body bgcolor="magenta">
+   <big>
+   <h2>Removing Spaces and Hyphens</h2>
+   <script type= "text/javascript">
+	var string="444- 33 - 12 34"
+	var regex = /[ -]+/g;
+	var newString=string.replace(regex, "");
+	document.write("The original string: "+string);
+	document.write("<br>The new string: "+ newString +"<br>");
+  </script>
+</big>
+</body>
+</html>

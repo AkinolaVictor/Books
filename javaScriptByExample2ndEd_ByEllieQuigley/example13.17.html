@@ -1,0 +1,44 @@
+<html>
+  <head><title>The onSubmit Event Handler</title>
+    <script type="text/javascript">
+	    function popUp(){
+           newWin=window.open('','NewWin','toolbar=no,status=no,width=500,height=200');
+			newWin.document.write("<body bgcolor='yellow'><h3>Form data</h3>");
+			newWin.document.write("<b>Your name is:</b> " +
+			   document["form1"].namestring.value);
+			newWin.document.write("<br/><b>Your address is:</b></body>" +document["form1"].address.value);
+		    newWin.document.close();
+		 }
+	  </script>
+	</head>
+	<body bgcolor="yellow">
+	<form name="form1" onSubmit="return popUp();">
+	  <p>
+	  <table>
+	  <tr>
+	    <td>
+	      <b>Type your name:</b>
+	    </td>
+	    <td>
+	        <input type="text"
+		      name="namestring"
+		      size="50">
+        </td>
+        </tr>
+	  <tr>
+	      <td>
+	       <b>Type in your address:</b>
+	     </td>
+	      <td>
+	          <input type="text"
+		             name="address"
+		             size="80">
+	      </td>
+	  </tr>
+	  </table>
+	  <p>
+	  <input type="submit" value="Submit form"/>
+	  <input type="reset" value="Clear"/>
+	  </form>
+</body>
+</html>

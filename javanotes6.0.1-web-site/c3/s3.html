@@ -1,0 +1,505 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 3.3 -- The while and do..while Statements</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s2.html">Previous Section</a> |
+           <a href="s4.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#control.3.1">The while Statement</a>
+<br>
+<a href="#control.3.2">The do..while Statement</a>
+<br>
+<a href="#control.3.3">break and continue</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 3.3</h3>
+<h2 class="section_title">The while and do..while Statements</h2>
+<hr class="break">
+
+
+<p>
+<span class="start"><big>S</big>tatements in Java can</span> be either simple statements
+or compound statements. Simple statements, such as assignment statements and
+subroutine call statements, are the basic building blocks of a program.
+Compound statements, such as <span class="code">while</span> loops and <span class="code">if</span> statements,
+are used to organize simple statements into complex structures, which are
+called control structures because they control the order in which the
+statements are executed. The next five sections explore the details of
+control structures that are available in Java, starting with the <span class="code">while</span>
+statement and the <span class="code">do..while</span> statement in this section. At the same
+time, we'll look at examples of programming with each control structure and
+apply the techniques for designing algorithms that were introduced in the
+<a href="../c3/s2.html">previous&nbsp;section</a>.</p>
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="control.3.1">3.3.1&nbsp;&nbsp;The while Statement</a>
+</h3>
+
+
+<p>The <span class="code">while</span> statement was already introduced in <a href="../c3/s1.html">Section&nbsp;3.1</a>. 
+A <span class="code">while</span> loop has the form</p>
+
+
+<pre>while ( <span class="bnf">boolean-expression</span> )
+   <span class="bnf">statement</span>
+</pre>
+
+
+<p>The <span class="bnf">statement</span> can, of course, be a block
+statement consisting of several statements grouped together between a pair of
+braces. This statement is called the <span class="newword">body of the loop</span>. 
+The body of the loop is repeated as long as the <span class="bnf">boolean-expression</span> is true. This boolean expression is
+called the <span class="newword">continuation condition</span>, or more simply
+the <span class="newword">test</span>, of the loop. There are a few points that
+might need some clarification. What happens if the condition is false in the
+first place, before the body of the loop is executed even once? In that case,
+the body of the loop is never executed at all. The body of a while loop can be
+executed any number of times, including zero. What happens if the condition is
+true, but it becomes false somewhere in the <b>middle</b> of the loop
+body? Does the loop end as soon as this happens? It doesn't, because the
+computer continues executing the body of the loop until it gets to the end.
+Only then does it jump back to the beginning of the loop and test the
+condition, and only then can the loop end.</p>
+
+
+<p>Let's look at a typical problem that can be solved using a <span class="code">while</span>
+loop: finding the average of a set of positive integers entered by the user.
+The average is the sum of the integers, divided by the number of integers. The
+program will ask the user to enter one integer at a time. It will keep count of
+the number of integers entered, and it will keep a running total of all the
+numbers it has read so far. Here is a pseudocode algorithm for the program:</p>
+
+
+<pre>Let sum = 0     // The sum of the integers entered by the user.
+Let count = 0   // The number of integers entered by the user.
+while there are more integers to process:
+    Read an integer
+    Add it to the sum
+    Count it
+Divide sum by count to get the average
+Print out the average</pre>
+
+
+<p>But how can we test whether there are more integers to process? A typical
+solution is to tell the user to type in zero after all the data have been
+entered. This will work because we are assuming that all the data are positive
+numbers, so zero is not a legal data value. The zero is not itself part of the
+data to be averaged. It's just there to mark the end of the real data. A data
+value used in this way is sometimes called a <span class="newword">sentinel value</span>. 
+So now the test in the while loop becomes "while the input
+integer is not zero". But there is another problem! The first time the test is
+evaluated, before the body of the loop has ever been executed, no integer has
+yet been read. There is no "input integer" yet, so testing whether the input
+integer is zero doesn't make sense. So, we have to do something
+<b>before</b> the while loop to make sure that the test makes sense.
+Setting things up so that the test in a <span class="code">while</span> loop makes sense the
+first time it is executed is called <span class="newword">priming the loop</span>. 
+In this case, we can simply read the first integer before the
+beginning of the loop. Here is a revised algorithm:</p>
+
+
+<pre>Let sum = 0
+Let count = 0
+Read an integer
+while the integer is not zero:
+    Add the integer to the sum
+    Count it
+    Read an integer
+Divide sum by count to get the average
+Print out the average</pre>
+
+
+<p>Notice that I've rearranged the body of the loop. Since an integer is read
+before the loop, the loop has to begin by processing that integer. At the end
+of the loop, the computer reads a new integer. The computer then jumps back to
+the beginning of the loop and tests the integer that it has just read. Note
+that when the computer finally reads the sentinel value, the loop ends before
+the sentinel value is processed. It is not added to the sum, and it is not
+counted. This is the way it's supposed to work. The sentinel is not part of the
+data. The original algorithm, even if it could have been made to work without
+priming, was incorrect since it would have summed and counted all the integers,
+including the sentinel. (Since the sentinel is zero, the sum would still be
+correct, but the count would be off by one. Such so-called <span class="newword">off-by-one errors</span> 
+are very common. Counting turns out to be
+harder than it looks!)</p>
+
+
+<p>We can easily turn the algorithm into a complete program. Note that the
+program cannot use the statement "<span class="code">average&nbsp;=&nbsp;sum/count</span>;" to compute the
+average. Since <span class="code">sum</span> and <span class="code">count</span> are both variables of type
+<span class="ptype">int</span>, the value of <span class="code">sum/count</span> is an integer. The average should
+be a real number. We've seen this problem before: we have to convert one of the
+<span class="ptype">int</span> values to a <span class="ptype">double</span> to force the computer to compute the
+quotient as a real number. This can be done by type-casting one of the
+variables to type <span class="ptype">double</span>. The type cast "(double)sum" converts the
+value of <span class="code">sum</span> to a real number, so in the program the average is
+computed as "<span class="code">average&nbsp;= ((double)sum)&nbsp;/&nbsp;count</span>;". Another solution in
+this case would have been to declare <span class="code">sum</span> to be a variable of type
+<span class="ptype">double</span> in the first place.</p>
+
+
+<p>One other issue is addressed by the program: If the user enters zero as the
+first input value, there are no data to process. We can test for this case by
+checking whether <span class="code">count</span> is still equal to zero after the <span class="code">while</span>
+loop. This might seem like a minor point, but a careful programmer should cover
+all the bases.</p>
+
+
+
+<p>Here is the program and an applet that simulates it:</p>
+
+
+<pre>/**
+ * This program reads a sequence of positive integers input
+ * by the user, and it will print out the average of those
+ * integers.  The user is prompted to enter one integer at a
+ * time.  The user must enter a 0 to mark the end of the
+ * data.  (The zero is not counted as part of the data to
+ * be averaged.)  The program does not check whether the
+ * user's input is positive, so it will actually add up
+ * both positive and negative input values.
+ */
+
+public class ComputeAverage {
+        
+   public static void main(String[] args) {
+      
+      int inputNumber;   // One of the integers input by the user.
+      int sum;           // The sum of the positive integers.
+      int count;         // The number of positive integers.
+      double average;    // The average of the positive integers.
+      
+      /* Initialize the summation and counting variables. */
+      
+      sum = 0;
+      count = 0;
+      
+      /* Read and process the user's input. */
+      
+      TextIO.put("Enter your first positive integer: ");
+      inputNumber = TextIO.getlnInt();
+      
+      while (inputNumber != 0) {
+         sum += inputNumber;   // Add inputNumber to running sum.
+         count++;              // Count the input by adding 1 to count.
+         TextIO.put("Enter your next positive integer, or 0 to end: ");
+         inputNumber = TextIO.getlnInt();
+      }
+      
+      /* Display the result. */
+      
+      if (count == 0) {
+         TextIO.putln("You didn't enter any data!");
+      }
+      else {
+         average = ((double)sum) / count;
+         TextIO.putln();
+         TextIO.putln("You entered " + count + " positive integers.");
+         TextIO.putf("Their average is %1.3f.\n", average);
+      }
+ 
+   } // end main()
+   
+} // end class ComputeAverage</pre>
+
+
+
+<p align="center">
+<applet code="ComputeAverageConsole" width="500" height="270" archive="ComputeAverageApplet.jar" alt="(Applet 'ComputeAverageConsole' should be displayed here.)"></applet></p>
+
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="control.3.2">3.3.2&nbsp;&nbsp;The do..while Statement</a>
+</h3>
+   
+
+
+<p>Sometimes it is more convenient to test the continuation condition at the
+end of a loop, instead of at the beginning, as is done in the <span class="code">while</span>
+loop. The <span class="code">do..while</span> statement is very similar to the <span class="code">while</span>
+statement, except that the word "while," along with the condition that it
+tests, has been moved to the end. The word "do" is added to mark the beginning
+of the loop. A <span class="code">do..while</span> statement has the form</p>
+
+
+<pre>do
+    <span class="bnf">statement</span>
+while ( <span class="bnf">boolean-expression</span> );</pre>
+
+
+<p>or, since, as usual, the <span class="bnf">statement</span> can be a
+block,</p>
+
+
+<pre>do {
+    <span class="bnf">statements</span>
+} while ( <span class="bnf">boolean-expression</span> );</pre>
+
+
+<p>Note the semicolon, ';', at the very  end. This semicolon is part of the
+statement, just as the semicolon at the end of an assignment statement or
+declaration is part of the statement. Omitting it is a syntax error. (More
+generally, <b>every</b> statement in Java ends either with a
+semicolon or a right brace, '}'.)</p>
+
+
+<p>To execute a <span class="code">do</span> loop, the computer first executes the body of the
+loop -- that is, the statement or statements inside the loop -- and then it
+evaluates the boolean expression. If the value of the expression is
+<span class="code">true</span>, the computer returns to the beginning of the <span class="code">do</span> loop and repeats
+the process; if the value is <span class="code">false</span>, it ends the loop and continues
+with the next part of the program. Since the condition is not tested until the
+end of the loop, the body of a <span class="code">do</span> loop is always executed at least once.</p>
+
+
+<p>For example, consider the following pseudocode for a game-playing program.
+The <span class="code">do</span> loop makes sense here instead of a <span class="code">while</span> loop because
+with the <span class="code">do</span> loop, you know there will be at least one game. Also, the
+test that is used at the end of the loop wouldn't even make sense at the
+beginning:</p>
+
+
+<pre>do {
+   Play a Game
+   Ask user if he wants to play another game
+   Read the user's response
+} while ( the user's response is yes );</pre>
+
+
+<p>Let's convert this into proper Java code. Since I don't want to talk about
+game playing at the moment, let's say that we have a class named
+<span class="code">Checkers</span>, and that the <span class="code">Checkers</span> class contains a static
+member subroutine named <span class="code">playGame()</span> that plays one game of checkers
+against the user. Then, the pseudocode "Play a game" can be expressed as the
+subroutine call statement "<span class="code">Checkers.playGame();</span>". We need a variable
+to store the user's response. The <span class="classname">TextIO</span> class makes it convenient to
+use a <span class="ptype">boolean</span> variable to store the answer to a yes/no question. The
+input function <span class="code">TextIO.getlnBoolean()</span> allows the user to enter the
+value as "yes" or "no". "Yes" is considered to be <span class="code">true</span>, and "no" is
+considered to be <span class="code">false</span>. So, the algorithm can be coded as</p>
+
+
+<pre>boolean wantsToContinue;  // True if user wants to play again.
+do {
+   Checkers.playGame();
+   TextIO.put("Do you want to play again? ");
+   wantsToContinue = TextIO.getlnBoolean();
+} while (wantsToContinue == true);</pre>
+
+
+<p>When the value of the <span class="ptype">boolean</span> variable is set to <span class="code">false</span>, it
+is a signal that the loop should end. When a <span class="ptype">boolean</span> variable is used
+in this way -- as a signal that is set in one part of the program and tested in
+another part -- it is sometimes called a <span class="newword">flag</span> or
+<span class="newword">flag variable</span> (in the sense of a signal flag).</p>
+
+
+<p>By the way, a more-than-usually-pedantic programmer would sneer at the test
+"<span class="code">while (wantsToContinue == true)</span>". This test is exactly equivalent to
+"<span class="code">while (wantsToContinue)</span>". Testing whether "<span class="code">wantsToContinue&nbsp;==&nbsp;true</span>" 
+is true amounts to the same thing as testing whether
+"<span class="code">wantsToContinue</span>" is true. A little less offensive is an expression of
+the form "<span class="code">flag&nbsp;==&nbsp;false</span>", where <span class="code">flag</span> is a boolean variable.
+The value of "<span class="code">flag&nbsp;==&nbsp;false</span>" is exactly the same as the value of
+"<span class="code">!flag</span>", where <span class="code">!</span> is the boolean negation operator. So you can
+write "<span class="code">while&nbsp;(!flag)</span>" instead of "<span class="code">while (flag&nbsp;==&nbsp;false)</span>", and
+you can write "<span class="code">if&nbsp;(!flag)</span>" instead of "<span class="code">if&nbsp;(flag&nbsp;==&nbsp;false)</span>".</p>
+
+
+<p>Although a <span class="code">do..while</span> statement is sometimes more convenient than a
+<span class="code">while</span> statement, having two kinds of loops does not make the language
+more powerful. Any problem that can be solved using <span class="code">do..while</span> loops
+can also be solved using only <span class="code">while</span> statements, and vice versa. In
+fact, if <span class="bnf">doSomething</span> represents any block of
+program code, then</p>
+
+
+<pre>do {
+    <span class="bnf">doSomething</span>
+} while ( <span class="bnf">boolean-expression</span> );</pre>
+
+
+<p>has exactly the same effect as</p>
+
+
+<pre>
+<span class="bnf">doSomething</span>
+while ( <span class="bnf">boolean-expression</span> ) {
+    <span class="bnf">doSomething</span>
+}</pre>
+
+
+<p>Similarly,</p>
+
+
+<pre>while ( <span class="bnf">boolean-expression</span> ) {
+    <span class="bnf">doSomething</span>
+} </pre>
+
+
+<p>can be replaced by</p>
+
+
+<pre>if ( <span class="bnf">boolean-expression</span> ) {
+   do {
+       <span class="bnf">doSomething</span>
+   } while ( <span class="bnf">boolean-expression</span> );
+}</pre>
+
+
+<p>without changing the meaning of the program in any way.</p>
+
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="control.3.3">3.3.3&nbsp;&nbsp;break and continue</a>
+</h3>
+
+
+<p>The syntax of the <span class="code">while</span> and <span class="code">do..while</span> loops allows you to
+test the continuation condition at either the beginning of a loop or at the
+end. Sometimes, it is more natural to have the test in the middle of the loop,
+or to have several tests at different places in the same loop. Java provides a
+general method for breaking out of the middle of any loop. It's called the
+<span class="code">break</span> statement, which takes the form</p>
+
+
+<pre>break;</pre>
+
+
+<p>When the computer executes a <span class="code">break</span> statement in a loop, it will
+immediately jump out of the loop. It then continues on to whatever follows the
+loop in the program. Consider for example:</p>
+
+
+<pre>while (true) {  // looks like it will run forever!
+   TextIO.put("Enter a positive number: ");
+   N = TextIO.getlnInt();
+   if (N &gt; 0)   // input is OK; jump out of loop
+      break;
+   TextIO.putln("Your answer must be &gt; 0.");
+}
+// continue here after break</pre>
+
+
+<p>If the number entered by the user is greater than zero, the <span class="code">break</span>
+statement will be executed and the computer will jump out of the loop.
+Otherwise, the computer will print out "Your answer must be &gt; 0." and will
+jump back to the start of the loop to read another input value.</p>
+
+
+<p>The first line of this loop, "<span class="code">while&nbsp;(true)</span>" might look a bit
+strange, but it's perfectly legitimate. The condition in a <span class="code">while</span> loop
+can be any boolean-valued expression. The computer evaluates this expression
+and checks whether the value is <span class="code">true</span> or <span class="code">false</span>. The boolean
+literal "<span class="code">true</span>" is just a boolean expression that always evaluates to
+true. So "<span class="code">while&nbsp;(true)</span>" can be used to write an infinite loop, or one
+that will be terminated by a <span class="code">break</span> statement.</p>
+
+
+<p>A <span class="code">break</span> statement terminates the loop that immediately encloses the
+<span class="code">break</span> statement. It is possible to have <span class="newword">nested</span> loops, 
+where one loop statement is contained inside
+another. If you use a <span class="code">break</span> statement inside a nested loop, it will
+only break out of that loop, not out of the loop that contains the nested loop. 
+There is something called a <span class="newword">labeled break</span> statement that allows you to
+specify which loop you want to break. This is not very common, so I will go over it quickly.
+Labels work like this:  You can put a <span class="newword">label</span> in
+front of any loop.  A label consists of a simple identifier followed
+by a colon.  For example, a <span class="code">while</span> with a label might
+look like "<span class="code">mainloop:&nbsp;while...</span>".  Inside
+this loop you can use the labeled break statement "<span class="code">break&nbsp;mainloop;</span>"
+to break out of the labeled loop.  For example, here is a code segment that checks
+whether two strings, <span class="code">s1</span> and <span class="code">s2</span>, have a character in common.
+If a common character is found, the value of the flag variable <span class="code">nothingInCommon</span>
+is set to <span class="code">false</span>, and a labeled break is used to end the processing
+at that point:</p>
+
+
+<pre>boolean nothingInCommon;
+nothingInCommon = true;  // Assume s1 and s2 have no chars in common.
+int i,j;  // Variables for iterating through the chars in s1 and s2.
+
+i = 0;
+bigloop: while (i &lt; s1.length()) {
+   j = 0;
+   while (j &lt; s2.length()) {
+      if (s1.charAt(i) == s2.charAt(j)) { // s1 and s2 have a common char.
+          nothingInCommon = false;
+          break bigloop;  // break out of BOTH loops
+      }
+      j++;  // Go on to the next char in s2.
+   }
+   i++;  //Go on to the next char in s1.
+}</pre>
+   
+
+<p>The <span class="code">continue</span> statement is related to <span class="code">break</span>, but less
+commonly used. A <span class="code">continue</span> statement tells the computer to skip the
+rest of the current iteration of the loop. However, instead of jumping out of
+the loop altogether, it jumps back to the beginning of the loop and continues
+with the next iteration (including evaluating the loop's continuation condition to
+see whether any further iterations are required).  As with <span class="code">break</span>,
+when a <span class="code">continue</span> is in a nested loop, it will continue the loop
+that directly contains it; a "labeled continue" can be used to continue
+the containing loop instead.</p>
+
+
+<p>
+<span class="code">break</span> and <span class="code">continue</span> can be used in <span class="code">while</span> loops and
+<span class="code">do..while</span> loops. They can also be used in <span class="code">for</span> loops, which
+are covered in the <a href="../c3/s4.html">next&nbsp;section</a>. 
+In <a href="../c3/s6.html">Section&nbsp;3.6</a>, we'll see that <span class="code">break</span> can also be used to
+break out of a <span class="code">switch</span> statement.   A <span class="code">break</span> can occur
+inside an <span class="code">if</span> statement, but in that case, it does <b>not</b> mean
+to break out of the <span class="code">if</span>.  Instead, it breaks out of the loop or
+<span class="code">switch</span> statement that contains the <span class="code">if</span> statement. If the
+<span class="code">if</span> statement is not contained inside a loop or <span class="code">switch</span>, then
+the <span class="code">if</span> statement cannot legally contain a <span class="code">break</span>. A
+similar consideration applies to <span class="code">continue</span> statements inside <span class="code">ifs</span>.</p>
+
+
+   
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s2.html">Previous Section</a> |
+           <a href="s4.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

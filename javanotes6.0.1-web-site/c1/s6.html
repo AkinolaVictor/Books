@@ -1,0 +1,163 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 1.6 -- The Modern User Interface</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s5.html">Previous Section</a> |
+           <a href="s7.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h3 class="section_title">Section 1.6</h3>
+<h2 class="section_title">The Modern User Interface</h2>
+<hr class="break">
+
+
+<p>
+<span class="start"><big>W</big>hen computers were first introduced</span>, ordinary
+people -- including most programmers -- couldn't get near them. They were
+locked up in rooms with white-coated attendants who would take your programs
+and data, feed them to the computer, and return the computer's response some
+time later. When timesharing -- where the computer switches its attention
+rapidly from one person to another -- was invented in the 1960s, it became
+possible for several people to interact directly with the computer at the same
+time. On a timesharing system, users sit at "terminals" where they type
+commands to the computer, and the computer types back its response. Early
+personal computers also used typed commands and responses, except that there
+was only one person involved at a time. This type of interaction between a user
+and a computer is called a <span class="newword">command-line interface</span>.</p>
+
+
+<p>Today, of course, most people interact with computers in a completely
+different way. They use a <span class="newword">Graphical User Interface</span>, 
+or GUI. The computer draws interface <span class="newword">components</span> on the
+screen. The components include things like windows, scroll bars, menus,
+buttons, and icons. Usually, a <span class="newword">mouse</span> is used to
+manipulate such components. Assuming that you have not just been teleported in
+from the 1970s, you are no doubt already familiar with the basics of graphical user
+interfaces!</p>
+
+
+<p>A lot of GUI interface components have become fairly standard. That is, they
+have similar appearance and behavior on many different computer platforms
+including Mac&nbsp;OS, Windows, and Linux. Java programs,
+which are supposed to run on many different platforms without modification to
+the program, can use all the standard GUI components. They might vary a little in
+appearance from platform to platform, but their functionality should be
+identical on any computer on which the program runs.</p>
+
+
+<p>Below is a very simple Java program -- actually an "<span class="newword">applet</span>,"
+since it is running right here in the middle of a Web
+page -- that shows a few standard GUI interface components.
+
+There are four
+components that the user can interact with: a button, a checkbox, a text field, and
+a pop-up menu. These components are labeled. There are a few other components
+in the applet. The labels themselves are components (even though you can't
+interact with them). The right half of the applet is a text area component,
+which can display multiple lines of text. And a scrollbar component appears
+alongside the text area when the number of lines of text becomes larger
+than will fit in the text area.  And in fact, in Java terminology, the
+whole applet is itself considered to be a "component." Try clicking on the
+button and on the checkbox, and try selecting an item from the pop-up menu. You
+will see a message in the text area about each action that you perform. You can
+type in the text field, but you might have to click on it first to activate it.
+When you press return while typing in the text field, you will see a message in
+the text area:</p>
+
+
+<p align="center">
+<applet code="GUIDemo.class" width="497" height="150" alt="Applet GUIDemo demonstrates some basic GUI components">
+<div align="center">
+<p>
+<b>Java is not enabled in your browser,<br>but here is an image of the applet:</b>
+</p>
+<img src="GUIDemo.png"></div>
+</applet></p>
+
+
+<p>Now, Java actually has two complete sets of GUI components. One of these,
+the AWT or <span class="newword">Abstract Windowing Toolkit</span>, was
+available in the original version of Java. The other, which is known as
+<span class="newword">Swing</span>, is included in Java version 1.2 or later,
+and is used in preference to the AWT in most modern Java programs.  The
+applet that is shown above uses components that are part of Swing. 
+If Java is not installed in your Web browser or if
+your browser uses a very old version of Java, you
+might get an error when the browser tries to load the applet.  Remember
+that most of the applets in this textbook require Java 5.0 (or higher).</p>
+
+
+<p>When a user interacts with the GUI components in this applet, an
+"event" is generated.  For example, clicking a push button generates an event, and pressing
+return while typing in a text field generates an event.
+Each time an
+event is generated, a message is sent to the applet telling it that the event
+has occurred, and the applet responds according to its program. In fact, the
+program consists mainly of "event handlers" that tell the applet how to respond
+to various types of events. In this example, the applet has been programmed
+to respond to each event by displaying a message in the text area.
+In a more realistic example, the event handlers would have more to do.</p>
+
+
+<p>The use of the term "message" here is deliberate. Messages, as you saw in
+the <a href="../c1/s5.html">previous&nbsp;section</a>, are sent to objects. In fact, Java
+GUI components are implemented as objects. Java includes many predefined
+classes that represent various types of GUI components. Some of these classes
+are subclasses of others. Here is a diagram showing some of Swing's GUI classes
+and their relationships:</p>
+
+
+<p align="center">
+<img src="overview_fig5.png" width="522" height="240" alt="" class="bordered"></p>
+
+
+<p>Don't worry about the details for now, but try to get some feel about how
+object-oriented programming and inheritance are used here. Note that all the
+GUI classes are subclasses, directly or indirectly, of a class called
+<span class="classname">JComponent</span>, which represents general properties
+that are shared by all Swing components.
+Two of the direct subclasses of <span class="classname">JComponent</span>
+themselves have subclasses. The classes <span class="classname">JTextArea</span> and
+<span class="classname">JTextField</span>, which have certain behaviors in common, are grouped
+together as subclasses of <span class="classname">JTextComponent</span>.
+Similarly <span class="classname">JButton</span> and <span class="classname">JToggleButton</span>
+are subclasses of <span class="classname">JAbstractButton</span>, which represents
+properties common to both buttons and checkboxes.  (<span class="classname">JComboBox</span>,
+by the way, is the Swing class that represents pop-up menus.)
+</p>
+
+
+<p>Just from this brief discussion, perhaps you can see how GUI programming can
+make effective use of object-oriented design. In fact, GUI's, with their
+"visible objects," are probably a major factor contributing to the popularity
+of OOP.</p>
+
+
+<p>Programming with GUI components and events is one of the most interesting
+aspects of Java. However, we will spend several chapters on the basics before
+returning to this topic in <a href="../c6/index.html">Chapter&nbsp;6</a>.</p>
+
+
+    
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s5.html">Previous Section</a> |
+           <a href="s7.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

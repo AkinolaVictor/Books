@@ -1,0 +1,18 @@
+<html><head><title>Left Frame</title>
+<script type="text/javascript">
+    function focus_on_me(){
+	document.bgColor="pink";   // Current doc is the left frame
+	window.status="focus leftframe";
+    }
+    function defocus_me(){
+	parent.left.document.bgColor="yellow";   // Another way to reference
+	window.status="focus rightframe";    // See the status bar
+    }
+</script>
+</head>
+<body onFocus="focus_on_me()"     // Event handlers
+    onBlur="defocus_me()"
+     bgColor="lightgreen">
+<image src="signs.jpg">
+</body>
+</html>

@@ -1,0 +1,191 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Excercises for Chapter 11</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Programming Exercises for Chapter 11</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> several exercises for Chapter 11
+        in <a href="../index.html">Introduction to Programming Using Java</a>.  For each exercise, a link to
+        a possible solution is provided.   Each solution includes a discussion of how a programmer might approach the
+        problem and interesting points raised by the problem or its solution, as well as complete source
+        code of the solution.</p>
+<hr>
+<h3 class="exercise">Exercise 11.1:</h3>
+<p>The sample program <span class="sourceref"><a href="../source/DirectoryList.java">DirectoryList.java</a></span>,
+given as an example in <a href="../c11/s2.html#IO.2.2">Subsection&nbsp;11.2.2</a>, will print a list of files in a directory
+specified by the user. But some of the files in that directory might themselves
+be directories. And the subdirectories can themselves contain directories. And
+so on. Write a modified version of <span class="code">DirectoryList</span> that will list all
+the files in a directory and all its subdirectories, to any level of nesting.
+You will need a <b>recursive</b> subroutine to do the listing. The subroutine should
+have a parameter of type <span class="classname">File</span>. You will need the constructor from the
+<span class="classname">File</span> class that has the form</p>
+
+<pre>public File( File dir, String fileName )
+   // Constructs the File object representing a file
+   // named fileName in the directory specified by dir.</pre>
+
+<p align="right">
+<a href="ex1-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 11.2:</h3>
+<p>Write a program that will
+count the number of lines in each file that is specified on the command line.
+Assume that the files are text files. Note that multiple files can be
+specified, as in:</p>
+
+<pre>java  LineCounts  file1.txt  file2.txt  file3.txt</pre>
+
+<p>Write each file name, along with the number of lines in that file, to standard
+output. If an error occurs while trying to read from one of the files, you
+should print an error message for that file, but you should still process all
+the remaining files. Do not use
+<span class="classname">TextIO</span> to process the files; use a <span class="classname">Scanner</span>, a
+<span class="classname">BufferedReader</span>, or a <span class="classname">TextReader</span>
+to process each file.</p>
+
+<p align="right">
+<a href="ex2-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 11.3:</h3>
+<p>For this exercise, you
+will write a network server program. The program is a simple file server that
+makes a collection of files available for transmission to clients. When the
+server starts up, it needs to know the name of the directory that contains the
+collection of files. This information can be provided as a command-line
+argument. You can assume that the directory contains only regular files (that
+is, it does not contain any sub-directories). You can also assume that all the
+files are text files.</p>
+
+<p>When a client connects to the server, the server first reads a one-line
+command from the client. The command can be the string "<span class="code">index</span>". In this case,
+the server responds by sending a list of names of all the files that are
+available on the server. Or the command can be of the form "<span class="code">get&nbsp;&lt;filename&gt;</span>",
+where <span class="code">&lt;filename&gt;</span> is a file name. The server checks whether the requested file
+actually exists. If so, it first sends the word "ok" as a message to the
+client. Then it sends the contents of the file and closes the connection.
+Otherwise, it sends the word "error" to the client and closes the
+connection.</p>
+
+<p>Write a subroutine to handle each request. See the <span class="code">DirectoryList</span>
+example in <a href="../c11/s2.html#IO.2.2">Subsection&nbsp;11.2.2</a> for help with the problem of
+getting the list of files in the directory.</p>
+
+<p align="right">
+<a href="ex3-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 11.4:</h3>
+<p>Write a client program
+for the server from <a href="../c11/ex3-ans.html">Exercise&nbsp;11.3</a>. Design a
+user interface that will let the user do at least two things: (1)&nbsp;Get a list of
+files that are available on the server and display the list on standard output; and
+(2)&nbsp;Get a copy of a specified file from the server and save it to a local file (on
+the computer where the client is running).</p>
+
+<p align="right">
+<a href="ex4-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 11.5:</h3>
+<p>The sample program <span class="sourceref"><a href="../source/PhoneDirectoryFileDemo.java">PhoneDirectoryFileDemo.java</a></span>,
+from <a href="../c11/s3.html#IO.3.2">Subsection&nbsp;11.3.2</a>,
+stores name/number pairs for a simple phone book in a text file in the user's home
+directory.  Modify that program so that is uses an XML format for the data.
+The only significant changes that you will have to make are to the parts of
+the program that read and write the data file.  Use the DOM to read the
+data, as discussed in <a href="../c11/s5.html#IO.5.3">Subsection&nbsp;11.5.3</a>.  You can use the XML format
+illustrated in the following sample phone directory file:</p>
+
+<pre>&lt;?xml version="1.0"?&gt;
+&lt;phone_directory&gt;
+  &lt;entry name='barney' number='890-1203'/&gt;
+  &lt;entry name='fred' number='555-9923'/&gt;
+&lt;/phone_directory&gt;</pre>
+
+<p>(This is just an easy exercise in simple XML processing; as before, the
+program in this exercise is not meant to be a useful phone directory program.)</p>
+
+<p align="right">
+<a href="ex5-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 11.6:</h3>
+<p>The sample program <span class="sourceref"><a href="../source/Checkers.java">Checkers.java</a></span> from
+<a href="../c7/s5.html#arrays.5.3">Subsection&nbsp;7.5.3</a> lets two players play checkers.  It would be nice if, in the
+middle of a game, the state of the game could be saved to a file.  Later, the file
+could be read back into the file to restore the game and allow the players to
+continue.  Add the ability to save and load files to the checkers program.
+Design a simple text-based format for the files.  Here is a picture of my
+solution to this exercise, just after a file has been loaded into the program:</p>
+
+<p align="center">
+<img src="CheckersWithFiles.png" width="" height="" alt="Checkers program window."></p>
+
+<p>Note: The original checkers program could be run as either an applet or a stand-alone
+application. Since the new version uses files, however, it can only be run
+as an application.  An applet running in a web browser is not allowed to access
+files.</p>
+
+<p>It's a little tricky to completely restore the state of a game.  The program
+has a variable <span class="code">board</span> of type <span class="classname">CheckersData</span> that
+stores the current contents of the board, and it has a variable <span class="code">currentPlayer</span>
+of type <span class="ptype">int</span> that indicates whether Red or Black is currently moving.
+This data must be stored in the file when a file is saved.  When a file is read
+into the program, you should read the data into two local variables
+<span class="code">newBoard</span> of type <span class="classname">CheckersData</span> and
+<span class="code">newCurrentPlayer</span> of type <span class="ptype">int</span>.  Once you have
+successfully read all the data from the file, you can use the following
+code to set up the program state correctly.  This code assumes that you
+have introduced two new variables <span class="code">saveButton</span> and <span class="code">loadButton</span>
+of type <span class="classname">JButton</span> to represent the "Save Game" and "Load Game" buttons:</p>
+
+<pre>board = newBoard;  // Set up game with data read from file.
+currentPlayer = newCurrentPlayer;
+legalMoves = board.getLegalMoves(currentPlayer);
+selectedRow = -1;
+gameInProgress = true;
+newGameButton.setEnabled(false);
+loadButton.setEnabled(false);
+saveButton.setEnabled(true);
+resignButton.setEnabled(true);
+if (currentPlayer == CheckersData.RED)
+   message.setText("Game loaded -- it's RED's move.");
+else
+   message.setText("Game loaded -- it's BLACK's move.");
+repaint();</pre>
+
+<p>(Note, by the way, that I used a <span class="classname">TextReader</span> to read
+the data from the file into my program.  <span class="classname">TextReader</span> is
+a non-standard class introduced in <a href="../c11/s1.html#IO.1.4">Subsection&nbsp;11.1.4</a> and
+defined in the file <span class="sourceref"><a href="../source/TextReader.java">TextReader.java</a></span>.  How to read the
+data in a file depends, of course, on the format that you have chosen
+for the data.)</p>
+
+<p align="right">
+<a href="ex6-ans.html">See the Solution</a>
+</p>
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

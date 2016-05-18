@@ -1,0 +1,38 @@
+<html><head><title>Testing for a Social Security Number</title>
+   <script type="text/javascript">
+	function okSocial(sform){
+		var regex=/^\d{3}-?\d\d-?\d{4}$/;
+		if ( regex.test(sform.ssn.value) == false) {
+			alert("Social Security number invalid!");
+			sform.ssn.focus();
+			return false;
+		}
+		if ( sform.ssn.value == ""){
+			alert("Please enter your Social Security number.");
+			sform.ssn.focus();
+			return false;
+		}
+		return true;
+	}
+   </script>
+</head>
+<body>
+   	<big>
+	<div align="center">
+	<form name="snnTest" 
+		method=post 
+		action="/cgi-bin/testing" 
+		onSubmit="return okSocial(this)" >
+		Enter your Social Security number: xxx-xx-xxxx
+		<p>
+		<input type="text"
+		        name="ssn"
+		         size=11>
+		<p>
+		<input type="submit" value="Submit">
+		<input type="reset">
+	</form>
+     </big>
+     </div>
+</body>
+</html>

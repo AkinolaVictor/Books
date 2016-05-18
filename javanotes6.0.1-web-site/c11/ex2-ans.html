@@ -1,0 +1,197 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 2, Chapter 11</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 11.2</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 11.2:</h3>
+<p>Write a program that will
+count the number of lines in each file that is specified on the command line.
+Assume that the files are text files. Note that multiple files can be
+specified, as in:</p>
+
+<pre>java  LineCounts  file1.txt  file2.txt  file3.txt</pre>
+
+<p>Write each file name, along with the number of lines in that file, to standard
+output. If an error occurs while trying to read from one of the files, you
+should print an error message for that file, but you should still process all
+the remaining files. Do not use
+<span class="classname">TextIO</span> to process the files; use a <span class="classname">Scanner</span>, a
+<span class="classname">BufferedReader</span>, or a <span class="classname">TextReader</span>
+to process each file.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>The <span class="code">main()</span> routine for this program is a simple for loop that
+processes the command-line arguments. Each argument is supposed to be the name
+of a file. The loop just prints the file name and calls a subroutine that
+counts the number of lines in the file and outputs the result:</p>
+
+
+<pre>for (int i = 0; i &lt; args.length; i++) {
+   System.out.print(args[i] + ": ");
+   countLines(args[i]);
+}</pre>
+
+
+<p>The <span class="code">countLines()</span> subroutine will catch any errors that occur when
+it tries to access the file. If an error occurs, it will output an error
+message instead of the number of lines. Since the error is handled in the
+subroutine, it won't crash the program or stop the <span class="code">main()</span> routine from
+going on to process any remaining files.</p>
+
+
+<p>The <span class="code">countLines()</span> subroutine can be written using either a
+<span class="classname">TextReader</span>, a <span class="classname">BufferedReader</span>,
+or a <span class="classname">Scanner</span> to read lines from the file; each of these
+classes has a simple method for reading a complete line of text from the file.
+(An alternative approach would read individual characters from the file and
+count the number of end-of-line markers.  Unfortunately, ends-of-line can be
+marked by any of the strings "\n", "\r", or "\r\n" and that would add to the
+difficulty of the task.  The line reading methods in <span class="classname">TextReader</span>, 
+<span class="classname">BufferedReader</span>, and <span class="classname">Scanner</span> will
+work no matter which end-of-line marker is used.)</p>
+
+<p>In my solution, I use a <span class="classname">BufferedReader</span>.
+The <span class="code">countLines()</span> method creates a <span class="classname">BufferedReader</span> stream to
+read from the file. It then calls the <span class="code">readLine()</span> routine from the
+<span class="classname">BufferedReader</span> class to read lines of text from the file, until the end of
+the file is encountered.  For a <span class="classname">BufferedReader</span>, the
+end-of-file can be recognized when <span class="code">readLine()</span> returns <span class="code">null</span>.  
+The method counts each line as it reads it. In the end, the
+value of the counter is the number of lines in the file. The subroutine writes
+this value to standard output. All this is done in <span class="code">try..catch</span>
+statements so that an error can be handled if it occurs. It's pretty
+straightforward. The complete solution is given below.</p>
+   
+
+<p>One note about the command line for calling this program. If you are
+using UNIX, including Mac OS or Linux, you can take advantage of something called "wildcards" in
+the command-line arguments. For example, if you say, "<span class="code">java LineCounts *.txt</span>",
+the "*" is a wildcard. The operating system will expand "*.txt" into a list of
+all the files in the current directory that end in ".txt". Similarly, "*xx*"
+expands into a list of all file names that contain "xx", and "fil*dat" expands
+into the list of file names that begin with "fil" and end with "dat". The "*"
+matches any number of characters in the file name, including zero characters.
+This expansion is done before your program sees the command-line arguments, so
+you don't have to worry about it in your program.
+Typing the command "<span class="code">java LineCounts *.txt</span>" would be exactly equivalent
+to typing something like "<span class="code">java LineCounts file1.txt file2.txt
+file3.txt</span>". This type of expansion happens for any command in UNIX, not
+just for the "java" command.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">import java.io.*;
+
+/**
+ * This program reports the number of lines in each of the files
+ * that are specified as command line arguments.  The files are
+ * assumed to be text files.  If a file does not exist, or if
+ * some error occurs when the attempt is made to read the file,
+ * then an error message is printed (but the other files are
+ * still processed). 
+*/
+public class LineCounts {
+
+
+   /**
+    * The main() routine simply gets the file names from the
+    * command line and calls the countLines() routine to process
+    * each name.  Since any errors are handled in the countLines()
+    * routine, the main program will continue after an error occurs
+    * while trying to process one of the files.
+    */       
+   public static void main(String[] args) {
+      
+      if (args.length == 0) {
+             // This program must have at least one command-line 
+             // argument to work with.
+          System.out.println("Usage:   java LineCounts &lt;file-names&gt;");
+          return;
+      }
+      
+      for (int i = 0; i &lt; args.length; i++) {
+         System.out.print(args[i] + ":  ");
+         countLines(args[i]);
+      }
+      
+   }  // end main()
+   
+   
+   /**
+    * Count the number of lines in the specified file, and
+    * print the number to standard output.  If an error occurs
+    * while processing the file, print an error message instead.
+    * Two try..catch statements are used so I can give a
+    * different error message in each case.
+    */
+   private static void countLines(String fileName) {
+          
+      BufferedReader in;  // A stream for reading from the file.
+      int lineCount;      // Number of lines in the file.
+      
+      try {
+          in = new BufferedReader( new FileReader(fileName) );
+      }
+      catch (Exception e) {
+          System.out.println("Error.  Can't open file.");
+          return;
+      }
+      
+      lineCount = 0;
+      
+      try {
+         String line = in.readLine();   // Read the first line.
+         while (line != null) {
+             lineCount++;               // Count this line.
+             line = in.readLine();      // Read the next line.
+         }
+      }
+      catch (Exception e) {
+         System.out.println("Error.   Problem with reading from file.");
+         return;
+      }
+      
+      System.out.println(lineCount + " lines");
+   
+   }  // end countLines()
+   
+
+} // end class LineCounts
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

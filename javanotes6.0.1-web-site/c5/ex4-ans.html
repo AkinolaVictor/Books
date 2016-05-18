@@ -1,0 +1,197 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 4, Chapter 5</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 5.4</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 5.4:</h3>
+<p>The <span class="classname">BlackjackHand</span>
+class from <a href="../c5/s5.html#OOP.5.1">Subsection&nbsp;5.5.1</a> is an extension of the
+<span class="classname">Hand</span> class from <a href="../c5/s4.html">Section&nbsp;5.4</a>. The instance
+methods in the <span class="classname">Hand</span> class are discussed in that section. In addition to
+those methods, <span class="classname">BlackjackHand</span> includes an instance method,
+<span class="code">getBlackjackValue()</span>, that returns the value of the hand for the game
+of Blackjack. For this exercise, you will also need the <span class="classname">Deck</span> and
+<span class="classname">Card</span> classes from <a href="../c5/s4.html">Section&nbsp;5.4</a>.</p>
+
+
+<p>A Blackjack hand typically contains from two to six cards. Write a program
+to test the <span class="classname">BlackjackHand</span> class. You should create a
+<span class="classname">BlackjackHand</span> object and a <span class="classname">Deck</span> object. Pick a random number
+between 2 and 6. Deal that many cards from the deck and add them to the hand.
+Print out all the cards in the hand, and then print out the value computed for
+the hand by <span class="code">getBlackjackValue()</span>. Repeat this as long as the user wants
+to continue.</p>
+
+
+<p>In addition to <span class="sourceref"><a href="../source/TextIO.java">TextIO.java</a></span>, your program will depend on 
+<span class="sourceref"><a href="../source/Card.java">Card.java</a></span>, <span class="sourceref"><a href="../source/Deck.java">Deck.java</a></span>, 
+<span class="sourceref"><a href="../source/Hand.java">Hand.java</a></span>, and <span class="sourceref"><a href="../source/BlackjackHand.java">BlackjackHand.java</a></span>.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+
+<p>This problem is mostly a warm-up for the <a href="../c5/ex5-ans.html">next
+one</a>. It uses objects of three different types, <span class="classname">Card</span>,
+<span class="classname">Deck</span>, and <span class="classname">BlackjackHand</span>. 
+The <span class="classname">Hand</span> class is used
+indirectly, as the superclass of <span class="classname">BlackjackHand</span>. To use these objects,
+you need to know what methods are available in each class, so you should review
+the information that you have about the classes before beginning the
+program.</p>
+
+
+<p>An algorithm for the program is</p>
+
+
+<pre>Create a deck
+repeat while user wants to continue:
+    Shuffle the deck
+    Create a new BlackjackHand
+    Decide the number of cards in the hand
+    Deal cards from the deck into the hand, and print them out
+    Display the value of the hand</pre>
+
+
+<p>Some variation is possible. You could use just one <span class="classname">BlackjackHand</span>
+object, and remove all the cards from it between hands. The <span class="classname">Hand</span> class
+includes an instance method, <span class="code">clear()</span>, that could be used for this
+purpose. Similarly, you could create a new <span class="classname">Deck</span> object each time
+through the loop. Or, you might want to use one deck and shuffle it only when
+the number of cards in the deck gets too small. You could say:</p>
+
+
+<pre>if (deck.cardsLeft() &lt; 6)  
+      deck.shuffle();</pre>
+
+
+<p>Since we always want to do at least one hand, we can use a
+<span class="code">do..while</span> statement for the loop. Putting in some variable names, we
+can refine the algorithm to</p>
+
+
+<pre>deck  =  new Deck();
+do:
+    deck.shuffle();
+    hand  =  new BlackjackHand();
+    cardsInHand = a random number between 2 and 6
+    Deal cards from deck into hand, and print them out.
+    Display hand.getBlackjackValue()
+    Ask if user wants to go again
+while user wants to go again</pre>
+
+
+<p>The number of cards in the hand is supposed to be a random number between 2
+and 6. There are five possible values. The expression
+"<span class="code">(int)(Math.random()*5)</span>" has one of the 5 possible values 0, 1, 2, 3,
+or 4. Adding 2 to the result gives one of the values 2, 3, 4, 5, or 6. So, the
+number of cards can be computed as "<span class="code">2&nbsp;+&nbsp;(int)(Math.random()*5)</span>".</p>
+
+
+<p>Once we know the number of cards, we can use a <span class="code">for</span> loop to deal
+cards into the hand, one at a time. The function call <span class="code">deck.dealCard()</span>
+gets a card from the deck. Once we have a card, we can add it to the hand with
+the subroutine call <span class="code">hand.addCard(card)</span>. This allows us to refine the
+algorithm to</p>
+
+
+<pre>deck  =  new Deck();
+do:
+    deck.shuffle();
+    hand  =  new BlackjackHand();
+    cardsInHand = 2 + (int)(Math.random()*5)
+    for i = 0 to cardsInHand:
+        card  =  deck.dealCard()
+        hand.addCard(card)
+        Display the card
+    Display hand.getBlackjackValue()
+    Ask if user wants to go again
+while user wants to go again</pre>
+
+
+<p>Alternatively, dealing the cards and displaying them could be done in
+separate <span class="code">for</span> loops.</p>
+
+
+<p>This algorithm can be translated pretty directly into the <span class="code">main()</span>
+routine of the program, which is shown below.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">/**
+ * Creates random blackjack hands, with 2 to 6 cards,
+ * and prints out the blackjack value of each hand.
+ * The user decides when to stop.
+ */
+
+public class TestBlackjackHand {
+
+   public static void main(String[] args) {
+   
+      Deck deck;            // A deck of cards.
+      Card card;            // A card dealt from the deck.
+      BlackjackHand hand;   // A hand of from two to six cards.
+      int cardsInHand;      // Number or cards in the hand.
+      boolean again;        // Set to true if user wants to continue.
+      
+      deck = new Deck();    // Create the deck.
+
+      do {
+         deck.shuffle();
+         hand = new BlackjackHand(); 
+         cardsInHand = 2 + (int)(Math.random()*5);
+         System.out.println();
+         System.out.println();
+         System.out.println("Hand contains:");
+         for ( int i = 1; i &lt;= cardsInHand; i++ ) {
+                // Get a card from the deck, print it out,
+                //   and add it to the hand.
+            card = deck.dealCard();
+            hand.addCard(card);
+            System.out.println("    " + card);
+         }
+         System.out.println("Value of hand is " + hand.getBlackjackValue());
+         System.out.println();
+         System.out.print("Again? ");
+         again = TextIO.getlnBoolean();
+      } while (again == true);
+      
+   }
+   
+}  // end class TestBlackjackHand
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

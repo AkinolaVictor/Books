@@ -1,0 +1,142 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 3, Chapter 4</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 4.3</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 4.3:</h3>
+<p>Write a function that
+simulates rolling a pair of dice until the total on the dice comes up to be a
+given number. The number that you are rolling for is a parameter to the
+function. The number of times you have to roll the dice is the return value of
+the function. The parameter should be one of the possible totals:
+2, 3, ..., 12.  The function should throw an <span class="classname">IllegalArgumentException</span>
+if this is not the case.  Use your function in a program that computes and prints the
+number of rolls it takes to get snake eyes. (Snake eyes means that the total
+showing on the dice is 2.)</p>
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>The subroutine we have to write is very similar to the program from
+<a href="../c3/ex1-ans.html">Exercise&nbsp;3.1</a>. The main difference is that
+instead of rolling until both dice come up 1, we roll until the total showing
+on the dice is equal to some specified value.    That value is given by the
+parameter to the function.  Of course, the first thing that the subroutine
+should do is check that the value of the parameter is in the range of
+possible rolls of a pair of dice; if not, it should throw an exception.
+
+I named the function <span class="code">rollFor</span>:</p>
+
+
+<pre>static int rollFor( int N ) {
+    if ( N &lt; 2 || N &gt; 12 )
+       throw new IllegalArgumentException("Impossible total for a pair of dice.");
+    int die1, die2;  // Numbers between 1 and 6 representing the dice.
+    int roll;        // Total showing on dice.
+    int rollCt;      // Number of rolls made.
+    rollCt = 0;
+    do {
+       die1 = (int)(Math.random()*6) + 1;
+       die2 = (int)(Math.random()*6) + 1;
+       roll = die1 + die2;
+       rollCt++;
+    } while ( roll != N );
+    return rollCt;
+}</pre>
+   
+
+<p>In the actual program, I've added an appropriate Javadoc comment.</p>
+   
+
+<p>You should understand the contract of this subroutine. The parameter, 
+<span class="code">N</span>, is supposed to be one of the numbers that could possibly come up on a
+pair of dice. That is, <span class="code">N</span> must be one of 2, 3, ..., or 12. If not, the
+subroutine would go into an infinite loop since the condition for continuing the
+loop, <span class="code">roll&nbsp;!=&nbsp;N</span>, will always be true.  The condition that
+<span class="code">N</span> have a valid value is a precondition for the subroutine.  If the caller of
+the function violates this precondition, the subroutine can't give any sort of
+correct answer, so it responds by throwing an exception.</p>
+
+
+<p>The <span class="code">main()</span> routine for this program is trivial. In fact, it could
+even be shortened to:</p>
+
+
+<pre>public static void main(String[] args) {
+   System.out.println("It took " + rollFor(2) + " rolls to get snake eyes.");
+}  // end main()</pre>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+<pre class="exercisecode">/**
+ * This program simulates rolling a pair of dice over and over until the
+ * total showing on the two dice is 2.  It reports the number of rolls 
+ * it took to get a 2.  (This was written to test the subroutine, rollFor.)
+ */
+public class RollFor2 {
+  
+   public static void main(String[] args) {
+      int numberOfRolls;  // Number of rolls to get a 2.
+      numberOfRolls = rollFor(2);
+      System.out.println("It took " + numberOfRolls + " rolls to get snake eyes.");
+   }  // end main()
+   
+   /**
+    * Simulates rolling a pair of dice until a given total comes up.
+    * Precondition:  The desired total is between 2 and 12, inclusive.
+    * @param N the total that we want to get on the dice
+    * @return the number of times the dice are rolled before the
+    *    desired total occurs
+    * @throws IllegalArgumentException if the parameter, N, is not a number
+    *    that could possibly come up on a pair of dice
+    */
+   static int rollFor( int N ) {
+       if ( N &lt; 2 || N &gt; 12 )
+          throw new IllegalArgumentException("Impossible total for a pair of dice.");
+       int die1, die2;  // Numbers between 1 and 6 representing the dice.
+       int roll;        // Total showing on dice.
+       int rollCt;      // Number of rolls made.
+       rollCt = 0;
+       do {
+          die1 = (int)(Math.random()*6) + 1;
+          die2 = (int)(Math.random()*6) + 1;
+          roll = die1 + die2;
+          rollCt++;
+       } while ( roll != N );
+       return rollCt;
+   }
+
+}  // end class RollFor2</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

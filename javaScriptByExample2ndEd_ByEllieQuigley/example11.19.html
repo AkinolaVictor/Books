@@ -1,0 +1,27 @@
+<html><head><title>Password Boxes</title>
+  <script type="text/javascript">
+	function verify(pw){
+		if ( pw.value == "letmein" ){
+			   alert("The chamber door will open now!");
+		}
+		else{
+			   alert("Sorry, you cannot enter. Please leave.");
+		}
+	}
+  </script>
+	</head>
+	<body bgcolor="#330033"><font color="FFCCFF">
+	<div align="center">
+	<h2> Welcome To The Secret Chamber</h2>
+	<img src="wizard.jpg"><br />
+	To enter, a password is required:<br />
+    <form name="form1" id="form1">
+	<input type="password"
+               name="passwfield"
+	       size="30"
+	       onBlur="return verify(this)"/>
+	
+	<input type=button value="Knock to verify"/>
+   </form>
+</body>
+</html>

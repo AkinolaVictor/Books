@@ -1,0 +1,65 @@
+<html><head><title>Creating a DOM Table</title><head>
+<style type="text/css">
+   table { width:380px;  
+           border: 2px solid darkgreen;
+           background-color:#8fbc8f; }
+      th { font-size: larger;
+           font-family:arial}
+      td { border: 1px solid #888878;
+           padding: 5px;
+           background-color:#fff8dc; 
+          font-family:arial;
+         }
+</style>
+<script type="text/javascript">
+        window.onload = function(){
+      // Create the table elements 
+        var Table = document.createElement("table");
+        Table.setAttribute("id","myTable");  // Create id
+        var THead = document.createElement("thead");
+        var TBody = document.createElement("tbody");
+        var Row, Cell;
+        var i, j;
+        // Declare two dimensional array of table data
+        var header=new Array( "State","Capital","Abbr");
+        var state =[ ["Arizona","Pheonix","AR"],
+                     ["California","Sacramento","CA"],
+                     ["Maine","Augusta","ME"],
+                     ["Montana","Helena","MT"],
+                     ["New York","Albany","NY"]
+                  ];
+        // Insert the created elements into Table.
+         Table.appendChild(THead);
+         Table.appendChild(TBody);
+        // Insert a row into the header
+         Row = document.createElement("tr");
+         THead.appendChild(Row);
+        // Create and insert table cells into the header row.
+         for (i=0; i<header.length; i++){
+            Cell = document.createElement("th");
+            Cell.innerHTML = header[i];
+            Row.appendChild(Cell);
+           }
+         // Insert rows and cells into bodies.
+         for (i=0; i<state.length; i++){
+             Row = document.createElement("tr");
+             TBody.appendChild(Row);
+             for (j=0; j<state[i].length; j++){
+                  Cell = document.createElement("td");
+                  Cell.innerHTML = state[i][j];
+                  Row.appendChild(Cell);
+              }
+        }
+        // Insert the table into the document tree
+       Tcontainer=document.getElementById("TableContainer");
+       Tcontainer.appendChild(Table);
+
+
+}
+</script>
+</head>
+<body>
+<div id="TableContainer"></div>
+</body>
+</html>
+

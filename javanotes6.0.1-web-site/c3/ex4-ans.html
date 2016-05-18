@@ -1,0 +1,180 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 4, Chapter 3</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 3.4</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 3.4:</h3>
+<p>Write a program that reads
+one line of input text and breaks it up into words. The words should be output
+one per line. A word is defined to be a sequence of letters. Any characters in
+the input that are not letters should be discarded. For example, if the user
+inputs the line</p>
+
+
+<pre>He said, "That's not a good idea."</pre>
+
+
+<p>then the output of the program should be</p>
+
+
+<pre>He
+said
+That
+s
+not
+a
+good
+idea</pre>
+
+
+<p>An improved version of the program would list "that's" as a single word. An
+apostrophe can be considered to be part of a word if there is a letter on each
+side of the apostrophe.</p>
+
+
+<p>To test whether a character is a letter, you might use <span class="code">(ch &gt;= 'a'
+&amp;&amp; ch &lt;= 'z') || (ch &gt;= 'A' &amp;&amp; ch &lt;= 'Z')</span>.
+However, this only works in English and similar languages. A better choice is
+to call the standard function <span class="code">Character.isLetter(ch)</span>, which returns a
+boolean value of <span class="code">true</span> if <span class="code">ch</span> is a letter and <span class="code">false</span> if
+it is not. This works for any Unicode character.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>There are many ways to approach this problem, and probably all of them are
+sort of tricky to get right. Here's a simple idea that almost works: Go through
+all the characters in the string. If the character is a letter, write it out.
+If it's not a letter, write a carriage return instead. If <span class="code">line</span> is a
+<span class="classname">String</span> variable representing the line of text, this algorithm can be
+coded as</p>
+
+
+<pre>for ( i = 0;  i &lt; line.length(); i++ ) {
+   ch = line.charAt(i);
+   if ( Character.isLetter(ch) )
+      TextIO.put(ch);
+   else
+      TextIO.putln();   
+}</pre>
+
+
+<p>This prints all the letters in a word on the same line of output. Since
+words in the string are separated by non-letter characters, and the computer
+prints a carriage return when it finds a non-letter, words in the output are
+separated by carriage returns. But there are is a problem with this: If two
+words in the string are separated by <b>several</b> non-letters, then
+there will be one or more blank lines between the words in the output. We don't
+want to output two carriage returns in a row. To avoid this, we can keep track
+of whether the previous output was a letter or a carriage return. When we find
+a non-letter, we will only output a carriage return if the previous output was
+<b>not</b> a carriage return. To keep track of the necessary
+information, I'll use a <span class="ptype">boolean</span> variable named <span class="code">didCR</span>. The
+value of this variable will be true if the previous output was a carriage
+return. I have to remember to set the value of <span class="code">didCR</span> each time I
+output something. With this modification, the code becomes:</p>
+
+
+<pre>for ( i = 0;  i &lt; line.length(); i++ ) {
+   ch = line.charAt(i);
+   if ( Character.isLetter(ch) ) {
+      TextIO.put(ch);
+      didCR = false;  // previous output was not a CR
+   }
+   else {
+      if ( didCR == false ) {  // output CR, if previous output was NOT a CR
+         TextIO.putln();
+         didCR = true;  // previous output was a CR
+      }
+   }
+}</pre>
+
+
+<p>The program requires an initial value for <span class="code">didCR</span>. In the program
+below, I output a carriage return before the <span class="code">for</span> loop and set
+<span class="code">didCR</span> to true. You should be able to follow the rest of the
+program.</p>
+
+
+<p>An entirely different approach to this problem is given by the algorithm,
+"while there are more words in the string, get the next word and print it."
+This turns out to be even harder to implement than the above.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">public class ListWordsInString {
+  
+   /*  This program will read one line of input typed by the user.
+       It will print the words from the input, one word to a line.
+       A word is defined to be a sequence of letters.  All non-letters
+       in the input are discarded.
+   */
+
+   public static void main(String[] args) {
+   
+       String line;    // A line of text, typed in by the user.
+       int i;          // Position in line, from 0 to line.length() - 1.
+       char ch;        // One of the characters in line.
+       boolean didCR;  // Set to true if the previous output was a carriage return.
+       
+       TextIO.putln("Enter a line of text.");
+       TextIO.put("? ");
+       line = TextIO.getln();
+       
+       TextIO.putln();
+       didCR = true;
+       
+       for ( i = 0;  i &lt; line.length();  i++ ) {
+          ch = line.charAt(i);
+          if ( Character.isLetter(ch) ) {
+             TextIO.put(ch);
+             didCR = false;
+          }
+          else {
+             if ( didCR == false ) {
+                TextIO.putln();
+                didCR = true;
+             }
+          }
+       }
+       
+       TextIO.putln();  // Make sure there's at least one carriage return at the end.
+         
+   }  // end main()
+
+}  // end class ListWordsInString</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

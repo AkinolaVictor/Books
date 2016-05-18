@@ -1,0 +1,44 @@
+
+<html>
+<head><title>Testing Expiration Dates</title>
+   <script type="text/javascript">
+	function validExpire(form) {
+		var now = new Date();
+		var thismonth = (now.getMonth() + 1);
+		var thisyear = now.getFullYear() ;
+		var expireYear = parseInt(form.expireYear.value);
+		var yearLength = form.expireYear.value.length;
+		var expireMonth = parseInt(form.expireMonth.value);
+		if( yearLength == 2 ){
+			expireYear += 2000;
+		}
+		if ((expireMonth < thismonth  && expireYear == thisyear) 
+			   || expireMonth > 12){
+			alert("Invalid month");
+			return false;
+		}
+		else if ( expireYear < thisyear) {
+			alert("Invalid year");
+			return false;
+		}
+		else {
+			return true;
+		}
+	}
+   </script>
+</head>
+	<body>
+	<form name="myForm" 
+		action="http://127.0.0.1/cgi-bin/env.cgi"
+		onSubmit="return validExpire(this)">
+	<p>
+	Enter the month (02 or 2): 
+	<input name="expireMonth" type="text" size=5>
+	<p>
+	Enter the year (2003 or 03): 
+	<input name="expireYear" type="text" size=5>
+	<input type="submit" value="submit">
+	<input type="reset" value="clear">
+</form>
+</body>
+</html>

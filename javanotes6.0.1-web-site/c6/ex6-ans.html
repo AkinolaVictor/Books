@@ -1,0 +1,416 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 6, Chapter 6</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 6.6</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 6.6:</h3>
+<p>For this exercise, you
+should modify the SubKiller game from <a href="../c6/s5.html#GUI1.5.4">Subsection&nbsp;6.5.4</a>. You
+can start with the existing source code, from the file 
+<span class="sourceref"><a href="../source/SubKillerPanel.java">SubKillerPanel.java</a></span>. Modify the game so it
+keeps track of the number of hits and misses and displays these quantities.
+That is, every time the depth charge blows up the sub, the number of hits goes
+up by one. Every time the depth charge falls off the bottom of the screen
+without hitting the sub, the number of misses goes up by one. There is room at
+the top of the panel to display these numbers. To do this exercise, you only
+have to add a half-dozen lines to the source code. But you have to figure out
+what they are and where to add them. To do this, you'll have to read the source
+code closely enough to understand how it works.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>You can do this exercise by adding exactly seven lines to the original
+version, <span class="sourceref"><a href="../source/SubKillerPanel.java">SubKillerPanel.java</a></span>. I used
+two lines to declare instance variables named <span class="code">hits</span> and
+<span class="code">misses</span>. These variables have to be updated whenever the depth charge
+hits the sub or falls off the bottom of the panel. These events are already
+detected by the panel, in the <span class="code">updateForNextFrame()</span> method of the
+<span class="classname">Bomb</span> class. At the point
+where this method detects that the depth charge has hit the sub, I add the
+command "<span class="code">hits++;</span>" to chalk up another hit for the user. At the point
+in where it is determined that the <span class="code">y</span>-coordinate
+of the depth charge has exceeded the height of the panel, I add the command
+"<span class="code">misses++;</span>" to record the fact that the sub has escaped destruction
+this time.</p>
+
+
+<p>The only other thing to do is to display the number of hits and misses at
+the top of the panel. This is part of drawing the picture, so it is done in the
+<span class="code">paintComponent()</span> method. The information is output with two
+<span class="code">drawString</span> commands. We need one more command to make sure that the
+strings are displayed in a color that can be seen:</p>
+
+
+<pre>g.setColor(Color.BLACK);
+g.drawString("Number of hits:   " + hits, 15, 24);
+g.drawString("Number of misses: " + misses, 15, 45);</pre>
+
+
+<p>(Using these coordinates, the messages about hits and misses were
+drawn over the "CLICK TO ACTIVATE" message, so I also move the
+"CLICK TO ACIVATE" message to the bottom of the screen.)</p>
+   
+
+<p>I made one further change when I decided that I wanted the output to be
+displayed in a larger font. I create a new font, store it in an instance
+variable named <span class="code">infoFont</span>, and use the command
+"<span class="code">g.setFont(infoFont);</span>" before drawing the strings.</p>
+   
+
+
+<p>Here is the applet version of the new program, so you can try it out:</p>
+
+<p align="center">
+<applet code="SubKillerApplet2.class" width="600" height="475" archive="SubKiller2.jar" alt=""></applet></p>
+
+
+
+<p>The source code is shown below. Changes from the original version are shown
+in red.  To use the panel class, you still have to write an
+applet class or a class that contains a main routine; I leave that to you.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">import java.awt.*;        
+import java.awt.event.*;
+import javax.swing.*;
+
+
+/**
+ * This panel implement a simple arcade game in which the user tries to blow
+ * up a "submarine" (a black oval) by dropping "depth charges" (a red disk) from 
+ * a "boat" (a blue roundrect).  The user moves the boat with the left- and 
+ * right-arrow keys and drops the depth charge with the down-arrow key.
+ * The sub moves left and right erratically along the bottom of the panel.
+ <span class="newcode">* The number of times the user hits the sub and the number of times that
+ * the user misses the sub are displayed at the top of the panel.</span>
+ */
+public class SubKillerPanel2 extends JPanel {
+   
+   private Timer timer;        // Timer that drives the animation.
+   private int width, height;  // The size of the panel -- the values are set
+                               //    the first time the paintComponent() method
+                               //    is called.  This class is not designed to
+                               //    handle changes in size; once the widht and
+                               //    height have been set, they are not changed.
+                               //    Note that width and height cannot be set
+                               //    in the constructor because the width and
+                               //    height of the panel have not been set at
+                               //    the time that the constructor is called.
+
+   private Boat boat;          // The boat, bomb, and sub objects are defined
+   private Bomb bomb;          //    by nested classes Boat, Bomb, and Submarine,
+   private Submarine sub;      //    which are defined later in this class.
+                               //    Note that the objects are created in the
+                               //    paintComponent() method, after the width
+                               //    and height of the panel are known.
+   
+   <span class="newcode">private int hits;           // The number of times the user has hit the sub.
+   private int misses;         // The number of times the user has missed the sub.
+   
+   private Font infoFont = new Font("Monospaced", Font.PLAIN, 16);
+                          // A font for displaying the numbers of hits and misses.</span>
+   
+   
+   /**
+    * The constructor sets the background color of the panel, creates the
+    * timer, and adds a KeyListener, FocusListener, and MouseListener to the
+    * panel.  These listeners, as well as the ActionListener for the timer
+    * are defined by anonymous inner classes.  The timer will run only
+    * when the panel has the input focus.
+    */
+   public SubKillerPanel2() {
+
+      setBackground(Color.GREEN);
+
+      ActionListener action = new ActionListener() {
+               // Defines the action taken each time the timer fires.
+         public void actionPerformed(ActionEvent evt) {
+            if (boat != null) {
+               boat.updateForNewFrame();
+               bomb.updateForNewFrame();
+               sub.updateForNewFrame();
+            }
+            repaint();
+         }
+      };
+      timer = new Timer( 30, action );  // Fires every 30 milliseconds.
+
+      addMouseListener( new MouseAdapter() {
+              // The mouse listener simply requests focus when the user
+              // clicks the panel.
+         public void mousePressed(MouseEvent evt) {
+            requestFocus();
+         }
+      } );
+
+      addFocusListener( new FocusListener() {
+             // The focus listener starts the timer when the panel gains
+             // the input focus and stops the timer when the panel loses
+             // the focus.  It also calls repaint() when these events occur.
+         public void focusGained(FocusEvent evt) {
+            timer.start();
+            repaint();
+         }
+         public void focusLost(FocusEvent evt) {
+            timer.stop();
+            repaint();
+         }
+      } );
+
+      addKeyListener( new KeyAdapter() {
+             // The key listener responds to keyPressed events on the panel. Only
+             // the left-, right-, and down-arrow keys have any effect.  The left- and
+             // right-arrow keys move the boat while down-arrow releases the bomb.
+         public void keyPressed(KeyEvent evt) {
+            int code = evt.getKeyCode();  // which key was pressed.
+            if (code == KeyEvent.VK_LEFT) {
+                 // Move the boat left.  (If this moves the boat out of the frame, its
+                 // position will be adjusted in the boat.updateForNewFrame() method.)
+               boat.centerX -= 15;
+            }
+            else if (code == KeyEvent.VK_RIGHT) {  
+                 // Move the boat right.  (If this moves boat out of the frame, its
+                 // position will be adjusted in the boat.updateForNewFrame() method.)
+               boat.centerX += 15;
+            }
+            else if (code == KeyEvent.VK_DOWN) {
+                  // Start the bomb falling, if it is not already falling.
+               if ( bomb.isFalling == false )
+                  bomb.isFalling = true;
+            }
+         }
+      } );
+
+   } // end constructor
+   
+   
+   /**
+    * The paintComponent() method draws the current state of the game.  It
+    * draws a gray or cyan border around the panel to indicate whether or not
+    * the panel has the input focus.  It draws the boat, sub, and bomb by
+    * calling their respective draw() method.
+    * 
+    */
+   public void paintComponent(Graphics g) {
+      
+      super.paintComponent(g);  // Fill panel with background color, green.
+      
+      if (boat == null) {
+            // The first time that paintComponent is called, it assigns
+            // values to the instance variables.
+         width = getWidth();
+         height = getHeight();
+         boat = new Boat();
+         sub = new Submarine();
+         bomb = new Bomb();
+      }
+      
+      if (hasFocus())
+         g.setColor(Color.CYAN);
+      else {
+         g.setColor(Color.RED);
+         g.drawString("CLICK TO ACTIVATE", 20, height - 10);
+         g.setColor(Color.GRAY);
+      }
+      g.drawRect(0,0,width-1,height-1);
+      g.drawRect(1,1,width-3,height-3);
+      g.drawRect(2,2,width-5,height-5);
+      
+      boat.draw(g);
+      sub.draw(g);
+      bomb.draw(g);
+      
+      <span class="newcode">g.setFont(infoFont);
+      g.setColor(Color.BLACK);
+      g.drawString("Number of hits:   " + hits, 15, 24);
+      g.drawString("Number of misses: " + misses, 15, 45);</span>
+      
+   } // end drawFrame()
+   
+
+   /**
+    * This nested class defines the boat.  Note that its constructor cannot
+    * be called until the width of the panel is known!
+    */
+   private class Boat {
+      int centerX, centerY;  // Current position of the center of the boat.
+      Boat() { // Constructor centers the boat horizontally, 80 pixels from top.
+         centerX = width/2;
+         centerY = 80;
+      }
+      void updateForNewFrame() { // Makes sure boat has not moved off screen.
+         if (centerX &lt; 0)
+            centerX = 0;
+         else if (centerX &gt; width)
+            centerX = width;
+      }
+      void draw(Graphics g) {  // Draws the boat at its current location.
+         g.setColor(Color.blue);
+         g.fillRoundRect(centerX - 40, centerY - 20, 80, 40, 20, 20);
+      }
+   } // end nested class Boat
+   
+   
+   /**
+    * This nested class defines the bomb. 
+    */
+   private class Bomb {
+      int centerX, centerY; // Current position of the center of the bomb.
+      boolean isFalling;    // If true, the bomb is falling; if false, it
+                            // is attached to the boat.
+      Bomb() { // Constructor creates a bomb that is initially attached to boat.
+         isFalling = false;
+      }
+      void updateForNewFrame() {  // If bomb is falling, take appropriate action.
+         if (isFalling) {
+            if (centerY &gt; height) {
+                  // Bomb has missed the submarine.  It is returned to its
+                  // intial state, with isFalling equal to false.
+               isFalling = false;
+               <span class="newcode">misses++;   // USER HAS MISSED THE SUB</span>
+            }
+            else if (Math.abs(centerX - sub.centerX) &lt;= 36 &amp;&amp;
+                  Math.abs(centerY - sub.centerY) &lt;= 21) {
+                  // Bomb has hit the submarine.  The submarine
+                  // enters the "isExploding" state.
+               sub.isExploding = true;
+               sub.explosionFrameNumber = 1;
+               isFalling = false;  // Bomb reappears on the boat.
+               <span class="newcode">hits++;   // USER HAS HIT THE SUB</span>
+            }
+            else {
+                 // If the bomb has not fallen off the panel or hit the
+                 // sub, then it is moved down 10 pixels.
+               centerY += 10;
+            }
+         }
+      }
+      void draw(Graphics g) {  // Draw the bomb.
+         if ( ! isFalling ) {  // If not falling, set centerX and CenterY
+                              // to show the bomb on the bottom of the boat.
+            centerX = boat.centerX;
+            centerY = boat.centerY + 23;
+         }
+         g.setColor(Color.RED);
+         g.fillOval(centerX - 8, centerY - 8, 16, 16);
+      }
+   } // end nested class Bomb
+   
+   
+   /**
+    * This nested class defines the sub.  Note that its constructor cannot
+    * be called until the width of the panel is known!
+    */
+   private class Submarine {
+      int centerX, centerY; // Current position of the center of the sub.
+      boolean isMovingLeft; // Tells whether the sub is moving left or right
+      boolean isExploding;  // Set to true when the sub is hit by the bomb.
+      int explosionFrameNumber;  // If the sub is exploding, this is the number
+                                 //   of frames since the explosion started.
+      Submarine() {  // Create the sub at a random location 40 pixels from bottom.
+         centerX = (int)(width*Math.random());
+         centerY = height - 40;
+         isExploding = false;
+         isMovingLeft = (Math.random() &lt; 0.5);
+      }
+      void updateForNewFrame() { // Move sub or increase explosionFrameNumber.
+         if (isExploding) {
+               // If the sub is exploding, add 1 to explosionFrameNumber.
+               // When the number reaches 15, the explosion ends and the
+               // sub reappears in a random position.
+            explosionFrameNumber++;
+            if (explosionFrameNumber == 15) { 
+               centerX = (int)(width*Math.random());
+               centerY = height - 40;
+               isExploding = false;
+               isMovingLeft = (Math.random() &lt; 0.5);
+            }
+         }
+         else { // Move the sub.
+            if (Math.random() &lt; 0.04) {  
+                  // In one frame out of every 25, on average, the sub
+                  // reverses its direction of motion.
+               isMovingLeft = ! isMovingLeft; 
+            }
+            if (isMovingLeft) { 
+                  // Move the sub 5 pixels to the left.  If it moves off
+                  // the left edge of the panel, move it back to the left
+                  // edge and start it moving to the right.
+               centerX -= 5;  
+               if (centerX &lt;= 0) {  
+                  centerX = 0; 
+                  isMovingLeft = false; 
+               }
+            }
+            else {
+                  // Move the sub 5 pixels to the right.  If it moves off
+                  // the right edge of the panel, move it back to the right
+                  // edge and start it moving to the left.
+               centerX += 5;         
+               if (centerX &gt; width) {  
+                  centerX = width;   
+                  isMovingLeft = true; 
+               }
+            }
+         }
+      }
+      void draw(Graphics g) {  // Draw sub and, if it is exploding, the explosion.
+         g.setColor(Color.BLACK);
+         g.fillOval(centerX - 30, centerY - 15, 60, 30);
+         if (isExploding) {
+                // Draw an "explosion" that grows in size as the number of
+                // frames since the start of the explosion increases.
+            g.setColor(Color.YELLOW);
+            g.fillOval(centerX - 4*explosionFrameNumber,
+                  centerY - 2*explosionFrameNumber,
+                  8*explosionFrameNumber,
+                  4*explosionFrameNumber);
+            g.setColor(Color.RED);
+            g.fillOval(centerX - 2*explosionFrameNumber,
+                  centerY - explosionFrameNumber/2,
+                  4*explosionFrameNumber,
+                  explosionFrameNumber);
+         }
+      }
+   } // end nested class Submarine   
+   
+   
+} // end class SubKiller
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

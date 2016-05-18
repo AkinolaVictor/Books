@@ -1,0 +1,24 @@
+<html>
+<head><title>Anonymous Function</title>
+    <script type="text/javascript">
+      var greetings= function(){  // Anonymous function has no name
+	    message="Greetings to you! "; // Function definition
+	    return message;
+      }
+    </script>
+</head>
+<body>
+   <big>
+   <script type="text/javascript">
+    text=greetings;
+     document.write(text +"<br />");
+      //greetings is a variable; its value is the function definition
+
+    text=greetings();   // Call function
+     document.write(text +"<br />");
+     alert(greetings());
+</script>
+</big>
+</body>
+</html>
+<html>

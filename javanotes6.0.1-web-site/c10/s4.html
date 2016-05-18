@@ -1,0 +1,725 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 10.4 -- Programming with the Java Collection Framework</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s3.html">Previous Section</a> |
+           <a href="s5.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#generics.4.1">Symbol Tables</a>
+<br>
+<a href="#generics.4.2">Sets Inside a Map</a>
+<br>
+<a href="#generics.4.3">Using a Comparator</a>
+<br>
+<a href="#generics.4.4">Word Counting</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 10.4</h3>
+<h2 class="section_title">Programming with the Java Collection Framework</h2>
+<hr class="break">
+
+   
+
+<p>
+<span class="start"><big>I</big>n this section,</span> we'll look at some
+programming examples that use classes from the Java Collection
+Framework.  The Collection Framework is easy to use, especially
+compared to the difficulty of programming new data structures
+from scratch.</p>
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="generics.4.1">10.4.1&nbsp;&nbsp;Symbol Tables</a>
+</h3>
+
+
+<p>We begin with a straightforward but important application of maps. When a
+compiler reads the source code of a program, it encounters definitions of
+variables, subroutines, and classes. The names of these things can be used
+later in the program. The compiler has to remember the definition of each name,
+so that it can recognize the name and apply the definition when the name is
+encountered later in the program. This is a natural application for a
+<span class="classname">Map</span>. The name can be used as a key in the map. The value associated to
+the key is the definition of the name, encoded somehow as an object. A map that
+is used in this way is called a <span class="newword">symbol table</span>.</p>
+
+
+<p>In a compiler, the values in a symbol table can be quite complicated, since
+the compiler has to deal with names for various sorts of things, and it needs a
+different type of information for each different type of name. We will keep
+things simple by looking at a symbol table in another context. Suppose that we
+want a program that can evaluate expressions entered by the user, and suppose
+that the expressions can contain variables, in addition to operators, numbers,
+and parentheses. For this to make sense, we need some way of assigning values
+to variables. When a variable is used in an expression, we need to retrieve the
+variable's value. A symbol table can be used to store the data that we need.
+The keys for the symbol table are variable names. The value associated with a
+key is the value of that variable, which is of type <span class="ptype">double</span>.
+The symbol table will be an object of type <span class="classname">Map&lt;String,Double&gt;</span>.
+(Remember that primitive types such as <span class="ptype">double</span> can't be used
+as type parameters; a wrapper class such as <span class="classname">Double</span> must
+be used instead.  See <a href="../c10/s1.html#generics.1.7">Subsection&nbsp;10.1.7</a>.)</p>
+
+
+<p>To demonstrate the idea, we'll use a rather simple-minded program in which
+the user types commands such as:</p>
+
+
+<pre>let x = 3 + 12
+print 2 + 2
+print 10*x +17
+let rate = 0.06
+print 1000*(1+rate)</pre>
+
+
+<p>The program is an interpreter for a very simple language.
+The only two commands that the program understands are "print" and "let".
+When a "print" command is executed, the computer evaluates the expression and
+displays the value. If the expression contains a variable, the computer has to
+look up the value of that variable in the symbol table. A "let" command is used
+to give a value to a variable. The computer has to store the value of the
+variable in the symbol table. (Note: The "variables" I am talking about here
+are not variables in the Java program. The Java program is executing a sort of
+program typed in by the user. I am talking about variables in the user's
+program. The user gets to make up variable names, so there is no way for the
+Java program to know in advance what the variables will be.)</p>
+
+
+<p>In <a href="../c9/s5.html#recursion.5.2">Subsection&nbsp;9.5.2</a>, we saw how to write a program,
+<span class="sourceref"><a href="../source/SimpleParser2.java">SimpleParser2.java</a></span>, that can
+evaluate expressions that do not contain variables. Here, I will discuss
+another example program, 
+<span class="sourceref"><a href="../source/SimpleInterpreter.java">SimpleInterpreter.java</a></span>, that is based on the older
+program. I will only talk about the parts that are relevant to the symbol
+table. Here is an applet that simulates the program:</p>
+
+
+
+<p align="center">
+<applet code="SimpleInterpreterConsole.class" width="600" height="320" archive="SimpleInterpreter.jar" alt="(Applet 'SimpleParser5Console' should be displayed here.)"></applet></p>
+
+
+
+<p>The program uses a <span class="classname">HashMap</span> as the symbol table. A <span class="classname">TreeMap</span>
+could also be used, but since the program does not need to access the variables
+in alphabetical order, we don't need to have the keys stored in sorted order.
+The symbol table in the program is represented by a variable named
+<span class="code">symbolTable</span> of type <span class="classname">HashMap&lt;String,Double&gt;</span>.
+At the beginning of the program, the symbol table object is created with the command:
+</p>
+
+
+<pre>symbolTable = new HashMap&lt;String,Double&gt;();</pre>
+
+
+<p>This creates a map that initially contains no key/value associations.
+To execute a "let" command, the program uses the symbol table's <span class="code">put()</span> method to
+associate a value with the variable name. Suppose that the name of the variable
+is given by a <span class="classname">String</span>, <span class="code">varName</span>, and the value
+of the variable is stored in a variable <span class="code">val</span> of type <span class="ptype">double</span>.
+The following command would then set the value associated with the variable
+in the symbol table:</p>
+
+
+<pre>symbolTable.put( varName, val );</pre>
+   
+
+<p>In the program <span class="sourceref"><a href="../source/SimpleInterpreter.java">SimpleInterpreter.java</a></span>, you'll find this in the
+method named <span class="code">doLetCommand()</span>. 
+The actual value that is stored in the symbol table is an object of
+type <span class="classname">Double</span>.  We can use the <span class="ptype">double</span>
+value <span class="code">val</span> in the call to <span class="code">put</span> because Java does
+an automatic conversion of type <span class="ptype">double</span> to <span class="classname">Double</span>
+when necessary.  The <span class="ptype">double</span> value is "wrapped" in an object
+of type <span class="classname">Double</span>, so that, in effect, the above statement
+is equivalent to</p>
+   
+
+<pre>symbolTable.put( varName, new Double(val) );</pre>
+
+
+
+<p>Just for fun, I decided to pre-define two
+variables named "pi" and "e" whose values are the usual mathematical constants
+π and <i>e</i>. In Java, the values of these constants are given by
+<span class="code">Math.PI</span> and <span class="code">Math.E</span>. To make these variables available to the
+user of the program, they are added to the symbol table with the commands:</p>
+
+
+<pre>symbolTable.put( "pi", Math.PI );
+symbolTable.put( "e", Math.E );</pre>
+
+
+<p>When the program encounters a variable while evaluating an expression, the 
+symbol table's <span class="code">get()</span> method is used to retrieve its value.
+The function <span class="code">symbolTable.get(varName)</span> returns a value of
+type <span class="classname">Double</span>.  It is possible that the return value
+is <span class="code">null</span>; this will happen if no value has ever been assigned
+to <span class="code">varName</span> in the symbol table.  It's important to check this
+possibility.  It indicates that the user is trying to use a variable that
+the user has not defined.  The program considers this to be an error,
+so the processing looks something like this:</p>
+
+
+<pre>Double val = symbolTable.get(varName);
+if (val == null) {
+   ... // Throw an exception:  Undefined variable.
+}
+// The value associated to varName is val.doubleValue()</pre>
+
+
+<p>You will find this code, more or less, in a
+method named <span class="code">primaryValue()</span> in <span class="sourceref"><a href="../source/SimpleInterpreter.java">SimpleInterpreter.java</a></span>.</p>
+
+
+<p>As you can see from this example, <span class="classname">Maps</span> are very useful
+and are really quite easy to use.</p>
+
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="generics.4.2">10.4.2&nbsp;&nbsp;Sets Inside a Map</a>
+</h3>
+
+
+<p>The objects in a collection or map can be of any type. They can even be
+collections. Here's an example where it's natural to store sets as the value 
+objects in a map.</p>
+
+
+<p>Consider the problem of making an index for a book. An index consists of a
+list of terms that appear in the book. Next to each term is a list of the pages
+on which that term appears. To represent an index in a program, we need a data
+structure that can hold a list of terms, along with a list of pages for each
+term. Adding new data should be easy and efficient. When it's time to print the
+index, it should be easy to access the terms in alphabetical order. There are
+many ways this could be done, but I'd like to use Java's generic data
+structures and let them do as much of the work as possible.</p>
+
+
+<p>We can think of an index as a <span class="classname">Map</span> that associates a list of page
+references to each term. The terms are keys, and the value associated with a
+given key is the list of page references for that term. A <span class="classname">Map</span> can be
+either a <span class="classname">TreeMap</span> or a <span class="classname">HashMap</span>, 
+but only a <span class="classname">TreeMap</span>
+will make it easy to access the terms in sorted order. The value associated
+with a term is a list of page references. How can we represent such a value? If
+you think about it, you see that it's not really a list in the sense of Java's
+generic classes. If you look in any index, you'll see that a list of page
+references has no duplicates, so it's really a set rather than a list.
+Furthermore, the page references for a given term are always printed in
+increasing order, so we want a sorted set. This means that we should use a
+<span class="classname">TreeSet</span> to represent each list of page references. The values that we
+really want to put in this set are of type <span class="ptype">int</span>, but once again we have
+to deal with the fact that generic data structures can only hold objects, so we
+must use the wrapper class, <span class="classname">Integer</span>, for the objects in the set.</p>
+
+
+<p>To summarize, an index will be represented by a <span class="classname">TreeMap</span>. The keys
+for the map will be terms, which are of type <span class="classname">String</span>. The values in the
+map will be <span class="classname">TreeSets</span> that contain <span class="classname">Integers</span> 
+that are the page numbers of every page on which a term appears.  The parameterized type that
+we should use for the sets is <span class="classname">TreeSet&lt;Integer&gt;</span>.
+For the <span class="classname">TreeMap</span> that represents the index as a whole,
+the key type is <span class="classname">String</span> and the value type is
+<span class="classname">TreeSet&lt;Integer&gt;</span>.  This means that the index has type
+</p>
+   
+
+<pre>TreeMap&lt; String, TreeSet&lt;Integer&gt; &gt;</pre>
+   
+
+<p>This is just the usual <span class="classname">TreeMap&lt;K,V&gt;</span> with
+<span class="code">K=String</span> and <span class="code">V=TreeSet&lt;Integer&gt;</span>.  A type name
+as complicated as this one can look intimidating (especially, I think,
+when used in a constructor with the <span class="code">new</span> operator), but if you think about
+the data structure that we want to represent, it makes sense.  Given a
+little time and practice, you can get used to types like this one.</p>
+
+
+<p>To make an index, we need to start with an empty <span class="classname">TreeMap</span> and look
+through the book, inserting every reference that we want to be in the index
+into the map.  We then need to print out the data from the
+map. Let's leave aside the question of how we find the references
+to put in the index, and just look at how the <span class="classname">TreeMap</span> is used. 
+It can be created with the commands:</p>
+
+
+<pre>TreeMap&lt;String,TreeSet&lt;Integer&gt;&gt;  index;         // Declare the variable.
+index = new TreeMap&lt;String,TreeSet&lt;Integer&gt;&gt;();  // Create the map object.</pre>
+
+
+<p>Now, suppose that we find a reference to some <span class="code">term</span>
+(of type <span class="classname">String</span>) on some <span class="code">pageNum</span>
+(of type <span class="ptype">int</span>). We need to
+insert this information into the index. To do this, we should look up the term
+in the index, using <span class="code">index.get(term)</span>. The return value is either
+<span class="code">null</span> or is the set of page references that we have previously found for the
+term. If the return value is <span class="code">null</span>, then this is the first page
+reference for the term, so we should add the term to the index, with a new set
+that contains the page reference we've just found. If the return value is
+non-<span class="code">null</span>, we already have a set of page references, and we should just add the new page
+reference to the set. Here is a subroutine that does this:</p>
+
+
+<pre>
+/**
+ * Add a page reference to the index.
+ */
+void addReference(String term, int pageNum) {
+   TreeSet&lt;Integer&gt; references; // The set of page references that we
+                                //    have so far for the term.
+   references = index.get(term);
+   if (references == null){
+          // This is the first reference that we have
+          // found for the term.  Make a new set containing
+          // the page number and add it to the index, with
+          // the term as the key.
+       TreeSet&lt;Integer&gt; firstRef = new TreeSet&lt;Integer&gt;();
+       firstRef.add( pageNum );  // pageNum is "autoboxed" to give an Integer!
+       index.put(term,firstRef);
+   }
+   else {
+         // references is the set of page references
+         // that we have found previously for the term.
+         // Add the new page number to that set.  This
+         // set is already associated to term in the index.
+      references.add( pageNum ); // pageNum is "autoboxed" to give an Integer!
+   }
+}</pre>
+
+
+<p>The only other thing we need to do with the index is print it out.  We want
+to iterate through the index and print out each term, together with the
+set of page references for that term.  We could use an <span class="classname">Iterator</span>
+to iterate through the index, but it's much easier to do it with a for-each
+loop.  The loop will iterate through the entry set of the map (see <a href="../c10/s3.html#generics.3.2">Subsection&nbsp;10.3.2</a>).
+Each "entry" is a key/value pair from the map; the key is a term and the value
+is the associated set of page references.
+Inside the for-each loop, we will have to print out a set of <span class="classname">Integers</span>,
+which can also be done with a for-each loop.  So, here we have an example of
+nested for-each loops.  (You might try to do the same thing entirely with
+iterators; doing so should give you some appreciation for the for-each loop!)
+Here is a subroutine that will print the index:
+</p>
+
+
+
+<pre>/**
+ * Print each entry in the index.
+ */
+void printIndex() {
+   
+    for ( Map.Entry&lt;String,TreeSet&lt;Integer&gt;&gt;  entry :  index.entrySet() ) {
+    
+        String term = entry.getKey();
+        TreeSet&lt;Integer&gt; pageSet = entry.getValue();
+   
+        System.out.print( term + " " );
+        for ( int page : pageSet ) {
+            System.out.print( page + " " );
+        }
+        System.out.println();
+   
+    }
+   
+}</pre>
+   
+
+<p>The hardest thing here is the name of the type <span class="code">Map.Entry&lt;String,TreeSet&lt;Integer&gt;&gt;</span>!
+Remember that the entries in a map of type <span class="classname">Map&lt;K,V&gt;</span> have
+type <span class="classname">Map.Entry&lt;K,V&gt;</span>, so the type parameters in
+<span class="code">Map.Entry&lt;String,TreeSet&lt;Integer&gt;&gt;</span> are simply copied
+from the declaration of <span class="code">index</span>.  Another thing to note is that
+I used a loop control variable, <span class="code">page</span>, of type <span class="classname">int</span> 
+to iterate through the elements of <span class="code">pageSet</span>,
+which is of type <span class="classname">TreeSet&lt;Integer&gt;</span>.  You might have expected
+<span class="code">page</span> to be of type <span class="classname">Integer</span>, not <span class="ptype">int</span>,
+and in fact <span class="classname">Integer</span> would have worked just as well here.
+However, <span class="ptype">int</span> does work, because of automatic type conversion:
+it's legal to assign a value of type <span class="classname">Integer</span> to a variable
+of type <span class="ptype">int</span>.  (To be honest, I was sort of surprised that this worked
+when I first tried it!)</p>
+
+
+<p>This is not a lot of code, considering the complexity of the operations.
+I have not written a complete indexing program, but  <a href="../c10/ex5-ans.html">Exercise&nbsp;10.5</a>
+presents a problem that is almost identical to the indexing problem.</p>
+   
+
+<hr class="break">
+   
+
+<p>By the way, in this example, I would prefer to print each list of page references with
+the integers separated by commas.  In the
+<span class="code">printIndex()</span> method given above, they are separated by spaces.
+There is an extra space after the last page reference in the list, but it does
+no harm since it's invisible in the printout.  An extra comma at the end
+of the list would be annoying.  The lists should be in a form such as "<span class="code">17,42,105</span>" and
+not "<span class="code">17,42,105,</span>".  The problem is, how to leave that last comma out.
+Unfortunately, this is not so easy to do
+with a for-each loop.  It might be fun to look at a few ways to solve this problem.
+One alternative is to use an iterator:</p>
+
+
+<pre>Iterator&lt;Integer&gt;  iter = pageSet.iterator();
+int firstPage = iter.next();  // In this program, we know the set has at least
+                              // one element.  Note also that this statement
+                              // uses an auto-conversion from Integer to int.
+System.out.print(firstPage);
+while ( iter.hasNext() ) {
+   int nextPage = iter.next();
+   System.out.print("," + nextPage);
+}</pre>
+   
+
+<p>Another possibility is to use the fact that the <span class="classname">TreeSet</span> class
+defines a method <span class="code">first()</span> that returns the first item in the set, that is,
+the one that is smallest in terms of the ordering that is used to compare items in the set.
+(It also defines the method <span class="code">last()</span>.)  We can solve our problem using
+this method and a for-each loop:</p>
+   
+
+<pre>int firstPage = pageSet.first();  // Find out the first page number in the set.
+for ( int page : pageSet ) {
+   if ( page != firstPage )
+      System.out.print(","); // Output comma only if this is not the first page.
+   System.out.print(page);
+}</pre>
+   
+
+<p>Finally, here is an elegant solution using a subset view of the tree.
+(See <a href="../c10/s3.html#generics.3.2">Subsection&nbsp;10.3.2</a>.)  Actually, this solution might be
+a bit extreme:</p>
+
+
+<pre>int firstPage = pageSet.first();  // Get first item, which we know exists.
+System.out.print(firstPage);      // Print first item, with no comma.
+for ( int page : pageSet.tailSet( firstPage+1 ) ) // Process remaining items.
+   System.out.print( "," + page );</pre>
+   
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="generics.4.3">10.4.3&nbsp;&nbsp;Using a Comparator</a>
+</h3>
+
+
+<p>There is a potential problem with our solution to the indexing problem. If
+the terms in the index can contain both upper case and lower case letters, then
+the terms will <b>not</b> be in alphabetical order! The ordering on <span class="classname">String</span> is
+not alphabetical. It is based on the Unicode codes of the characters in the
+string. The codes for all the upper case letters are less than the codes for
+the lower case letters. So, for example, terms beginning with "Z" come before
+terms beginning with "a". If the terms are restricted to use lower case letters
+only (or upper case only), then the ordering would be alphabetical. But suppose
+that we allow both upper and lower case, and that we insist on alphabetical
+order. In that case, our index can't use the usual ordering for
+<span class="code">Strings</span>. Fortunately, it's possible to specify a different method to
+be used for comparing the keys of a map. This is a typical use for a
+<span class="classname">Comparator</span>.</p>
+
+
+<p>Recall that an object that implements the interface <span class="classname">Comparator&lt;T&gt;</span> 
+defines a method for comparing two objects of type&nbsp;<span class="classname">T</span>:</p>
+
+
+<pre>public int compare( T obj1, T obj2 )</pre>
+
+
+<p>This method  should return an integer
+that is positive, zero, or negative, depending on whether <span class="code">obj1</span> is less
+than, equal to, or greater than <span class="code">obj2</span>. We need an object of type
+<span class="classname">Comparator&lt;String&gt;</span>
+that will compare two <span class="classname">Strings</span> based on alphabetical order. The easiest
+way to do this is to convert the <span class="classname">Strings</span>
+to lower case and use the default comparison on the lower case
+<span class="classname">Strings</span>. The following class defines such a comparator:</p>
+
+
+<pre>
+/**
+ * Represents a Comparator that can be used for comparing two
+ * strings based on alphabetical order.
+ */
+class AlphabeticalOrder implements Comparator&lt;String&gt; {
+   public int compare(String str1, String str2) {
+      String s1 = str1.toLowerCase();  // Convert to lower case.
+      String s2 = str2.toLowerCase();
+      return s1.compareTo(s2);  // Compare lower-case Strings.
+   }
+}
+</pre>
+
+
+<p>To solve our indexing problem, we just need to tell our index to use an
+object of type <span class="classname">AlphabeticalOrder</span> for comparing keys. This is done by
+providing a <span class="classname">Comparator</span> object as a parameter to the constructor. We
+just have to create the <span class="code">index</span> in our example with the command:</p>
+
+
+<pre>index = new TreeMap&lt;String,TreeSet&lt;Integer&gt;&gt;( new AlphabeticalOrder() );</pre>
+
+
+<p>This does work.  However, I've been concealing one technicality. Suppose, for example,
+that the indexing program calls <span class="code">addReference("aardvark",56)</span> and that it later
+calls <span class="code">addReference("Aardvark",102)</span>. The words "aardvark" and
+"Aardvark" differ only in that one of them begins with an upper case letter;
+when converted to lower case, they are the same.
+When we insert them into the index, do they count as two different terms or as
+one term? The answer depends on the way that a <span class="classname">TreeMap</span> tests objects
+for equality. In fact, <span class="classname">TreeMaps</span> and <span class="classname">TreeSets</span> always use a
+<span class="classname">Comparator</span> object or a <span class="code">compareTo</span> method to test for equality.
+They do <b>not</b> use the <span class="code">equals()</span> method for this purpose.
+The <span class="classname">Comparator</span> that is
+used for the <span class="classname">TreeMap</span> in this example returns the value zero when it is
+used to compare "aardvark" and "Aardvark", so the <span class="classname">TreeMap</span> considers
+them to be the same. Page references to "aardvark" and "Aardvark" are combined
+into a single list, and when the index is printed it will contain only the first
+version of the word that was encountered by the program.  This is probably 
+acceptable behavior in this example. If
+not, some other technique must be used to sort the terms into alphabetical
+order.</p>
+
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="generics.4.4">10.4.4&nbsp;&nbsp;Word Counting</a>
+</h3>
+
+
+<p>The final example in this section also deals with storing information
+about words.  The problem here is to make a list of all the words that
+occur in a file, along with the number of times that each word occurs.
+The file will be selected by the user.  The output of the program
+will consist of two lists.  Each list contains all the words from
+the file, along with the number of times that the word occurred.
+One list is sorted alphabetically, and the other is sorted according to 
+the number of occurrences, with the most common words at the top and 
+the least common at the bottom.  The problem here is a generalization
+of <a href="../c7/ex6-ans.html">Exercise&nbsp;7.6</a>, which asked you to make an
+alphabetical list of all the words in a file, without counting
+the number of occurrences.</p>
+   
+
+<p>My word counting program can be found in the file <span class="sourceref"><a href="../source/WordCount.java">WordCount.java</a></span>.
+As the program reads an input file, it must keep track of how many times it
+encounters each word. We could simply throw all the words, with duplicates,
+into a list and count them later. But that would require a lot of extra storage space and
+would not be very efficient. A better method is to keep a counter for each
+word. The first time the word is encountered, the counter is initialized to&nbsp;1.
+On subsequent encounters, the counter is incremented. To keep track of the data
+for one word, the program uses a simple class that holds a word and the counter
+for that word. The class is a <span class="code">static</span> nested class:</p>
+
+
+<pre>/**
+ * Represents the data we need about a word:  the word and
+ * the number of times it has been encountered.
+ */
+private static class WordData { 
+   String word;
+   int count;
+   WordData(String w) {
+         // Constructor for creating a WordData object when
+         // we encounter a new word.
+      word = w;
+      count = 1;  // The initial value of count is 1.
+   }
+} // end class WordData</pre>
+
+
+<p>The program has to store all the <span class="classname">WordData</span> objects in some sort of
+data structure. We want to be able to add new words efficiently. Given a word,
+we need to check whether a <span class="classname">WordData</span> object already exists for that
+word, and if it does, we need to find that object so that we can increment its
+counter. A <span class="classname">Map</span> can be used to implement these operations. Given a
+word, we want to look up a <span class="classname">WordData</span> object in the <span class="classname">Map</span>. This
+means that the word is the <b>key</b>, and the <span class="classname">WordData</span> object is
+the <b>value.</b> (It might seem strange that the key is also one of the
+instance variables in the value object, but in fact this is probably the most
+common situation: The value object contains all the information about some
+entity, and the key is one of those pieces of information; the partial information
+in the key is used to retrieve the full information in the value object.) After reading the
+file, we want to output the words in alphabetical order, so we should use a
+<span class="classname">TreeMap</span> rather than a <span class="classname">HashMap</span>. This program converts all
+words to lower case so that the default ordering on <span class="code">Strings</span> will put
+the words in alphabetical order.  The data is stored in a variable named
+<span class="code">words</span> of type <span class="classname">TreeMap&lt;String,WordData&gt;</span>.
+The variable is declared and the map object is created with the statement:</p>
+   
+
+<pre>TreeMap&lt;String,WordData&gt; words = new TreeMap&lt;String,WordData&gt;();</pre>
+
+
+<p>When the program reads a word from a file, it calls <span class="code">words.get(word)</span>
+to find out if that word is already in the map. If the return value is
+<span class="code">null</span>, then this is the first time the word has been encountered, so a
+new <span class="classname">WordData</span> object is created and inserted into the map with the
+command <span class="code">words.put(word, new WordData(word))</span>. If
+<span class="code">words.get(word)</span> is not <span class="code">null</span>, 
+then its value is the <span class="classname">WordData</span>
+object for this word, and the program only has to increment the counter in that
+object.  The program uses a method <span class="code">readNextWord()</span>, which was
+given in <a href="../c7/ex6-ans.html">Exercise&nbsp;7.6</a>, to read one word from the file.
+This method returns <span class="code">null</span> when the end of the file is encountered.
+Here is the complete code segment that reads the file and collects the
+data:</p>
+
+
+<pre>String word = readNextWord();
+while (word != null) {
+   word = word.toLowerCase();  // convert word to lower case
+   WordData data = words.get(word);
+   if (data == null)
+      words.put( word, new WordData(word) );
+   else
+      data.count++;
+   word = readNextWord();
+}</pre>
+
+
+<p>After reading the words and printing them out in alphabetical order, the
+program has to sort the words by frequency and print them again. To do
+the sorting using a generic algorithm, I defined a simple <span class="classname">Comparator</span> class
+for comparing two word objects according to their frequency counts.  The
+class implements the interface <span class="classname">Comparator&lt;WordData&gt;</span>,
+since it will be used to compare two objects of type <span class="classname">WordData</span>:</p>
+
+
+<pre>/**
+ * A comparator class for comparing objects of type WordData according to 
+ * their counts.  This is used for sorting the list of words by frequency.
+ */
+private static class CountCompare implements Comparator&lt;WordData&gt; {
+   public int compare(WordData data1, WordData data2) {
+      return data2.count - data1.count;
+          // The return value is positive if data1.count &lt; data2.count.
+          // I.E., data1 comes after data2 in the ordering if there
+          // were FEWER occurrences of data1.word than of data2.word.
+          // The words are sorted according to decreasing counts.
+   }
+} // end class CountCompare</pre>
+
+
+<p>Given this class, we can sort the <span class="classname">WordData</span> objects according to
+frequency by first copying them into a list and then using the generic method
+<span class="code">Collections.sort(list,comparator)</span>. 
+The <span class="classname">WordData</span> objects that we need are
+the values in the map, <span class="code">words</span>.  Recall that <span class="code">words.values()</span> returns a
+<span class="classname">Collection</span> that contains all the values from the map. The constructor for the
+<span class="classname">ArrayList</span> class lets you specify a collection to be copied into the
+list when it is created. So, we can use the following commands to create a list of type 
+<span class="classname">ArrayList&lt;WordData&gt;</span> containing the word
+data and then sort that list according to frequency:</p>
+
+
+<pre>ArrayList&lt;WordData&gt; wordsByFrequency = new ArrayList&lt;WordData&gt;( words.values() );
+Collections.sort( wordsByFrequency, new CountCompare() );</pre>
+
+
+<p>You should notice that these two lines replace a lot of code! It requires
+some practice to think in terms of generic data structures and algorithms, but
+the payoff is significant in terms of saved time and effort.</p>
+
+
+<p>The only remaining problem is to print the data. We have
+to print the data from all the <span class="classname">WordData</span> objects twice, first in
+alphabetical order and then sorted according to frequency count. The data is in
+alphabetical order in the <span class="classname">TreeMap</span>, or more precisely, in the values of
+the <span class="classname">TreeMap</span>.  We can use a for-each loop to
+print the data in the collection <span class="code">words.values()</span>, and the words will appear
+in alphabetical order.  Another for-each loop can be used to print the
+data in the list <span class="code">wordsByFrequency</span>, and the words will be printed
+in order of decreasing frequency.  Here is the code that does it:</p>
+
+
+<pre>TextIO.putln("List of words in alphabetical order" 
+      + " (with counts in parentheses):\n");
+for ( WordData data : words.values() )
+   TextIO.putln("   " + data.word + " (" + data.count + ")");
+
+TextIO.putln("\n\nList of words by frequency of occurrence:\n");
+for ( WordData data : wordsByFrequency )
+   TextIO.putln("   " + data.word + " (" + data.count + ")");</pre>
+   
+
+<p>You can find the complete word-counting program in the file
+<span class="sourceref"><a href="../source/WordCount.java">WordCount.java</a></span>.  Note that for reading and writing
+files, it uses the file I/O capabilities of <span class="sourceref"><a href="../source/TextIO.java">TextIO.java</a></span>,
+which were discussed in <a href="../c2/s4.html#basics.4.5">Subsection&nbsp;2.4.5</a>.</p>
+   
+
+<p>By the way, if you run the WordCount program on a reasonably large file
+and take a look at the output,
+it will illustrate something about the <span class="code">Collections.sort()</span> method.
+The second list of words in the output is ordered by frequency, but if you
+look at a group of words that all have the same frequency, you will see that
+the words in that group are in alphabetical order.  The method
+<span class="code">Collections.sort()</span> was applied to sort the words by frequency,
+but before it was applied, the words were already in alphabetical order.
+When <span class="code">Collections.sort()</span> rearranged the words, it did not
+change the ordering of words that have the same frequency, so they were
+still in alphabetical order within the group of words with that frequency.  This is
+because the algorithm used by <span class="code">Collections.sort()</span> is a
+<span class="newword">stable</span> sorting algorithm.  A sorting algorithm is
+said to be stable if it satisfies the following condition:  When the algorithm
+is used to sort a list according to some property of the items in the
+list, then the sort does not change the relative order of items that
+have the same value of that property.  That is, if item&nbsp;B comes
+after item&nbsp;A in the list before the sort, and if both items have
+the same value for the property that is being used as the basis for
+sorting, then item&nbsp;B will still come after item&nbsp;A after the
+sorting has been done.  Neither SelectionSort nor QuickSort are stable
+sorting algorithms.  Insertion sort is stable, but
+is not very fast.  Merge sort, the sorting algorithm used by <span class="code">Collections.sort()</span>,
+is both stable and fast.</p>
+   
+
+<p>I hope that the programming examples in this section have convinced you
+of the usefulness of the Java Collection Framework!</p>
+   
+
+   
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s3.html">Previous Section</a> |
+           <a href="s5.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

@@ -1,0 +1,305 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 3, Chapter 6</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 6.3</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 6.3:</h3>
+<p>Write a panel that shows
+a pair of dice. When the user clicks on the panel, the dice should be rolled
+(that is, the dice should be assigned newly computed random values). Each die
+should be drawn as a square showing from 1 to 6 dots. Since you have to draw
+two dice, its a good idea to write a subroutine, "<span class="code">void drawDie(Graphics g,
+int val, int x, int y)</span>", to draw a die at the specified <span class="code">(x,y)</span>
+coordinates. The second parameter, <span class="code">val</span>, specifies the value that is
+showing on the die. Assume that the size of the panel is 100 by 100 pixels.
+Also write an applet that uses your panel as its content pane.
+Here is a working version of the applet:</p>
+
+<p align="center">
+<applet code="DiceApplet.class" width="100" height="100" archive="Dice.jar" alt=""></applet></p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>This is largely an exercise in precision drawing.</p>
+   
+
+<p>We need a subclass of <span class="code">JPanel</span> to make the panel.
+We will also need an object to respond to mouse events. As always, there are several
+ways to approach this:  Let the panel implement <span class="classname">MouseListener</span>
+and listen for events on itself, use a separate class to define the listener object,
+or use an anonymous inner class (see <a href="../c6/s4.html#GUI1.4.5">Subsection&nbsp;6.4.5</a>).  In this case, I decided
+to use an inner class.  The listener object is created and registered to listen
+for mouse events in the constructor of the main class:</p>
+   
+
+<pre>addMouseListener( new MouseAdapter() {
+    public void mousePressed(MouseEvent evt) {
+        roll();
+    }
+});</pre>
+   
+
+<p>By using <span class="classname">MouseAdapter</span> instead of
+<span class="classname">MouseListener</span> as the superclass for the listener, I
+avoid the necessity of providing empty definitions for <span class="code">mouseReleased</span>,
+<span class="code">mouseClicked</span>, <span class="code">mouseEntered</span>, and <span class="code">mouseExited</span>.
+<span class="classname">MouseAdapter</span> is discussed in <a href="../c6/s4.html#GUI1.4.5">Subsection&nbsp;6.4.5</a>.
+In the <span class="code">mousePressed()</span> method, <span class="code">roll()</span> is a method that 
+is defined in the main class; it just rolls the dice.  It would be
+reasonable to put the code for rolling the dice in <span class="code">mousePressed()</span>,
+but writing a subroutine to do it makes the program a little easier to
+modify for the next exercise. Anyway, when you can identify a
+self-contained, meaningful task to be performed, it's never a bad a idea to
+write a subroutine to do it. It will make the program more readable, if nothing
+else. My roll subroutine assigns random values to the dice and calls
+<span class="code">repaint()</span> so that the new values will be shown.</p>
+
+
+
+<p>The hardest part of this exercise is drawing the dice. I made each die 35
+pixels wide, leaving a 10 pixel border on each side and 10 pixels between the
+dice, for a total of 100 pixels.
+The top left corner of the left die is at <span class="code">(10,10)</span>, the top left
+corner of the right die is at <span class="code">(55,55)</span>. The 55 includes the 10 pixel
+border on the left, the 35 pixel width of the other die, and the 10 pixels
+between the dice. The <span class="code">paintComponent()</span>
+method calls a <span class="code">drawDie()</span> routine to draw
+each die, using the commands:</p>
+
+
+<pre>drawDie(g, die1, 10, 10);
+drawDie(g, die2, 55, 55);</pre>
+
+
+<p>where <span class="code">die1</span> is the numerical value shown on the first die and
+<span class="code">die2</span> is the numerical value of the second die.</p>
+
+
+<p>As for the <span class="code">drawDie</span> routine, there are two quite different
+algorithms that could have been used for drawing the dots. Either:</p>
+
+
+<pre>if the value shown is 1
+    draw 1 dot (in the center)
+else if the value shown is 2
+    draw 2 dots (in the top-left and bottom-right corners)
+  .
+  .
+  .
+else if the value shown is 6
+    draw 6 dots (along the left and right edges)</pre>
+
+
+<p>Or:</p>
+
+
+<pre>if the value has a dot in the top-left corner
+     draw the top-left dot
+else if the value has a dot in the top-right corner
+     draw the top-right dot
+   .
+   .
+   .
+else if the value has a dot in the bottom-right corner
+     draw the bottom-right dot</pre>
+
+
+<p>Although the first algorithm is more obvious, the second requires much less
+typing. (The first algorithm ends up using 21 <span class="code">drawOval()</span> commands,
+while the second uses only 7.) Furthermore, after drawing the dice on paper, I
+found that the conditions for testing when a given dot needs to be drawn are
+simpler than I expected. For example, the values that need a dot in the
+top-left position are all the values greater than 1. The algorithm leads to my
+<span class="code">drawDice()</span> routine:</p>
+
+
+<pre>/**
+ * Draw a die with upper left corner at (x,y).  The die is
+ * 35 by 35 pixels in size.  The val parameter gives the
+ * value showing on the die (that is, the number of dots).
+ */
+private void drawDie(Graphics g, int val, int x, int y) {
+     g.setColor(Color.white);
+     g.fillRect(x, y, 35, 35);
+     g.setColor(Color.black);
+     g.drawRect(x, y, 34, 34);
+     if (val &gt; 1)  // upper left dot
+        g.fillOval(x+3, y+3, 9, 9);
+     if (val &gt; 3)  // upper right dot
+        g.fillOval(x+23, y+3, 9, 9);
+     if (val == 6) // middle left dot
+        g.fillOval(x+3, y+13, 9, 9);
+     if (val % 2 == 1) // middle dot (for odd-numbered val's)
+        g.fillOval(x+13, y+13, 9, 9);
+     if (val == 6) // middle right dot
+        g.fillOval(x+23, y+13, 9, 9);
+     if (val &gt; 3)  // bottom left dot
+        g.fillOval(x+3, y+23, 9, 9);
+     if (val &gt; 1)  // bottom right dot
+        g.fillOval(x+23, y+23, 9,9);
+}</pre>
+
+
+<p>It took some care to figure out the numbers to use in the <span class="code">fillOval</span>
+commands. The individual dots have a diameter of 9 pixels. There are three rows
+of dots, which have a combined height of 27 pixels. That leaves 35 minus 27, or 8
+pixels for spacing. I use 3 pixels between the dots and the edge of the die,
+and 1 pixel between rows. This puts the tops of the rows at 3, 3+9+1, and
+3+9+1+9+1, that is, at 3, 13, and 23. The columns use the same numbers. (If you
+believe that I got all this right the first time, I won't disillusion you!)</p>
+
+
+<p>The <span class="code">paintComponent</span> method just draws the two dice and the border around
+the panel</p>
+
+
+<pre>public void paintComponent(Graphics g) {
+   super.paintComponent(g);  // fill with background color.
+   g.setColor( Color.BLUE );
+   g.drawRect(0,0,99,99);
+   g.drawRect(1,1,97,97);
+   drawDie(g, die1, 10, 10);
+   drawDie(g, die2, 55, 55);
+}</pre>
+   
+   
+
+<p>It is easy to write an applet class that uses a <span class="classname">DicePanel</span>
+as its content pane, and I do not give the source code for it here.
+(Look at the bottom of the solution to <a href="../c6/ex2-ans.html">Exercise&nbsp;6.2</a> if you 
+are still not sure how to do it.)</p>
+
+
+<p>One more small remark on the solution:  The constructor of the <span class="classname">DicePanel</span>
+class sets the preferred size of the panel to be 100-by-100 pixels, using the command:</p>
+   
+
+<pre>setPreferredSize( new Dimension(100,100) );</pre>
+
+
+<p>When a panel is used in an applet, this has no effect since the size of the
+applet is set in the &lt;applet&gt; tag in the HTML source code of the web page
+on which the applet appears.  However, if a <span class="classname">DicePanel</span> is
+used in some context where its preferred size is taken into account, it's
+important for it to have a correctly set preferred size.</p>
+   
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+/**
+ * Shows a pair of dice that are rolled when the user clicks on the
+ * applet.  It is assumed that the panel is 100-by-100 pixels.
+ */
+public class DicePanel extends JPanel {
+ 
+    private int die1 = 4;  // The values shown on the dice.
+    private int die2 = 3;
+ 
+    /**
+     *  The constructor adds a mouse listener to the panel.  The listener
+     *  will roll the dice when the user clicks the panel.  Also, the
+     *  background color and the preferred size of the panel are set.
+     */
+    public DicePanel() {
+       setPreferredSize( new Dimension(100,100) );
+       setBackground( new Color(200,200,255) );  // light blue
+       addMouseListener( new MouseAdapter() {
+           public void mousePressed(MouseEvent evt) {
+               roll();
+           }
+       });
+    }
+    
+    /**
+     * Draw a die with upper left corner at (x,y).  The die is
+     * 35 by 35 pixels in size.  The val parameter gives the
+     * value showing on the die (that is, the number of dots).
+     */
+    private void drawDie(Graphics g, int val, int x, int y) {
+       g.setColor(Color.white);
+       g.fillRect(x, y, 35, 35);
+       g.setColor(Color.black);
+       g.drawRect(x, y, 34, 34);
+       if (val &gt; 1)  // upper left dot
+          g.fillOval(x+3, y+3, 9, 9);
+       if (val &gt; 3)  // upper right dot
+          g.fillOval(x+23, y+3, 9, 9);
+       if (val == 6) // middle left dot
+          g.fillOval(x+3, y+13, 9, 9);
+       if (val % 2 == 1) // middle dot (for odd-numbered val's)
+          g.fillOval(x+13, y+13, 9, 9);
+       if (val == 6) // middle right dot
+          g.fillOval(x+23, y+13, 9, 9);
+       if (val &gt; 3)  // bottom left dot
+          g.fillOval(x+3, y+23, 9, 9);
+       if (val &gt; 1)  // bottom right dot
+          g.fillOval(x+23, y+23, 9,9);
+    }
+ 
+ 
+    /**
+     * Roll the dice by randomizing their values.  Tell the
+     * system to repaint the applet, to show the new values.
+     */
+    void roll() {
+       die1 = (int)(Math.random()*6) + 1;
+       die2 = (int)(Math.random()*6) + 1;
+       repaint();
+    }
+    
+    
+    /**
+     * The paintComponent method just draws the two dice and draws
+     * a one-pixel wide blue border around the panel.
+     */
+    public void paintComponent(Graphics g) {
+       super.paintComponent(g);  // fill with background color.
+       g.setColor( Color.BLUE );
+       g.drawRect(0,0,99,99);
+       g.drawRect(1,1,97,97);
+       drawDie(g, die1, 10, 10);
+       drawDie(g, die2, 55, 55);
+    }
+ 
+} // end class DicePanel
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

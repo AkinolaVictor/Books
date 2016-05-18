@@ -1,0 +1,854 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 11.1 -- Streams, Readers, and Writers</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s2.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#IO.1.1">Character and Byte Streams</a>
+<br>
+<a href="#IO.1.2">PrintWriter</a>
+<br>
+<a href="#IO.1.3">Data Streams</a>
+<br>
+<a href="#IO.1.4">Reading Text</a>
+<br>
+<a href="#IO.1.5">The Scanner Class</a>
+<br>
+<a href="#IO.1.6">Serialized Object I/O</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 11.1</h3>
+<h2 class="section_title">Streams, Readers, and Writers</h2>
+<hr class="break">
+   
+
+<p>
+<span class="start"><big>W</big>ithout the ability</span> to interact with the rest of
+the world, a program would be useless. The interaction of a program with the
+rest of the world is referred to as <span class="newword">input/output</span>
+or I/O. Historically, one of the hardest parts of programming language design
+has been coming up with good facilities for doing input and output. A computer
+can be connected to many different types of input and output devices. If a
+programming language had to deal with each type of device as a special case,
+the complexity would be overwhelming. One of the major achievements in the
+history of programming has been to come up with good abstractions for
+representing I/O devices.  In Java, the main I/O abstractions are called 
+<span class="newword">streams</span>.  Other I/O abstractions, such as "files" and "channels"
+also exist, but in this section we will look only at streams.  Every stream
+represents either a source of input or a destination to which output can be
+sent.</p>
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="IO.1.1">11.1.1&nbsp;&nbsp;Character and Byte Streams</a>
+</h3>
+
+
+<p>When dealing with input/output, you have to keep in mind that there are two
+broad categories of data: machine-formatted data and human-readable text.
+Machine-formatted data is represented in binary form, the same way that data is represented
+inside the computer, that is, as strings of zeros and ones. Human-readable data
+is in the form of characters. When you read a number such as <span class="code">3.141592654</span>, you
+are reading a sequence of characters and interpreting them as a number. The
+same number would be represented in the computer as a bit-string that you would
+find unrecognizable.</p>
+
+
+<p>To deal with the two broad categories of data representation, Java has two
+broad categories of streams: <span class="newword">byte streams</span> for
+machine-formatted data and <span class="newword">character streams</span> for
+human-readable data. There are many predefined classes that represent streams
+of each type.</p>
+
+
+<p>An object that <b>outputs</b> data to a byte stream belongs to one of the
+subclasses of the abstract class <span class="classname">OutputStream</span>. Objects that
+<b>read</b> data from a byte stream belong to subclasses of
+<span class="classname">InputStream</span>. If you write numbers to an 
+<span class="classname">OutputStream</span>, you
+won't be able to read the resulting data yourself. But the data can be read
+back into the computer with an <span class="classname">InputStream</span>. The writing and reading of
+the data will be very efficient, since there is no translation involved: the
+bits that are used to represent the data inside the computer are simply copied
+to and from the streams.</p>
+
+
+<p>For reading and writing human-readable character data, the main classes are the abstract classes
+<span class="classname">Reader</span> and <span class="classname">Writer</span>.  All character stream classes are
+subclasses of one of these. If a number is to be written to a <span class="classname">Writer</span>
+stream, the computer must translate it into a human-readable sequence of
+characters that represents that number. Reading a number from a <span class="classname">Reader</span>
+stream into a numeric variable also involves a translation, from a character
+sequence into the appropriate bit string. (Even if the data you are working
+with consists of characters in the first place, such as words from a text
+editor, there might still be some translation. Characters are stored in the
+computer as 16-bit Unicode values. For people who use Western alphabets,
+character data is generally stored in files in ASCII code, which uses only 8
+bits per character. The <span class="classname">Reader</span> and <span class="classname">Writer</span> 
+classes take care
+of this translation, and can also handle non-western alphabets in countries
+that use them.)</p>
+
+
+<p>Byte streams can be useful for direct machine-to-machine communication,
+and they can sometimes be useful for storing data in files, especially when
+large amounts of data need to be stored efficiently, such as in large databases.
+However, binary data is <i>fragile</i> in the sense that its meaning is not self-evident.
+When faced with a long series of zeros and ones, you have to know what information it
+is meant to represent and how that information is encoded before you will be able
+to interpret it.  Of course, the same is true to some extent for character data,
+which is itself coded into binary form.  But the binary encoding of character data
+has been standardized and is well understood, and data expressed in character form
+can be made meaningful to human readers.  The current trend seems to be towards
+increased use of character data, represented in a way that will make its meaning
+as self-evident as possible.  We'll look at one way this is done in <a href="../c11/s5.html">Section&nbsp;11.5</a>.
+</p>
+   
+
+<p>I should note that the original version of Java did not have character
+streams, and that for ASCII-encoded character data, byte streams are largely
+interchangeable with character streams. In fact, the standard input and output
+streams, <span class="code">System.in</span> and <span class="code">System.out</span>, are byte streams rather
+than character streams. However, you should use
+<span class="classname">Readers</span> and <span class="classname">Writers</span> rather than 
+<span class="classname">InputStreams</span> and
+<span class="classname">OutputStreams</span> when working with character data,
+even when working with the standard ASCII character set.
+</p>
+
+
+<p>The standard stream classes discussed in this section are defined in the
+package <span class="code">java.io</span>, along with several supporting classes. You must
+<span class="code">import</span> the classes from this package if you want to use them in your
+program. That means either importing individual classes or
+putting the directive "<span class="code">import java.io.*;</span>" at the
+beginning of your source file. Streams are necessary for working
+with files and for doing communication over a network. They can also be used
+for communication between two concurrently running threads, and there are
+stream classes for reading and writing data stored in the computer's
+memory.</p>
+
+
+<p>The beauty of the stream abstraction is that it is as easy to write data to
+a file or to send data over a network as it is to print information on the
+screen.</p>
+
+
+<hr class="break">
+
+
+<p>The basic I/O classes <span class="classname">Reader</span>, <span class="classname">Writer</span>,
+<span class="classname">InputStream</span>, and <span class="classname">OutputStream</span> provide 
+only very primitive I/O
+operations. For example, the <span class="classname">InputStream</span> class declares the instance
+method</p>
+
+
+<pre>public int read() throws IOException</pre>
+
+
+<p>for reading one byte of data, as a number in the range 0 to 255, from an input
+stream. If the end of the input stream is encountered, the <span class="code">read()</span>
+method will return the value -1 instead. If some error occurs during the input
+attempt, an exception of type
+<span class="classname">IOException</span> is thrown. Since <span class="classname">IOException</span> is an
+exception class that requires mandatory exception-handling, this means that you
+can't use the <span class="code">read()</span> method except inside a <span class="code">try</span> statement or
+in a subroutine that is itself declared with a "<span class="code">throws IOException</span>"
+clause. (Mandatory exception handling was covered in
+<a href="../c8/s3.html#robustness.3.3">Subsection&nbsp;8.3.3</a>.)</p>
+
+
+<p>The <span class="classname">InputStream</span> class also defines methods for reading multiple
+bytes of data in one step into an array of <span class="code">bytes</span>. However,
+<span class="classname">InputStream</span> provides no convenient methods for reading other types of
+data, such as <span class="ptype">int</span> or <span class="ptype">double</span>, from a stream. This is not a
+problem because you'll never use an object of type <span class="classname">InputStream</span> itself.
+Instead, you'll use subclasses of <span class="classname">InputStream</span> that add more convenient
+input methods to <span class="classname">InputStream's</span> rather primitive capabilities.
+Similarly, the <span class="classname">OutputStream</span> class defines a primitive output method
+for writing one byte of data to an output stream. The method is defined as:</p>
+
+
+<pre>
+<span class="code">public void write(int b) throws IOException</span>
+</pre>
+
+
+<p>The parameter is of type <span class="ptype">int</span> rather than <span class="ptype">byte</span>, but the 
+parameter value is type-cast to type <span class="ptype">byte</span> before it is written; this
+effectively discards all but the eight low order bits of&nbsp;<span class="code">b</span>.
+Again, in practice, you will almost always use higher-level output
+operations defined in some subclass of <span class="classname">OutputStream</span>.</p>
+
+
+<p>The <span class="classname">Reader</span> and <span class="classname">Writer</span> classes 
+provide the analogous low-level <span class="code">read</span> and <span class="code">write</span> methods.
+As in the byte stream classes,
+the parameter of the <span class="code">write(c)</span> method in <span class="classname">Writer</span>
+and the return value of the <span class="code">read()</span> method in <span class="classname">Reader</span>
+are of type <span class="ptype">int</span>, but in these character-oriented classes, the I/O operations 
+read and write characters rather than bytes.  The return value of <span class="code">read()</span>
+is <span class="code">-1</span> if the end of the input stream has been reached.  Otherwise,
+the return value must be type-cast to type <span class="ptype">char</span> to obtain the
+character that was read. In practice, you will ordinarily use higher level
+I/O operations provided by sub-classes of
+<span class="classname">Reader</span> and <span class="classname">Writer</span>, as discussed below.</p>
+
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="IO.1.2">11.1.2&nbsp;&nbsp;PrintWriter</a>
+</h3>
+
+
+<p>One of the neat things about Java's I/O package is that it lets you add
+capabilities to a stream by "wrapping" it in another stream object that
+provides those capabilities. The wrapper object is also a stream, so you can
+read from or write to it -- but you can do so using fancier operations than
+those available for basic streams.</p>
+
+
+<p>For example, <span class="classname">PrintWriter</span> is a subclass of 
+<span class="classname">Writer</span> that
+provides convenient methods for outputting human-readable character
+representations of all of Java's basic data types. If you have an object
+belonging to the <span class="classname">Writer</span> class, or any of its subclasses, and you would
+like to use <span class="classname">PrintWriter</span> methods to output data to that
+<span class="classname">Writer</span>, all you have to do is wrap the <span class="classname">Writer</span> in a
+<span class="classname">PrintWriter</span> object. You do this by constructing a new
+<span class="classname">PrintWriter</span> object, using the <span class="classname">Writer</span> as input to the
+constructor. For example, if <span class="code">charSink</span> is of type <span class="classname">Writer</span>, then
+you could say</p>
+
+
+<pre>PrintWriter printableCharSink = new PrintWriter(charSink);</pre>
+
+
+<p>When you output data to <span class="code">printableCharSink</span>, using
+the high-level output methods in <span class="classname">PrintWriter</span>, that data will go to
+exactly the same place as data written directly to <span class="code">charSink</span>. You've
+just provided a better interface to the same output stream. For example, this
+allows you to use <span class="classname">PrintWriter</span> methods to send data to a file or over a
+network connection.</p>
+
+
+<p>For the record, if <span class="code">out</span> is a variable of type <span class="classname">PrintWriter</span>,
+then the following methods are defined:</p>
+   
+
+<ul>
+
+<li>
+<span class="codedef">out.print(x)</span>  --  prints the value of <span class="code">x</span>, represented in
+the form of a string of characters, to the output stream; <span class="code">x</span> can be an expression
+of any type, including both primitive types and object types.  An object is converted to
+string form using its <span class="code">toString()</span> method.  A <span class="code">null</span> value is
+represented by the string "null".</li>
+
+<li>
+<span class="codedef">out.println()</span>  --  outputs an end-of-line to the output stream.</li>
+
+<li>
+<span class="codedef">out.println(x)</span>  --  outputs the value of <span class="code">x</span>, followed
+by an end-of-line; this is equivalent to <span class="code">out.print(x)</span> followed by
+<span class="code">out.println()</span>.</li>
+
+<li>
+<span class="codedef">out.printf(formatString, x1, x2, ...)</span>  --  does formated output
+of <span class="code">x1</span>, <span class="code">x2</span>,&nbsp;<span class="code">...</span> to the output stream.  The
+first parameter is a string that specifies the format of the output.  There can
+be any number of additional parameters, of any type, but the types of the
+parameters must match the formatting directives in the format string. Formatted output
+for the standard output stream, <span class="code">System.out</span>, was introduced in 
+<a href="../c2/s4.html#basics.4.4">Subsection&nbsp;2.4.4</a>, and <span class="code">out.printf</span> has the same functionality.</li>
+
+<li>
+<span class="codedef">out.flush()</span>  --  ensures that characters that have been written
+with the above methods are actually sent to the output destination.  In some cases,
+notably when writing to a file or to the network, it might be necessary to call this
+method to force the output to actually appear at the destination.</li>
+
+</ul>
+
+
+<p>Note that none of these methods will ever throw an <span class="classname">IOException</span>.
+Instead, the <span class="classname">PrintWriter</span> class includes the method</p>
+
+
+<pre>public boolean checkError()</pre>
+
+
+<p>which will return <span class="code">true</span> if any error has been encountered while writing to
+the stream. The <span class="classname">PrintWriter</span> class 
+catches any <span class="classname">IOExceptions</span>
+internally, and sets the value of an internal error flag if one occurs. The
+<span class="code">checkError()</span> method can be used to check the error flag. This allows
+you to use <span class="classname">PrintWriter</span> methods without worrying about catching
+exceptions. On the other hand, to write a fully robust program, you should call
+<span class="code">checkError()</span> to test for possible errors whenever you use a
+<span class="classname">PrintWriter</span>.</p>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="IO.1.3">11.1.3&nbsp;&nbsp;Data Streams</a>
+</h3>
+
+
+<p>When you use a <span class="classname">PrintWriter</span> to output data to a stream, the
+data is converted into the sequence of characters that represents the data in
+human-readable form. Suppose you want to output the data in byte-oriented,
+machine-formatted form? The <span class="code">java.io</span> package includes a byte-stream
+class, <span class="classname">DataOutputStream</span> that can be used for writing data values to
+streams in internal, binary-number format. <span class="classname">DataOutputStream</span> bears the
+same relationship to <span class="classname">OutputStream</span> that <span class="classname">PrintWriter</span> bears to
+<span class="classname">Writer</span>. That is, whereas <span class="classname">OutputStream</span> only has methods for
+outputting bytes, <span class="classname">DataOutputStream</span> has methods 
+<span class="code">writeDouble(double&nbsp;x)</span> for outputting values of type 
+<span class="ptype">double</span>, <span class="code">writeInt(int&nbsp;x)</span>
+for outputting values of type <span class="ptype">int</span>, and so on. Furthermore, you can
+wrap any <span class="classname">OutputStream</span> in a <span class="classname">DataOutputStream</span> so that you can
+use the higher level output methods on it. For example, if <span class="code">byteSink</span> is
+of type <span class="classname">OutputStream</span>, you could say</p>
+
+
+<pre>DataOutputStream dataSink = new DataOutputStream(byteSink);</pre>
+
+
+<p>to wrap <span class="code">byteSink</span> in a <span class="classname">DataOutputStream</span>,
+<span class="code">dataSink</span>.</p>
+
+
+<p>For input of machine-readable data, such as that created by writing to a
+<span class="classname">DataOutputStream</span>, <span class="code">java.io</span> provides the class
+<span class="classname">DataInputStream</span>. You can wrap any <span class="classname">InputStream</span> in a
+<span class="classname">DataInputStream</span> object to provide it with the ability to read data of
+various types from the byte-stream. The methods in the <span class="classname">DataInputStream</span>
+for reading binary data are called <span class="code">readDouble()</span>, <span class="code">readInt()</span>,
+and so on. Data written by a <span class="classname">DataOutputStream</span> is guaranteed to be in a
+format that can be read by a <span class="classname">DataInputStream</span>. This is true even if the
+data stream is created on one type of computer and read on another type of
+computer. The cross-platform compatibility of binary data is a major aspect of
+Java's platform independence.</p>
+   
+
+<p>In some circumstances, you might need to read character data from an
+<span class="classname">InputStream</span> or write character data to an
+<span class="classname">OutputStream</span>.  This is not a problem, since characters,
+like all data, are represented as binary numbers.  However, for character data,
+it is convenient to use <span class="classname">Reader</span> and <span class="classname">Writer</span>
+instead of <span class="classname">InputStream</span> and <span class="classname">OutputStream</span>.
+To make this possible, you can <b>wrap</b> a byte stream in a character stream.
+If <span class="code">byteSource</span> is a variable of type <span class="classname">InputStream</span>
+and <span class="code">byteSink</span> is of type <span class="classname">OutputStream</span>, then
+the statements</p>
+
+
+<pre>Reader charSource = new InputStreamReader( byteSource );
+Writer charSink   = new OutputStreamWriter( byteSink );</pre>
+   
+
+<p>create character streams that can be used to read character data from and
+write character data to the byte streams.  In particular, the standard input
+stream <span class="code">System.in</span>, which is of type <span class="classname">InputStream</span>
+for historical reasons, can be wrapped in a <span class="classname">Reader</span> to
+make it easier to read character data from standard input:</p>
+   
+
+<pre>Reader charIn = new InputStreamReader( System.in );</pre>
+   
+
+<p>As another application, the input and output streams that are associated with
+a network connection are byte streams rather than character streams, but the
+byte streams can be wrapped in character streams to make it easy to send
+and receive character data over the network.  We will encounter network I/O
+in <a href="../c11/s4.html">Section&nbsp;11.4</a>.</p>
+
+
+<p>There are various ways for characters to be encoded as binary data.
+A particular encoding is known as a <span class="newword">charset</span> or
+<span class="newword">character set</span>.  Charsets have standardized names such as "UTF-16,"
+"UTF-8," and "ISO-8859-1."  In UTF-16, characters are encoded as 16-bit UNICODE
+values; this is the character set that is used internally by Java.  UTF-8 is
+a way of encoding UNICODE characters using 8 bits for common ASCII characters
+and longer codes for other characters.  ISO-8859-1, also known as "Latin-1,"
+is an 8-bit encoding that includes ASCII characters as well as certain
+accented characters that are used in several European languages.
+<span class="classname">Readers</span> and <span class="classname">Writers</span> use
+the default charset for the computer on which they are running,
+unless you specify a different one.  This can be done, for
+example, in a constructor such as</p>
+
+
+<pre>Writer charSink = new OutputStreamWriter( byteSink, "ISO-8859-1" );</pre>
+
+
+<p>Certainly, the existence of a variety of charset encodings has
+made text processing more complicated -- unfortunate for us English-speakers
+but essential for people who use non-Western character sets.
+Ordinarily, you don't have to worry about this, but it's a good idea
+to be aware that different charsets exist in case you run into textual data 
+encoded in a non-default way.</p>
+
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="IO.1.4">11.1.4&nbsp;&nbsp;Reading Text</a>
+</h3>
+   
+
+
+<p>Much I/O is done in the form of human-readable
+characters. In view of this, it is surprising that Java does <b>not</b> provide
+a standard character input class that can read character data in a manner that
+is reasonably symmetrical with the character output capabilities of
+<span class="classname">PrintWriter</span>.  (The <span class="classname">Scanner</span> class,
+introduced briefly in <a href="../c2/s4.html#basics.4.6">Subsection&nbsp;2.4.6</a> and covered
+in more detail in <a href="../c11/s1.html#IO.1.5">Subsection&nbsp;11.1.5</a>, comes pretty close.)
+There is one basic case that is easily
+handled by a standard class.  The <span class="classname">BufferedReader</span> class
+has a method</p>
+   
+
+<pre>public String readLine() throws IOException</pre>
+   
+
+<p>that reads one line of text from its input source.  If the end of the stream has
+been reached, the return value is <span class="code">null</span>.  When a line of text is
+read, the end-of-line marker is read from the input stream, but it is not part
+of the string that is returned.  Different input streams use different
+characters as end-of-line markers, but the <span class="code">readLine</span> method
+can deal with all the common cases.  (Traditionally, Unix computers, including Linux
+and Mac OS&nbsp;X, use a line feed character, <span class="code">'\n'</span>, to mark an end of line;
+classic Macintosh used a carriage return character,&nbsp;<span class="code">'\r'</span>;
+and Windows uses the two-character sequence "<span class="code">\r\n</span>".  In general, modern
+computers can deal correctly with all of these possibilities.)</p>
+   
+
+<p>Line-by-line processing is very common.  Any <span class="classname">Reader</span>
+can be wrapped in a <span class="classname">BufferedReader</span> to make it easy
+to read full lines of text.  If <span class="code">reader</span> is of type <span class="classname">Reader</span>,
+then a <span class="classname">BufferedReader</span> wrapper can be created for <span class="code">reader</span>
+with</p>
+
+
+<pre>BufferedReader in = new BufferedReader( reader );</pre>
+   
+
+<p>This can be combined with the <span class="classname">InputStreamReader</span> class
+that was mentioned above to read lines of text from an <span class="classname">InputStream</span>.
+For example, we can apply this to <span class="code">System.in</span>:</p>
+   
+
+<pre>BufferedReader in;  // BufferedReader for reading from standard input.
+in = new BufferedReader( new InputStreamReader( System.in ) );
+try {
+   String line = in.readLine();
+   while ( line != null ) {  
+      processOneLineOfInput( line );
+      line = in.readLine();
+   }
+}
+catch (IOException e) {
+}</pre>
+ 
+
+<p>This code segment reads and processes lines from standard input until
+an end-of-stream is encountered.  (An end-of-stream is possible
+even for interactive input.  For example, on at least some computers, typing a 
+<span class="code">Control-D</span> generates an end-of-stream on the standard input stream.)
+The <span class="code">try..catch</span> statement is necessary because the <span class="code">readLine</span>
+method can throw an exception of type <span class="classname">IOException</span>, which
+requires mandatory exception handling; an alternative to <span class="code">try..catch</span>
+would be to declare that the method that contains the code "<span class="code">throws IOException</span>".
+Also, remember that <span class="classname">BufferedReader</span>, <span class="classname">InputStreamReader</span>,
+and <span class="classname">IOException</span> must be imported from the package
+<span class="code">java.io</span>.</p>
+   
+
+<hr class="break">
+     
+
+<p>Previously in this book, we have used the non-standard class <span class="classname">TextIO</span> 
+for input both
+from users and from files.  The advantage of <span class="classname">TextIO</span> is that it makes
+it fairly easy to read data values of any of the primitive types.  Disadvantages include
+the fact that <span class="classname">TextIO</span> can only read from one file at a time,
+that it can't do I/O operations on network connections, and that it does not follow
+the same pattern as Java's built-in input/output classes.</p>
+   
+
+<p>I have written a class named <span class="classname">TextReader</span> to fix some of these 
+disadvantages, while providing input capabilities similar to those of <span class="classname">TextIO</span>.
+Like <span class="classname">TextIO</span>, <span class="classname">TextReader</span> is a non-standard
+class, so you have to be careful to make it available to any program that uses it.
+The source code for the class can be found in the file <span class="sourceref"><a href="../source/TextReader.java">TextReader.java</a></span>.
+</p>
+
+
+<p>Just as for many of Java's stream classes, an object of type 
+<span class="classname">TextReader</span> can be used as a wrapper for an existing input stream,
+which becomes the source of the characters that will be read by the <span class="classname">TextReader</span>.
+(Unlike the standard classes, however, a <span class="classname">TextReader</span> is not
+itself a stream and cannot be wrapped inside other stream classes.)  
+The constructors</p>
+
+
+<pre>public TextReader(Reader characterSource)</pre>
+
+<p>and</p>
+
+<pre>public TextReader(InputStream byteSource)</pre>
+
+
+<p>create objects that can be used to read human-readable data from the given
+<span class="classname">Reader</span> or <span class="classname">InputStream</span> 
+using the convenient input methods of the <span class="classname">TextReader</span> class.
+In <span class="classname">TextIO</span>, the input methods were static members of the class.
+The input methods in the <span class="classname">TextReader</span> class are instance methods.
+The instance methods in a <span class="classname">TextReader</span> object read from the
+data source that was specified in the object's constructor.  This makes it possible
+for several <span class="classname">TextReader</span> objects to exist at the same time, 
+reading from different streams;  those objects can then be used to read
+data from several files or other input sources at the same time.</p>
+   
+
+<p>A <span class="classname">TextReader</span> object has essentially the same set of
+input methods as the <span class="classname">TextIO</span> class.  One big difference
+is how errors are handled.  When a <span class="classname">TextReader</span> encounters
+an error in the input, it throws an exception of type <span class="classname">IOException</span>.
+This follows the standard pattern that is used by Java's standard input streams.
+<span class="classname">IOExceptions</span> require mandatory exception handling, so
+<span class="classname">TextReader</span> methods are generally called inside
+<span class="code">try..catch</span> statements.  If an <span class="classname">IOException</span> is
+thrown by the input stream that is wrapped inside a <span class="classname">TextReader</span>,
+that <span class="classname">IOException</span> is simply passed along.  However,
+other types of errors can also occur.  One such possible error is an attempt to read
+data from the input stream when there is no more data left in the stream.
+A <span class="classname">TextReader</span> throws an exception of type
+<span class="classname">TextReader.EndOfStreamException</span> when this happens.
+The exception class in this case is a nested class in the <span class="classname">TextReader</span>
+class; it is a subclass of <span class="classname">IOException</span>, so a <span class="code">try..catch</span>
+statement that handles <span class="classname">IOExceptions</span> will also handle
+end-of-stream exceptions.  However, having a class to represent
+end-of-stream errors makes it possible to detect such errors and provide
+special handling for them.  Another type of error occurs when a <span class="classname">TextReader</span>
+tries to read a data value of a certain type, and the next item in the input stream
+is not of the correct type.  In this case, the <span class="classname">TextReader</span>
+throws an exception of type <span class="classname">TextReader.BadDataException</span>,
+which is another subclass of <span class="classname">IOException</span>.</p>
+   
+
+<p>For reference, here is a list of some of the more useful instance methods in the
+<span class="classname">TextReader</span> class.  All of these methods can throw
+exceptions of type <span class="classname">IOException</span>:</p>
+   
+
+<ul>
+
+<li>
+<span class="codedef">public char peek()</span>  --  looks ahead at the next
+character in the input stream, and returns that character.  The character is
+not removed from the stream.  If the next character is an end-of-line,
+the return value is&nbsp;'<span class="code">\n</span>'.  It is legal to call this method even
+if there is no more data left in the stream; in that case, the return
+value is the constant <span class="code">TextReader.EOF</span>.  ("EOF" stands for
+"End-Of-File," a term that is more commonly used than "End-Of-Stream", even
+ though not all streams are files.)</li>
+
+<li>
+<span class="codedef">public boolean eoln()</span> and <span class="codedef">public boolean eof()</span>  --  
+convenience methods for testing whether the next thing in the file is an
+end-of-line or an end-of-file.  Note that these methods do <b>not</b> skip whitespace.
+If <span class="code">eof()</span> is false, you know that there is still at least one
+character to be read, but there might not be any more <b>non-blank</b> characters
+in the stream.</li>
+
+<li>
+<span class="codedef">public void skipBlanks()</span> and <span class="codedef">public void skipWhiteSpace()</span>
+ --  skip past whitespace characters in the input stream; <span class="code">skipWhiteSpace()</span>
+skips all whitespace characters, including end-of-line while <span class="code">skipBlanks()</span>
+only skips spaces and tabs.</li>
+
+<li>
+<span class="codedef">public String getln()</span>  --  reads characters up to the
+next end-of-line (or end-of-stream), and returns those characters in a string.
+The end-of-line marker is read but is not part of the returned string.  This will throw
+an exception if there are no more characters in the stream.</li>
+
+<li>
+<span class="codedef">public char getAnyChar()</span>  --  reads and returns the
+next character from the stream.  The character can be a whitespace character
+such as a blank or end-of-line.  If this method is called after all the characters
+in the stream have been read, an exception is thrown.</li>
+
+<li>
+<span class="codedef">public int getlnInt()</span>, <span class="codedef">public double getlnDouble()</span>,
+<span class="codedef">public char getlnChar()</span>, etc.   --   skip any whitespace characters
+in the stream, including end-of-lines, then read a value of the specified
+type, which will be the return value of the method.
+Any remaining characters on the line are then discarded, including the
+end-of-line marker.  There is a method for each primitive type.  An exception occurs if
+it's not possible to read a data value of the requested type.</li>
+
+<li>
+<span class="codedef">public int getInt()</span>, <span class="codedef">public double getDouble()</span>,
+<span class="codedef">public char getChar()</span>, etc.   --   skip any whitespace characters
+in the stream, including end-of-lines, then read and return a value of the specified
+type.  Extra characters on the line are <b>not</b> discarded and are still available
+to be read by subsequent input methods. There is a method for each primitive type.  
+An exception occurs if it's not possible to read a data value of the requested type.</li>
+
+</ul>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="IO.1.5">11.1.5&nbsp;&nbsp;The Scanner Class</a>
+</h3>
+   
+
+<p>Since its introduction, Java has been notable for its lack of built-in support
+for basic input, and for its reliance on fairly advanced techniques for the support
+that it does offer.  (This is my opinion, at least.)  The <span class="classname">Scanner</span> 
+class was introduced in Java 5.0 to make it easier to read basic data types from
+a character input source.  It does not (again, in my opinion) solve the problem completely,
+but it is a big improvement.  The <span class="classname">Scanner</span> class is in the
+package <span class="code">java.util</span>.</p>
+   
+
+<p>Input routines are defined as instance methods in the <span class="classname">Scanner</span> class,
+so to use the class, you need to create a <span class="classname">Scanner</span> object.
+The constructor specifies the source of the characters that the <span class="classname">Scanner</span>
+will read.  The scanner acts as a wrapper for the input source.
+The source can be a <span class="classname">Reader</span>, an <span class="classname">InputStream</span>,
+a <span class="classname">String</span>, or a <span class="classname">File</span>.  (If a <span class="classname">String</span> 
+is used as the input source, the <span class="classname">Scanner</span> will simply read the characters in the
+string from beginning to end, in the same way that it would process the same sequence 
+of characters from a stream.  The <span class="classname">File</span> class will be covered
+in the <a href="../c11/s2.html">next section</a>.)  
+For example, you can use a <span class="classname">Scanner</span> to read from standard input by saying:</p>
+   
+
+<pre>Scanner standardInputScanner = new Scanner( System.in );</pre>
+   
+
+<p>and if <span class="code">charSource</span> is of type <span class="classname">Reader</span>, you can create
+a <span class="classname">Scanner</span> for reading from <span class="code">charSource</span> with:</p>
+   
+
+<pre>Scanner scanner = new Scanner( charSource );</pre>
+   
+
+<p>When processing input, a scanner usually works with
+<span class="newword">tokens</span>.  A token is a meaningful string of characters that
+cannot, for the purposes at hand, be further broken down into smaller meaningful
+pieces.  A token can, for example, be an individual word or a string of characters
+that represents a value of type <span class="ptype">double</span>.  In the case of a
+scanner, tokens must be separated by "delimiters."
+By default, the delimiters are whitespace characters such as spaces and end-of-line
+markers, but you can change a <span class="classname">Scanner's</span> delimiters if you need to.
+In normal processing, whitespace characters serve simply to separate tokens 
+and are discarded by the scanner.  
+A scanner has instance methods for reading tokens of various types.  Suppose
+that <span class="code">scanner</span> is an object of type <span class="classname">Scanner</span>.
+Then we have:</p>
+   
+
+<ul>
+
+<li>
+<span class="codedef">scanner.next()</span>  --  reads the next token from the input
+source and returns it as a <span class="classname">String</span>.</li>
+
+<li>
+<span class="codedef">scanner.nextInt()</span>, <span class="codedef">scanner.nextDouble()</span>, and so on  --  
+reads the next token from the input source and tries to convert it to a value of
+type <span class="ptype">int</span>, <span class="ptype">double</span>, and so on.  There are methods for reading
+values of any of the primitive types.
+</li>
+
+<li>
+<span class="codedef">scanner.nextLine()</span>  --  reads an entire line from the input
+source, up to the next end-of-line and returns the line as a value of type <span class="classname">String</span>.
+The end-of-line marker is read but is not part of the return value.  Note that this
+method is <b>not</b> based on tokens.  An entire line is read and returned, including
+any whitespace characters in the line.
+</li>
+
+</ul>
+   
+
+<p>All of these methods can generate exceptions.  If an attempt is made to read
+past the end of input, an exception of type <span class="classname">NoSuchElementException</span>
+is thrown.  Methods such as <span class="code">scanner.getInt()</span> will throw an
+exception of type <span class="classname">InputMismatchException</span> if the next
+token in the input does not represent a value of the requested type.  The exceptions
+that can be generated do not require mandatory exception handling.</p>
+   
+
+<p>The <span class="classname">Scanner</span> class has very nice look-ahead capabilities.
+You can query a scanner to determine whether more tokens are available and whether
+the next token is of a given type.  If <span class="code">scanner</span> is of type <span class="classname">Scanner</span>:</p>
+   
+
+<ul>
+
+<li>
+<span class="codedef">scanner.hasNext()</span>  --  returns a <span class="ptype">boolean</span> value
+that is true if there is at least one more token in the input source.</li>
+
+<li>
+<span class="codedef">scanner.hasNextInt()</span>, <span class="codedef">scanner.hasNextDouble()</span>, and so on  --  
+returns a <span class="ptype">boolean</span> value
+that is true if there is at least one more token in the input source and
+that token represents a value of the requested type.
+</li>
+
+<li>
+<span class="codedef">scanner.hasNextLine()</span>  --  returns a <span class="ptype">boolean</span> value
+that is true if there is at least one more line in the input source.
+</li>
+
+</ul>
+
+
+<p>Although the insistence on defining tokens only in terms of delimiters limits
+the usability of scanners to some extent, they are easy to use and are suitable
+for many applications.  With so many input classes available -- <span class="classname">BufferedReader</span>,
+<span class="classname">TextReader</span>, <span class="classname">Scanner</span> -- you might
+have trouble deciding which one to use!  In general, I would recommend using a <span class="classname">Scanner</span>
+unless you have some particular reason for preferring the <span class="classname">TextIO</span>-style input
+routines of <span class="classname">TextReader</span>.  <span class="classname">BufferedReader</span> can be
+used as a lightweight alternative when all that you want to do is read entire lines of text from
+the input source.</p>
+   
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="IO.1.6">11.1.6&nbsp;&nbsp;Serialized Object I/O</a>
+</h3>
+   
+
+<p>The classes <span class="classname">PrintWriter</span>, <span class="classname">TextReader</span>,
+<span class="classname">Scanner</span>,
+<span class="classname">DataInputStream</span>, and <span class="classname">DataOutputStream</span> 
+allow you to easily
+input and output all of Java's primitive data types. But what happens when you
+want to read and write <b>objects</b>? Traditionally, you would have to come up with
+some way of encoding your object as a sequence of data values belonging to the
+primitive types, which can then be output as bytes or characters. This is
+called <span class="newword">serializing</span> the object. On input, you have
+to read the serialized data and somehow reconstitute a copy of the original
+object. For complex objects, this can all be a major chore. However, you can
+get Java to do all the work for you by using the classes
+<span class="classname">ObjectInputStream</span> and <span class="classname">ObjectOutputStream</span>. These are
+subclasses of <span class="classname">InputStream</span> and <span class="classname">OutputStream</span> that can be used
+for writing and reading serialized objects.</p>
+
+
+<p>
+<span class="classname">ObjectInputStream</span> and <span class="classname">ObjectOutputStream</span> are wrapper
+classes that can be wrapped around arbitrary <span class="classname">InputStreams</span> and
+<span class="classname">OutputStreams</span>. This makes it possible to do object input and output on
+any byte stream. The methods for object I/O are <span class="code">readObject()</span>, in
+<span class="classname">ObjectInputStream</span>, and <span class="code">writeObject(Object obj)</span>, in
+<span class="classname">ObjectOutputStream</span>. Both of these methods can throw
+<span class="classname">IOExceptions</span>. Note that <span class="code">readObject()</span> returns a value of type
+<span class="classname">Object</span>, which generally has to be type-cast to the actual type of the
+object that was read.</p>
+   
+
+<p>
+<span class="classname">ObjectOutputStream</span> also has methods <span class="code">writeInt()</span>,
+<span class="code">writeDouble()</span>, and so on, for outputting primitive type values to the stream,
+and <span class="classname">ObjectInputStream</span> has corresponding methods for reading
+primitive type values.  These primitive type values can be interspersed with objects
+in the data.</p>
+   
+
+<p>Object streams are byte streams.  The objects are represented in binary, machine-readable
+form.  This is good for efficiency, but it does suffer from the fragility that is often
+seen in binary data.  They suffer from the additional problem that the binary format of
+Java objects is very specific to Java, so the data in object streams is not easily
+available to programs written in other programming languages.
+For these reasons, object streams are appropriate mostly for short-term storage of objects 
+and for transmitting objects over a network connection from one Java program to another.
+For long-term storage and for communication with non-Java programs, other approaches
+to object serialization are usually better.  (See <a href="../c11/s5.html#IO.5.2">Subsection&nbsp;11.5.2</a> for a
+character-based approach.)</p>
+
+
+<p>
+<span class="classname">ObjectInputStream</span> and <span class="classname">ObjectOutputStream</span> 
+only work with
+objects that implement an interface named <span class="classname">Serializable</span>. Furthermore,
+all of the instance variables in the object must be serializable. However,
+there is little work involved in making an object serializable, since the
+<span class="classname">Serializable</span> interface does not declare any methods. It exists only as
+a marker for the compiler, to tell it that the object is meant to be writable
+and readable. You only need to add the words "<span class="code">implements Serializable</span>"
+to your class definitions. Many of Java's standard classes are already declared
+to be serializable, including all the component classes and many other classes in Swing and in the
+AWT. One of the programming examples in <a href="../c11/s3.html">Section&nbsp;11.3</a>
+uses object IO.</p>
+
+
+<p>One warning about using <span class="classname">ObjectOutputStreams</span>: These streams are optimized to avoid writing
+the same object more than once.  When an object is encountered for a second time, only a reference to the first
+occurrence is written.  Unfortunately, if the object has been modified in the meantime, the new data will
+not be written.  Because of this, <span class="classname">ObjectOutputStreams</span> are meant mainly for use
+with "immutable" objects that can't be changed after they are created.  (<span class="classname">Strings</span>
+are an example of this.)  However, if you do need to write mutable objects to an
+<span class="classname">ObjectOutputStream</span>, you can ensure that the full, correct version of the
+object can be written by calling the stream's <span class="code">reset()</span> method before writing the object
+to the stream.</p>
+   
+
+
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s2.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

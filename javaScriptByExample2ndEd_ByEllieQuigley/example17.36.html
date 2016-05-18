@@ -1,0 +1,32 @@
+<html><head><title>Checking for Empty Fields</title>
+<script type="text/javascript">
+   function validate_text(form1) {
+      	if ( form1.user_name.value == "" || form1.user_name.value  == null){
+		alert("You must enter your name.");
+		return false;
+      	}
+	if ( form1.user_phone.value == "" || form1.user_phone.value == null){
+		alert("You must enter your phone.");
+		return false;
+	}
+	else {
+		return true;
+	}
+	}
+</script>
+</head>
+<hr>
+<body>
+<h2> Checking for Empty fields </h2>
+   <form name="formtest" action="/cgi-bin/form1.cgi" method="get"
+    onSubmit="return validate_text(formtest)">
+	Please enter your name: <br />
+	<input type="text" size=50 name="user_name">
+	<p>
+	Please enter your phone number: <br />
+	<input type="text" size=30 name="user_phone">
+	<p>
+	<input type=submit value="Send">
+	<input type=reset value="Clear">
+   </form>
+</html>

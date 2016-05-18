@@ -1,0 +1,25 @@
+<html><head><title>Closures</title></head>
+<script type="text/javascript">
+	function paint(type, color) {
+      var type, color;
+      var str =  "The " + type + " is " + color; // local variable
+      var tellme = function() { document.write("<big>"+str+".</big></br>")} //anonymous
+      return tellme;  // return a reference to the function
+    }
+</script>
+</head>
+<body bgColor="lightgreen">
+   <h2>Testing a closure</h2>
+   <script type="text/javascript">
+		paint("sea", "blue");
+		var say1 = paint("rose","red");  //A reference to tellme is returned
+		var say2 = paint("sun", "yellow");
+		alert(say1);
+		say1();   // Call the anonymous function
+		say2();
+   </script>
+</body>
+</html>
+
+
+

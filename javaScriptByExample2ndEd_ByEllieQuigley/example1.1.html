@@ -1,0 +1,28 @@
+<html><head><title>Dynamic Page</title>
+<script type="text/JavaScript">
+   var message="Learning JavaScript will give your Web page life!";
+   message += " Are you ready to learn? ";
+   var space="...";
+   var position=0;
+   function scroller(){
+        var newtext = message.substring(position,message.length)+
+        space + message.substring(0,position);
+        var td = document.getElementById("tabledata");
+        td.firstChild.nodeValue = newtext;
+        position++;
+        if (position > message.length){position=0;}
+        window.setTimeout("scroller()",38);
+   }
+
+</script>
+</HEAD>
+<body bgColor="darkgreen" onload="scroller();">
+<table border="1">
+   <tr>
+      <td id="tabledata" bgcolor="white">message goes here</td>
+    </tr>
+ </table>
+ </body>
+ </html>
+
+

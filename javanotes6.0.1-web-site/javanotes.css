@@ -1,0 +1,153 @@
+
+body {
+   background: #EEEEEE;
+   color: black;
+}
+a:link {
+   color: #0000CC;
+   text-decoration: underline;
+}
+a:visited {
+   color: #553377;
+   text-decoration: underline;
+}
+a:active {
+   color: #CC2222;
+   text-decoration: underline;
+}
+a:hover {
+   color: #6666FF;
+   text-decoration: underline;
+   cursor: pointer;
+}
+
+div.content {
+   margin-left: 25pt;
+   margin-right: 25pt;
+}
+
+pre.exercisecode {
+   margin-left: 25pt;
+}
+
+pre {
+   margin-left: 60pt;
+}
+
+.chapter_title {
+   text-align: center;
+}
+
+.quiz_title {
+   text-align: center;
+}
+
+.section_title {
+   text-align: center;
+}
+
+.subsection_title {
+}
+
+hr.break {
+   align:center;
+   width: 33%;
+}
+
+ul.contents {
+   margin-left: 20pt;
+}
+
+img.bordered {
+   border: solid black 1px
+}
+
+table.subsections {
+  background: white;
+}
+
+h3.exercise {
+   color: #CC0000;
+}
+
+div.exercisesubtitle {
+   color: #CC0000;
+}
+
+span.start {
+    text-transform: uppercase;
+}
+
+span.newword {
+    color: #CC0000;
+}
+
+span.codedef {
+    color: #CC0000;
+    font-family: monospace;
+}
+
+span.ptype {
+    color: #0050C0;
+}
+
+
+span.classname {
+    color: #0050C0;
+    font-style: oblique;
+}
+
+span.atype {
+    color: #0050C0;
+    font-family: monospace;
+}
+
+
+span.code {
+	font-family: monospace;
+}
+
+span.newcode {
+	font-family: monospace;
+	color: #CC0000;
+}
+
+span.bnf {
+	font-weight: bold;
+	color: #009900;
+}
+
+span.question {
+    font-weight: bold;
+    color: #990000;
+}
+
+tr.question {
+    background: #FFFFE8;
+}
+
+span.answer {
+    font-weight: bold;
+    color: #000080;
+}
+
+tr.answer {
+    background: #E8E8FF
+}
+
+span.sourceref {
+    font-style: italic;
+}
+
+p.glossary_item {
+    text-indent: -30pt;
+    padding-left: 30pt;
+}
+
+span.glossary_term {
+    font-weight: bold;
+    color: #A20;
+}
+
+span.glossary_definition {
+}

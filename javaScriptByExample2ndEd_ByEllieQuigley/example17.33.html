@@ -1,0 +1,17 @@
+<html><head><title>Capturing</title></head>
+<body>
+     <h3>
+	<script type="text/javascript">
+		textString = "Everyone likes William Rogers and his friends."
+		var reg_expression = /(William)\s(Rogers)/;
+		myArray=textString.match(reg_expression);
+ 		document.write(myArray);  // Three element array
+		document.write("<br>"+RegExp.$1 + " "+RegExp.$2 +"</br>");
+		/* alert(myArray[1] + " "+ myArray[2]);
+	      match and exec create an array consisting of the string, and 
+		 the captured patterns. myArray[0] is "William Rogers"  
+		  myArray[1] is "William"  myArray[2] is "Rogers".*/
+	</script>
+	</h3>
+     </body>
+	</html>

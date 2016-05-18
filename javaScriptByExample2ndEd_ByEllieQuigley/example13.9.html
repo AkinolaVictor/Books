@@ -1,0 +1,39 @@
+
+<html><head><title>Mouse Events</title>
+  <script type="text/javascript">
+	var counter=0;
+	function alertme(){
+		alert("I'm outta hea!");
+		window.close();
+	}
+	function track_Moves(){
+		counter++;
+		if(counter==1){
+			  alert(counter + " mouse moves so far!");
+		}
+		else{
+			  alert(counter + " mouse moves so far!");
+		}
+	}
+   </script>
+</head>
+<body bgColor="CCFF00" onDblClick="alertme()";>
+  <p><font face="arial" size=3>
+	Double click anywhere on this page to get out!
+  <p>
+	When the mouse moves over the link, an event is triggered.
+  <a href="#" onMouseOver="alert('Event: onMouseOver');">onMouseOver 
+  </a><p>
+    When the mouse moves away from a link, an event is triggered.
+  <a href="#" onMouseOut="alert('Event: onMouseOut');">onMouseOut
+  </a><p>
+	When the mouse moves in or out of the button, a function<br />
+	is called that keeps track of how many times the mouse touched  
+	the button.
+  <form>
+     <input type="button"
+	    value="onMouseMove"
+	    onMouseMove="track_Moves();">
+  </form>
+</body>
+</html> 

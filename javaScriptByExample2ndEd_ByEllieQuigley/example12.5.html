@@ -1,0 +1,13 @@
+<html><head><title>HTML Replacing Images</title></head>
+<body bgcolor="cornflowerblue">
+	<h2>&nbsp;&nbsp;This Is Baby William</h2>
+	<img name="display" src="baby1.jpg" width="220" height="250" >
+	<script type="text/javascript">
+		var myImages=new Array("baby1.jpg", "baby2.jpg", "baby3.jpg");
+		var n = prompt("Pick a number between 1 and 3","");
+		n--;
+		document.images["display"].src = myImages[n];
+              // document.images[0].src = myImages[n]
+	</script>
+</body>
+</html> 

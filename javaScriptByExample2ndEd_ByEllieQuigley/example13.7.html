@@ -1,0 +1,25 @@
+<html><head><title>The focus and blur methods</title>
+<script language="JavaScript">
+    function newWindow(){
+	winObj=window.open("summer.jpg","summer","width=650,height=200,resizable=yes,scrollbars=yes,location=yes");
+	winObj.moveTo(0,0);   // Move to left-hand corner of screen
+	winObj.focus();       // New window gets the focus
+			//windObj.blur();
+    }
+    function closeWindow(){
+        winObj.close();      // Close the new window
+    }
+</script>
+</head>
+<body bgColor="lightgreen">
+  <h2>Summer Scene from the Old Country</h2>
+  <form>
+	<input type=button
+	       value="Open Window"
+	       onClick="javascript:newWindow();">
+	<input type=button
+	       value="Close Window"
+	       onClick="javascript:closeWindow();">
+  </form>
+</body>
+</html>

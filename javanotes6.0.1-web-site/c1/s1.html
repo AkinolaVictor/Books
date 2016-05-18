@@ -1,0 +1,137 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 1.1 -- The Fetch and Execute Cycle: Machine Language</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s2.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h3 class="section_title">Section 1.1</h3>
+<h2 class="section_title">The Fetch and Execute Cycle: Machine Language</h2>
+<hr class="break">
+
+
+<p>
+<span class="start"><big>A</big> computer is a complex system</span> consisting of many
+different components. But at the heart -- or the brain, if you want -- of the
+computer is a single component that does the actual computing. This is the
+<span class="newword">Central Processing Unit</span>, or CPU. In a modern
+desktop computer, the CPU is a single "chip" on the order of one square inch in
+size. The job of the CPU is to execute programs.</p>
+
+
+<p>A <span class="newword">program</span> is simply a list of unambiguous
+instructions meant to be followed mechanically by a computer. A computer is
+built to carry out instructions that are written in a very simple type of
+language called <span class="newword">machine language</span>. Each type of
+computer has its own machine language, and the computer can directly execute a program
+only if the program is expressed in that language. (It can execute programs written in
+other languages if they are first translated into machine language.)</p>
+
+
+<p>When the CPU executes a program, that program is stored in the computer's
+<span class="newword">main memory</span> (also called the RAM or random access
+memory). In addition to the program, memory can also hold data that is being
+used or processed by the program. Main memory consists of a sequence of
+<span class="newword">locations</span>. These locations are numbered, and the
+sequence number of a location is called its <span class="newword">address</span>.
+An address provides a way of picking out one
+particular piece of information from among the millions stored in memory. When
+the CPU needs to access the program instruction or data in a particular
+location, it sends the address of that information as a signal to the memory;
+the memory responds by sending back the data contained in the specified
+location. The CPU can also store information in memory by specifying the
+information to be stored and the address of the location where it is to be
+stored.</p>
+
+
+<p>On the level of machine language, the operation of the CPU is fairly
+straightforward (although it is very complicated in detail). The CPU executes a
+program that is stored as a sequence of machine language instructions in main
+memory. It does this by repeatedly reading, or <span class="newword">fetching</span>,
+an instruction from memory and then carrying out, or
+<span class="newword">executing</span>, that instruction. This process -- fetch
+an instruction, execute it, fetch another instruction, execute it, and so on
+forever -- is called the <span class="newword">fetch-and-execute cycle</span>.
+With one exception, which will be covered in the <a href="../c1/s2.html">next&nbsp;section</a>, 
+this is all that the CPU ever does.</p>
+
+
+<p>The details of the fetch-and-execute cycle are not terribly important, but
+there are a few basic things you should know. The CPU contains a few internal
+<span class="newword">registers</span>, which are small memory units capable of
+holding a single number or machine language instruction. The CPU uses one of
+these registers -- the <span class="newword">program counter</span>, or PC -- to
+keep track of where it is in the program it is executing. The PC stores the
+address of the next instruction that the CPU should execute. At the beginning
+of each fetch-and-execute cycle, the CPU checks the PC to see which instruction
+it should fetch. During the course of the fetch-and-execute cycle, the number
+in the PC is updated to indicate the instruction that is to be executed in the
+next cycle. (Usually, but not always, this is just the instruction that
+sequentially follows the current instruction in the program.)</p>
+
+
+<hr class="break">
+
+
+<p>A computer executes machine language programs mechanically -- that is
+without understanding them or thinking about them -- simply because of the way
+it is physically put together. This is not an easy concept. A computer is a
+machine built of millions of tiny switches called <span class="newword">transistors</span>, 
+which have the property that they can be wired
+together in such a way that an output from one switch can turn another switch
+on or off. As a computer computes, these switches turn each other on or off in
+a pattern determined both by the way they are wired together and by the program
+that the computer is executing.</p>
+
+
+<p>Machine language instructions are expressed as binary numbers. A binary
+number is made up of just two possible digits, zero and one. So, a machine
+language instruction is just a sequence of zeros and ones. Each particular
+sequence encodes some particular instruction. The data that the computer
+manipulates is also encoded as binary numbers. A computer can work directly
+with binary numbers because switches can readily represent such numbers: Turn
+the switch on to represent a one; turn it off to represent a zero. Machine
+language instructions are stored in memory as patterns of switches turned on or
+off. When a machine language instruction is loaded into the CPU, all that
+happens is that certain switches are turned on or off in the pattern that
+encodes that particular instruction. The CPU is built to respond to this
+pattern by executing the instruction it encodes; it does this simply because of
+the way all the other switches in the CPU are wired together.</p>
+
+
+<p>So, you should understand this much about how computers work: Main memory
+holds machine language programs and data. These are encoded as binary numbers.
+The CPU fetches machine language instructions from memory one after another and
+executes them. It does this mechanically, without thinking about or
+understanding what it does -- and therefore the program it executes must be
+perfect, complete in all details, and unambiguous because the CPU can do
+nothing but execute it exactly as written. Here is a schematic view of this
+first-stage understanding of the computer:</p>
+
+
+<p align="center">
+<img src="overview_fig1.gif" width="352" height="228" alt="Basic diagram of the CPU and RAM"></p>
+
+
+
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s2.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

@@ -1,0 +1,434 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 8.4 -- Assertions and Annotations</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s3.html">Previous Section</a> |
+           <a href="s5.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#robustness.4.1">Assertions</a>
+<br>
+<a href="#robustness.4.2">Annotations</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 8.4</h3>
+<h2 class="section_title">Assertions and Annotations</h2>
+<hr class="break">
+
+
+<p>
+<span class="start"><big>I</big>n this short section</span>, we look briefly 
+at two features of Java that are not covered or used elsewhere in this
+textbook, assertions and annotations.  They are included here for 
+completeness, but they are mostly meant for more advanced programming.
+</p>
+ 
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="robustness.4.1">8.4.1&nbsp;&nbsp;Assertions</a>
+</h3>
+
+
+<p>Recall that a precondition is a condition that must be true at a certain
+point in a program, for the execution of the program to continue correctly from
+that point.  In the case where there is a chance that the precondition might not
+be satisfied -- for example, if it depends on input from the user -- then
+it's a good idea to insert an <span class="code">if</span> statement to test it.
+But then the question arises, What should be done if the precondition does not
+hold? One option is to throw an exception. This will terminate the program,
+unless the exception is caught and handled elsewhere in the program.</p>
+   
+
+<p>In many cases, of course, instead of using an <span class="code">if</span> statement to 
+<i>test</i> whether a precondition holds, a programmer tries to write the program
+in a way that will <i>guarantee</i> that the precondition holds.  In that case,
+the test should not be necessary, and the <span class="code">if</span> statement can be
+avoided.  The problem is that programmers are not perfect.  In spite of the programmer's
+intention, the program might contain a bug that screws up the precondition.
+So maybe it's a good idea to check the precondition after all -- at least during the
+debugging phase of program development.</p>
+
+
+<p>Similarly, a postcondition is a condition that is true at a certain point in the program 
+as a consequence of the code that has been executed before that point.  Assuming
+that the code is correctly written, a postcondition is guaranteed to be true,
+but here again testing whether a desired postcondition is <b>actually</b> true
+is a way of checking for a bug that might have screwed up the postcondition.
+This is something that might be desirable during debugging.</p>
+   
+
+<p>The programming languages C and C++ have always had a facility for adding
+what are called <span class="newword">assertions</span> to a program. These
+assertions take the form "<span class="code">assert(</span><span class="bnf">condition</span><span class="code">)</span>", 
+where <span class="bnf">condition</span> is a <span class="ptype">boolean</span>-valued expression. This
+condition expresses a precondition or postcondition that should hold at that point in the program.
+When the computer encounters an assertion during the execution of the program,
+it evaluates the condition. If the condition is false, the program is
+terminated.  Otherwise, the program continues normally.  This allows the
+programmer's belief that the condition is true to be tested; if it is not
+true, that indicates that the part of the program that preceded the assertion
+contained a bug.  One nice thing about assertions in C and C++ is that they can be
+"turned off" at compile time. That is, if the program is compiled in one way,
+then the assertions are included in the compiled code. If the program is
+compiled in another way, the assertions are not included. During debugging, the
+first type of compilation is used, with assertions turned on. The release version of the program is
+compiled with assertions turned off. The release version will be more
+efficient, because the computer won't have to evaluate all the assertions.</p>
+   
+
+<p>Although early versions of Java did not have assertions, an assertion facility similar 
+to the one in C/C++ has been available in Java since version 1.4.  As with the
+C/C++ version, Java assertions can be turned on during debugging and turned off
+during normal execution.  In Java, however, assertions are turned on and off
+at run time rather than at compile time.  An assertion in the Java source code
+is always included in the compiled class file.  When the program is run in the normal
+way, these assertions are ignored; since the condition in the assertion is not
+evaluated in this case, there is little or no performance penalty for having the
+assertions in the program.  When the program is being debugged, it can be run
+with assertions enabled, as discussed below, and then the assertions can be
+a great help in locating and identifying bugs.</p>
+   
+
+
+<hr class="break">
+   
+
+<p>An <span class="newword">assertion statement</span> in Java takes one of the following two forms:</p>
+   
+
+<pre>assert <span class="bnf">condition</span> ;</pre>
+  
+
+<p>or</p>
+    
+
+<pre>assert <span class="bnf">condition</span> : <span class="bnf">error-message</span> ;</pre>
+
+
+<p>where <span class="bnf">condition</span> is a <span class="ptype">boolean</span>-valued expression
+and <span class="bnf">error-message</span> is a string or an expression of type <span class="classname">String</span>.
+The word "<span class="code">assert</span>" is a reserved word in Java, which cannot be used as
+an identifier.  An assertion statement can be used anyplace in Java where a statement is legal.</p>
+   
+
+<p>If a program is run with assertions disabled, an assertion statement is equivalent to
+an empty statement and has no effect.  When assertions are enabled and an assertion statement
+is encountered in the program, the <span class="bnf">condition</span> 
+in the assertion is evaluated.  If the value is <span class="code">true</span>, the program proceeds normally.
+If the value of the condition is <span class="code">false</span>, then an exception of type
+<span class="code">java.lang.AssertionError</span> is thrown, and the program will crash (unless the
+error is caught by a <span class="code">try</span> statement).  If the <span class="code">assert</span> statement
+includes an <span class="bnf">error-message</span>, then the error message string becomes the message
+in the <span class="classname">AssertionError</span>.</p>
+   
+
+<p>So, the statement "<span class="code">assert <span class="bnf">condition</span> : <span class="bnf">error-message</span>;"</span> is
+similar to</p>   
+   
+
+<pre>if ( <span class="bnf">condition</span> == false )
+    throw new AssertionError( <span class="bnf">error-message</span> );</pre>
+   
+
+<p>except that the <span class="code">if</span> statement is executed whenever the program is
+run, and the <span class="code">assert</span> statement is executed only when the program is
+run with assertions enabled.</p>
+   
+
+<p>The question is, when to use assertions instead of exceptions? The general
+rule is to use assertions to test conditions that should definitely be true,
+if the program is written correctly.  Assertions are useful for testing a program 
+to see whether or not it is correct and for finding the errors in an incorrect program.
+After testing and debugging, when the program is used in the normal way, the
+assertions in the program will be ignored.  However, if a problem turns up later,
+the assertions are still there in the program to be used to help locate the
+error.  If someone writes to you to say that your program doesn't work when
+he does such-and-such, you can run the program with assertions enabled, do
+such-and-such, and hope that the assertions in the program will help you
+locate the point in the program where it goes wrong.</p>
+   
+
+<p>Consider, for example, the <span class="code">root()</span> method from <a href="../c8/s3.html#robustness.3.3">Subsection&nbsp;8.3.3</a>
+that calculates a root of a quadratic equation.  If you believe that your program will
+always call this method with legal arguments, then it would make sense to write the
+method using assertions instead of exceptions:</p>
+   
+
+<pre>/**
+ * Returns the larger of the two roots of the quadratic equation
+ * A*x*x + B*x + C = 0, provided it has any roots.  
+ * Precondition: A != 0 and B*B - 4*A*C &gt;= 0.
+ */
+static public double root( double A, double B, double C )  {
+   assert A != 0 : "Leading coefficient of quadratic equation cannot be zero.";
+   double disc = B*B - 4*A*C;
+   assert disc &gt;= 0 : "Discriminant of quadratic equation cannot be negative.";
+   return  (-B + Math.sqrt(disc)) / (2*A);
+}</pre>
+
+
+<p>The assertions are not checked when the program is run in the normal way.  If you
+are correct in your belief that the method is never called with illegal arguments,
+then checking the conditions in the assertions would be unnecessary.  If your belief
+is not correct, the problem should turn up during testing or debugging, when the program is
+run with the assertions enabled.</p>
+   
+
+<p>If the <span class="code">root()</span> method is part of a software library that you
+expect other people to use, then the situation is less clear.  Oracle's
+Java documentation advises that assertions should <b>not</b> be used for checking
+the contract of public methods:  If the caller of a method violates the contract
+by passing illegal parameters, then an exception should be thrown.  This will enforce
+the contract whether or not assertions are enabled.  (However, while it's true
+that Java programmers <i>expect</i> the contract of a method to be enforced with
+exceptions, there are reasonable arguments for using assertions instead, in some
+cases.)  One might say that assertions are for <b>you</b>, to help you in
+debugging your code, while exceptions are for people who use your code, to alert
+them that they are misusing it.</p>
+   
+
+<p>On the other hand, it never hurts to use an assertion to check a postcondition
+of a method.  A postcondition is something that is supposed to be true after
+the method has executed, and it can be tested with an <span class="code">assert</span> statement at the
+end of the method.  If the postcondition is false, there is a bug in the method
+itself, and that is something that needs to be found during the development
+of the method.</p>
+   
+
+<hr class="break">
+
+
+<p>To have any effect, assertions must be <b>enabled</b> when the program is run.
+How to do this depends on what programming environment you are using.  (See
+<a href="../c2/s6.html">Section&nbsp;2.6</a> for a discussion of programming environments.)
+In the usual command line environment, assertions are enabled by adding the 
+option <span class="code">-enableassertions</span> to the <span class="code">java</span> command that 
+is used to run the program.  For example, if the class that contains the main 
+program is <span class="classname">RootFinder</span>, then the command</p>
+   
+
+<pre>java -enableassertions RootFinder</pre>
+
+
+<p>will run the program with assertions enabled.  
+The <span class="code">-enableassertions</span>
+option can be abbreviated to <span class="code">-ea</span>, so the command can alternatively
+be written as</p>
+   
+
+<pre>java -ea RootFinder</pre>
+   
+
+<p>In fact, it is possible to enable assertions in just part of a program.
+An option of the form
+"<span class="code">-ea:<span class="bnf">class-name</span></span>"
+enables only the assertions in the specified class.  Note that there are no
+spaces between the <span class="code">-ea</span>, the ":", and the name of the class.  To
+enable all the assertions in a package and in its sub-packages, you can use
+an option of the form "<span class="code">-ea:<span class="bnf">package-name</span>...</span>".
+To enable assertions in the "default package" (that is, classes that are not specified to
+belong to a package, like almost all the classes in this book), use
+"<span class="code">-ea:...</span>".  For
+example, to run a Java program named "MegaPaint" with assertions enabled for every class
+in the packages named "paintutils" and "drawing", you would use the command:</p>
+
+
+<pre>java  -ea:paintutils...  -ea:drawing...  MegaPaint</pre>
+   
+
+<p>If you are using the Eclipse integrated development environment, you can
+specify the <span class="code">-ea</span> option by creating a <span class="newword">run configuration</span>.
+Right-click the name of the main program class in the Package Explorer pane,
+and select "Run As" from the pop-up menu and then "Run..." from the
+submenu.  This will open a dialog box where you can manage run configurations.
+The name of the project and of the main class will be already be filled in.
+Click the "Arguments" tab, and enter <span class="code">-ea</span> in the box
+under "VM Arguments".  The contents of this box are added to the <span class="code">java</span>
+command that is used to run the program.  You can enter other options
+in this box, including more complicated <span class="code">enableassertions</span> options such 
+as <span class="code">-ea:paintutils...</span>.  When you click the "Run" button,
+the options will be applied.  Furthermore, they will be applied whenever
+you run the program, unless you change the run configuration or add a
+new configuration.  Note that it is possible to make two run configurations
+for the same class, one with assertions enabled and one with assertions
+disabled.</p>
+   
+
+  
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="robustness.4.2">8.4.2&nbsp;&nbsp;Annotations</a>
+</h3>
+
+
+<p>The term "annotation" refers to notes added to or written alongside a
+main text, to help you understand or appreciate the text.  An annotation
+might be a note that you make to yourself in the margin of a book.
+It might be a footnote added to an old novel by an editor to explain
+the historical context of some event.  The annotation is metadata or "metatext,"
+that is, text written <i>about</i> the main text rather than as
+<i>part of</i> the main text itself.</p>
+
+
+<p>Comments on a program are actually a kind of annotation.  Since they
+are ignored by the compiler, they have no effect on the meaning of
+the program.  They are there to explain that meaning to a human
+reader.  It is possible, of course, for another computer program
+(not the compiler) to process comments.  That's what done in the
+case of Javadoc comments, which are processed by a program that
+uses them to create API documentation.  But comments are only
+one type of metadata that might be added to programs.</p>
+
+
+<p>In Java 5.0, a new feature called <span class="newword">annotations</span>
+was added to the Java language to make it easier to create new kinds
+of metadata for Java programs.  This has made it possible for programmers
+to devise new ways of annotating programs, and to write programs
+that can read and use their annotations.</p>
+
+
+<p>Java annotations have no direct effect on the program that
+they annotate.  But they do have many potential uses.  Some
+annotations are used to make the programmer's intent more
+explicit. Such annotations might be checked by a compiler
+to make sure that the code is consistent with the programmer's
+intention.  For example, <span class="code">@Override</span> is a standard
+annotation that can be used to annotate method definitions.
+It means that the method is intended to override (that is replace)
+a method with the same signature that was defined in some
+superclass.  A compiler can check that the superclass
+method actually exists; if not, it can inform the programmer.
+An annotation used in this way is an aid to writing correct
+programs, since the programmer can be warned about a potential
+error in advance, instead of having to hunt it down later
+as a bug.</p>
+
+
+<p>To annotate a method definition with the <span class="code">@Override</span>
+annotation,
+simply place it in front of the definition.  Syntactically,
+annotations are modifiers that are used in much the same way
+as built-in modifiers like "public" and "final."  For example,
+</p>
+
+
+<pre>@Override public void WindowClosed(WindowEvent evt) { ... }</pre>
+
+
+<p>If there is no <span class="code">"WindowClosed(WindowEvent)"</span> method
+in any superclass, then the compiler can issue an error.  In fact,
+this example is based on a hard-to-find bug that I once introduced
+when trying to override a method named "windowClosed" with
+a method that I called "WindowClosed" (with an upper case "W").
+If the <span class="code">@Override</span> annotation had existed at that time -- and
+if I had used it -- the compiler would have rejected my code
+and saved me the trouble of tracking down the bug.
+</p>
+
+
+<p>(Annotations are a fairly advanced feature, and I might not have
+mentioned them in this textbook, except that the <span class="code">@Override</span>
+annotation can show up in code generated by Eclipse and other integrated
+development environments.)</p>
+
+
+<p>There are two other standard annotations. One is <span class="code">@Deprecated</span>,
+which can be used to mark deprecated classes, methods, and variables.
+(A deprecated item is one that is considered to be obsolete, but is
+still part of the Java language for backwards compatibility for old code.)
+Use of this annotation would allow a compiler to generate warnings
+when the deprecated item is used.
+</p>
+
+
+<p>The other standard annotation is <span class="code">@SurpressWarnings</span>,
+which can be used by a compiler to turn off warning messages that
+would ordinarily be generated when a class or method is compiled.
+<span class="code">@SuppressWarnings</span> is an example of an annotation that
+has a parameter.  The parameter tells what class of warnings
+are to be suppressed.  For example, when a class or method is
+annotated with</p>
+
+
+<pre>@SuppressWarnings("deprecation")</pre>
+
+
+<p>then no warnings about the use of deprecated items will be emitted
+when the class or method is compiled.  There are other types of
+warning that can be suppressed; unfortunately the list of warnings
+and their names is not standardized and will vary from one compiler
+to another.</p>
+
+
+<p>Note, by the way, that the syntax for annotation parameters -- especially
+for an annotation that accepts multiple parameters -- is not
+the same as the syntax for method parameters.  I won't cover
+the annotation syntax here.</p>
+
+
+<p>Programmers can define new annotations for use in their code.
+Such annotations are ignored by standard compilers and programming
+tools, but it's possible to write programs that can understand the
+annotations and check for their presence in source code.  It is even
+possible to create annotations that will be retained at run-time and
+become part of the running program.  In that case, a program
+can check for annotations in the actual compiled code that is being 
+executed, and take actions that depend on the presence of the annotation
+or the values of its parameters.</p>
+
+
+<p>Annotations can help programmers to write correct programs.
+To use an example from the Java documentation, they can help
+with the creation of "boilerplate" code -- that is, code that
+has a very standardized format and that can be generated mechanically.
+Often, boilerplate code is generated based on other code.  Doing
+that by hand is a tedious and error-prone process.  A simple
+example might be code to save certain aspects of a program's state
+to a file and to restore it later.  The code for reading and writing
+the values of all the relevant state variables is highly repetitious.
+Instead of writing that code by hand, a programmer could use an
+annotation to mark the variables that are part of the state
+that is to be saved.  A program could then be used to check for
+the annotations and generate the save-and-restore code.  In fact,
+it would even be possible to do without that code altogether, if the program
+checks for the presence of the annotation at run time to decide
+which variables to save and restore.
+</p>
+
+
+
+
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s3.html">Previous Section</a> |
+           <a href="s5.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

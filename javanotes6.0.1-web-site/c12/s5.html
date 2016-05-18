@@ -1,0 +1,820 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 12.5 -- Network Programming Example: A Networked Game Framework</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s4.html">Previous Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#threads.5.1">The Netgame Framework</a>
+<br>
+<a href="#threads.5.2">A Simple Chat Room</a>
+<br>
+<a href="#threads.5.3">A Networked TicTacToe Game</a>
+<br>
+<a href="#threads.5.4">A Networked Poker Game</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 12.5</h3>
+<h2 class="section_title">Network Programming Example: A Networked Game Framework</h2>
+<hr class="break">
+
+
+<p>
+<span class="start"><big>T</big>his section presents</span> several programs that use
+networking and threads.  The common problem in each application is to support
+network communication between several programs running on different computers.
+A typical example of such an application is a networked game with two or
+more players, but the same problem can come up in less frivolous applications
+as well.  The first part of this section describes a common framework that
+can be used for a variety of such applications, and the rest of the section
+discusses three specific applications that use that framework.
+</p>
+
+
+<p>This section was inspired by a pair of students, Alexander Kittelberger and
+Kieran Koehnlein, who wanted to write a networked poker game as a final project
+in a class that I was teaching.  I helped them with the network part of the
+project by writing a basic framework to support communication between the players.
+Since the application illustrates a variety of important ideas, I decided to
+include a somewhat more advanced and general version of that framework in
+the current edition of this book.   The final
+example is a networked poker game.
+</p>
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="threads.5.1">12.5.1&nbsp;&nbsp;The Netgame Framework</a>
+</h3>
+
+
+<p>One can imagine playing many different games over the network.  As far as the
+network goes, all of those games have at least one thing in common: There has
+to be some way for actions taken by one player to be communicated over the
+network to other players.  It makes good programming sense to make that
+capability available in a reusable common core that can be used in many
+different games.  I have written such a core; it is defined by several
+classes in the package <span class="sourceref"><a href="../source/netgame/common/">netgame.common</a></span>.
+</p>
+
+
+<p>We have not done much with packages in this book, aside from using
+built-in classes.  Packages were introduced in <a href="../c2/s6.html#basics.6.4">Subsection&nbsp;2.6.4</a>,
+but we have stuck to the ``default package'' in our programming examples.
+In practice, however, packages are used in all but the simplest programming
+projects to divide the code into groups of related classes.  It makes particularly
+good sense to define a reusable framework in a package that can be included as
+a unit in a variety of projects.</p>
+
+
+<p>Integrated development environments such as Eclipse or Netbeans make it very
+easy to use packages:  To use the netgame package in a project in an IDE, simply
+copy-and-paste the entire <span class="sourceref"><a href="../source/netgame">netgame</a></span> directory into the
+project.</p>
+
+
+<p>If you work on the command line, you should be in a working directory
+that includes the <i>netgame</i> directory as a subdirectory.  Then, to compile
+all the java files in the package <span class="sourceref"><a href="../source/netgame/common/">netgame.common</a></span>,
+for example, you can use the following command in Mac OS or Linux:</p>
+
+
+<pre>javac netgame/common/*.java</pre>
+
+
+<p>For windows, you should use backslashes instead of forward slashes:</p>
+
+
+<pre>javac netgame\common\*.java</pre>
+
+
+<p>To run a main program that is defined in a package, you should again be in
+a directory that contains the package as a subdirectory, and you should use the
+full name of the class that you want to run.  For example, the <span class="classname">ChatRoomServer</span>
+class, discussed later in this section, is defined in the package <span class="sourceref"><a href="../source/netgame/chat/">netgame.chat</a></span>,
+so you would run it with the command
+</p>
+
+
+<pre>java netgame.chat.ChatRoomServer</pre>
+
+
+<p>I will have more to say about packages in the final example of the book,
+in <a href="../c13/s5.html">Section&nbsp;13.5</a>.</p>
+
+
+<hr class="break">
+
+
+<p>The applications discussed in this section are examples of distributed
+computing, since they involve several computers communicating over a network.
+Like the example in <a href="../c12/s4.html#threads.4.5">Subsection&nbsp;12.4.5</a>, they use a central "server,"
+or "master," to which a number of "clients" will connect.  All communication
+goes through the server; a client cannot send messages directly to another
+client.  In this section, I will refer to the server as a <span class="newword">hub</span>,
+in the sense of "communications hub":</p>
+
+
+<p align="center">
+<img src="HubAndClients.png" width="391" height="213" alt=""></p>
+
+
+<p>In <a href="../c12/s4.html#threads.4.5">Subsection&nbsp;12.4.5</a>,
+messages were sent back and forth between the server and the client in a definite,
+predetermined sequence.  Communication between the server and a client
+was actually communication between one thread running on the server and another
+thread running on the client.  For the netgame framework, however, I want to 
+allow for asynchronous communication, in which it is not possible to wait for
+messages to arrive in a predictable sequence.  To make this possible a netgame
+client will use two threads for communication, one for sending messages and
+one for receiving messages.  Similarly, the netgame hub will use two threads
+for communicating with each client.
+</p>
+
+
+<p>The hub is generally connected to many clients and can receive messages
+from any of those clients at any time.  The hub will have to process each
+message in some way.  To organize this processing, the hub uses a single
+thread to process all incoming messages.  When a communication thread
+receives a message from a client, it simply drops that message into a
+queue of incoming messages.  There is only one such queue, which is 
+used for messages from all clients.  The message processing thread runs
+in a loop in which it removes a message from the queue, processes it,
+removes another message from the queue, processes it, and so on.
+The queue itself is implemented as an object of type
+<span class="classname">LinkedBlockingQueue</span> (see <a href="../c12/s3.html#threads.3.3">Subsection&nbsp;12.3.3</a>).</p>
+
+
+<p align="center">
+<img src="HubAndClientThreads.png" width="517" height="251" alt=""></p>
+
+
+<p>There is one more thread in the hub, not shown in the illustration.  This final
+thread creates a <span class="classname">ServerSocket</span> and uses it to listen
+for connection requests from clients. Each time it accepts a connection request,
+it hands off the client to another object, defined by the nested class 
+<span class="classname">ConnectionToClient</span>, which will handle communication with that client.
+Each connected client is identified by an ID number.  ID numbers 1, 2, 3,&nbsp;...&nbsp;are
+assigned to clients as they connect.  Since clients can also disconnect, the clients
+connected at any give time might not have consecutive IDs. A variable
+of type <span class="classname">TreeMap&lt;Integer,ConnectionToClient&gt;</span>
+associates the ID numbers of connected clients with the objects that
+handle their connections.</p>
+
+
+<p>The messages that are sent and received are objects.  The I/O streams
+that are used for reading and writing objects are of type
+<span class="classname">ObjectInputStream</span> and <span class="classname">ObjectOutputStream</span>.
+(See <a href="../c11/s1.html#IO.1.6">Subsection&nbsp;11.1.6</a>.)  The output stream of a socket is wrapped
+in an <span class="classname">ObjectOutputStream</span> to make it possible to transmit
+objects through that socket.  The socket's input stream is wrapped in
+an <span class="classname">ObjectInputStream</span> to make it possible to receive
+objects.  Remember that the objects that are used with such streams
+must implement the interface <span class="code">java.io.Serializable</span>.</p>
+
+
+<p>The netgame <span class="classname">Hub</span> class is defined in the file
+<span class="sourceref"><a href="../source/netgame/common/Hub.java">Hub.java</a></span>, in the
+package <span class="sourceref"><a href="../source/netgame/common/">netgame.common</a></span>.
+The port on which the server socket will listen must be specified as a 
+parameter to the <span class="classname">Hub</span> constructor.
+The <span class="classname">Hub</span> class defines a method
+</p>
+
+
+<pre>protected void messageReceived(int playerID, Object message)</pre>
+
+
+<p>which is called to process messages that are received from clients.
+The first parameter, <span class="code">playerID</span>, is the ID number of the client
+from whom the message was received, and the second parameter is the message
+itself.  In the <span class="classname">Hub</span> class, this method will simply
+forward the message to all connected clients.  To forward the message, it
+wraps both the <span class="code">playerID</span> and the <span class="code">message</span> in
+an object of type <span class="classname">ForwardedMessage</span> (defined in the
+file <span class="sourceref"><a href="../source/netgame/common/ForwardedMessage.java">ForwardedMessage.java</a></span>,
+in the package <span class="code">netgame.common</span>).  In a simple application such as
+the chat room discussed in the <a href="../c12/s5.html#threads.5.2">next&nbsp;subsection</a>,
+this might be sufficient.  For most applications, however, it will be necessary
+to define a subclass of <span class="classname">Hub</span> and redefine 
+the <span class="code">messageReceived()</span> method to do more complicated message processing.
+There are several other methods that a subclass might redefine, including
+</p>
+
+
+<ul>
+
+<li>
+<span class="codedef">protected void playerConnected(int playerID)</span>  --  This method is
+called each time a player connects to the hub.  The parameter <span class="code">playerID</span>
+is the ID number of the newly connected player.  In the <span class="classname">Hub</span>
+class, this method does nothing.  Note that the complete list of ID numbers
+for currently connected players can be obtained by calling
+<span class="code">getPlayerList()</span>.</li>
+
+<li>
+<span class="codedef">protected void playerDisconnected(int playerID)</span>  --  This
+is called each time a player disconnects from the hub.  The parameter tells
+which player has just disconnected.  In the <span class="classname">Hub</span> class,
+this method does nothing.</li>
+
+</ul>
+
+
+<p>The <span class="classname">Hub</span> class also defines a number of useful public
+methods, notably</p>
+
+
+<ul>
+
+<li>
+<span class="codedef">sendToAll(message)</span>  --  sends the specified <span class="code">message</span>
+to every client that is currently connected to the hub.  The message must be a non-null
+object that implements the <span class="classname">Serializable</span> interface.</li>
+
+<li>
+<span class="codedef">sendToOne(recipientID,message)</span>  --  sends a 
+specified <span class="code">message</span> to just one user.  The first parameter,
+<span class="code">recipientID</span> is the ID number of the client who will receive the
+message.  This method returns a <span class="ptype">boolean</span> value, which is false if
+there is no connected client with the specified <span class="code">recipientID</span>.</li>
+
+<li>
+<span class="codedef">shutDownServerSocket()</span>  --  shuts down the hub's
+server socket, so that no additional clients will be able to connect.  This could
+be used, for example, in a two-person game, after the second client has connected.</li>
+
+<li>
+<span class="codedef">setAutoreset(autoreset)</span>  --  sets the <span class="ptype">boolean</span>
+value of the <span class="code">autoreset</span> property.  If this property is <span class="code">true</span>,
+then the <span class="classname">ObjectOutputStreams</span> that are used to transmit
+messages to clients will automatically be reset before each message is
+transmitted.  (Resetting an <span class="classname">ObjectOutputStream</span> is something
+that has to be done if an object is written to the stream, modified, and then
+written to the stream again.  If the stream is not reset before writing the
+modified object, then the old, unmodified value is sent to the stream instead of the new value.
+See <a href="../c11/s1.html#IO.1.6">Subsection&nbsp;11.1.6</a> for a discussion of this technicality.)</li>
+
+</ul>
+
+
+<p>For more information -- and to see how all this is implemented -- you
+should read the source code file <span class="sourceref"><a href="../source/netgame/common/Hub.java">Hub.java</a></span>.
+With some effort, you should be able to understand everything in that file.</p>
+
+
+<hr class="break">
+
+
+<p>Turning to the client side, the basic netgame client class is defined in the file
+<span class="sourceref"><a href="../source/netgame/common/Client.java">Client.java</a></span>, in 
+the package <span class="sourceref"><a href="../source/netgame/common/">netgame.common</a></span>.
+The <span class="classname">Client</span> class has a constructor that specifies
+the host name (or IP address) and port number of the hub to which the client will connect.
+This constructor blocks until the connetion has been established.</p>
+
+
+<p>
+<span class="classname">Client</span> is an <span class="code">abstract</span> class.
+Every netgame application must define a subclass of <span class="classname">Client</span>
+and provide a definition for the abstract method:</p>
+
+
+<pre>abstract protected void messageReceived(Object message);</pre>
+
+
+<p>This method is called each time a message is received from
+the netgame hub to which the client is connected.  A subclass of client
+might also override the <span class="code">protected</span> methods
+<span class="code">playerConnected</span>, <span class="code">playerDisconnected</span>,
+<span class="code">serverShutdown</span>, and <span class="code">connectionClosedByError</span>.
+See the <span class="sourceref"><a href="../source/netgame/common/Client.java">source&nbsp;code</a></span>
+for more information.  I should also note that <span class="classname">Client</span>
+contains the <span class="code">protected</span> instance variable <span class="code">connectedPlayerIDs</span>,
+of type <span class="code">int[]</span>, an array containing the ID numbers of all the clients
+that are currently connected to the hub. The most important <span class="code">public</span>
+methods that are provided by the <span class="code">Client</span> class are</p>
+
+
+<ul>
+
+<li>
+<span class="codedef">send(message)</span>  --  transmits a message to the hub.  The
+<span class="code">message</span> can be any non-null object that implements the
+<span class="classname">Serializable</span> interface.</li>
+
+<li>
+<span class="codedef">getID()</span>  --  gets the ID number that was assigned to this client by the hub.</li>
+
+<li>
+<span class="codedef">disconnect()</span>  --  closes the client's connection to the hub.
+It is not possible to send messages after disconnecting.  The <span class="code">send()</span>
+method will throw an <span class="classname">IllegalStateException</span> is an attempt is
+made to do so.</li>
+
+</ul>
+
+
+<p>The <span class="classname">Hub</span> and <span class="classname">Client</span> classes
+are meant to define a general framework that can be used as the basis for
+a variety of networked games -- and, indeed, of other distributed programs.
+The low level details of network communication and multithreading are hidden
+in the <span class="code">private</span> sections of these classes.  Applications that
+build on these classes can work in terms of higher-level concepts such
+as players and messages.  The design of these classes was developed though several
+iterations, based on experience with several actual applications.  I urge
+you to look at the source code to see how <span class="classname">Hub</span> and
+<span class="classname">Client</span> use threads, sockets, and streams.  In the
+remainder of this section, I will discuss three applications built on
+the netgame framework.  I will not discuss these applications in great detail.
+You can find the complete source code for all three in the
+<span class="sourceref"><a href="../source/netgame/">netgame</a></span> package.</p>
+
+
+
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="threads.5.2">12.5.2&nbsp;&nbsp;A Simple Chat Room</a>
+</h3>
+
+
+<p>Our first example is a "chat room," a network application
+where users can connect to a server and can then post messages
+that will be seen by all current users of the room.  It is similar
+to the <span class="sourceref"><a href="../source/GUIChat.java">GUIChat</a></span> program
+from <a href="../c12/s4.html#threads.4.2">Subsection&nbsp;12.4.2</a>, except that any number of 
+users can participate in a chat.  While this application is not
+a game as such, it does show the basic functionality of the
+netgame framework.
+</p>
+
+
+<p>The chat room application consists of two programs.  The first,
+<span class="sourceref"><a href="../source/netgame/chat/ChatRoomServer.java">ChatRoomServer.java</a></span>,
+is a completely trivial program that simply creates a netgame 
+<span class="classname">Hub</span> to listen for connection requests
+from netgame clients:</p>
+
+
+<pre>public static void main(String[] args) {
+    try {
+        new Hub(PORT);
+    }
+    catch (IOException e) {
+        System.out.println("Can't create listening socket.  Shutting down.");
+    }
+}</pre>
+
+
+<p>The port number, <span class="code">PORT</span>, is defined as a constant in the
+program and is arbitrary, as long as both the server and the
+clients use the same port.</p>
+
+
+<p>The second part of the chat room application is the program
+<span class="sourceref"><a href="../source/netgame/chat/ChatRoomWindow.java">ChatRoomWindow.java</a></span>,
+which is meant to be run by users who want to participate in the chat room.  
+A potential user must know the name (or IP address) of the computer
+where the hub is running.  (For testing, it is possible to run 
+the client program on the same computer as the hub, using <span class="code">localhost</span>
+as the name of the computer where the hub is running.)
+When <span class="classname">ChatRoomWindow</span> is
+executed, it uses a dialog box to ask the user for this information.  It
+then opens a window that will serve as the user's interface to the chat
+room.  The window has a large transcript area that displays messages that
+users post to the chat room.  It also has a text input box where the
+user can enter messages.  When the user enters a message, that message
+will be posted to the transcript of every user who is connected to the
+hub, so all users see every message sent by every user.  Let's look
+at some of the programming.</p>
+
+
+<p>Any netgame application must define a subclass of the abstract 
+<span class="sourceref"><a href="../source/netgame/common/Client.java">Client</a></span> class.
+For the chat room application, clients are defined by a nested
+class <span class="classname">ChatClient</span> inside <span class="classname">ChatRoomWindow</span>.
+The program has an instance variable, <span class="code">connection</span>, of type
+<span class="classname">ChatClient</span>, which represents the program's
+connection to the hub.  When the user enters a message, that message
+is sent to the hub by calling</p>
+
+
+<pre>connection.send(message);</pre>
+
+
+<p>When the hub receives the message, it packages it into an object
+of type <span class="sourceref"><a href="../source/netgame/common/ForwardedMessage.java">ForwardedMessage</a></span>,
+along with the ID number of the client who sent the message.  The hub
+sends a copy of that <span class="classname">ForwardedMessage</span> to every
+connected client, including the client who sent the message.  When
+the message is received from the hub by a client object, the
+<span class="code">messageReceived()</span> method of the client object is called.
+<span class="classname">ChatClient</span> overrides this method to make it
+add the message to the transcript of the <span class="classname">ChatClientWindow</span>.
+</p>
+
+
+<p>A client is also notified when a player connects to or disconnects from
+the hub and when the connection with the hub is lost.  <span class="classname">ChatClient</span> 
+overrides the methods that are called when these events happen so that
+they post appropriate messages to the transcript.   Here's the complete definition
+of the client class for the chat room application:</p>
+
+
+<pre>/**
+ * A ChatClient connects to a Hub and is used to send messages to
+ * and receive messages from the Hub.  Messages received from the
+ * Hub will be of type ForwardedMessage and will contain the
+ * ID number of the sender and the string that was sent by that user.
+ */
+private class ChatClient extends Client {
+
+    /**
+     * Opens a connection to the chat room server on a specified computer.
+     */
+    ChatClient(String host) throws IOException {
+        super(host, PORT);
+    }
+
+    /**
+     * Responds when a message is received from the server.  It should be
+     * a ForwardedMessage representing something that one of the participants
+     * in the chat room is saying.  The message is simply added to the
+     * transcript, along with the ID number of the sender.
+     */
+    protected void messageReceived(Object message) {
+        if (message instanceof ForwardedMessage) {  
+                         // (no other message types are expected)
+            ForwardedMessage fm = (ForwardedMessage)message;
+            addToTranscript("#" + fm.senderID + " SAYS:  " + fm.message);
+        }
+    }
+
+    /**
+     * Called when the connection to the client is shut down because of some
+     * error message.  (This will happen if the server program is terminated.)
+     */
+    protected void connectionClosedByError(String message) {
+        addToTranscript("Sorry, communication has shut down due to an error:\n     " 
+                                        + message);
+        sendButton.setEnabled(false);
+        messageInput.setEnabled(false);
+        messageInput.setEditable(false);
+        messageInput.setText("");
+        connected = false;
+        connection = null;
+    }
+
+    /**
+     * Posts a message to the transcript when someone leaves the chat room.
+     */
+    protected void playerConnected(int newPlayerID) {
+        addToTranscript("Someone new has joined the chat room, with ID number " 
+                                       + newPlayerID);
+    }
+
+    /**
+     * Posts a message to the transcript when someone leaves the chat room.
+     */
+    protected void playerDisconnected(int departingPlayerID) {
+        addToTranscript("The person with ID number " + departingPlayerID 
+                                     + " has left the chat room");
+    }
+
+} // end nested class ChatClient</pre>
+
+
+<p>For the full source code of the chat room application, see the
+source code files, which can be found in the package
+<span class="sourceref"><a href="../source/netgame/chat">netgame.chat</a></span>.</p>
+
+
+<p>Note: A user of my chat room application is identified only by an ID number that 
+is assigned by the hub when the client connects.  Essentially, users are
+anonymous, which is not very satisfying.  See <a href="../c12/ex6-ans.html">Exercise&nbsp;12.6</a> 
+at the end of this chapter for a way of addressing this issue.</p>
+
+
+
+
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="threads.5.3">12.5.3&nbsp;&nbsp;A Networked TicTacToe Game</a>
+</h3>
+
+
+<p>My second example is a very simple game: the familiar children's game
+TicTacToe.  In TicTacToe, two players alternate placing marks on a
+three-by-three board.  One player plays X's; the other plays O's.
+The object is to get three X's or three O's in a row.</p>
+
+
+<p>At a given time, the state of a TicTacToe game consists of
+various pieces of information such as the current contents of
+the board, whose turn it is, and -- when the game is over -- who
+won or lost.  In a typical non-networked version of the game,
+this state would be represented by instance variables.  The
+program would consult those instance variables to determine
+how to draw the board and how to respond to user actions such
+as mouse clicks.  In the networked netgame version, however,
+there are <b>three</b> programs involved:  Two copies of a 
+client program, which provide the interface to the two players
+of the game, and the hub program that manages the connections to the
+clients.  These programs are not even running on the same 
+computer, so they can't share the same instance variables.
+Nevertheless, the game has to have a single, well-defined
+state at any time, and both players have to be aware of
+that state.</p>
+
+
+<p>My solution is to store the "official" game state in
+the hub, and to send a copy of that state to each player
+every time the state changes.  The players can't change
+the state directly.  When a player takes some action, such
+as placing a piece on the board, that action is sent
+as a message to the hub.  The hub changes the state to
+reflect the result of the action, and it sends the new
+state to both players.  The window used by each player will
+then be updated to reflect the new state.  In this way, we
+can be sure that the game always looks the same to both players.</p>
+
+
+<p>Networked TicTacToe is defined in several classes in the
+package <span class="sourceref"><a href="../source/netgame/tictactoe/">netgame.tictactoe</a></span>.
+<span class="sourceref"><a href="../source/netgame/tictactoe/TicTacToeGameState.java">TicTacToeGameState</a></span>
+represents the state of a game.  It includes a method
+</p>
+
+
+<pre>public void applyMessage(int senderID, Object message)</pre>
+
+
+<p>that modifies the state to reflect the effect of a message
+received from one of the players of the game.  The message will
+represent some action taken by the player, such as clicking
+on the board.</p>
+
+
+<p>The <span class="classname">Hub</span> class knows nothing about TicTacToe.
+Since the hub for the TicTacToe game has to keep track of the state
+of the game, it has to be defined by a subclass of <span class="classname">Hub</span>.
+The <span class="sourceref"><a href="../source/netgame/tictactoe/TicTacToeGameHub.java">TicTacToeGameHub</a></span>
+class is quite simple.  It overrides the <span class="code">messageRecieved()</span> method
+so that it responds to a message from a player by applying that message
+to the game state and sending a copy of the new state to both players.  It
+also overrides the <span class="code">playerConnected()</span> and <span class="code">playerDisconnected()</span>
+methods to take appropriate actions, since the game can only be played when
+there are exactly two connected players.  Here is the complete source code:</p>
+
+
+<pre>package netgame.tictactoe;
+
+import java.io.IOException;
+
+import netgame.common.Hub;
+
+/**
+ * A "Hub" for the network TicTacToe game.  There is only one Hub
+ * for a game, and both network players connect to the same Hub.
+ * Official information about the state of the game is maintained
+ * on the Hub.  When the state changes, the Hub sends the new 
+ * state to both players, ensuring that both players see the
+ * same state.
+ */
+public class TicTacToeGameHub extends Hub {
+    
+    private TicTacToeGameState state;  // Records the state of the game.
+
+    /**
+     * Create a hub, listening on the specified port.  Note that this
+     * method calls setAutoreset(true), which will cause the output stream
+     * to each client to be reset before sending each message.  This is
+     * essential since the same state object will be transmitted over and
+     * over, with changes between each transmission.
+     * @param port the port number on which the hub will listen.
+     * @throws IOException if a listener cannot be opened on the specified port.
+     */
+    public TicTacToeGameHub(int port) throws IOException {
+        super(port);
+        state = new TicTacToeGameState();
+        setAutoreset(true);
+    }
+
+    /**
+     * Responds when a message is received from a client.  In this case,
+     * the message is applied to the game state, by calling state.applyMessage().
+     * Then the possibly changed state is transmitted to all connected players.
+     */
+    protected void messageReceived(int playerID, Object message) {
+        state.applyMessage(playerID, message);
+        sendToAll(state);
+    }
+
+    /**
+     * This method is called when a player connects.  If that player
+     * is the second player, then the server's listening socket is
+     * shut down (because only two players are allowed), the 
+     * first game is started, and the new state -- with the game
+     * now in progress -- is transmitted to both players.
+     */
+    protected void playerConnected(int playerID) {
+        if (getPlayerList().length == 2) {
+            shutdownServerSocket();
+            state.startFirstGame();
+            sendToAll(state);
+        }
+    }
+
+    /**
+     * This method is called when a player disconnects.  This will
+     * end the game and cause the other player to shut down as
+     * well.  This is accomplished by setting state.playerDisconnected
+     * to true and sending the new state to the remaining player, if 
+     * there is one, to notify that player that the game is over.
+     */
+    protected void playerDisconnected(int playerID) {
+        state.playerDisconnected = true;
+        sendToAll(state);
+    }
+}</pre>
+
+
+
+<p>A player's interface to the game is represented by the
+class <span class="sourceref"><a href="../source/netgame/tictactoe/TicTacToeWindow.java">TicTacToeWindow</a></span>.
+As in the chat room application, this class defines a nested subclass
+of <span class="classname">Client</span> to represent the client's connection
+to the hub.  One interesting point is how the client responds to a message
+from the hub.  Such a message represents a new game state.  When the 
+message is received, the window must be updated to show the new state.
+The message is received and processed by one thread; the updating is done
+in another thread.  This has the potential of introducing race conditions
+that require synchronization.  (In particular, as I was developing the
+program, I found that it was possible for a message to be received before
+the window's constructor had finished executing.  This led to a very
+hard-to-diagnose bug because my response to the message was trying to
+use objects that had not yet been created.)</p>
+
+
+<p>When working with the Swing API, it is recommended that all modifications
+to the GUI be made in the GUI event thread.  An alternative would be to make
+<span class="code">paintComponent()</span> and other methods <span class="code">synchronized</span>,
+but that would negatively impact the performace of the GUI.  Swing includes
+a method <span class="code">SwingUtilitites.invokeLater(runnable)</span>  to make it
+possible to run arbitrary code in the GUI event thread.  The parameter,
+<span class="code">runnable</span>, is an object that implements the <span class="classname">Runnable</span>
+interface that was discussed in <a href="../c12/s1.html#threads.1.1">Subsection&nbsp;12.1.1</a>.  A
+<span class="classname">Runnable</span> object has a <span class="code">run()</span> method.
+<span class="code">SwingUtilities.runLater()</span> will schedule the <span class="code">run()</span>
+method of the object to be executed in the GUI event thread.  It will be
+executed after that thread has finished handling any pending events.
+By executing <span class="code">run()</span> in the event thread, you can be sure that
+it will not introduce any synchronization problems.  In the TicTacToe
+client class, this technique is used in the method that processes
+events received from the hub:</p>
+
+
+
+<pre>protected void messageReceived(final Object message) {
+    if (message instanceof TicTacToeGameState) {
+        SwingUtilities.invokeLater(new Runnable(){
+            public void run() {
+                   // The newstate() method updates the GUI for the new state.
+                newState( (TicTacToeGameState)message ); 
+            }
+        });
+    }
+}</pre>
+
+
+<p>(The <span class="classname">SwingUtiltites</span> class, by the way, includes a
+variety of useful static methods that can be used in programming with Swing;
+it's worth taking a look at the documentation for that class.)</p>
+
+
+
+<p>To run the TicTacToe netgame, the two players should each run the program
+<span class="sourceref"><a href="../source/netgame/tictactoe/Main.java">Main.java</a></span>
+in the package <span class="sourceref"><a href="../source/netgame/tictactoe/">netgame.tictactoe</a></span>.
+This program presents the user with a dialog box where the user can 
+choose to start a new game or to join an existing game.  If the user
+starts a new game, then a <span class="classname">TicTacToeHub</span> is created
+to manage the game; a <span class="classname">TicTacToeWindow</span> is created
+and connects to that hub.  If the user chooses to connect to an existing
+game, then only the window is created; that window connects to the 
+hub that was created by the first player.  The second player has to know
+the name of the computer where the first player's program is running.
+As usual, for testing, you can run everything on one computer and use
+"localhost" as the computer name.</p>
+
+
+
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="threads.5.4">12.5.4&nbsp;&nbsp;A Networked Poker Game</a>
+</h3>
+
+
+<p>And finally, we turn very briefly to the application that inspired the
+netgame framework:  Poker.  In particular, I have implemented a
+two-player version of the traditional "five card draw" version of
+that game.  This is a rather complex application, and I do not
+intend to say much about it here other than to describe the general
+design.  The full source code can be found in the package
+<span class="sourceref"><a href="../source/netgame/fivecarddraw/">netgame.fivecarddraw</a></span>.
+To fully understand it, you will need to be familiar with the
+game of five card draw poker.  And it uses some techniques
+from <a href="../c13/s1.html">Section&nbsp;13.1</a> for drawing the cards.
+</p>
+
+
+<p>In general outline, the Poker game is similar to the TicTacToe game.
+There is a <span class="sourceref"><a href="../source/netgame/fivecarddraw/Main.java">Main</a></span>
+class that can be run by either player, to start a new game or to join
+an existing game.  There is a class 
+<span class="sourceref"><a href="../source/netgame/fivecarddraw/PokerGameState.java">PokerGameState</a></span>
+to represent the state of a game.  And there is a subclass,
+<span class="sourceref"><a href="../source/netgame/fivecarddraw/PokerHub.java">PokerHub</a></span>,
+of <span class="classname">Hub</span> to manage the game.</p>
+
+
+<p>But Poker is a much more complicated game than TicTacToe, and the
+game state is correspondingly more complicated.  It's not clear that we
+want to broadcast a new copy of the complete game state to the players
+every time some minor change is made in the state.  Furthermore, it
+doesn't really make sense for both players to know the full game state -- that
+would include the opponent's hand and full knowledge of the deck from which
+the cards are dealt.  (Of course, our client programs wouldn't have to show
+the full state to the players, but it would be easy enough for a player to
+substitute their own client program to enable cheating.)  So in the Poker
+application, the full game state is known only to the <span class="classname">PokerHub</span>.
+A <span class="classname">PokerGameState</span> object represents a view of the
+game from the point of view of one player only.  When the state of the game
+changes, the <span class="classname">PokerHub</span> creates two different
+<span class="classname">PokerGameState</span> objects, representing the state of the
+game from each player's point of view, and it sends the appropriate game state
+objects to each player.  You can see the <span class="sourceref"><a href="../source/netgame/fivecarddraw/">source&nbsp;code</a></span>
+for details.</p>
+
+
+<p>(One of the hard parts in poker is to implement some way to compare
+two hands, to see which is higher.  In my game, this is handled by the
+class <span class="sourceref"><a href="../source/netgame/fivecarddraw/PokerRank.java">PokerRank</a></span>.
+You might find this class useful in other poker games.)</p>
+
+
+
+
+
+
+
+<hr>
+<div align="center">
+<b><small>End of Chapter 12</small></b>
+</div>
+<hr>
+<p align="center">
+<applet code="LittleQuicksortDemo.java" width="450" height="150" archive="LittleQuicksortDemo.jar" alt=""></applet></p>
+
+
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s4.html">Previous Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

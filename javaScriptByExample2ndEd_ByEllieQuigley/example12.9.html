@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <title>Planet Earth</title>
+    <script type="text/javascript">
+      function alert_me(){
+         alert("This window's outer width is: "+window.outerWidth+" and the outer height is: " +window.outerHeight);
+      }
+      function resizeEarth() {
+        document.images["earth"].style.height =       
+                  (document.body.clientHeight - 75) * 0.9;
+      }
+    </script>
+  </head>
+
+  <body onload="resizeEarth();">
+     <div style="margin-top:75px; text-align:center">
+      <img name="earth" src=" http://recycle4acause.files.wordpress.com/2009/12/earth.jpg"    
+          alt="earth"images/Earth.jpg" alt="earth picture"
+          onclick="alert_me();"/>
+    </div>
+  </body>
+</html>

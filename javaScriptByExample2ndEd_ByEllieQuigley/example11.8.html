@@ -1,0 +1,42 @@
+<html><head><title>An HTML Form</title></head>
+	<body><big><b>
+	<form action="/cgi-bin/bookstuff/form1.cgi" method="post"><p>
+	<fieldset><legend>All About You</legend>
+	<p>
+	Type your name here:
+	<input type="text" name="namestring" size="50" />
+	<p />
+	<b>Choose a work place:</b><br />
+	<input type="checkbox" name="place" value="LA">Los Angeles<br />
+	<input type="checkbox" name="place" value="SJ">San Jose<br />
+	<input type="checkbox" name="place" 
+           value="SF" checked>San Francisco  </>
+  	  <p></p>
+      <input type="radio" name="status" value="senior" id="senior" />
+       <label for="senior">senior</label>
+      <br />
+
+	 <input type="radio" name="status" value="adult" id="adult" />
+        <label for="senior">adult</label>
+      <br />
+
+	  <input type="radio" name="status" value="child" id="child" />
+         <label for="senior">child</label>
+	   <br />
+      <br />	<b>Choose a vacation spot:</b><br />
+	<select multiple name="location" />
+		<option selected value="hawaii"> Hawaii </option>
+		<option value="bali">Bali </option>
+		<option value="maine">Maine </option>
+		<option value="paris">Paris </option>
+	</select>
+	<p>
+	  </fieldset>
+	  <input type="submit" value="Submit" />
+	  <input type="reset" value="Clear" />
+    </p>
+	</form>
+	</big>
+	</body>
+	</html>
+	<p></fieldset>

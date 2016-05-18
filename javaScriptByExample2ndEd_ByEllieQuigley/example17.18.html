@@ -1,0 +1,19 @@
+<html><head><title></title>
+	</head>
+	<body>
+<script language="JavaScript">
+	var reg_expression = /\d\.?\d/;
+	var textString=prompt("Type a string of text","");
+	var result=reg_expression.test(textString);  // Returns true 
+		                                             // or false
+	document.write(result+"<br />");
+	if (result){
+		document.write("<b>The regular expression /\\d\\.?\\d/matched the string\""+
+		     textString +"\".<br>");
+		}
+	else{
+			alert("No Match!");
+	}
+</script>
+</body>
+</html>

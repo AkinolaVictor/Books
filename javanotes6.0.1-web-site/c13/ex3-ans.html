@@ -1,0 +1,231 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 3, Chapter 13</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 13.3</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 13.3:</h3>
+<p>The <span class="classname">StopWatchLabel</span>
+component from <a href="../c13/s4.html#GUI2.4.5">Subsection&nbsp;13.4.5</a> displays the text "Timing..."
+when the stop watch is running. It would be nice if it displayed the elapsed
+time since the stop watch was started. For that, you need to create a
+<span class="classname">Timer</span>. (See <a href="../c6/s5.html#GUI1.5.1">Subsection&nbsp;6.5.1</a>.)
+Add a <span class="classname">Timer</span> to the original source code, 
+<span class="sourceref"><a href="../source/StopWatchLabel.java">StopWatchLabel.java</a></span>, to drive the display of the elapsed time in
+seconds. Create the timer in the <span class="code">mousePressed()</span> routine when the stop
+watch is started. Stop the timer in the <span class="code">mousePressed()</span> routine when
+the stop watch is stopped. The elapsed time won't be very accurate anyway, so
+just show the integral number of seconds. You only need to set the text a few
+times per second. For my <span class="classname">Timer</span> method, I use a delay of 200
+milliseconds for the timer. Here is an applet that tests my solution to this
+exercise:</p>
+
+
+<p align="center">
+<applet code="TestStopWatch2.class" width="350" height="50" archive="TestStopWatch2.jar" alt=""></applet></p>
+
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>This one is almost too easy. (The hardest part is that I referred to the
+stop watch as a "timer" in my program, and this could be confused with a
+<span class="classname">Timer</span> object, so I changed some of the old references to
+"timer" to "stop watch".)</p>
+
+
+<p>An instance variable named <span class="code">timer</span> of type
+<span class="classname">Timer</span> is added to the class. The timer is started when the stop watch
+is started and is stopped when the stop watch is stopped. Both of these things
+happen in the <span class="code">mousePressed()</span> method. I could have created a new timer
+each time the stop watch is started, but I decided to reuse a single timer. The
+first time the stop watch is started, a <span class="classname">Timer</span>  object is created and
+started. After that, the same <span class="classname">Timer</span>  object is simply restarted. I can
+tell the difference between these two cases since the first time, the timer
+will be <span class="code">null</span>:</p>
+
+
+<pre>if (timer == null) {
+   timer = new Timer(200,this);
+   timer.start();
+}
+else
+   timer.restart();</pre>
+
+
+<p>The class is declared to implement <span class="classname">ActionListener</span> so that it can
+respond to events from the timer. (As usual, it would probably be better style
+to create another object to do the listening.) The <span class="code">actionPerformed()</span>
+method just has to set the text on the label to show how much time has passed
+since the stop watch was started. The starting time of the stop watch is in the
+instance variable <span class="code">startTime</span>. The current time is given by
+<span class="code">System.currentTimeMillis()</span>, so the elapsed time, in milliseconds, is
+just <span class="code">System.currentTimeMillis() - startTime</span>. This has to be divided by
+1000 to give the number of seconds. (Remember that dividing an integer by an
+integer always gives an integer. The answer is truncated by dropping the fractional part, giving the
+integral number of seconds.) The <span class="code">actionPerformed()</span> method simply does
+this calculation and then sets the text of the label.</p>
+
+
+<p>The complete source code is shown below, followed by the source code for the
+little applet that tests the component. The applet sets the fonts and colors of
+the stop watch component.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<p>
+<b>The timer component, with changes from the original shown in red:</b>
+</p>
+
+<pre class="exercisecode">
+import java.awt.event.*;
+import javax.swing.*;
+
+/**
+ * A custom component that acts as a simple stop-watch.  When the user clicks
+ * on it, this component starts timing.  When the user clicks again,
+ * it displays the time between the two clicks.  Clicking a third time
+ * starts another timer, etc.  While it is timing, the label displays
+ * <span class="newcode">the integral number of seconds since it was started.</span>
+ */
+public class StopWatchLabel2 extends JLabel 
+                               implements MouseListener, ActionListener {
+
+   private long startTime;   // Start time of timer.
+                             //   (Time is measured in milliseconds.)
+
+   private boolean running;  // True when the timer is running.
+   
+   <span class="newcode">private Timer timer;      // Generates events that cause the component
+                             // to be repainted periodically while the
+                             // stop watch is running.</span>
+
+   /**
+    * Constructor sets initial text on the label to
+    * "Click to start timer." and sets up a mouse listener
+    * so the label can respond to clicks.
+    */
+   public StopWatchLabel2() {
+      super("  Click to start timer.  ", JLabel.CENTER);
+      addMouseListener(this);
+   }
+   
+   
+   /**
+    * Tells whether the timer is currently running.
+    */
+   public boolean isRunning() {
+      return running;
+   }
+   
+   
+   <span class="newcode">/**
+    * This will be called when an event from the timer is received.  It just 
+    * sets the stop watch to show the amount of time that it has been running.
+    * Time is rounded down to the nearest second.
+    */
+   public void actionPerformed(ActionEvent evt) {
+      long time = (System.currentTimeMillis() - startTime) / 1000;
+      setText("Running:  " + time + " seconds");
+    }</span>
+
+   
+   /**
+    * React when the user presses the mouse by starting
+    * or stopping the stop watch and changing the text that
+    * is shown on the label.
+    */
+   public void mousePressed(MouseEvent evt) {
+      if (running == false) {
+            // Record the time and start the stop watch.
+         running = true;
+         startTime = evt.getWhen();  // Time when mouse was clicked.
+         <span class="newcode">setText("Running:  0 seconds");
+         if (timer == null) {
+            timer = new Timer(100,this);
+            timer.start();
+         }
+         else
+            timer.restart();</span>
+      }
+      else {
+            // Stop the stop watch.  Compute the elapsed time since the
+            // stop watch was started and display it.
+         <span class="newcode">timer.stop();</span>
+         running = false;
+         long endTime = evt.getWhen();
+         double seconds = (endTime - startTime) / 1000.0;
+         setText("Time: " + seconds + " sec.");
+      }
+   }
+
+   public void mouseReleased(MouseEvent evt) { }
+   public void mouseClicked(MouseEvent evt) { }
+   public void mouseEntered(MouseEvent evt) { }
+   public void mouseExited(MouseEvent evt) { }
+
+}
+</pre>
+
+<p>
+<b>The code for the applet that tests the component:</b>
+</p>
+
+<pre class="exercisecode">
+import java.awt.*;
+import javax.swing.*;
+
+/**
+ * A trivial applet that tests the StopWatchLabel2 component.
+ * The applet just creates and shows a StopWatchLabel2.
+ */
+
+public class TestStopWatch2 extends JApplet {
+
+   public void init() {
+
+      StopWatchLabel2 watch = new StopWatchLabel2();
+      watch.setFont( new Font("SansSerif", Font.BOLD, 24) );
+      watch.setBackground(Color.WHITE);
+      watch.setForeground( new Color(180,0,0) );
+      watch.setOpaque(true);
+      getContentPane().add(watch, BorderLayout.CENTER);
+
+   }
+
+}
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

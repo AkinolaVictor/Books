@@ -1,0 +1,1136 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 7.3 -- Dynamic Arrays and ArrayLists</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s2.html">Previous Section</a> |
+           <a href="s4.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#arrays.3.1">Partially Full Arrays</a>
+<br>
+<a href="#arrays.3.2">Dynamic Arrays</a>
+<br>
+<a href="#arrays.3.3">ArrrayLists</a>
+<br>
+<a href="#arrays.3.4">Parameterized Types</a>
+<br>
+<a href="#arrays.3.5">Vectors</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 7.3</h3>
+<h2 class="section_title">Dynamic Arrays and ArrayLists</h2>
+<hr class="break">
+
+
+<p>
+<span class="start"><big>T</big>he size of an array</span> is fixed when it is created.
+In many cases, however, the number of data items that are actually stored in
+the array varies with time. Consider the following examples: An array that
+stores the lines of text in a word-processing program. An array that holds the
+list of computers that are currently downloading a page from a Web site. An
+array that contains the shapes that have been added to the screen by the user
+of a drawing program. Clearly, we need some way to deal with cases where the
+number of data items in an array is not fixed.</p>
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="arrays.3.1">7.3.1&nbsp;&nbsp;Partially Full Arrays</a>
+</h3>
+
+
+<p>Consider an application where the number of items that we want to store in
+an array changes as the program runs. Since the size of the array can't
+actually be changed, a separate counter variable must be used to keep track of
+how many spaces in the array are in use. (Of course, every space in the array
+has to contain something; the question is, how many spaces contain useful or
+valid items?)</p>
+
+
+<p>Consider, for example, a program that reads positive integers entered by the
+user and stores them for later processing. The program stops reading when the
+user inputs a number that is less than or equal to zero. The input numbers can
+be kept in an array, <span class="code">numbers</span>, of type <span class="atype">int[]</span>. Let's say that
+no more than 100 numbers will be input. Then the size of the array can be fixed
+at 100. But the program must keep track of how many numbers have actually been
+read and stored in the array. For this, it can use an integer variable,
+<span class="code">numCount</span>. Each time a number is stored in the array, <span class="code">numCount</span> must
+be incremented by one. As a rather silly example, let's write a program that
+will read the numbers input by the user and then print them in the reverse of the
+order in which they were entered.
+(This is, at least, a processing task that requires that the numbers be saved
+in an array. Remember that many types of processing, such as finding the sum or
+average or maximum of the numbers, can be done without saving the individual
+numbers.)</p>
+
+
+<pre>public class ReverseInputNumbers {
+
+   public static void main(String[] args) {
+   
+     int[] numbers;  // An array for storing the input values.
+     int numCount;   // The number of numbers saved in the array.
+     int num;        // One of the numbers input by the user.
+     
+     numbers = new int[100];   // Space for 100 ints.
+     numCount = 0;             // No numbers have been saved yet.
+     
+     TextIO.putln("Enter up to 100 positive integers; enter 0 to end.");
+     
+     while (true) {   // Get the numbers and put them in the array.
+        TextIO.put("? ");
+        num = TextIO.getlnInt();
+        if (num &lt;= 0)
+           break;
+        numbers[numCount] = num;
+        numCount++;
+     }
+     
+     TextIO.putln("\nYour numbers in reverse order are:\n");
+     
+     for (int i = numCount - 1; i &gt;= 0; i--) {
+         TextIO.putln( numbers[i] );
+     }
+     
+   } // end main();
+   
+}  // end class ReverseInputNumbers</pre>
+
+
+<p>It is especially important to note that the variable <span class="code">numCount</span> plays a
+dual role. It is the number of items that have been entered into the array.
+But it is also the index of the next available spot in the array. For example,
+if 4 numbers have been stored in the array, they occupy locations number 0, 1,
+2, and 3. The next available spot is location 4. When the time comes to print
+out the numbers in the array, the last occupied spot in the array is location
+<span class="code">numCount&nbsp;-&nbsp;1</span>, so the <span class="code">for</span> loop prints out values starting from
+location <span class="code">numCount&nbsp;-&nbsp;1</span> and going down to 0.</p>
+
+
+<p>Let's look at another, more realistic example. Suppose that you write a game
+program, and that players can join the game and leave the game as it
+progresses. As a good object-oriented programmer, you probably have a class
+named <span class="classname">Player</span> to represent the individual players in the game. A list
+of all players who are currently in the game could be stored in an array,
+<span class="code">playerList</span>, of type <span class="atype">Player[]</span>. Since the number of players can
+change, you will also need a variable, <span class="code">playerCt</span>, to record the number
+of players currently in the game. Assuming that there will never be more than
+10 players in the game, you could declare the variables as:</p>
+
+
+<pre>Player[] playerList = new Player[10];  // Up to 10 players.
+int      playerCt = 0;  // At the start, there are no players.</pre>
+
+
+<p>After some players have joined the game, <span class="code">playerCt</span> will be greater
+than 0, and the player objects representing the players will be stored in the
+array elements <span class="code">playerList[0]</span>, <span class="code">playerList[1]</span>, ...,
+<span class="code">playerList[playerCt-1]</span>. Note that the array element
+<span class="code">playerList[playerCt]</span> is <b>not</b> in use. The procedure for
+adding a new player, <span class="code">newPlayer</span>, to the game is simple:</p>
+
+
+<pre>playerList[playerCt] = newPlayer; // Put new player in next
+                                  //     available spot.
+playerCt++;  // And increment playerCt to count the new player.</pre>
+
+
+<p>Deleting a player from the game is a little harder, since you don't want to
+leave a "hole" in the array. Suppose you want to delete the player at index
+<span class="code">k</span> in <span class="code">playerList</span>. If you are not worried about keeping the
+players in any particular order, then one way to do this is to move the player
+from the last occupied position in the array into position <span class="code">k</span> and then
+to decrement the value of <span class="code">playerCt</span>:</p>
+
+
+<pre>playerList[k] = playerList[playerCt - 1];
+playerCt--;</pre>
+
+
+<p>The player previously in position <span class="code">k</span> is no longer in the array. The
+player previously in position <span class="code">playerCt&nbsp;-&nbsp;1</span> is now in the array twice.
+But it's only in the occupied or valid part of the array once, since
+<span class="code">playerCt</span> has decreased by one. Remember that every element of the
+array has to hold some value, but only the values in positions 0 through
+<span class="code">playerCt&nbsp;-&nbsp;1</span> will be looked at or processed in any way.
+(By the way, you should think about what happens if the player that is being deleted
+is in the last position in the list.  The code does still work in this case.  What
+exactly happens?)</p>
+
+
+<p>Suppose that when deleting the player in position <span class="code">k</span>, you'd like to
+keep the remaining players in the same order. (Maybe because they take turns in
+the order in which they are stored in the array.) To do this, all the players
+in positions <span class="code">k+1</span> and above must move down one position in the array.
+Player <span class="code">k+1</span> replaces player <span class="code">k</span>, who is out of the game. Player
+<span class="code">k+2</span> fills the spot left open when player <span class="code">k+1</span> is moved. And so
+on. The code for this is</p>
+
+
+<pre>for (int i = k+1; i &lt; playerCt; i++) {
+    playerList[i-1] = playerList[i];
+}
+playerCt--;</pre>
+
+
+<hr class="break">
+
+
+<p>It's worth emphasizing that the <span class="classname">Player</span> example deals with an array
+whose base type is a class. An item in the array is either <span class="code">null</span> or is
+a reference to an object belonging to the class, <span class="classname">Player</span>. The
+<span class="classname">Player</span> objects themselves are not really stored in the array, only
+references to them. Note that because of the rules for assignment in Java, the
+objects can actually belong to subclasses of <span class="classname">Player</span>. Thus there could
+be different classes of players such as computer players, regular
+human players, players who are wizards, ..., all represented by different
+subclasses of <span class="classname">Player</span>.</p>
+
+
+<p>As another example, suppose that a class <span class="classname">Shape</span> represents the
+general idea of a shape drawn on a screen, and that it has subclasses to
+represent specific types of shapes such as lines, rectangles, rounded
+rectangles, ovals, filled-in ovals, and so forth. (<span class="classname">Shape</span> itself would
+be an abstract class, as discussed in <a href="../c5/s5.html#OOP.5.5">Subsection&nbsp;5.5.5</a>.)
+Then an array of type <span class="atype">Shape[]</span> can hold references to objects belonging
+to the subclasses of <span class="classname">Shape</span>. For example, the situation created by the
+statements</p>
+
+
+<pre>Shape[] shapes = new Shape[100]; // Array to hold up to 100 shapes.
+shapes[0] = new Rect();          // Put some objects in the array.
+shapes[1] = new Line(); 
+shapes[2] = new FilledOval(); 
+int shapeCt = 3;  // Keep track of number of objects in array.</pre>
+
+
+<p>could be illustrated as:</p>
+
+
+<p align="center">
+<img src="array_of_objects.png" width="417" height="208" alt="(Array containing references to three objects)"></p>
+
+
+<p>Such an array would be useful in a drawing program. The array could be used
+to hold a list of shapes to be displayed. If the <span class="code">Shape</span> class includes
+a method, "<span class="code">void redraw(Graphics&nbsp;g)</span>", for drawing the shape in a
+graphics context <span class="code">g</span>, then all the shapes in the array could be redrawn
+with a simple for loop:</p>
+
+
+<pre>for (int i = 0; i &lt; shapeCt; i++)
+   shapes[i].redraw(g);</pre>
+
+
+<p>The statement "<span class="code">shapes[i].redraw(g);</span>" calls the <span class="code">redraw()</span>
+method belonging to the particular shape at index <span class="code">i</span> in the array. Each
+object knows how to redraw itself, so that repeated executions of the statement
+can produce a variety of different shapes on the screen. This is nice example
+both of polymorphism and of array processing.</p>
+
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="arrays.3.2">7.3.2&nbsp;&nbsp;Dynamic Arrays</a>
+</h3>
+
+
+<p>In each of the above examples, an arbitrary limit was set on the number of
+items -- 100 <span class="ptype">ints</span>, 10 <span class="classname">Players</span>, 100 <span class="classname">Shapes</span>. Since the
+size of an array is fixed, a given array can only hold a certain maximum number
+of items. In many cases, such an arbitrary limit is undesirable. Why should a
+program work for 100 data values, but not for 101? The obvious alternative of
+making an array that's so big that it will work in any practical case is not
+usually a good solution to the problem. It means that in most cases, a lot of
+computer memory will be wasted on unused space in the array. That memory might
+be better used for something else. And what if someone is using a computer that
+could handle as many data values as the user actually wants to process, but
+doesn't have enough memory to accommodate all the extra space that you've
+allocated for your huge array?</p>
+
+
+<p>Clearly, it would be nice if we could increase the size of an array at will.
+This is not possible, but what <b>is</b> possible is almost as good.
+Remember that an array variable does not actually hold an array. It just holds
+a reference to an array object. We can't make the array bigger, but we can make
+a new, bigger array object and change the value of the array variable so that
+it refers to the bigger array. Of course, we also have to copy the contents of
+the old array into the new array. The array variable then refers to an array
+object that contains all the data of the old array, with room for additional
+data. The old array will be garbage collected, since it is no longer in
+use.</p>
+
+
+<p>Let's look back at the game example, in which <span class="code">playerList</span> is an
+array of type <span class="atype">Player[]</span> and <span class="code">playerCt</span> is the number of spaces
+that have been used in the array. Suppose that we don't want to put a pre-set
+limit on the number of players. If a new player joins the game and the current
+array is full, we just make a new, bigger one. The same variable,
+<span class="code">playerList</span>, will refer to the new array. Note that after this is done,
+<span class="code">playerList[0]</span> will refer to a different memory location, but the value
+stored in <span class="code">playerList[0]</span> will still be the same as it was before. Here
+is some code that will do this:</p>
+
+
+<pre>// Add a new player, even if the current array is full.
+
+if (playerCt == playerList.length) {
+        // Array is full.  Make a new, bigger array,
+        // copy the contents of the old array into it,
+        // and set playerList to refer to the new array.
+   int newSize = 2 * playerList.length;  // Size of new array.
+   Player[] temp = new Player[newSize];  // The new array.
+   System.arraycopy(playerList, 0, temp, 0, playerList.length);
+   playerList = temp;  // Set playerList to refer to new array.
+}
+
+// At this point, we KNOW there is room in the array.
+
+playerList[playerCt] = newPlayer; // Add the new player...
+playerCt++;                       //    ...and count it.</pre>
+
+
+<p>If we are going to be doing things like this regularly, it would be nice to
+define a reusable class to handle the details. An array-like object that
+changes size to accommodate the amount of data that it actually contains is
+called a <span class="newword">dynamic array</span>. A dynamic array supports
+the same operations as an array: putting a value at a given position and
+getting the value that is stored at a given position. But there is no upper
+limit on the positions that can be used (except those imposed by the size of
+the computer's memory). In a dynamic array class, the <span class="code">put</span> and
+<span class="code">get</span> operations must be implemented as instance methods. Here, for
+example, is a class that implements a dynamic array of <span class="ptype">ints</span>:</p>
+
+
+<pre>/**
+ *  An object of type DynamicArrayOfInt acts like an array of int
+ *  of unlimited size.  The notation A.get(i) must be used instead
+ *  of A[i], and A.set(i,v) must be used instead of A[i] = v.
+ */
+public class DynamicArrayOfInt {
+
+   private int[] data;  // An array to hold the data.
+
+   /**
+    * Constructor creates an array with an initial size of 1,
+    * but the array size will be increased whenever a reference
+    * is made to an array position that does not yet exist.
+    */   
+   public DynamicArrayOfInt() {
+      data = new int[1];
+   }
+   
+   /**
+    *  Get the value from the specified position in the array.
+    *  Since all array elements are initialized to zero, when the
+    *  specified position lies outside the actual physical size
+    *  of the data array, a value of 0 is returned.  Note that
+    *  a negative value of position will still produce an
+    *  ArrayIndexOutOfBoundsException.
+    */
+   public int get(int position) {
+      if (position &gt;= data.length)
+         return 0;
+      else
+         return data[position];
+   }
+   
+   /**
+    *  Store the value in the specified position in the array.
+    *  The data array will increase in size to include this
+    *  position, if necessary.
+    */
+   public void put(int position, int value) {
+      if (position &gt;= data.length) {
+             // The specified position is outside the actual size of
+             // the data array.  Double the size, or if that still does
+             // not include the specified position, set the new size
+             // to 2*position. 
+         int newSize = 2 * data.length;
+         if (position &gt;= newSize)
+            newSize = 2 * position;
+         int[] newData = new int[newSize];
+         System.arraycopy(data, 0, newData, 0, data.length);
+         data = newData;
+             // The following line is for demonstration purposes only !!
+         System.out.println("Size of dynamic array increased to " + newSize);
+      }
+      data[position] = value;
+   }
+
+} // end class DynamicArrayOfInt</pre>
+
+
+<p>The data in a <span class="classname">DynamicArrayOfInt</span> object is actually stored in a
+regular array, but that array is discarded and replaced by a bigger array
+whenever necessary. If <span class="code">numbers</span> is a variable of type
+<span class="classname">DynamicArrayOfInt</span>, then the command <span class="code">numbers.put(pos,val)</span>
+stores the value <span class="code">val</span> at position number <span class="code">pos</span> in the dynamic
+array. The function <span class="code">numbers.get(pos)</span> returns the value stored at
+position number <span class="code">pos</span>.</p>
+
+
+<p>The first example in this section used an array to store positive integers
+input by the user. We can rewrite that example to use a
+<span class="classname">DynamicArrayOfInt</span>. A reference to <span class="code">numbers[i]</span> is replaced by
+<span class="code">numbers.get(i)</span>. The statement "<span class="code">numbers[numCount] = num</span>;" is
+replaced by "<span class="code">numbers.put(numCount,num);</span>". Here's the program:</p>
+
+
+<pre>public class ReverseWithDynamicArray {
+
+   public static void main(String[] args) {
+  
+      <span class="newcode">DynamicArrayOfInt</span> numbers;  // To hold the input numbers.
+      int numCount;  // The number of numbers stored in the array.
+      int num;    // One of the numbers input by the user.
+    
+      <span class="newcode">numbers = new DynamicArrayOfInt();</span>
+      numCount = 0;
+    
+      TextIO.putln("Enter some positive integers; Enter 0 to end");
+      while (true) {  // Get numbers and put them in the dynamic array.
+         TextIO.put("? ");
+         num = TextIO.getlnInt();
+         if (num &lt;= 0)
+            break;
+         <span class="newcode">numbers.put(numCount, num);</span>  // Store num in the dynamic array.
+         numCount++;
+      }
+    
+      TextIO.putln("\nYour numbers in reverse order are:\n");
+    
+      for (int i = numCount - 1; i &gt;= 0; i--) {
+          TextIO.putln( <span class="newcode">numbers.get(i)</span> );  // Print the i-th number.
+      }
+    
+   } // end main();
+  
+}  // end class ReverseWithDynamicArray</pre>
+
+
+<p>The following applet simulates this program. I've included an output
+statement in the <span class="classname">DynamicArrayOfInt</span> class. This statement will inform
+you each time the data array increases in size. (Of course, the output
+statement doesn't really belong in the class. It's included here for
+demonstration purposes.)</p>
+
+
+<p align="center">
+<applet code="ReverseWithDynamicArrayConsole.class" width="550" height="275" archive="ReverseWithDynamicArray.jar" alt="(Applet 'ReverseIntsConsole' should be displayed here.)"></applet></p>
+
+
+
+   
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="arrays.3.3">7.3.3&nbsp;&nbsp;ArrrayLists</a>
+</h3>
+
+
+<p>The <span class="classname">DynamicArrayOfInt</span> class could be used in any situation where an
+array of <span class="ptype">int</span> with no preset limit on the size is needed. However, if
+we want to store <span class="classname">Shapes</span> instead of <span class="ptype">ints</span>, we would have to
+define a new class to do it. That class, probably named
+"<span class="classname">DynamicArrayOfShape</span>", would look exactly the same as the
+<span class="classname">DynamicArrayOfInt</span> class except that everywhere the type "<span class="ptype">int</span>"
+appears, it would be replaced by the type "<span class="classname">Shape</span>". Similarly, we could
+define a <span class="classname">DynamicArrayOfDouble</span> class, a <span class="classname">DynamicArrayOfPlayer</span>
+class, and so on. But there is something a little silly about this, since all
+these classes are close to being identical. It would be nice to be able to
+write some kind of source code, once and for all, that could be used to
+generate any of these classes on demand, given the type of value that we want
+to store. This would be an example of <span class="newword">generic programming</span>. 
+Some programming languages, including C++, have had support for
+generic programming for some time.  With version 5.0, Java introduced true
+generic programming, but even before that it had something that was very
+similar:  One can come close to generic programming in Java by working with 
+data structures that contain elements of type <span class="classname">Object</span>.
+We will first consider the almost-generic programming that has been available
+in Java from the beginning, and then we will look at the change
+that was introduced in Java 5.0.  A full discussion of generic programming
+will be given in <a href="../c10/index.html">Chapter&nbsp;10</a>.</p>
+
+
+<p>In Java, every class is a subclass of the class named <span class="classname">Object</span>. This
+means that every object can be assigned to a variable of type <span class="classname">Object</span>.
+Any object can be put into an array of type <span class="atype">Object[]</span>.  If we defined a
+<span class="classname">DynamicArrayOfObject</span> class, then we could store objects of any type.
+This is not true generic programming, and it doesn't apply to the primitive
+types such as <span class="ptype">int</span> and <span class="ptype">double</span>. But it does come close. In
+fact, there is no need for us to define a <span class="classname">DynamicArrayOfObject</span> class.
+Java already has a standard class named <span class="classname">ArrayList</span> that serves much the
+same purpose. The <span class="classname">ArrayList</span> class is in the package
+<span class="code">java.util</span>, so if you want to use it in a
+program, you should put the directive "<span class="code">import java.util.ArrayList;</span>"
+at the beginning of your source code file.</p>
+
+
+<p>The <span class="classname">ArrayList</span> class differs from my <span class="classname">DynamicArrayOfInt</span>
+class in that an <span class="classname">ArrayList</span> object always has a definite size, and it
+is illegal to refer to a position in the <span class="classname">ArrayList</span> that lies outside
+its size. In this, an <span class="classname">ArrayList</span> is more like a regular array. However,
+the size of an <span class="classname">ArrayList</span> can be increased at will. The
+<span class="classname">ArrayList</span> class defines many instance methods. I'll describe some of
+the most useful. Suppose that <span class="code">list</span> is a variable of type
+<span class="classname">ArrayList</span>.  Then we have:</p>
+
+
+<ul>
+
+<li>
+<span class="codedef">list.size()</span>  --  This function returns
+the current size of the <span class="classname">ArrayList</span>. The only valid positions in the
+list are numbers in the range <span class="code">0</span> to <span class="code">list.size()-1</span>. Note that
+the size can be zero. A call to the default constructor <span class="code">new ArrayList()</span> 
+creates an <span class="classname">ArrayList</span> of size zero.</li>
+
+<li>
+<span class="codedef">list.add(obj)</span>  --  Adds an object onto
+the end of the list, increasing the size by&nbsp;1. The parameter,
+<span class="code">obj</span>, can refer to an object of any type, or it can be <span class="code">null</span>.</li>
+
+<li>
+<span class="codedef">list.get(N)</span>  --  This function returns
+the value stored at position <span class="code">N</span> in the <span class="classname">ArrayList</span>. <span class="code">N</span>
+must be an integer in the range <span class="code">0</span> to <span class="code">list.size()-1</span>. If
+<span class="code">N</span> is outside this range, an error of type <span class="classname">IndexOutOfBoundsException</span>
+occurs. Calling this function is
+similar to referring to <span class="code">A[N]</span> for an array, <span class="code">A</span>, except that you
+can't use <span class="code">list.get(N)</span> on the left side of an assignment statement.</li>
+
+<li>
+<span class="codedef">list.set(N, obj)</span>  --  Assigns the
+object, <span class="code">obj</span>, to position <span class="code">N</span> in the <span class="classname">ArrayList</span>,
+replacing the item previously stored at position <span class="code">N</span>. The integer
+<span class="code">N</span> must be in the range from <span class="code">0</span> to <span class="code">list.size()-1</span>. A
+call to this function is equivalent to the command <span class="code">A[N]&nbsp;=&nbsp;obj</span> for an
+array <span class="code">A</span>.</li>
+
+<li>
+<span class="codedef">list.remove(obj)</span>  --  If the specified
+object occurs somewhere in the <span class="classname">ArrayList</span>, it is removed from the list.
+Any items in the list that come after the removed item are moved down one
+position. The size of the <span class="classname">ArrayList</span> decreases by 1. If <span class="code">obj</span>
+occurs more than once in the list, only the first copy is removed.</li>
+
+<li>
+<span class="codedef">list.remove(N)</span>  --  For an integer,
+<span class="code">N</span>, this removes the <span class="code">N-th</span> item in the <span class="classname">ArrayList</span>.
+<span class="code">N</span> must be in the range <span class="code">0</span> to <span class="code">list.size()-1</span>. Any items
+in the list that come after the removed item are moved down one position. The
+size of the <span class="classname">ArrayList</span> decreases by 1.</li>
+
+<li>
+<span class="codedef">list.indexOf(obj)</span>  --  A function that
+searches for the object, <span class="code">obj</span>, in the <span class="classname">ArrayList</span>. If the object
+is found in the list, then the position number where it is found is returned.
+If the object is not found, then <span class="code">-1</span> is returned.</li>
+
+</ul>
+
+
+<p>For example, suppose again that players in a game are represented by objects
+of type <span class="classname">Player</span>. The players currently in the game could be stored in
+an <span class="classname">ArrayList</span> named <span class="code">players</span>. This variable would be declared
+as</p>
+
+
+<pre>ArrayList players;</pre>
+
+
+<p>and initialized to refer to a new, empty <span class="classname">ArrayList</span> object with</p>
+
+
+<pre>players = new ArrayList();</pre>
+
+
+<p>If <span class="code">newPlayer</span> is a variable that refers to a <span class="classname">Player</span> object,
+the new player would be added to the <span class="classname">ArrayList</span> and to the game by
+saying</p>
+
+
+<pre>players.add(newPlayer);</pre>
+
+
+<p>and if player number <span class="code">i</span> leaves the game, it is only necessary to
+say</p>
+
+
+<pre>players.remove(i);</pre>
+
+
+<p>Or, if <span class="code">player</span> is a variable that refers to the <span class="classname">Player</span> that
+is to be removed, you could say</p>
+
+
+<pre>players.remove(player);</pre>
+
+
+<p>All this works very nicely. The only slight difficulty arises when you use
+the function <span class="code">players.get(i)</span> to get the value stored at position
+<span class="code">i</span> in the <span class="classname">ArrayList</span>. The return type of this function is
+<span class="classname">Object</span>. In this case the object that is returned by the function is
+actually of type <span class="classname">Player</span>. In order to do anything useful with the
+returned value, it's usually necessary to type-cast it to type
+<span class="classname">Player</span>:</p>
+
+
+<pre>Player plr = (Player)players.get(i);</pre>
+
+
+<p>For example, if the <span class="classname">Player</span> class includes an instance method
+<span class="code">makeMove()</span> that is called to allow a player to make a move in the
+game, then the code for letting every player make a move is</p>
+
+
+<pre>for (int i = 0;  i &lt; players.size();  i++) {
+    Player plr = (Player)players.get(i);
+    plr.makeMove();
+}</pre>
+
+
+<p>The two lines inside the <span class="code">for</span> loop can be combined into a single
+line:</p>
+
+
+<pre>((Player)players.get(i)).makeMove();</pre>
+
+
+<p>This gets an item from the list, type-casts it, and then calls the
+<span class="code">makeMove()</span> method on the resulting <span class="classname">Player</span>. The parentheses
+around "<span class="code">(Player)players.get(i)</span>" are required because of Java's
+precedence rules. The parentheses force the type-cast to be performed before
+the <span class="code">makeMove()</span> method is called.</p>
+   
+
+<p>For-each loops work for <span class="classname">ArrayLists</span> just as they do
+for arrays.  But note that since the items in an <span class="classname">ArrayList</span> are
+only known to be <span class="classname">Objects</span>, the type of the loop control variable
+must be <span class="classname">Object</span>.  For example, the <span class="code">for</span> loop
+used above to let each <span class="classname">Player</span> make a move could be written
+as the for-each loop</p>
+   
+
+<pre>for ( Object plrObj : players ) {
+   Player plr = (Player)plrObj;
+   plr.makeMove();
+}</pre>
+   
+
+<p>In the body of the loop, the value of the loop control variable, <span class="code">plrObj</span>,
+is one of the objects from the list, <span class="code">players</span>.  This object must be
+type-cast to type <span class="classname">Player</span> before it can be used.</p>
+   
+
+<hr class="break">
+
+
+<p>In <a href="../c5/s5.html#OOP.5.5">Subsection&nbsp;5.5.5</a>, I discussed a program,
+<span class="classname">ShapeDraw</span>, that uses <span class="classname">ArrayLists</span>. Here is another version of
+the same idea, simplified to make it easier to see how <span class="classname">ArrayList</span> is
+being used. The program supports the following operations: Click the large white drawing area to add a colored
+rectangle.  (The color of the
+rectangle is given by a "rainbow palette" along the bottom of the applet;
+click the palette to select a new color.)  Drag rectangles using the
+right mouse button.  Hold down the Alt key and click on a rectangle to
+delete it (or click it with the middle mouse button). 
+Shift-click a rectangle to move it out in front of all the other
+rectangles.  You can try an applet version of the program here:</p>
+
+
+<p align="center">
+<applet code="SimpleDrawRectsApplet.class" width="266" height="290" archive="SimpleDrawRects.jar" alt="(Applet 'SimpleDrawRects' should be displayed here.)"></applet></p>
+   
+
+<p>Source code for the main panel for this program can 
+be found in <span class="sourceref"><a href="../source/SimpleDrawRects.java">SimpleDrawRects.java</a></span>. You should be able
+to follow the source code in its entirety. (You can also take a look at the file
+<span class="sourceref"><a href="../source/RainbowPalette.java">RainbowPalette.java</a></span>, which defines the color palette shown at the bottom of
+the applet, if you like.) Here, I just
+want to look at the parts of the program that use an <span class="classname">ArrayList</span>.</p>
+
+
+<p>The applet uses a variable named <span class="code">rects</span>, of type <span class="classname">ArrayList</span>,
+to hold information about the rectangles that have been added to the drawing
+area. The objects that are stored in the list belong to a static nested class,
+<span class="classname">ColoredRect</span>, that is defined as</p>
+
+
+<pre>/**
+ * An object of type ColoredRect holds the data for one colored rectangle.
+ */
+private static class ColoredRect {
+   int x,y;           // Upper left corner of the rectangle.
+   int width,height;  // Size of the rectangle.  
+   Color color;       // Color of the rectangle.
+}</pre>
+
+
+<p>If <span class="code">g</span> is a variable of type <span class="code">Graphics</span>, then the following
+code draws all the rectangles that are stored in the list <span class="code">rects</span> (with
+a black outline around each rectangle):</p>
+
+
+<pre>for (int i = 0;  i &lt; rects.size();  i++) {
+   ColoredRect rect = (ColoredRect)rects.get(i);
+   g.setColor( rect.color );
+   g.fillRect( rect.x, rect.y, rect.width, rect.height);
+   g.setColor( Color.BLACK );
+   g.drawRect( rect.x, rect.y, rect.width - 1, rect.height - 1);
+}</pre>
+   
+
+<p>The <span class="code">i</span>-th rectangle in the list is obtained by calling
+<span class="code">rects.get(i)</span>.  Since this method returns a value of type
+<span class="classname">Object</span>, the return value must be typecast
+to its actual type, <span class="classname">ColoredRect</span>, to get
+access to the data that it contains.</p>
+
+
+<p>To implement the mouse operations, it must be possible to
+find the rectangle, if any, that contains the point where the user clicked the
+mouse. To do this, I wrote the function</p>
+
+
+<pre>/**
+ * Find the topmost rect that contains the point (x,y). Return null 
+ * if no rect contains that point.  The rects in the ArrayList are 
+ * considered in reverse order so that if one lies on top of another, 
+ * the one on top is seen first and is returned.
+ */
+ColoredRect findRect(int x, int y) {
+
+   for (int i = rects.size() - 1;  i &gt;= 0;  i--) {
+      ColoredRect rect = (ColoredRect)rects.get(i);
+      if ( x &gt;= rect.x &amp;&amp; x &lt; rect.x + rect.width
+               &amp;&amp; y &gt;= rect.y &amp;&amp; y &lt; rect.y + rect.height )
+      return rect;  // (x,y) is inside this rect.
+   }
+   
+   return null;  // No rect containing (x,y) was found.
+   
+}</pre>
+   
+
+
+<p>The code for removing a <span class="code">ColoredRect</span>, <span class="code">rect</span>, from the
+drawing area is simply <span class="code">rects.remove(rect)</span> (followed by a
+<span class="code">repaint()</span>). Bringing a given rectangle out in front of all the other
+rectangles is just a little harder. Since the rectangles are drawn in the order
+in which they occur in the <span class="classname">ArrayList</span>, the rectangle that is in the
+last position in the list is in front of all the other rectangles on the
+screen. So we need to move the selected rectangle to the last position in the list. This
+can most easily be done in a slightly tricky way using built-in <span class="classname">ArrayList</span>
+operations: The rectangle is simply removed from its current position in the list and
+then added back at the end of the list:</p>
+
+
+<pre>void bringToFront(ColoredRect rect) {
+   if (rect != null) {
+      rects.remove(rect); // Remove rect from the list.
+      rects.add(rect);    // Add it back; it will be placed in the last position.
+      repaint();
+   }
+}</pre>
+
+
+<p>This should be enough to give you the basic idea. You can look in the source
+code for more details.</p>
+
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="arrays.3.4">7.3.4&nbsp;&nbsp;Parameterized Types</a>
+</h3>
+   
+
+<p>The main difference between true generic programming and the <span class="classname">ArrayList</span>
+examples in the previous subsection is the use of the type <span class="classname">Object</span>
+as the basic type for objects that are stored in a list.  This has at least two unfortunate
+consequences:  First, it makes it necessary to use type-casting in almost every
+case when an element is retrieved from that list.  Second, since any type of object
+can legally be added to the list, there is no way for the compiler to detect an attempt
+to add the wrong type of object to the list; the error will be detected only at
+run time when the object is retrieved from the list and the attempt to type-cast
+the object fails.  Compare this to arrays.  An array of type <span class="atype">BaseType[]</span>
+can <b>only</b> hold objects of type <span class="classname">BaseType</span>.  An attempt
+to store an object of the wrong type in the array will be detected by the compiler,
+and there is no need to type-cast items that are retrieved from the array back to
+type <span class="classname">BaseType</span>.</p>
+
+
+<p>To address this problem, Java 5.0 introduced <span class="newword">parameterized types</span>.
+<span class="classname">ArrayList</span> is an example:  Instead of using the plain
+"ArrayList" type, it is possible to use <span class="atype">ArrayList&lt;BaseType&gt;</span>,
+where <span class="classname">BaseType</span> is any object type, that is, the name of
+a class or of an interface.  (<span class="classname">BaseType</span> <b>cannot</b> be one
+of the primitive types.)  <span class="atype">ArrayList&lt;BaseType&gt;</span> can be
+used to create lists that can hold only objects of type <span class="classname">BaseType</span>.
+For example,</p>
+   
+
+<pre>ArrayList&lt;ColoredRect&gt; rects;</pre>   
+
+
+<p>declares a variable named <span class="code">rects</span> of type <span class="atype">ArrayList&lt;ColoredRect&gt;</span>, and</p>
+   
+
+<pre>rects  =  new ArrayList&lt;ColoredRect&gt;();</pre>
+   
+
+<p>sets <span class="code">rects</span> to refer to a newly created list that can only
+hold objects belonging to the class <span class="classname">ColoredRect</span> (or to
+a subclass).  The funny-looking name "ArrayList&lt;ColoredRect&gt;" is being
+used here in exactly the same way as an ordinary class name -- don't let
+the "&lt;ColoredRect&gt;" confuse you; it's just part of the name of the type,
+just as it would be in the array type <span class="atype">ColoredRect[]</span>.
+When a statement such as <span class="code">rects.add(x);</span> occurs
+in the program, the compiler can check whether <span class="code">x</span> is in fact
+of type <span class="classname">ColoredRect</span>.  If not, the compiler will
+report a syntax error.  When an object is retrieved from the list, the
+compiler knows that the object must be of type <span class="classname">ColoredRect</span>,
+so no type-cast is necessary.  You can say simply:</p>
+   
+
+<pre>ColoredRect rect = rects.get(i)</pre>
+   
+
+<p>You can even refer directly to an instance variable in the object,
+such as <span class="code">rects.get(i).color</span>.
+This makes using <span class="atype">ArrayList&lt;ColoredRect&gt;</span> very
+similar to using <span class="atype">ColoredRect[]</span>, with the added advantage that the
+list can grow to any size.  Note that if a for-each loop is used to process
+the items in <span class="code">rects</span>, the type of the loop control variable can
+be <span class="classname">ColoredRect</span>, and no type-cast is necessary.  For
+example, when using <span class="atype">ArrayList&lt;ColoredRect&gt;</span> as the
+type for the list <span class="code">rects</span>, the code for drawing all the rectangles
+in the list could be rewritten as:</p>
+
+
+<pre>for ( ColoredRect rect : rects ) {
+   g.setColor( rect.color );
+   g.fillRect( rect.x, rect.y, rect.width, rect.height );
+   g.setColor( Color.BLACK );
+   g.drawRect( rect.x, rect.y, rect.width - 1, rect.height - 1 );
+}</pre>
+   
+
+<p>You can use <span class="atype">ArrayList&lt;ColoredRect&gt;</span> anyplace where you could
+use a normal type:  to declare variables, as the type of a formal parameter in
+a subroutine, or as the return type of a subroutine.  You can even create a
+subclass of <span class="atype">ArrayList&lt;ColoredRect&gt;</span>!  (Nevertheless,
+technically speaking, <span class="atype">ArrayList&lt;ColoredRect&gt;</span> is not
+considered to be a separate class from <span class="classname">ArrayList</span>.
+An object of type <span class="atype">ArrayList&lt;ColoredRect&gt;</span> actually belongs to
+the class <span class="classname">ArrayList</span>, but the compiler restricts the type
+of objects that can be added to the list.)</p>
+   
+
+<p>The only drawback to
+using parameterized types is that the base type cannot be a primitive type.
+For example, there is no such thing as "<span class="code">ArrayList&lt;int&gt;</span>".
+However, this is not such a big drawback as it might seem at first, because
+of the "wrapper types" and "autoboxing" that were introduced in <a href="../c5/s3.html#OOP.3.2">Subsection&nbsp;5.3.2</a>.
+A wrapper type such as <span class="classname">Double</span> or <span class="classname">Integer</span>
+can be used as a base type for a parameterized type.  An object
+of type <span class="atype">ArrayList&lt;Double&gt;</span> can hold objects of type
+<span class="classname">Double</span>.  Since each object of type <span class="classname">Double</span>
+holds a value of type <span class="ptype">double</span>, it's almost like having a list
+of <span class="ptype">doubles</span>.  If <span class="code">numlist</span> is declared to be of
+type <span class="atype">ArrayList&lt;Double&gt;</span> and if <span class="code">x</span> is of type
+<span class="ptype">double</span>, then the value of <span class="code">x</span> can be added to the list
+by saying:</p>
+   
+
+<pre>numlist.add( new Double(x) );</pre>
+
+
+<p>Furthermore, because of autoboxing, the compiler will automatically do
+<span class="ptype">double</span>-to-<span class="classname">Double</span> and
+<span class="classname">Double</span>-to-<span class="ptype">double</span> type conversions
+when necessary.  This means that the compiler will treat "<span class="code">numlist.add(x)</span>"
+as being equivalent to "<span class="code">numlist.add( new Double(x)&nbsp;)</span>".  So, behind
+the scenes, "<span class="code">numlist.add(x)</span>" is actually adding an object to the
+list, but it looks a lot as if you are working with a list of <span class="ptype">doubles</span>.</p>
+
+
+<hr class="break">
+   
+
+<p>The sample program <span class="sourceref"><a href="../source/SimplePaint2.java">SimplePaint2.java</a></span> demonstrates the use
+of parameterized types.  In this program, the user can sketch curves in a drawing area
+by clicking and dragging with the mouse.  The curves can be of any color, and
+the user can select the drawing color using a menu.  The background color of the
+drawing area can also be selected using a menu.  And there is a "Control"
+menu that contains several commands:  An "Undo" command, which removes the
+most recently drawn curve from the screen, a "Clear" command that removes
+all the curves, and a "Use Symmetry" checkbox that turns a symmetry feature
+on and off.  Curves that are drawn by the user when the symmetry option is on
+are reflected horizontally and vertically to produce a symmetric pattern.
+You can try an applet version of the program here:</p>
+
+   
+
+<p align="center">
+<applet code="SimplePaint2Applet.class" width="400" height="400" archive="SimplePaint2.jar" alt="Applet 'SimplePaint2' should appear here."></applet></p>
+
+   
+
+<p>Unlike the original SimplePaint program in <a href="../c6/s4.html#GUI1.4.4">Subsection&nbsp;6.4.4</a>, this new version
+uses a data structure to store information about the picture that has been
+drawn by the user.  This data is used in the <span class="code">paintComponent()</span> method
+to redraw the picture whenever necessary.  Thus, the picture doesn't disappear
+when, for example, the picture is covered and then uncovered.  The data
+structure is implemented using <span class="classname">ArrayLists</span>.</p>
+   
+
+<p>The main data for a curve consists of a list of the points on the curve.  This
+data can be stored in an object of type <span class="atype">ArrayList&lt;Point&gt;</span>,
+where <span class="code">java.awt.Point</span> is one of Java's standard classes.
+(A <span class="classname">Point</span> object contains two public integer variables
+<span class="code">x</span> and <span class="code">y</span> that represent the coordinates of a
+point.)  However, to redraw the curve, we also need to know its color,
+and we need to know whether the symmetry option should be applied to the curve.
+All the data that is needed to redraw the curve can be grouped into
+an object of type <span class="classname">CurveData</span> that is defined as</p>
+   
+
+<pre>private static class CurveData {
+   Color color;  // The color of the curve.
+   boolean symmetric;  // Are horizontal and vertical reflections also drawn?
+   ArrayList&lt;Point&gt; points;  // The points on the curve.
+}</pre>
+   
+
+<p>However, a picture can contain many curves, not just one, so to store
+all the data necessary to redraw the entire picture, we need a <b>list</b>
+of objects of type <span class="classname">CurveData</span>.  For this list,
+we can use a variable <span class="code">curves</span> declared as</p>
+   
+   
+
+<pre>ArrayList&lt;CurveData&gt; curves = new ArrayList&lt;CurveData&gt;();</pre>
+   
+
+<p>Here we have a list of objects, where each object contains a list of
+points as part of its data!  Let's look at a few examples of processing
+this data structure.  When the user clicks the mouse on the drawing surface,
+it's the start of a new curve, and a new <span class="classname">CurveData</span>
+object must be created and added to the list of curves.  The instance
+variables in the new <span class="classname">CurveData</span> object must
+also be initialized.  Here is the code from the <span class="code">mousePressed()</span>
+routine that does this:</p>
+     
+
+<pre>
+currentCurve = new CurveData();        // Create a new CurveData object.
+
+currentCurve.color = currentColor;     // The color of the curve is taken from an
+                                       // instance variable that represents the
+                                       // currently selected drawing color.
+
+currentCurve.symmetric = useSymmetry;  // The "symmetric" property of the curve
+                                       // is also copied from the current value
+                                       // of an instance variable, useSymmetry.
+
+currentCurve.points = new ArrayList&lt;Point&gt;();  // Create a new point list object.
+
+currentCurve.points.add( new Point(evt.getX(), evt.getY()) );
+           // The point where the user pressed the mouse is the first point on
+           // the curve.  A new Point object is created to hold the coordinates
+           // of that point and is added to the list of points for the curve.
+   
+curves.add(currentCurve);   // Add the CurveData object to the list of curves.</pre>
+   
+
+<p>As the user drags the mouse, new points are added to <span class="code">currentCurve</span>,
+and <span class="code">repaint()</span> is called.  When the picture is redrawn, the new
+point will be part of the picture.</p>
+
+
+<p>The <span class="code">paintComponent()</span> method has to use the data in <span class="code">curves</span>
+to draw all the curves.  The basic structure is a for-each loop that processes
+the data for each individual curve in turn.  This has the form:</p>
+   
+
+<pre>for ( CurveData curve : curves ) {
+   .
+   .  // Draw the curve represented by the object, curve, of type CurveData.
+   .  
+}</pre>
+   
+
+<p>In the body of this loop, <span class="code">curve.points</span> is a variable of
+type <span class="atype">ArrayList&lt;Point&gt;</span> that holds the list of 
+points on the curve.  The <span class="code">i-th</span> point on the curve can be
+obtained by calling the <span class="code">get()</span> method of this list:
+<span class="code">curve.points.get(i)</span>.  This returns a value of type
+<span class="classname">Point</span> which contains instance variables named
+<span class="code">x</span> and <span class="code">y</span>.  We can refer directly to the
+x-coordinate of the <span class="code">i-th</span> point as:</p>
+   
+
+<pre>curve.points.get(i).x</pre>
+   
+
+<p>This might seem rather complicated, but it's a nice example of a complex name
+that specifies a path to a desired piece of data: Go to the object, <span class="code">curve</span>.
+Inside <span class="code">curve</span>, go to <span class="code">points</span>.  Inside <span class="code">points</span>,
+get the <span class="code">i-th</span> item.  And from that item, get the instance variable
+named&nbsp;<span class="code">x</span>.  Here is the complete definition of the
+<span class="code">paintComponent()</span> method:</p>
+   
+
+<pre>public void paintComponent(Graphics g) {
+   super.paintComponent(g);
+   for ( CurveData curve : curves) {
+      g.setColor(curve.color);
+      for (int i = 1; i &lt; curve.points.size(); i++) {
+            // Draw a line segment from point number i-1 to point number i.
+         int x1 = curve.points.get(i-1).x;
+         int y1 = curve.points.get(i-1).y;
+         int x2 = curve.points.get(i).x;
+         int y2 = curve.points.get(i).y;
+         g.drawLine(x1,y1,x2,y2);
+         if (curve.symmetric) {
+               // Also draw the horizontal and vertical reflections
+               // of the line segment.
+            int w = getWidth();
+            int h = getHeight();
+            g.drawLine(w-x1,y1,w-x2,y2);
+            g.drawLine(x1,h-y1,x2,h-y2);
+            g.drawLine(w-x1,h-y1,w-x2,h-y2);
+         }
+      }
+   }
+} // end paintComponent()</pre>
+   
+
+<p>I encourage you to read the full source code, <span class="sourceref"><a href="../source/SimplePaint2.java">SimplePaint2.java</a></span>.
+In addition to serving as an example of using parameterized types, it also serves
+as another example of creating and using menus.</p>
+
+
+   
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="arrays.3.5">7.3.5&nbsp;&nbsp;Vectors</a>
+</h3>
+
+
+<p>The <span class="classname">ArrayList</span> class was introduced in Java version 1.2, as one of a
+group of classes designed for working with collections of objects. We'll look
+at these "collection classes" in <a href="../c10/index.html">Chapter&nbsp;10</a>.
+Early versions of Java did not include <span class="classname">ArrayList</span>, but they did have
+a very similar class named <span class="code">java.util.Vector</span>. You can still see
+<span class="classname">Vectors</span> used in older code and in many of Java's standard classes, so
+it's worth knowing about them. Using a <span class="classname">Vector</span> is similar to using an
+<span class="classname">ArrayList</span>, except that different names are used for some commonly used
+instance methods, and some instance methods in one class don't correspond to
+any instance method in the other class.</p>
+
+
+<p>Like an <span class="classname">ArrayList</span>, a <span class="classname">Vector</span> is similar to an array of
+<span class="classname">Objects</span> that can grow to be as large as necessary. The default
+constructor, <span class="code">new&nbsp;Vector()</span>, creates a vector with no elements.
+Suppose that <span class="code">vec</span> is a <span class="classname">Vector</span>. Then we have:</p>
+
+
+<ul>
+
+<li>
+<span class="codedef">vec.size()</span>  --  a function that returns the number of elements
+currently in the vector.</li>
+
+
+<li>
+<span class="codedef">vec.elementAt(N)</span>  --  returns the <span class="code">N-th</span> element of the vector, for an
+integer <span class="code">N</span>. <span class="code">N</span> must be in the range 0 to <span class="code">vec.size()-1</span>.
+This is the same as <span class="code">get(N)</span> for an <span class="classname">ArrayList</span>.</li>
+
+
+<li>
+<span class="codedef">vec.setElementAt(obj,N)</span>  --  sets the <span class="code">N-th</span> element in
+the vector to be <span class="code">obj</span>. <span class="code">N</span> must be in the range 0 to <span class="code">vec.size()-1</span>.
+This is the same as <span class="code">set(N,obj)</span> for an <span class="classname">ArrayList</span>.</li>
+
+
+<li>
+<span class="codedef">vec.addElement(obj)</span>  --  adds the <span class="classname">Object</span>, <span class="code">obj</span>, to
+the end of the vector. This is the same as the <span class="code">add()</span> method of an
+<span class="classname">ArrayList</span>.</li>
+
+
+<li>
+<span class="codedef">vec.removeElement(obj)</span>  --  removes <span class="code">obj</span> from the vector, if it
+occurs. Only the first occurrence is removed. This is the same as
+<span class="code">remove(obj)</span> for an <span class="classname">ArrayList</span>.</li>
+
+
+<li>
+<span class="codedef">vec.removeElementAt(N)</span>  --  removes the <span class="code">N-th</span> element, for an
+integer <span class="code">N</span>. <span class="code">N</span> must be in the range 0 to <span class="code">vec.size()-1</span>.
+This is the same as <span class="code">remove(N)</span> for an <span class="classname">ArrayList</span>.</li>
+
+
+<li>
+<span class="codedef">vec.setSize(N)</span>  --  sets the size of the vector to <span class="code">N</span>. If there
+were more than <span class="code">N</span> elements in <span class="code">vec</span>, the extra elements are
+removed. If there were fewer than <span class="code">N</span> elements, extra spaces are filled
+with <span class="code">null</span>. The <span class="classname">ArrayList</span> class, unfortunately, does not have a
+<span class="code">setSize()</span> method.</li>
+
+</ul>
+
+
+<p>The <span class="classname">Vector</span> class includes many more methods, but these are probably
+the most commonly used.  Note that in Java 5.0, <span class="classname">Vector</span> can be used
+as a parameterized type in exactly the same way as <span class="classname">ArrayList</span>.
+That is, if <span class="classname">BaseType</span> is any class or interface name, then
+<span class="atype">Vector&lt;BaseType&gt;</span> represents vectors that can hold only objects of type
+<span class="classname">BaseType</span>.</p>
+
+   
+
+   
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s2.html">Previous Section</a> |
+           <a href="s4.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

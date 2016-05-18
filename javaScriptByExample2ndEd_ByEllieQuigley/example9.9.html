@@ -1,0 +1,22 @@
+<html><head><title>Associative Array</title></head>
+  <body>
+   <p style="font-size:150%">
+   <script type="text/javascript">
+    var student=new Array();
+    student["Name"]="John Doe"; //one key, one value
+    student["Courses"]=new Array("Math","English", "PE");
+    student["Phones"]=new Array("415-333-1234","530-345-5432");
+
+    document.write("The student's name is " + student["Name"] + 
+                      ".<br />");
+    document.write("His courses are " + student["Courses"] + 
+                      ".<br />");
+    document.write("His favorite course is "+ student["Courses"][2] + 
+                      ".<br />");
+    document.write("His cell phone number is "+ student["Phones"][0]+ 
+                      ".<br />");
+   
+</script>
+</p>
+</body>
+</html>

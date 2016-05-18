@@ -1,0 +1,256 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Excercises for Chapter 4</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Programming Exercises for Chapter 4</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> several exercises for Chapter 4
+        in <a href="../index.html">Introduction to Programming Using Java</a>.  For each exercise, a link to
+        a possible solution is provided.   Each solution includes a discussion of how a programmer might approach the
+        problem and interesting points raised by the problem or its solution, as well as complete source
+        code of the solution.</p>
+<hr>
+<h3 class="exercise">Exercise 4.1:</h3>
+<p>To "capitalize" a string
+means to change the first letter of each word in the string to upper case (if
+it is not already upper case). For example, a capitalized version of "Now is
+the time to act!" is "Now Is The Time To Act!". Write a subroutine named
+<span class="code">printCapitalized</span> that will print a capitalized version of a string to
+standard output. The string to be printed should be a parameter to the
+subroutine. Test your subroutine with a <span class="code">main()</span> routine that gets a
+line of input from the user and applies the subroutine to it.</p>
+
+<p>Note that a letter is the first letter of a word if it is not immediately
+preceded in the string by another letter. Recall that there is a standard
+<span class="ptype">boolean</span>-valued function <span class="code">Character.isLetter(char)</span> that can be
+used to test whether its parameter is a letter. There is another standard
+<span class="ptype">char</span>-valued function, <span class="code">Character.toUpperCase(char)</span>, that
+returns a capitalized version of the single character passed to it as a
+parameter. That is, if the parameter is a letter, it returns the upper-case
+version. If the parameter is not a letter, it just returns a copy of the
+parameter.</p>
+<p align="right">
+<a href="ex1-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 4.2:</h3>
+<p>The hexadecimal digits are
+the ordinary, base-10 digits '0' through '9' plus the letters 'A' through 'F'.
+In the hexadecimal system, these digits represent the values 0 through 15,
+respectively. Write a function named <span class="code">hexValue</span> that uses a
+<span class="code">switch</span> statement to find the hexadecimal value of a given character.
+The character is a parameter to the function, and its hexadecimal value is the
+return value of the function. You should count lower case letters 'a' through
+'f' as having the same value as the corresponding upper case letters. If the
+parameter is not one of the legal hexadecimal digits, return <span class="code">-1</span> as the value of
+the function.</p>
+
+
+<p>A hexadecimal integer is a sequence of hexadecimal digits, such as 34A7,
+FF8, 174204, or FADE. If <span class="code">str</span> is a string containing a hexadecimal
+integer, then the corresponding base-10 integer can be computed as follows:</p>
+
+
+<pre>value = 0;
+for ( i = 0; i &lt; str.length();  i++ )
+   value = value*16 + hexValue( str.charAt(i) );</pre>
+
+
+<p>Of course, this is not valid if <span class="code">str</span> contains any characters that
+are not hexadecimal digits. Write a program that reads a string from the user.
+If all the characters in the string are hexadecimal digits, print out the
+corresponding base-10 value. If not, print out an error message.</p>
+
+<p align="right">
+<a href="ex2-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 4.3:</h3>
+<p>Write a function that
+simulates rolling a pair of dice until the total on the dice comes up to be a
+given number. The number that you are rolling for is a parameter to the
+function. The number of times you have to roll the dice is the return value of
+the function. The parameter should be one of the possible totals:
+2, 3, ..., 12.  The function should throw an <span class="classname">IllegalArgumentException</span>
+if this is not the case.  Use your function in a program that computes and prints the
+number of rolls it takes to get snake eyes. (Snake eyes means that the total
+showing on the dice is 2.)</p>
+<p align="right">
+<a href="ex3-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 4.4:</h3>
+<p>This exercise builds on <a href="../c4/ex3-ans.html">Exercise&nbsp;4.3</a>.
+Every time you roll the dice repeatedly, trying to get a given
+total, the number of rolls it takes can be different. The question naturally
+arises, what's the average number of rolls to get a given total? Write a function that performs the
+experiment of rolling to get a given total 10000 times. The desired total is a
+parameter to the subroutine. The average number of rolls is the return value.
+Each individual experiment should be done by calling the function you wrote for
+<a href="../c4/ex3-ans.html">Exercise&nbsp;4.3</a>. Now, write a main program that will call your function once for
+each of the possible totals (2, 3, ..., 12). It should make a table of the
+results, something like:</p>
+
+
+<pre>Total On Dice     Average Number of Rolls
+-------------     -----------------------
+       2               35.8382
+       3               18.0607
+       .                .
+       .                .</pre>
+
+<p align="right">
+<a href="ex4-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 4.5:</h3>
+<p>The sample program
+<span class="sourceref"><a href="../source/RandomMosaicWalk.java">RandomMosaicWalk.java</a></span> from
+<a href="../c4/s6.html">Section&nbsp;4.6</a> shows a "disturbance" that wanders around a
+grid of colored squares. When the disturbance visits a square, the color of
+that square is changed. The applet at the bottom of 
+<a href="../c4/s7.html">Section&nbsp;4.7</a> 
+shows a variation on this idea. In this applet, all the squares start
+out with the default color, black. Every time the disturbance visits a square,
+a small amount is added to the green component of the color of that square. Write
+a subroutine that will add 25 to the green component of one of the squares in the
+mosaic. The row and column numbers of the square should be given as parameters
+to the subroutine. Recall that you can discover the current green component of
+the square in row <span class="code">r</span> and column <span class="code">c</span> with the function call
+<span class="code">Mosaic.getGreen(r,c)</span>. Use your subroutine as a substitute for the
+<span class="code">changeToRandomColor()</span> subroutine in the program <span class="sourceref"><a href="../source/RandomMosaicWalk2.java">RandomMosaicWalk2.java</a></span>.
+(This is the improved version of the program from <a href="../c4/s7.html">Section&nbsp;4.7</a> that uses named constants for
+the number of rows, number of columns, and square size.) Set the number of rows
+and the number of columns to 80. Set the square size to 5.</p>
+
+<p>Don't forget that you will need <span class="sourceref"><a href="../source/Mosaic.java">Mosaic.java</a></span> and <span class="sourceref"><a href="../source/MosaicCanvas.java">MosaicCanvas.java</a></span>
+to compile and run your program, since they define non-standard classes that are required by the program.
+</p>
+
+<p align="right">
+<a href="ex5-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 4.6:</h3>
+<p>For this exercise, you will do something even more interesting
+with the <span class="classname">Mosaic</span> class that was discussed in <a href="../c4/s6.html">Section&nbsp;4.6</a>.
+(Again, don't forget that you will need <span class="sourceref"><a href="../source/Mosaic.java">Mosaic.java</a></span> and <span class="sourceref"><a href="../source/MosaicCanvas.java">MosaicCanvas.java</a></span>.)
+</p>
+ 
+
+<p>The program that you write for this exercise should start by filling a mosaic with
+random colors.  Then repeat the following until the user closes the mosaic window:
+Select one of the rectangles in the mosaic at random.  Then select one of the
+neighboring rectangles -- above it, below it, to the left of it, or to the right of it.
+Copy the color of the originally selected rectangle to the selected neighbor, so that
+the two rectangles now have the same color.
+</p>
+ 
+ 
+<p>As this process is repeated over and over, it becomes more and more likely that neighboring
+ squares will have the same color.  The result is to build up larger color patches.  On the other
+ hand, once the last square of a given color disappears, there is no way for that color to
+ ever reappear (extinction is forever!).  If you let the program run long enough, eventually
+ the entire mosaic will be one uniform color.</p>
+ 
+ 
+<p>Here is an applet version of the program.  In the applet version -- but not in the
+ version that you will write -- you can double-click the applet to reset all the rectangles 
+ to random colors.</p>
+ 
+ 
+<p align="center">
+<applet code="MosaicConvertApplet.java" width="320" height="320" archive="MosaicConvertApplet.jar" alt=""></applet></p>
+   
+ 
+<p>After doing each color conversion, your program should insert a very short delay.
+ You can try running the program without the delay; it will work, but it might be a little
+ glitchy.</p>
+ 
+<p align="right">
+<a href="ex6-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 4.7:</h3>
+<p>This is another <span class="classname">Mosaic</span> exercise,
+(using <span class="sourceref"><a href="../source/Mosaic.java">Mosaic.java</a></span> and <span class="sourceref"><a href="../source/MosaicCanvas.java">MosaicCanvas.java</a></span>
+as discussed in <a href="../c4/s6.html">Section&nbsp;4.6</a>).
+While the program does not do anything
+particularly interesting, it's interesting as a programming problem.  The program
+will do the same thing as the following applet:</p>
+
+
+<p align="center">
+<applet code="MosaicStrobeApplet.java" width="287" height="287" archive="MosaicStrobeApplet.jar" alt=""></applet></p>
+   
+
+<p>The program will show a square that grows from the center of the applet to the
+edges.  As it grows, the part added around the edges gets brighter, so that in the
+end the color of the square fades from white at the edges to dark gray at the center.</p>
+
+
+<p>The whole picture is made up of the little
+rectangles of a mosaic.   You should first write a subroutine that draws the outline of a
+rectangle on a <span class="code">Mosaic</span> window.  More specifically, write a subroutine
+named <span class="code">outlineRectangle</span> such that the subroutine call statement</p>
+
+
+<pre>outlineRectangle(top,left,height,width,r,g,b);</pre>
+
+
+<p>will call <span class="code">Mosaic.setColor(row,col,r,g,b)</span> for each little square
+that lies on the outline of a rectangle. The topmost row of the rectangle is
+specified by <span class="code">top</span>. The number of rows in the rectangle is specified by
+<span class="code">height</span> (so the bottommost row is <span class="code">top+height-1</span>). The leftmost
+column of the rectangle is specified by <span class="code">left</span>. The number of columns in
+the rectangle is specified by <span class="code">width</span> (so the rightmost column is
+<span class="code">left+width-1</span>.)  For the specific program that you are writing,
+the width and the height of the rectangle will always be equal, but it's nice
+to have the more general-purpose routine.</p>
+
+
+<p>The animation loops through the same sequence of steps over and over. In each
+step, the outline of a rectangle is drawn in gray (that is, with all three color components
+having the same value). There is a pause of 200 milliseconds so the user can
+see the picture. Then the variables giving the top row, left
+column, size, and color level of the rectangle are adjusted to get ready for
+the next step. In my applet, the color level starts at 50 and increases by 10
+after each step. When the rectangle gets to the outer edge of the applet, the
+loop ends, and the picture is erased by filling the mosaic with black.
+Then, after a delay of one second, the animation starts again at the beginning of the loop.
+You might want to make an additional subroutine to do one loop through
+the steps of the basic animation.</p>
+
+
+<p>The <span class="code">main()</span> routine simply opens a Mosaic window and then does the
+animation loop over and over until the user closes the window. There is a 1000
+millisecond delay between one animation loop and the next. Use a Mosaic window
+that has 41 rows and 41 columns. (I advise you <b>not</b> to use
+named constants for the numbers of rows and columns, since the problem is
+complicated enough already.)</p>
+
+<p align="right">
+<a href="ex7-ans.html">See the Solution</a>
+</p>
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

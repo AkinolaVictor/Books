@@ -1,0 +1,133 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 1, Chapter 3</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 3.1</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 3.1:</h3>
+<p>How many times do you have
+to roll a pair of dice before they come up snake eyes? You could do the
+experiment by rolling the dice by hand. Write a computer program that simulates
+the experiment. The program should report the number of rolls that it makes
+before the dice come up snake eyes. (Note: "Snake eyes" means that both dice
+show a value of 1.) <a href="../c2/ex2-ans.html">Exercise&nbsp;2.2</a> explained how to simulate rolling a pair of dice.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>Since we want to roll the dice at least once, a <span class="code">do..while</span> is
+appropriate. A pseudocode algorithm for the program is</p>
+
+
+<pre>Let countRolls = 0
+do:
+    roll the dice
+    count this roll by adding 1 to countRolls
+while the roll is not snake eyes
+Output the value of countRolls</pre>
+
+
+<p>As in <a href="../c2/ex2-ans.html">Exercise&nbsp;2.2</a>, we can simulate
+rolling one die by computing <span class="code">(int)(Math.random()*6)&nbsp;+&nbsp;1</span>.</p>
+
+
+<p>We want to <b>stop</b> rolling the dice when the roll is a double
+1. We want to <b>continue</b> rolling the dice while the roll is
+<b>not</b> a double 1. If <span class="code">die1</span> and <span class="code">die2</span> are
+variables representing the values of the dice, the condition for continuing to
+roll can be expressed as</p>
+
+
+<pre>while ( ! (die1 == 1 &amp;&amp; die2 == 1) )</pre>
+
+
+<p>The exclamation point means "not", so the condition says that it is not the
+case that both <span class="code">die1</span> is 1 and <span class="code">die2</span> is 1. That is, it is not
+the case that the dice came up snake eyes. Another way to express the same
+condition is that at least one of the dice is not 1, that is, that either
+<span class="code">die1</span> is not 1 <b>or</b> <span class="code">die2</span> is not 1. In Java
+code, this is written:</p>
+
+
+<pre>while ( die1 != 1  ||  die2 != 1 )</pre>
+
+
+<p>This is the test that I use in my program. Students often get the
+<span class="code">&amp;&amp;</span> and <span class="code">||</span> operators mixed up, especially when
+negation is involved. (In this case, we could have avoided the problem by
+testing <span class="code">while (die1+die2 != 2)</span>.)</p>
+
+
+<p>Filling in some details gives an algorithm that can be easily converted into
+a program:</p>
+
+
+<pre>Let countRolls = 0
+do:
+    die1 = (int)(Math.random()*6) + 1
+    die2 = (int)(Math.random()*6) + 1
+    count this roll by adding 1 to countRolls
+while die1 is not 1 or die2 is not 1
+Output the value of countRolls</pre>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">public class SnakeEyes {
+  
+   /*  This program simulates rolling a pair of dice until they
+       come up snake eyes.  It reports how many rolls were needed.
+   */
+
+   public static void main(String[] args) {
+   
+       int die1, die2;   // The values rolled on the two dice.
+       
+       int countRolls;   // Used to count the number of rolls.
+       
+       countRolls = 0;
+       
+       do {
+          die1 = (int)(Math.random()*6) + 1;   // roll the dice
+          die2 = (int)(Math.random()*6) + 1;
+          countRolls++;                        // and count this roll
+       } while ( die1 != 1 || die2 != 1 );
+       
+       System.out.println("It took " + countRolls + " rolls to get snake eyes.");
+   
+   }  // end main()
+
+}  // end class</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

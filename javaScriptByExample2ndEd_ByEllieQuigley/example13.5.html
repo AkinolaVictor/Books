@@ -1,0 +1,27 @@
+<html><head><title>load and unload Events</title>
+<script type="text/javascript">
+   var sec=0; 
+   function now(){
+	var newdate= new Date();
+	var hour=newdate.getHours();
+	var minutes=newdate.getMinutes();
+	var seconds=newdate.getSeconds();
+	var timestr=hour+":"+minutes+":"+seconds;
+	window.setInterval("trackTime()", 1000);
+	alert("Your document has finished loading\n"+
+			      "The time: "+timestr);
+    }
+    function trackTime(){
+	sec++;
+    }
+    function howLong(){
+	alert("You have been browsing here for "+ sec+" seconds");
+    }
+</script>
+</head>
+<body background="blue hills.jpg" onLoad="now();" 
+	onUnLoad="howLong();">
+<font face="arial,helvetica" size=5>
+	When you leave or reload this page, <br>an alert dialog box will appear.
+</body>
+</html> 

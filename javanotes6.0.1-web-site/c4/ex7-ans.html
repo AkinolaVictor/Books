@@ -1,0 +1,358 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 7, Chapter 4</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 4.7</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 4.7:</h3>
+<p>This is another <span class="classname">Mosaic</span> exercise,
+(using <span class="sourceref"><a href="../source/Mosaic.java">Mosaic.java</a></span> and <span class="sourceref"><a href="../source/MosaicCanvas.java">MosaicCanvas.java</a></span>
+as discussed in <a href="../c4/s6.html">Section&nbsp;4.6</a>).
+While the program does not do anything
+particularly interesting, it's interesting as a programming problem.  The program
+will do the same thing as the following applet:</p>
+
+
+<p align="center">
+<applet code="MosaicStrobeApplet.java" width="287" height="287" archive="MosaicStrobeApplet.jar" alt=""></applet></p>
+   
+
+<p>The program will show a square that grows from the center of the applet to the
+edges.  As it grows, the part added around the edges gets brighter, so that in the
+end the color of the square fades from white at the edges to dark gray at the center.</p>
+
+
+<p>The whole picture is made up of the little
+rectangles of a mosaic.   You should first write a subroutine that draws the outline of a
+rectangle on a <span class="code">Mosaic</span> window.  More specifically, write a subroutine
+named <span class="code">outlineRectangle</span> such that the subroutine call statement</p>
+
+
+<pre>outlineRectangle(top,left,height,width,r,g,b);</pre>
+
+
+<p>will call <span class="code">Mosaic.setColor(row,col,r,g,b)</span> for each little square
+that lies on the outline of a rectangle. The topmost row of the rectangle is
+specified by <span class="code">top</span>. The number of rows in the rectangle is specified by
+<span class="code">height</span> (so the bottommost row is <span class="code">top+height-1</span>). The leftmost
+column of the rectangle is specified by <span class="code">left</span>. The number of columns in
+the rectangle is specified by <span class="code">width</span> (so the rightmost column is
+<span class="code">left+width-1</span>.)  For the specific program that you are writing,
+the width and the height of the rectangle will always be equal, but it's nice
+to have the more general-purpose routine.</p>
+
+
+<p>The animation loops through the same sequence of steps over and over. In each
+step, the outline of a rectangle is drawn in gray (that is, with all three color components
+having the same value). There is a pause of 200 milliseconds so the user can
+see the picture. Then the variables giving the top row, left
+column, size, and color level of the rectangle are adjusted to get ready for
+the next step. In my applet, the color level starts at 50 and increases by 10
+after each step. When the rectangle gets to the outer edge of the applet, the
+loop ends, and the picture is erased by filling the mosaic with black.
+Then, after a delay of one second, the animation starts again at the beginning of the loop.
+You might want to make an additional subroutine to do one loop through
+the steps of the basic animation.</p>
+
+
+<p>The <span class="code">main()</span> routine simply opens a Mosaic window and then does the
+animation loop over and over until the user closes the window. There is a 1000
+millisecond delay between one animation loop and the next. Use a Mosaic window
+that has 41 rows and 41 columns. (I advise you <b>not</b> to use
+named constants for the numbers of rows and columns, since the problem is
+complicated enough already.)</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>According to the exercise, the first task is to write a subroutine that
+draws a rectangle in a Mosaic window. The name and seven parameters of the
+subroutine are specified. So the first line of the subroutine definition will
+look like this:</p>
+
+
+<pre>static void outlineRectangle(int left, int top, 
+                        int height, int width, int r, int g, int b) {</pre>
+
+
+<p>The subroutine has to draw the four lines that make up the outline of the
+rectangle. Each square that lies along one of these lines will have its color
+set by a call to <span class="code">Mosaic.setColor(row,col,r,g,b)</span>. We just have to make
+sure that <span class="code">row</span> and <span class="code">col</span> take on all the correct values that are
+needed to hit all the necessary squares. For the topmost line of the rectangle,
+for example, <span class="code">row</span> is given by the value of the parameter, <span class="code">top</span>.
+And, as the exercise explains, the value of <span class="code">col</span> varies from
+<span class="code">left</span> to <span class="code">left+width-1</span>. So the topmost line of the rectangle
+can be drawn with the <span class="code">for</span> loop:</p>
+
+
+<pre>for ( col = left;  col &lt;= left+width-1;  col++ )
+    Mosaic.setColor(top,col,r,g,b);</pre>
+
+
+<p>The bottommost row can be drawn by a similar <span class="code">for</span> loop, except that
+the value of <span class="code">row</span> along the bottommost row is <span class="code">top+height-1</span>, as
+noted in the exercise. We can combine the two <span class="code">for</span> loops to draw the
+top and bottom lines at the same time:</p>
+
+
+<pre>for ( col = left;  col &lt;= left+width-1;  col++ ) {
+    Mosaic.setColor(top,col,r,g,b);           // A square on the top line.
+    Mosaic.setColor(top+height-1,col,r,g,b);  // A square on the bottom line.
+}</pre>
+
+
+<p>Drawing the leftmost and rightmost lines of the rectangle is similar. The
+row number along these lines varies from <span class="code">top</span> to <span class="code">top+height-1</span>.
+The column number of the leftmost line is given by <span class="code">left</span>, and the
+column number of the rightmost line is <span class="code">left+width-1</span>. So, these two
+lines can be drawn with the <span class="code">for</span> loop:</p>
+
+
+<pre>for ( row = top;  row &lt;= top+height-1;  row++ ) {
+    Mosaic.setColor(row,left,r,g,b);           // A square on the left line.
+    Mosaic.setColor(row,left+width-1,r,g,b);   // A square on the right line.
+}</pre>
+
+
+<p>When I wrote my program, I used the test "<span class="code">row &lt; top+height</span>" in
+the first <span class="code">for</span> loop in place of "<span class="code">row &lt;= top+height-1</span>", and
+similarly for the second loop. The meaning is the same, and the form that I
+used would probably be preferred by most Java and C++ programmers. Putting this
+all together gives the <span class="code">outlineRectangle()</span> subroutine:</p>
+
+
+<pre>static void outlineRectangle(int top, int left, 
+                        int height, int width, int r, int g, int b) {
+   int row, col;
+   for ( row = top;  row &lt; top + height;  row++ ) {
+      Mosaic.setColor(row, left, r, g, b);
+      Mosaic.setColor(row, left + width - 1, r, g, b);
+   }
+   for ( col = left;  col &lt; left + width; col++ ) {
+      Mosaic.setColor(top, col, r, g, b);
+      Mosaic.setColor(top + height - 1, col, r, g, b);
+   }
+}  // end rectangle()</pre>
+
+
+<p>We still have the problem of designing the complete program. The
+<span class="code">main()</span> routine plays the same animation over and over as long as the
+window is still open. A pseudocode algorithm for this is given by</p>
+
+
+<pre>Open a mosaic window
+while the window remains open:
+    Delay for 1000 milliseconds
+    Play once through the animation</pre>
+
+
+<p>I will write a subroutine named <span class="code">strobe</span> that  gradually fills in the
+big square. After that subroutine has finished, I want to erase the picture by filling
+the mosaic with black.  You could do that with a nested <span class="code">for</span> loop that sets
+the color of every rectangle in the Mosaic individually.  However, the <span class="classname">Mosaic</span>
+class already includes a subroutine <span class="code">Mosaic.fill(r,g,b)</span> that does exactly that.
+Using the <span class="code">fill</span> subroutine, we can call <span class="code">Mosaic.fill(0,0,0)</span> to fill
+the entire mosaic with black.  So, the body of the <span class="code">main()</span> routine
+becomes:</p>
+
+
+<pre>Mosaic.open(41,41,5,5);
+while ( Mosaic.isOpen() ) {
+    Mosaic.delay(1000);
+    strobe();
+    Mosaic.fill(0,0,0);
+}</pre>
+
+
+<p>The final stage in the design is to write the <span class="code">strobe()</span> routine. The
+outline of an algorithm is already given in the exercise. It can be written
+more formally as</p>
+
+
+<pre>Initialize variables top,left,size,brightness for the first step
+Repeat until the rectangle is as big as the whole window:
+    Draw the rectangle outline in gray
+    Delay 200 milliseconds
+    Update the variables for the next step</pre>
+
+
+<p>The window has 41 columns and 41 rows of squares. We want the rectangle to
+start at the middle of the window. That will be in row 20 and column 20, so we
+can initialize <span class="code">top</span> and <span class="code">left</span> to 20. The rectangle starts off
+as small as possible, that is with <span class="code">rectSize</span> equal to 1. The value
+of <span class="code">rectSize</span>is used as both the width and the height of the rectangle. The
+<span class="code">brightness</span> is initialized to 50. The value of <span class="code">brightness</span> is
+used for each of the color components, <span class="code">r</span>, <span class="code">g</span>, and <span class="code">b</span>.
+So, the rectangle can be drawn in gray with the subroutine call statement:</p>
+
+
+<pre>outlineRectangle(top,left,rectSize,rectSize,brightness,brightness,brightness);</pre>
+
+
+
+<p>As for updating the variables to get ready for the next iteration of the loop,
+<span class="code">brightness</span> increases by 10 at each step. The topmost line of the rectangle moves up one row. This means
+that the value of <span class="code">top</span> decreases by&nbsp;1. Similarly, the value of
+<span class="code">left</span> decreases by&nbsp;1. The rectangle grows by one row on
+<b>each</b> side, so its <span class="code">size</span> increases by&nbsp;2.</p>
+
+
+<p>There are
+several ways to check whether the animation should continue. We could check
+whether its <span class="code">size</span> is &lt;= 41. Or whether <span class="code">left</span> is &gt;= 0. Or
+whether <span class="code">top</span> is &gt;= 0. Alternatively, we could notice that there are
+21 steps in the animation, and we could just use a <span class="code">for</span> loop to count
+from 1 to 21. Picking one of these methods more or less at random, the
+algorithm for the <span class="code">strobe()</span> becomes</p>
+
+
+<pre>left = 20
+top = 20
+size = 1
+brightness = 50
+while left is &gt;= 0:
+    draw the rectangle outline
+    delay 200 milliseconds
+    left -= 1
+    top -= 1
+    size += 2
+    brightness += 10</pre>
+
+
+<p>This translates easily into Java code. One more note: In my implementation
+of the subroutine, I changed the condition in the loop to "<span class="code">while (left
+&gt;= 0 &amp;&amp; Mosaic.isOpen())</span>", since there is no reason to continue
+with the animation if the user has closed the window. However, the program will
+work without this extra test. It just might take an extra second or so for the
+program to end after the user closes the window.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+<pre class="exercisecode">/**
+ * This program shows an animation in which a small square grows from the 
+ * center of the window until it fills the whole mosaic.  The filled square
+ * is built up by a series of outlines of squares, which get brighter as
+ * they get bigger.  After the entire mosaic is filled, the square is 
+ * erased, there is a one-second delay, and the process repeats.  This
+ * continues until the user closes the window.  This program depends on 
+ * the non-standard classes Mosaic and MosaicCanvas.
+ */
+
+public class MosaicStrobe {
+
+   
+   /**
+    * Opens a mosaic window then play the "strobe" animation over and over
+    * as long as the window is still open.
+    */
+   public static void main(String[] args) {
+      Mosaic.open(41,41,6,6);
+      while ( Mosaic.isOpen() ) {
+          Mosaic.delay(1000);
+          strobe();
+          Mosaic.fill(0,0,0);
+      }
+   }  // end main()
+
+
+   /**
+    * Draw the animation, showing a square that starts at the center of the
+    * mosaic and grows to fill the whole window.  The outline added to the
+    * square at each step square gets brighter as the square grows.  Note 
+    * that the animation ends immediately if the user closes the window.
+    */
+   static void strobe() {
+
+      int rectSize;    // The number of rows (and columns) in the part of the square
+                       // that has been drawn so far.
+      int left;        // The leftmost column in the next square outline to be drawn.
+      int top;         // The topmost row in the next square outline.
+      int brightness;  // The brightness of the outline, which increases from
+                       //   50 to a maximum of 250 as the square grows.  This
+                       //   quantity is used for all three color components,
+                       //   giving a gray color that brightens to white.
+
+      left = 20;       // Start at the center of the 41-by-41 mosaic.
+      top = 20;
+      
+      rectSize = 1;  
+      brightness = 50;
+
+      while (left &gt;= 0 &amp;&amp; Mosaic.isOpen()) {
+
+         /* Draw the outline in gray, pause so the user can see it. */
+
+         outlineRectangle(top,left,rectSize,rectSize,brightness,brightness,brightness);
+          Mosaic.delay(200);
+          
+          /*  Now, adjust the parameters to get ready to draw the next outline. */
+
+          left--;
+          top--;
+          rectSize += 2;
+          brightness += 10;
+      }
+      
+   }
+   
+
+   /**
+    * Draws the outline of a rectangle in the mosaic window by setting the color
+    * of each little square on that outline. 
+    * @param top gives the starting row, at the top edge of the rectangle
+    * @param left gives the starting column, at the left edge of the rectangle
+    * @param height gives the number of rows in the rectangle
+    * @param width gives the number of columns in the rectangle
+    * @param red the red component of the color, in the range 0 to 255
+    * @param green the green component of the color
+    * @param blue the blue component of the color
+    */
+   static void outlineRectangle(int top, int left, int height, int width, int r, int g, int b) {
+      int row, col;
+      for ( row = top;  row &lt; top + height;  row++ ) {
+         Mosaic.setColor(row, left, r, g, b);
+         Mosaic.setColor(row, left + width - 1, r, g, b);
+      }
+      for ( col = left;  col &lt; left + width; col++ ) {
+         Mosaic.setColor(top, col, r, g, b);
+         Mosaic.setColor(top + height - 1, col, r, g, b);
+      }
+   }  // end outlineRectangle()
+
+
+}  // end class MosaicStrobe
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

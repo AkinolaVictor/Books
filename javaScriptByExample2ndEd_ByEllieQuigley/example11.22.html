@@ -1,0 +1,37 @@
+
+<html><head><title>Drop-Down Menus</title>
+   <script type="text/javascript">
+	function schedule(f){
+	   if(f.menu1.selectedIndex == 0){
+		// Could also say: document.form1.menu1.selectedIndex
+		f.text1.value="PL100, Feb 3-7, 9am to 5pm, Room 2133,Dr. Baloney ";
+			// Could also say: document.form1.text1.value
+	   }
+
+	   if(f.menu1.selectedIndex == 1){
+		f.text1.value="PL200 Feb 10-13 9am to 5pm, Room 209B,Ms. Eclectic";
+	   }
+	   if(f.menu1.selectedIndex == 2){
+		f.text1.value="UX101 Mar 2-6 9am to 5pm, Room 209,Mr. Nerdly";
+	   }
+	   if(f.menu1.selectedIndex == 3){
+		f.text1.value="SH201 Apr 10-13 9am to 5pm, Room 209B,Miss Bashing";
+	   }
+	}
+   </script>
+   <body bgcolor=lightgreen>
+	<font face=arial >
+	<b>
+      <form name="form1">
+	Select a Course<br />
+	<select name="menu1" size="4" onChange="schedule(this.form)">
+		<option name="choice1" value="Perl1">Intro to Perl</option>
+		<option name="choice2" value="Perl2">Advanced Perl</option>
+		<option name="choice3" value="Unix1">Intro to Unix</option>
+		<option name="choice4" value="Shell1">Shell Programming</option>
+	</select>
+        <br /><br />
+	<input type="text" name="text1" size=60 />
+      </form>
+   </body>
+</html>

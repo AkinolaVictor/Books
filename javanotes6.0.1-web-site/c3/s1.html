@@ -1,0 +1,415 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Section 3.1 -- Blocks, Loops, and Branches</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="s2.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<table class="subsections" vspace="8" hspace="8" cellpadding="5" border="2" align="right">
+<tr>
+<td>
+<div align="center">
+<b>Subsections</b>
+<hr>
+<small><a href="#control.1.1">Blocks</a>
+<br>
+<a href="#control.1.2">The Basic While Loop</a>
+<br>
+<a href="#control.1.3">The Basic If Statement</a>
+<br>
+</small>
+</div>
+</td>
+</tr>
+</table>
+<div class="content">
+<h3 class="section_title">Section 3.1</h3>
+<h2 class="section_title">Blocks, Loops, and Branches</h2>
+<hr class="break">
+
+
+<p>
+<span class="start"><big>T</big>he ability of a computer to perform</span> complex tasks
+is built on just a few ways of combining simple commands into control
+structures. In Java, there are just six such structures that are used to determine the normal
+flow of control in a program -- and, in fact, just
+three of them would be enough to write programs to perform any task. The six
+control structures are: the <span class="newword">block</span>, the
+<span class="newword">while loop</span>, the <span class="newword">do..while loop</span>, the 
+<span class="newword">for loop</span>, the <span class="newword">if statement</span>, and the 
+<span class="newword">switch statement</span>.  Each of these structures is considered to be a single
+"statement," but each is in fact a <b>structured</b> statement that
+can contain one or more other statements inside itself.</p>
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="control.1.1">3.1.1&nbsp;&nbsp;Blocks</a>
+</h3>
+
+
+<p>The <span class="newword">block</span> is the simplest type of structured
+statement. Its purpose is simply to group a sequence of statements into a
+single statement. The format of a block is:</p>
+
+
+<pre>{
+     <span class="bnf">statements</span>
+}</pre>
+
+
+<p>That is, it consists of a sequence of statements enclosed between a pair of
+braces, "{" and "}". In fact, it is possible for a block to contain no
+statements at all; such a block is called an <span class="newword">empty block</span>, 
+and can actually be useful at times. An empty block consists of
+nothing but an empty pair of braces. Block statements usually occur inside
+other statements, where their purpose is to group together several statements
+into a unit. However, a block can be legally used wherever a statement can
+occur. There is one place where a block is required: As you might have already
+noticed in the case of the <span class="code">main</span> subroutine of a program, the
+definition of a subroutine is a block, since it is a sequence of statements
+enclosed inside a pair of braces.</p>
+
+
+<p>I should probably note again at this point that Java is what is called a
+free-format language. There are no syntax rules about how the language has to
+be arranged on a page. So, for example, you could write an entire block on one
+line if you want. But as a matter of good programming style, you should lay out
+your program on the page in a way that will make its structure as clear as
+possible. In general, this means putting one statement per line and using
+indentation to indicate statements that are contained inside control
+structures. This is the format that I will generally use in my examples.</p>
+
+
+<p>Here are two examples of blocks:</p>
+
+
+<pre>{
+   System.out.print("The answer is ");
+   System.out.println(ans);
+}
+  
+ 
+{  // This block exchanges the values of x and y
+   int temp;      // A temporary variable for use in this block.
+   temp = x;      // Save a copy of the value of x in temp.
+   x = y;         // Copy the value of y into x.
+   y = temp;      // Copy the value of temp into y.
+}</pre>
+
+
+<p>In the second example, a variable, <span class="code">temp</span>, is declared inside the
+block. This is perfectly legal, and it is good style to declare a variable
+inside a block if that variable is used nowhere else but inside the block. A
+variable declared inside a block is completely inaccessible and invisible from
+outside that block. When the computer executes the variable declaration
+statement, it allocates memory to hold the value of the variable. When the
+block ends, that memory is discarded (that is, made available for reuse). The
+variable is said to be <span class="newword">local</span> to the block. There
+is a general concept called the "scope" of an identifier. The <span class="newword">scope</span> 
+of an identifier is the part of the program in which
+that identifier is valid. The scope of a variable defined inside a block is
+limited to that block, and more specifically to the part of the block that
+comes after the declaration of the variable.</p>
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="control.1.2">3.1.2&nbsp;&nbsp;The Basic While Loop</a>
+</h3>
+
+
+<p>The block statement by itself really doesn't affect the flow of control in a
+program. The five remaining control structures do. They can be divided into two
+classes: loop statements and branching statements. You really just need one
+control structure from each category in order to have a completely
+general-purpose programming language. More than that is just convenience. In
+this section, I'll introduce the <span class="code">while</span> loop and the <span class="code">if</span>
+statement. I'll give the full details of these statements and of the other
+three control structures in later sections.</p>
+
+
+<p>A <span class="newword">while loop</span> is used to repeat a given
+statement over and over. Of course, it's not likely that you would want to keep
+repeating it forever. That would be an <span class="newword">infinite loop</span>, which is 
+generally a bad thing. (There is an old story about
+computer pioneer Grace Murray Hopper, who read instructions on a bottle of
+shampoo telling her to "lather, rinse, repeat." As the story goes, she claims
+that she tried to follow the directions, but she ran out of shampoo. (In case
+you don't get it, this is a joke about the way that computers mindlessly follow
+instructions.))</p>
+
+
+<p>To be more specific, a <span class="code">while</span> loop will repeat a statement over and
+over, but only so long as a specified condition remains true. A <span class="code">while</span>
+loop has the form:</p>
+
+
+<pre>while (<span class="bnf">boolean-expression</span>)
+     <span class="bnf">statement</span>
+</pre>
+
+
+<p>Since the statement can be, and usually is, a block, many <span class="code">while</span>
+loops have the form:</p>
+
+
+<pre>while (<span class="bnf">boolean-expression</span>) {
+    <span class="bnf">statements</span>
+}</pre>
+
+
+<p>Some programmers think that the braces should always be included as a matter
+of style, even when there is only one statement between them, but I don't always
+follow that advice myself.</p>
+
+
+<p>The semantics of the <span class="code">while</span> statement go like this: When the computer comes to a
+<span class="code">while</span> statement, it evaluates the <span class="bnf">boolean-expression</span>, which yields either <span class="code">true</span> or
+<span class="code">false</span> as its value. If the value is <span class="code">false</span>, the computer skips
+over the rest of the <span class="code">while</span> loop and proceeds to the next command in
+the program. If the value of the expression is <span class="code">true</span>, the computer
+executes the <span class="bnf">statement</span> or block of <span class="bnf">statements</span> inside the loop. Then it returns to the
+beginning of the <span class="code">while</span> loop and repeats the process. That is, it
+re-evaluates the <span class="bnf">boolean-expression</span>, ends the
+loop if the value is <span class="code">false</span>, and continues it if the value is
+<span class="code">true</span>. This will continue over and over until the value of the
+expression is <span class="code">false</span>; if that never happens, then there will be an
+infinite loop.</p>
+
+
+<p>Here is an example of a <span class="code">while</span> loop that simply prints out the
+numbers 1, 2, 3, 4, 5:</p>
+
+
+<pre>int number;   // The number to be printed.
+number = 1;   // Start with 1.
+while ( number &lt; 6 ) {  // Keep going as long as number is &lt; 6.
+    System.out.println(number);
+    number = number + 1;  // Go on to the next number.
+}
+System.out.println("Done!");</pre>
+
+
+<p>The variable <span class="code">number</span> is initialized with the value&nbsp;1. So the first
+time through the <span class="code">while</span> loop, when the computer evaluates the
+expression "<span class="code">number&nbsp;&lt;&nbsp;6</span>", it is asking whether 1 is less than 6, which is
+<span class="code">true</span>. The computer therefore proceeds to execute the two statements
+inside the loop. The first statement prints out "1". The second statement adds
+1 to <span class="code">number</span> and stores the result back into the variable
+<span class="code">number</span>; the value of <span class="code">number</span> has been changed to 2. The
+computer has reached the end of the loop, so it returns to the beginning and
+asks again whether <span class="code">number</span> is less than 6. Once again this is true, so
+the computer executes the loop again, this time printing out 2 as the value of
+<span class="code">number</span> and then changing the value of <span class="code">number</span> to 3. It
+continues in this way until eventually <span class="code">number</span> becomes equal to 6. At
+that point, the expression "<span class="code">number&nbsp;&lt;&nbsp;6</span>" evaluates to <span class="code">false</span>. So, the
+computer jumps past the end of the loop to the next statement and prints out
+the message "Done!". Note that when the loop ends, the value of <span class="code">number</span>
+is 6, but the last value that was printed was 5.</p>
+
+
+<p>By the way, you should remember that you'll never see a <span class="code">while</span> loop
+standing by itself in a real program. It will always be inside a subroutine
+which is itself defined inside some class. As an example of a <span class="code">while</span>
+loop used inside a complete program, here is a little program that computes the
+interest on an investment over several years. This is an improvement over
+examples from the previous chapter that just reported the results for one
+year:</p>
+
+
+<pre>/**
+ *  This class implements a simple program that will compute the amount of 
+ *  interest that is earned on an investment over a period of 5 years.  The 
+ *  initial amount of the investment and the interest rate are input by the 
+ *  user.  The value of the investment at the end of each year is output.
+ */
+ 
+public class Interest3 {
+     
+ 
+   public static void main(String[] args) {
+  
+      double principal;  // The value of the investment.
+      double rate;       // The annual interest rate.
+      
+      /* Get the initial investment and interest rate from the user. */
+      
+      System.out.print("Enter the initial investment: ");
+      principal = TextIO.getlnDouble();
+      
+      System.out.println();
+      System.out.println("Enter the annual interest rate.");
+      System.out.print("Enter a decimal, not a percentage: ");
+      rate = TextIO.getlnDouble();
+      System.out.println();
+      
+      /* Simulate the investment for 5 years. */
+      
+      int years;  // Counts the number of years that have passed.
+      
+      years = 0;
+      while (years &lt; 5) {
+         double interest;  // Interest for this year.
+         interest = principal * rate;
+         principal = principal + interest;     // Add it to principal.
+         years = years + 1;    // Count the current year.
+         System.out.print("The value of the investment after ");
+         System.out.print(years);
+         System.out.print(" years is $");
+         System.out.printf("%1.2f", principal);
+         System.out.println();
+      } // end of while loop
+                       
+   } // end of main()
+        
+} // end of class Interest3
+</pre>
+
+
+
+<p>And here is an applet which simulates this program.  (Remember that for "console applets"
+like this one, if the applet does not respond to your typing, you might have to
+click on it to activate it.  In some browsers, you might also need to leave the
+mouse cursor inside the applet for it to recognize your typing.)</p>
+
+
+<p align="center">
+<applet code="Interest3Console" width="600" height="250" archive="Interest3Applet.jar" alt="(Applet 'Interest3Console' should be displayed here.)"></applet></p>
+
+
+   
+
+<p>You should study this program, and make sure that you understand what the
+computer does step-by-step as it executes the <span class="code">while</span> loop.</p>
+
+
+
+
+
+<hr class="break">
+<h3 class="subsection_title">
+<a name="control.1.3">3.1.3&nbsp;&nbsp;The Basic If Statement</a>
+</h3>
+
+
+<p>An <span class="newword">if statement</span> tells the computer to take one
+of two alternative courses of action, depending on whether the value of a given
+boolean-valued expression is true or false. It is an example of a "branching"
+or "decision" statement. An <span class="code">if</span> statement has the form:</p>
+
+
+<pre>if ( <span class="bnf">boolean-expression</span> )
+    <span class="bnf">statement</span>
+else
+    <span class="bnf">statement</span>
+</pre>
+
+
+<p>When the computer executes an <span class="code">if</span> statement, it evaluates the
+boolean expression. If the value is <span class="code">true</span>, the computer executes the
+first statement and skips the statement that follows the "<span class="code">else</span>". If
+the value of the expression is <span class="code">false</span>, then the computer skips the
+first statement and executes the second one. Note that in any case, one and
+only one of the two statements inside the <span class="code">if</span> statement is executed.
+The two statements represent alternative courses of action; the computer
+decides between these courses of action based on the value of the boolean
+expression.</p>
+
+
+<p>In many cases, you want the computer to choose between doing something and
+not doing it. You can do this with an <span class="code">if</span> statement that omits the
+<span class="code">else</span> part:</p>
+
+
+<pre>if ( <span class="bnf">boolean-expression</span> )
+    <span class="bnf">statement</span>
+</pre>
+
+
+<p>To execute this statement, the computer evaluates the expression. If the
+value is <span class="code">true</span>, the computer executes the <span class="bnf">statement</span> that is contained inside the <span class="code">if</span>
+statement; if the value is <span class="code">false</span>, the computer skips over that <span class="bnf">statement</span>.</p>
+
+
+<p>Of course, either or both of the <span class="bnf">statements</span>
+in an <span class="code">if</span> statement can be a block, and again many programmers
+prefer to add the braces even when they contain just a single statement.
+So an <span class="code">if</span> statement often looks like:</p>
+
+
+<pre>if ( <span class="bnf">boolean-expression</span> ) {
+    <span class="bnf">statements</span>
+}
+else {
+    <span class="bnf">statements</span>
+}</pre>
+
+
+<p>or:</p>
+
+
+<pre>if ( <span class="bnf">boolean-expression</span> ) {
+    <span class="bnf">statements</span>
+}</pre>
+
+
+<p>As an example, here is an <span class="code">if</span> statement that exchanges the value of
+two variables, <span class="code">x</span> and <span class="code">y</span>, but only if <span class="code">x</span> is greater
+than <span class="code">y</span> to begin with. After this <span class="code">if</span> statement has been
+executed, we can be sure that the value of <span class="code">x</span> is definitely less than
+or equal to the value of <span class="code">y</span>:</p>
+
+
+<pre>if ( x &gt; y ) {
+    int temp;      // A temporary variable for use in this block.
+    temp = x;      // Save a copy of the value of x in temp.
+    x = y;         // Copy the value of y into x.
+    y = temp;      // Copy the value of temp into y.
+}</pre>
+
+
+<p>Finally, here is an example of an <span class="code">if</span> statement that includes an
+<span class="code">else</span> part. See if you can figure out what it does, and why it would be
+used:</p>
+
+
+<pre>if ( years &gt; 1 ) {  // handle case for 2 or more years
+    System.out.print("The value of the investment after ");
+    System.out.print(years);
+    System.out.print(" years is $");
+}
+else {  // handle case for 1 year
+    System.out.print("The value of the investment after 1 year is $");
+}  // end of if statement
+System.out.printf("%1.2f", principal);  // this is done in any case</pre>
+
+
+<p>I'll have more to say about control structures later in this chapter. But
+you already know the essentials. If you never learned anything more about
+control structures, you would already know enough to perform any possible
+computing task. Simple looping and branching are all you really need!</p>
+
+
+
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="s2.html">Next Section</a> |
+           <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

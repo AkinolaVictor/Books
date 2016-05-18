@@ -1,0 +1,37 @@
+<html><head><title>Radio Buttons</title>
+  <script type="text/javascript">
+	function changeBg(f){
+	    for (var i = 0; i < f.color.length;i++){
+		if(f.color[i].checked){
+			     document.bgColor= f.color[i].value;
+		}
+	    }
+	}
+  </script>
+</head>
+<body bgcolor="#CCFFFF">
+   <font face="arial"><b>
+      <form name="formradio">
+	Pick a background color:<p>
+	<input type=radio
+		name="color"
+		value="#0099CC" />dark cyan<br />
+	<input type=radio
+		name="color"
+		value="#339966" />teal<br />
+	<input type=radio
+		name="color"
+		value="#FF00FF" />magenta<br />
+	<input type=radio
+		name="color"
+		value="#FFFF66" />light yellow<br />
+	<input type=radio
+		name="color"
+		value="#FF9933" />light orange<br />
+	<p>
+	<input type=button
+		value="Click for Color" onClick="changeBg(this.form);" />
+	<input type="reset" />
+   </form>
+</body>
+</html>

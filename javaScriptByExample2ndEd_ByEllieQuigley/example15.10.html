@@ -1,0 +1,98 @@
+  <html><head><title>Creating a Blog</title>
+  <style type="text/css">
+     body{ background-color:#7fffd4;}
+     div#div1{ background: white;
+               border-width:1px;
+               margin-left:20%;
+               margin-right:20%;
+             }
+          p  { margin-left:1%;
+              font-family: arial;}
+    </style>
+   <script type="text/javascript">
+    function BlogEntry(){  //Create a blog class
+       var date;        //Properties
+       var message;
+       var name;
+       this.setDate=setDate;   // Methods
+       this.setBlogger=setBlogger;
+       this.setMessage=setMessage;
+       this.showBlog=showBlog;
+
+      function setDate(){   // Get the current date
+          var d=new Date();
+          var year=d.getFullYear();
+	  var month=d.getMonth() + 1;
+	  var day=d.getDate();
+          date=month + "/" + day + "/" + year;
+        }
+
+       function setBlogger(nameVal){
+           name=nameVal;
+        }
+        function setMessage(messageVal){
+           message=messageVal;
+        }
+       function showBlog(){
+          // Create HTML elements
+          var para = document.createElement("p");
+          var count=document.getElementsByTagName("p").length;
+              // Get number of paragraphs
+          para.setAttribute("id","para" + count); // Set id for P
+              // alert("There are " + count+ " paragraphs so far.");
+          var aBR = document.createElement("br");
+          var aBold = document.createElement("b");
+          var divObj = document.getElementById("div1");
+             //Get a reference to the div
+          divObj.appendChild(para);   // Append a paragraph
+            //Create nodes
+          var txt1=document.createTextNode("Posted by "+ name +" on ")
+          var txt2=document.createTextNode(date);
+          var txt3=document.createTextNode(message);
+          para.appendChild(txt1);
+          para.appendChild(txt2);
+          aBold.appendChild(aBR);
+          para.appendChild(aBold);
+          aBold.appendChild(txt3);
+          para.appendChild(aBold);
+         // alert(document.getElementById("para"+count).innerHTML);
+     }
+    } // End class
+
+   function addBlog(){  /*Add a blog entry using the DOM
+          and get form data */
+      message=document.getElementById("text").value;
+      bloggername=document.getElementById("name").value;
+      var blog = new BlogEntry();  // Create a new blog object
+      blog.setMessage(message);    // Call object’s methods
+      blog.setBlogger(bloggername);
+      blog.setDate();
+      blog.showBlog();
+   }
+</script>
+</head>
+<body>
+    <div align="center">
+      <img src="sunny.gif">
+      <img src="rain.gif">
+      <img src="partlycloudy.gif">
+      <img src="mostlycloudy.gif">
+      <img src="snow.gif">
+    </div>
+    <h2 align="center">MoodyWedderBlog</h2>
+    <div id="div1">
+     </div >
+    <br />
+    <div align="center">
+     <form method="post">
+        Enter your name (optional) <br />
+        <input type="text" id="name" />
+        <br /><br />
+       <textarea id="text" name="text" rows="5" cols="40"
+                  onfocus="this.value=''">
+        </textarea><br />
+       <input type="button" value="Add a blog" onclick="addBlog();"/>
+   </form>
+   </div>
+   </body>
+  </html>

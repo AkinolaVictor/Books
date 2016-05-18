@@ -1,0 +1,25 @@
+<html><head><title>Creating a New Element</title>
+<style type="text/css">
+	.divStyle { background-color:blue;
+       	            border-style:solid;
+ 	            color:white;
+	          }
+	        p { color:yellow; font-size:150%;}
+</style>
+<script type="text/javascript">
+    // Create a new p element and append it to a div
+	window.onload=function(){
+		var para = document.createElement("p");
+	    var divObj = document.getElementById("divtest");
+		divObj.appendChild(para);
+		var txt = document.createTextNode("Wow! Hope this works!");
+		para.appendChild(txt);
+         }
+</script>
+</head>
+<body>
+   <div id="divtest" class="divStyle">
+        <p>Original text in div container.</p>
+   </div>
+</body>
+</html>

@@ -1,0 +1,502 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 9, Chapter 6</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 6.9</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 6.9:</h3>
+<p>Write a GUI Blackjack program
+that lets the user play a game of Blackjack, with the computer as the dealer.
+The applet should draw the user's cards and the dealer's cards, just as was
+done for the graphical HighLow card game in  <a href="../c6/s7.html#GUI1.7.6">Subsection&nbsp;6.7.6</a>.
+You can use the source code for that game, <span class="sourceref"><a href="../source/HighLowGUI.java">HighLowGUI.java</a></span>, for some ideas about how to
+write your Blackjack game. The structures of the HighLow panel and the
+Blackjack panel are very similar. You will certainly want to use the
+<span class="code">drawCard()</span> method from the HighLow program.</p>
+
+
+<p>You can find a description of the game of Blackjack in <a href="../c5/ex5-ans.html">Exercise&nbsp;5.5</a>. 
+Add the following rule to that
+description: If a player takes five cards without going over 21, that player
+wins immediately. This rule is used in some casinos. For your program, it means
+that you only have to allow room for five cards. You should assume that the
+panel is just wide enough to show five cards, and that it is tall enough 
+show the user's hand and the dealer's hand.</p>
+
+
+<p>Note that the design of a GUI Blackjack game is very different from the
+design of the text-oriented program that you wrote for <a href="../c5/ex5-ans.html">Exercise&nbsp;5.5</a>. The user
+should play the game by clicking on "Hit" and "Stand" buttons. There should be
+a "New Game" button that can be used to start another game after one game ends.
+You have to decide what happens when each of these buttons is pressed. You
+don't have much chance of getting this right unless you think in terms of the
+states that the game can be in and how the state can change.</p>
+
+
+<p>Your program will need the classes defined in 
+<span class="sourceref"><a href="../source/Card.java">Card.java</a></span>,
+<span class="sourceref"><a href="../source/Hand.java">Hand.java</a></span>,
+<span class="sourceref"><a href="../source/Deck.java">Deck.java</a></span>, and
+<span class="sourceref"><a href="../source/BlackjackHand.java">BlackjackHand.java</a></span>.</p>
+
+
+
+<p>Here is an applet version of the program for you to try:</p>
+
+<p align="center">
+<applet code="BlackjackGUIApplet.class" width="466" height="346" archive="BlackjackGUI.jar" alt=""></applet></p>
+
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>The constructor for this exercise can be almost identical to that in
+the <span class="sourceref"><a href="../source/HighLowGUI.java">HighLow</a></span> game.  The text of the buttons
+just has to be changed from "Higher" and "Lower" to "Hit" and "Stand".  However,
+the nested class, <span class="classname">CardPanel</span> has to be rewritten to
+implement a game of Blackjack instead of a game of HighLow. The basic structure
+of the revised class remains similar to the original.
+All the programming for the game is in this class.</p>
+
+
+<p>In the HighLow game, there is one "hand," which holds all the cards that
+have been dealt. Blackjack is a two-player game, so there are two hands, one
+for the player and one for the dealer. These hands are of type
+<span class="code">BlackjackHand</span>. So, we need instance variables</p>
+
+
+<pre>BlackjackHand dealerHand;   // The dealer's cards.
+BlackjackHand playerHand;   // The user's cards.</pre>
+
+
+<p>We also need a <span class="code">deck</span> and a boolean-valued instance variable,
+<span class="code">gameInProgress</span>, to keep track of the two basic states of the game: Is
+a game in progress, or are we between games. Finally, there is a
+<span class="code">message</span> variable, which holds the string that is shown at the bottom
+of the game board.</p>
+
+
+<p>The <span class="code">paintComponent()</span> method uses the information in the
+<span class="code">dealerHand</span>, <span class="code">playerHand</span>, <span class="code">message</span>, and
+<span class="code">gameInProgress</span> variables. The reason it needs to look at the
+<span class="code">gameInProgress</span> variable is that when a game is in progress, one of the
+dealer's cards is drawn face down, so the user can't see it. Once the game is
+over, the card is drawn face up so the user can see what the dealer was
+holding. Note that there is no point in the program where I say, "turn the
+dealer's first card face up"! It happens automatically because the state of the
+game changes, and the <span class="code">paintComponent()</span> method checks the state when it
+draws the applet. If the game is over, the card is face up. If the game is in
+progress, the card is face down. This is nice
+example of state-machine thinking.</p>
+
+
+<p>Note that writing the <span class="code">paintComponent()</span> method required some
+calculation. The cards are 80 pixels wide and 100 pixels tall. Horizontally,
+there is a gap of 10 pixels between cards, and there are gaps of 10 pixels
+between the cards and the left and right edges. (The total width needed for the
+card panel, 460, allows for five 80-pixel cards and six 10-pixel gaps:
+ 5*80 + 6*10  = 460.  The applet is another 6 pixels wide because of a 3-pixel wide
+border on each side). The <span class="code">N</span>-th card,
+counting from 0, has its left edge at <span class="code">10+90*N</span>. It might be easier to
+see this as <span class="code">10+80*N+10*N</span>, 10 pixels on the left plus <span class="code">N</span>
+80-pixel cards, plus <span class="code">N</span> 10-pixel gaps between cards. Vertically, I
+allow 30 pixels for each string, "Dealer's Cards" and "Your Cards". This puts
+the top of the first row of cards at <span class="code">y=30</span>. Allowing 100 pixels for
+that row of cards and 30 pixels for the string "Your Cards", the top of the
+second row of cards is at 160. Given all this, you should be able to understand
+the <span class="code">paintComponent()</span> method. Allowing 100 pixels for the second row of
+cards and 30 pixels for the message at the bottom of the board, we need a
+height of at least 290 pixels for the drawing area. I set the preferred height of the CardPanel to
+310 to for some extra space between the cards and the message at the bottom of the
+panel.  The applet has an even greater height to allow for the height of the
+button bar below the card panel.</p>
+
+
+<p>In this GUI version of Blackjack, things happen when the user clicks the
+"Hit", "Stand", and "New Game" buttons. The program handles these events by
+calling the routines <span class="code">doHit()</span>, <span class="code">doStand()</span>, and
+<span class="code">doNewGame()</span>. Each of these routines has responsibility for one part of
+the game of Blackjack. Note that each routine starts by checking the state of
+the game to make sure that it is legal to call the routine at this time. If
+<span class="code">gameInProgress</span> is true, the user can legally click "Hit" or "Stand".
+If <span class="code">gameInProgress</span> is false, the user can legally click "New Game". If
+the user made an illegal move, an error message is stored in the
+<span class="code">message</span> variable, and <span class="code">repaint()</span> is called so the user will
+see the new message. This is similar to the way the three buttons in HighLowGUI
+are handled.</p>
+
+
+<p>The <span class="code">doNewGame()</span> routine has to set up a new game. This means
+creating the deck and hands, shuffling the deck and dealing two cards into each
+hand. At this point, the first time I wrote the game, I just set
+<span class="code">gameInProgress</span> to true, to record the fact that the state of the game
+has changed. Later, I realized that the <span class="code">doNewGame()</span> routine also has
+to check whether one of the players has Blackjack, since there is really no
+other place where this can be done. If one of the players has Blackjack, the
+game is over as soon as it starts, so <span class="code">gameIsProgress</span> has to be false, and the only action
+that the user can take at that point is to click the "New Game" button again.
+(Note that the <span class="code">doNewGame()</span> routine is also called by the constructor
+of the <span class="code">BlackjackPanel</span> class. This sets up the first game, when the
+panel is first created, so the user doesn't have to click on the "New Game"
+button to start the first game.)</p>
+
+
+<p>When the user clicks "Hit", if the game is in progress, we deal a card into
+the user's hand. At this point, the state of the game might have changed. If
+the user has over 21, the user loses and the game is over. If the user has
+taken 5 cards without going over 21, the user wins and the game is over. In
+either of these cases, the value of the state variable <span class="code">gameInProgress</span>
+becomes <span class="code">false</span>. Otherwise, <span class="code">gameInProgress</span> retains the value
+<span class="code">true</span>, and the game will continue. Since <span class="code">gameInProgress</span> is
+<span class="code">true</span>, the user again still the choice of clicking "Hit" or "Stand".
+(Note that there is no loop in the program that says "while the user continues
+to hit." The progress of the game is driven by events.)</p>
+
+
+<p>Finally, when the user clicks "Stand", the game is definitely over, so
+<span class="code">gameInProgrss</span> is set to false. However, before the game can end, the
+dealer gets to draw cards and a winner is determined. This all has to be done
+in the <span class="code">doStand()</span> routine. Then, the applet is repainted to show the
+final state of the game.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+
+/**
+ * In this program, the user plays a game of Blackjack.  The
+ * computer acts as the dealer.  The user plays by clicking
+ * "Hit!" and "Stand!" buttons.
+ * 
+ * This class defines a panel, but it also contains a main()
+ * routine that makes it possible to run the program as a
+ * stand-alone application.  
+ 
+ * If the panel is used in an applet the size should be about 466 pixels 
+ * wide and 346 pixels high.  That width is just big enough to show 
+ * 2 rows of 5 cards.  The height is probably a little bigger
+ * than necessary, to allow for variations in the size of buttons 
+ * from one platform to another.
+ * 
+ * This program depends on the following classes:  Card, Hand,
+ * BlackjackHand, Deck.
+ */
+public class BlackjackGUI extends JPanel {
+   
+   /**
+    * The main routine simply opens a window that shows a BlackjackGUI.
+    */
+   public static void main(String[] args) {
+      JFrame window = new JFrame("Blackjack");
+      BlackjackGUI content = new BlackjackGUI();
+      window.setContentPane(content);
+      window.pack();  // Set size of window to preferred size of its contents.
+      window.setResizable(false);  // User can't change the window's size.
+      Dimension screensize = Toolkit.getDefaultToolkit().getScreenSize();
+      window.setLocation( (screensize.width - window.getWidth())/2, 
+            (screensize.height - window.getHeight())/2 );
+      window.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+      window.setVisible(true);
+   }
+      
+   
+   /**
+    * The constructor lays out the panel.  A CardPanel occupies the CENTER 
+    * position of the panel (where CardPanel is a subclass of JPanel that is 
+    * defined below).  On the bottom is a panel that holds three buttons.  
+    * The CardPanel listens for ActionEvents from the buttons and does all 
+    * the real work of the program.
+    */
+   public BlackjackGUI() {
+      
+      setBackground( new Color(130,50,40) );
+      
+      setLayout( new BorderLayout(3,3) );
+      
+      CardPanel board = new CardPanel();
+      add(board, BorderLayout.CENTER);
+      
+      JPanel buttonPanel = new JPanel();
+      buttonPanel.setBackground( new Color(220,200,180) );
+      add(buttonPanel, BorderLayout.SOUTH);
+      
+      JButton hitButton = new JButton( "Hit!" );
+      hitButton.addActionListener(board);
+      buttonPanel.add(hitButton);
+      
+      JButton standButton = new JButton( "Stand!" );
+      standButton.addActionListener(board);
+      buttonPanel.add(standButton);
+      
+      JButton newGame = new JButton( "New Game" );
+      newGame.addActionListener(board);
+      buttonPanel.add(newGame);
+      
+      setBorder(BorderFactory.createLineBorder( new Color(130,50,40), 3) );
+      
+   }  // end constructor
+   
+   
+   
+   /**
+    * A nested class that displays the game and does all the work
+    * of keeping track of the state and responding to user events.
+    */
+   private class CardPanel extends JPanel implements ActionListener {
+      
+      Deck deck;         // A deck of cards to be used in the game.
+      
+      BlackjackHand dealerHand;   // Hand containing the dealer's cards.
+      BlackjackHand playerHand;   // Hand containing the user's cards.
+      
+      String message;  // A message drawn on the canvas, which changes
+                       //    to reflect the state of the game.
+      
+      boolean gameInProgress;  // Set to true when a game begins and to false
+                               //   when the game ends.
+      
+      Font bigFont;      // Font that will be used to display the message.
+      Font smallFont;    // Font that will be used to draw the cards.
+      
+      
+      /**
+       * The constructor creates the fonts and starts the first game.
+       * It also sets a preferred size of 460-by-310 for the panel.
+       * The paintComponent() method assumes that this is in fact the
+       * size of the panel (although it can be a little taller with
+       * no bad effect).
+       */
+      CardPanel() {
+         setPreferredSize( new Dimension(460,310) );
+         setBackground( new Color(0,120,0) );
+         smallFont = new Font("SansSerif", Font.PLAIN, 12);
+         bigFont = new Font("Serif", Font.BOLD, 16);
+         doNewGame();
+      }
+      
+      /**
+       * Respond when the user clicks on a button by calling the appropriate 
+       * method.  Note that the buttons are created and listening is set
+       * up in the constructor of the BlackjackPanel class.
+       */
+      public void actionPerformed(ActionEvent evt) {
+         String command = evt.getActionCommand();
+         if (command.equals("Hit!"))
+            doHit();
+         else if (command.equals("Stand!"))
+            doStand();
+         else if (command.equals("New Game"))
+            doNewGame();
+      }
+      
+      
+      /**
+       * This method is called when the user clicks the "Hit!" button.  First 
+       * check that a game is actually in progress.  If not, give  an error 
+       * message and exit.  Otherwise, give the user a card.  The game can end 
+       * at this point if the user goes over 21 or if the user has taken 5 cards 
+       * without going over 21.
+       */
+      void doHit() {
+         if (gameInProgress == false) {
+            message = "Click \"New Game\" to start a new game.";
+            repaint();
+            return;
+         }
+         playerHand.addCard( deck.dealCard() );
+         if ( playerHand.getBlackjackValue() &gt; 21 ) {
+            message = "You've busted!  Sorry, you lose.";
+            gameInProgress = false;
+         }
+         else if (playerHand.getCardCount() == 5) {
+            message = "You win by taking 5 cards without going over 21.";
+            gameInProgress = false;
+         }
+         else {
+            message = "You have " + playerHand.getBlackjackValue() + ".  Hit or Stand?";
+         }
+         repaint();
+      }
+      
+      
+      /**
+       * This method is called when the user clicks the "Stand!" button.
+       * Check whether a game is actually in progress.  If it is, the game 
+       * ends.  The dealer takes cards until either the dealer has 5 cards 
+       * or more than 16 points.  Then the  winner of the game is determined. 
+       */
+      void doStand() {
+         if (gameInProgress == false) {
+            message = "Click \"New Game\" to start a new game.";
+            repaint();
+            return;
+         }
+         gameInProgress = false;
+         while (dealerHand.getBlackjackValue() &lt;= 16 &amp;&amp; dealerHand.getCardCount() &lt; 5)
+            dealerHand.addCard( deck.dealCard() );
+         if (dealerHand.getBlackjackValue() &gt; 21)
+            message = "You win!  Dealer has busted with " + dealerHand.getBlackjackValue() + ".";
+         else if (dealerHand.getCardCount() == 5)
+            message = "Sorry, you lose.  Dealer took 5 cards without going over 21.";
+         else if (dealerHand.getBlackjackValue() &gt; playerHand.getBlackjackValue())
+            message = "Sorry, you lose, " + dealerHand.getBlackjackValue()
+                        + " to " + playerHand.getBlackjackValue() + ".";
+         else if (dealerHand.getBlackjackValue() == playerHand.getBlackjackValue())
+            message = "Sorry, you lose.  Dealer wins on a tie.";
+         else
+            message = "You win, " + playerHand.getBlackjackValue()
+                        + " to " + dealerHand.getBlackjackValue() + "!";
+         repaint();
+      }
+      
+      
+      /**
+       * Called by the constructor, and called by actionPerformed() if  the 
+       * user clicks the "New Game" button.  Start a new game.  Deal two cards 
+       * to each player.  The game might end right then  if one of the players 
+       * had blackjack.  Otherwise, gameInProgress is set to true and the game 
+       * begins.
+       */
+      void doNewGame() {
+         if (gameInProgress) {
+               // If the current game is not over, it is an error to try
+               // to start a new game.
+            message = "You still have to finish this game!";
+            repaint();
+            return;
+         }
+         deck = new Deck();   // Create the deck and hands to use for this game.
+         dealerHand = new BlackjackHand();
+         playerHand = new BlackjackHand();
+         deck.shuffle();
+         dealerHand.addCard( deck.dealCard() );  // Deal two cards to each player.
+         dealerHand.addCard( deck.dealCard() );
+         playerHand.addCard( deck.dealCard() );
+         playerHand.addCard( deck.dealCard() );
+         if (dealerHand.getBlackjackValue() == 21) {
+            message = "Sorry, you lose.  Dealer has Blackjack.";
+            gameInProgress = false;
+         }
+         else if (playerHand.getBlackjackValue() == 21) {
+            message = "You win!  You have Blackjack.";
+            gameInProgress = false;
+         }
+         else {
+            message = "You have " + playerHand.getBlackjackValue() + ".  Hit or stand?";
+            gameInProgress = true;
+         }
+         repaint();
+      }  // end newGame();
+      
+      
+      /**
+       * The paint method shows the message at the bottom of the
+       * canvas, and it draws all of the dealt cards spread out
+       * across the canvas.
+       */
+      public void paintComponent(Graphics g) {
+         
+         super.paintComponent(g); // fill with background color.
+         
+         g.setFont(bigFont);
+         g.setColor(Color.GREEN);
+         g.drawString(message, 10, getHeight() - 10);
+         
+         // Draw labels for the two sets of cards.
+         
+         g.drawString("Dealer's Cards:", 10, 23);
+         g.drawString("Your Cards:", 10, 153);
+         
+         // Draw dealer's cards.  Draw first card face down if
+         // the game is still in progress,  It will be revealed
+         // when the game ends.
+         
+         g.setFont(smallFont);
+         if (gameInProgress)
+            drawCard(g, null, 10, 30);
+         else
+            drawCard(g, dealerHand.getCard(0), 10, 30);
+         for (int i = 1; i &lt; dealerHand.getCardCount(); i++)
+            drawCard(g, dealerHand.getCard(i), 10 + i * 90, 30);
+         
+         // Draw the user's cards.
+         
+         for (int i = 0; i &lt; playerHand.getCardCount(); i++)
+            drawCard(g, playerHand.getCard(i), 10 + i * 90, 160);
+         
+      }  // end paint();
+      
+      
+      /**
+       * Draws a card as a 80 by 100 rectangle with upper left corner at (x,y).
+       * The card is drawn in the graphics context g.  If card is null, then
+       * a face-down card is drawn.  (The cards are rather primitive!)
+       */
+      void drawCard(Graphics g, Card card, int x, int y) {
+         if (card == null) {  
+               // Draw a face-down card
+            g.setColor(Color.blue);
+            g.fillRect(x,y,80,100);
+            g.setColor(Color.white);
+            g.drawRect(x+3,y+3,73,93);
+            g.drawRect(x+4,y+4,71,91);
+         }
+         else {
+            g.setColor(Color.white);
+            g.fillRect(x,y,80,100);
+            g.setColor(Color.gray);
+            g.drawRect(x,y,79,99);
+            g.drawRect(x+1,y+1,77,97);
+            if (card.getSuit() == Card.DIAMONDS || card.getSuit() == Card.HEARTS)
+               g.setColor(Color.red);
+            else
+               g.setColor(Color.black);
+            g.drawString(card.getValueAsString(), x + 10, y + 30);
+            g.drawString("of", x+ 10, y + 50);
+            g.drawString(card.getSuitAsString(), x + 10, y + 70);
+         }
+      }  // end drawCard()
+      
+      
+   } // end nested class CardPanel
+   
+   
+} // end class BlackjackGUI
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

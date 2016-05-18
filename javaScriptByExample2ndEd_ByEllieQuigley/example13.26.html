@@ -1,0 +1,37 @@
+
+<html><head><title>Event Handling and Forms</title>
+   <script type="text/javascript">
+	   var b1,b2,b3;
+	   window.onload=function(){
+	        b1=document.getElementById("button1");
+	        b2=document.getElementById("button2");
+	        b3=document.getElementById("button3");
+
+	        b1.onclick=morning;
+	        b2.onclick=noon;
+	        b3.onclick=night;
+       }
+       function morning(){
+            alert ("Good Morning");
+       }
+       function noon(){
+             alert("Let's have lunch.");
+       }
+       function night(){
+            alert("Good-night!");
+       }
+   </script>
+</head>
+<body>
+	<h2>
+	Greetings Message
+	</h2>
+	<hr>
+    <form>
+		<input type="button" id="button1" value="Morning">
+		<input type="button" id="button2" value="Noon">
+		<input type="button" id="button3" value="Night">
+
+   </form>
+</body>
+</html>	

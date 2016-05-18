@@ -1,0 +1,20 @@
+<html><head><title>The Character Class and Negation</title>
+</head>
+<body>
+   <script type="text/javascript">
+	//  Negation within a Character Class
+	var reg_expression = /[^0-9]/;
+	var textString=prompt("Type a string of text","");
+	var result=reg_expression.test(textString);  // Returns true
+		                                             // or false
+	document.write(result+"<br />");
+	if (result){
+		document.write("<b>The reg_ex /[^0-9]/ matched the string\""+
+		textString +"\".<br />");
+	}
+	else{
+		alert("No Match!");
+	}
+   </script>
+</body>
+</html>

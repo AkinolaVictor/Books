@@ -1,0 +1,37 @@
+ <html>
+	<head><title>Method Inheritance</title>
+	 <script type = "text/javascript">
+	 	function Book(title, author, price){    // The Book costructor
+			this.title = title;   // Book properties/attributes
+			this.author = author;
+			this.price=price;
+			this.show=showProps;  // Book method
+		}
+		function showProps(){
+			var result = "";
+			for (var i in this){
+			   result +=  i + " = " + this[i] + "<br>";
+			}
+			return result;
+		}
+	 </script>
+	 </head>
+	 <body>
+	    <script type="text/javascript">
+	   // Add a new method with prototype
+	    Book.prototype.addTax=function addTax(){
+	              this.price *= 1.18;
+	              return(this.price.toFixed(2));
+	    }
+	    var famousBook=new Book("War and Peace","Leo Tolstoy", 30.00);
+	    var myBook=new Book("JavaScript by Example", "Ellie Quigley",
+                             25);
+	    document.write("<br><b>" + famousBook.show()+"</br>");
+	    document.write("<br><b>" + myBook.show()+"</br>");
+	     document.write("With tax \""+ famousBook.title +"\" costs $"+
+           famousBook.addTax() +".</br>");
+        document.write("With tax \""+ myBook.title + "\" costs $" +
+           myBook.addTax() +".</br>");
+	   </script>
+	</body>
+	</html>

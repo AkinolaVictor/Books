@@ -1,0 +1,77 @@
+
+<html><head><title>Checking for Valid CC Type and Length</title>
+  <script type="text/javascript">
+	function checkCC(myForm){
+		var cc_type;
+		var cc_length;
+		if (myForm.select1.selectedIndex==0){
+			cc_type="Visa";
+		}
+		else if( myForm.select1.selectedIndex==1){
+			cc_type="MasterCard";
+		}
+		else if( myForm.select1.selectedIndex==2){
+			cc_type="Discover";
+		}
+		else {
+			alert("You didn't select a card type.");
+		}
+		cc_length=myForm.text.value.length;
+		switch(cc_type){
+		case "Visa" :
+			if ( cc_length == 13 || cc_length == 16){
+			   return true;
+			}
+			else{
+			   alert("Invalid length");
+			   return false;
+			}
+			break;
+
+		case "MasterCard":
+			if ( cc_length == 16){
+			   return true;
+			}
+			else{
+			   alert("Invalid length");
+			   return false;
+			}
+			break;
+		case "Discover":
+			if ( cc_length == 16){
+			   return true;
+			}
+			else{
+			   alert("Invalid length");
+			   return false;
+			}
+			break;
+		default:
+			alert("Invalid type");
+			return false;
+			break;
+		}
+	}
+  </script>
+</head>
+<body bgcolor="lightblue">
+   <big>
+	<form name="form1" onSubmit="return checkCC(this);">
+	Please select a credit card from the menu:
+	<p>
+	<select name="select1" size="3">
+		<option value="Visa">Visa</option>
+		<option value="MC">MasterCard</option>
+		<option value="Dis">Discover</option>
+	</select>
+	<p>
+	Please enter your card number:
+	<p>
+	<input type=textbox name="text" size=30>
+	<p>
+	<input type=submit value="Check card">
+	<input type=reset>
+	</form>
+     </big>
+  </body>
+</html>

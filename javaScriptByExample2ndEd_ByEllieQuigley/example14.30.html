@@ -1,0 +1,55 @@
+<html><head><title>Positioning</title>
+     <style type="text/css">
+           body { background-color: aliceblue;}
+           div {  font-size:larger;
+                   color: white;
+                   border: solid;
+                   border-color:aqua;
+                }
+          .pos1 {position:absolute; top:50px;left:10px;
+				       background-color:blue;
+		}
+	  .pos2 {position:absolute; top:100px;left:10px;
+				      background-color:teal;
+                }
+          .pos3  {position:absolute; top:150px;left:10px;
+				       background-color:darkblue;
+		}
+        </style>
+    <script type="text/javascript">
+	var div1,div2,div3;
+	window.onload=function(){
+			div1=document.getElementById("first");
+			div2=document.getElementById("second");
+			div3=document.getElementById("third");
+	}
+	function startPosition(){
+		div1.style.top = 50;
+                div1.style.left=10;
+		div2.style.top = 100;
+               	div2.style.left=10;
+		div3.style.top = 150;
+		div3.style.left=10;
+	}
+	function movePosition(){
+		div1.style.left = 50;
+		div1.style.top = 150;
+		div2.style.left = 100;
+ 		div2.style.top = 100;
+		div3.style.left = 150;
+		div3.style.top = 50;
+	}
+    </script>
+</head>
+<body>
+	<div id="first"  class="pos1">one</div>
+	<div id="second" class="pos2">two</div>
+	<div id="third"  class="pos3">three</div>
+	<form>
+	        <input type="button" value="move text"           
+                   onClick="movePosition()">
+		 	 <input type="button" value="put it back" 
+                   onClick="startPosition()"  >
+	</form>
+</body>
+</html>

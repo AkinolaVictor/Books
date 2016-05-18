@@ -1,0 +1,574 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 5, Chapter 13</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 13.5</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 13.5:</h3>
+<p>The sample program <span class="sourceref"><a href="../source/PhoneDirectoryFileDemo.java">PhoneDirectoryFileDemo.java</a></span>
+from <a href="../c11/s3.html#IO.3.2">Subsection&nbsp;11.3.2</a> keeps data for a "phone directory" in a file in the user's
+home directory.  <a href="../c11/ex5-ans.html">Exercise&nbsp;11.5</a> asked you to revise that program to
+use an XML format for the data.  Both programs have a simple command-line user
+interface.  For this exercise, you should provide a GUI interface for the
+phone directory data.  You can base your program either on the original sample
+program or on the modified version from the exercise.  Use a <span class="classname">JTable</span>
+to hold the data.  The user should be able to edit all the entries in the
+table.  Also, the user should be able to add and delete rows.  Include either
+buttons or menu commands that can be used to perform these actions.  The
+delete command should delete the selected row, if any.   New rows should be
+added at the end of the table.
+For this program, you can use a standard <span class="classname">DefaultTableModel</span>.</p>
+
+<p>Your program should load data from the file when it starts and save data to the
+file when it ends, just as the two previous programs do.  For a GUI program, you can't
+simply save the data at the end of the <span class="code">main()</span> routine, since <span class="code">main()</span>
+terminates as soon as the window shows up on the screen.  You want to save the
+data when the user closes the window and ends the program.  There are several
+approaches.  One is to use a <span class="classname">WindowListener</span> to detect
+the event that occurs when the window closes.  Another is to use a "Quit"
+command to end the program; when the user quits, you can save the data and
+close the window  (by calling its <span class="code">dispose()</span> method), and end the program.
+If you use the "Quit" command approach, you don't want the user to be
+able to end the program simply by closing the window.  To accomplish this,
+you should call</p>
+
+<pre>frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);</pre>
+
+<p>where <span class="code">frame</span> refers to the <span class="classname">JFrame</span> that
+you have created for the program's user interface.  When using a
+<span class="classname">WindowListener</span>, you want the close box on the window to
+close the window, not end the program.  For this, you need</p>
+
+<pre>frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);</pre>
+
+<p>When the listener is notified of a window closed event, it can
+save the data and end the program.</p>
+
+<p>Most of the <span class="classname">JTable</span> and <span class="classname">DefaultTableModel</span>
+methods that you need for this exercise are discussed in <a href="../c13/s4.html#GUI2.4.3">Subsection&nbsp;13.4.3</a>,
+but there are a few more that you need to know about.  To determine
+which row is selected in a <span class="classname">JTable</span>, call
+<span class="code">table.getSelectedRow()</span>.  This method
+returns the row number of the selected row, or returns <span class="code">-1</span> if no
+row is selected.  To specify which cell is currently being edited, you can
+use:</p>
+
+<pre>table.setRowSelectionInterval(rowNum, rowNum);  // Selects row number rowNum. 
+table.editCellAt( rowNum, colNum ); // Edit cell at position (rowNum,colNum).
+phoneTable.getEditorComponent().requestFocus();  // Put input cursor in cell.</pre>
+
+<p>One particularly troublesome point is that the data that is in the cell that
+is currently being edited is not in the table model.  The value in the edit cell
+is not put into the table model until after the editing is finished.  This means
+that even though the user sees the data in the cell, it's not really part of the
+table data yet.  If you lose that data, the user would be justified in complaining.
+To make sure that you get the right data when you save the
+data at the end of the program, you have to turn off editing before retrieving
+the data from the model.  This can be done with the following method:</p>
+
+<pre>private void stopEditing() {
+   if (table.getCellEditor() != null)
+      table.getCellEditor().stopCellEditing();
+}</pre>
+
+<p>This method must also be called before modifying the table by adding or
+deleting rows; if such modifications are made while editing is in progress,
+the effect can be very strange.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>There are many, many ways to organize the program.  I will
+discuss just one. The main GUI class in my program is a subclass of <span class="classname">JPanel</span>,
+named <span class="classname">PhoneDirectoryPanel</span>.  This panel holds the table and
+two buttons that are used for adding and deleting rows.  
+In the <span class="code">main()</span> routine, the data from the file is read
+into a variable of type <span class="classname">TreeMap&lt;String,String&gt;</span>.
+Somehow, that data has to get into the panel.  I decided to pass it as a
+parameter to a constructor of the form</p>
+
+<pre>public PhoneDirectoryPanel(TreeMap&lt;String,String&gt; initialPhoneBook)</pre>
+
+<p>When the program ends, the data has to be gotten back <b>out</b> of the
+panel object so it can be saved to the file.  I defined a method in the
+<span class="classname">PhoneDirectoryPanel</span> class that can be used to get
+the data:</p> 
+
+<pre>public TreeMap&lt;String, String&gt; getPhoneBook()</pre>
+
+<p>Aside from the constructor, some instance variables, and the <span class="code">getPhoneBook()</span> method, the only
+other thing in the panel class is the <span class="code">stopEditing()</span> method that was mentioned in the
+exercise.  While the program is running, the data is managed by the table.</p>
+
+<p>In the command-line version, the code for
+saving the data is at the end of the <span class="code">main()</span> routine.  I
+moved it into a static method</p>
+
+<pre>private static void saveData(TreeMap&lt;String,String&gt; newPhoneBook)</pre>
+
+<p>This method has to be called when the program ends.  I decided to use a 
+<span class="classname">WindowListener</span> to save the data when the window is closed.
+The <span class="code">main()</span> routine creates the window, puts a <span class="classname">PhoneDirectoryPanel</span>
+in the window, and adds a listener to the window:</p>
+
+<pre>JFrame window = new JFrame("PhoneBook");
+final PhoneDirectoryPanel panel = new PhoneDirectoryPanel(phoneBook);
+window.setContentPane( panel );
+window.pack();
+Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+window.setLocation( (screenSize.width - window.getWidth())/2, 80 );
+window.setVisible(true);
+window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+window.addWindowListener( new WindowAdapter() {
+      // When the user clicks the close box of the window,
+      // the window will be disposed (that is, closed), and the
+      // windowClosed method in this WindowListener will be 
+      // called.  This method saves the phone book data and
+      // calls System.exit() to terminate the program.
+   public void windowClosed(WindowEvent evt) {
+      saveData(panel.getPhoneBook());
+      System.exit(0);
+   }
+});</pre>
+
+<p>After it does this, the <span class="code">main()</span> routine ends, and the window takes
+over.  The constructor of the panel class has to create a table and a table model
+using the data from the <span class="classname">TreeMap</span>, <span class="code">initialPhoneBook</span>.
+To do this, it copies the data into a two-dimensional array of <span class="classname">Strings</span>
+that can be used in the constructor for the <span class="classname">DefaultTableModel</span>:
+</p>
+
+<pre>int entryCount = initialPhoneBook.size();
+String[][] entries;
+if (entryCount == 0)
+    entries = new String[1][2]; // Represents an empty row.
+else {
+   entries = new String[entryCount][2];
+   int index = 0;
+   for (Map.Entry&lt;String, String&gt; entry : initialPhoneBook.entrySet()) {
+      entries[index][0] = entry.getKey();
+      entries[index][1] = entry.getValue();
+      index++;
+   }
+}
+String[] columnHeads = new String[] { "Name", "Number" };
+ 
+model = new DefaultTableModel(entries,columnHeads);
+table = new JTable(model);</pre>
+
+<p>Note that if there are no entries in the phone book, I place one empty row
+in the table, since the user would have to do that anyway before they could
+do anything else with the table.  (Also, I need a real array when I create the model,
+since the number of columns is taken from the size of the array.)
+I also did some customization of the table's appearance.  The constructor
+also creates an "Add Row" button and a "Delete Row" button.  It's worth
+looking at the <span class="classname">ActionListener</span> for the "Add Row" button:</p>
+
+<pre>JButton addRowButton = new JButton("Add Row");
+addRowButton.addActionListener( new ActionListener() {
+   public void actionPerformed(ActionEvent evt) {
+          // Add a row at the end of the table.  Also, select
+          // that row and set the first cell in that row to
+          // be the cell that is currently being edited.
+      stopEditing();
+      model.addRow( new String[] { null, null } );
+      int newRow = model.getRowCount() - 1;  // Number of the row that was added.
+      table.setRowSelectionInterval(newRow, newRow);
+      table.editCellAt( newRow, 0 );
+      Component c = table.getEditorComponent();
+      if (c != null) // (Should not be null.)
+         c.requestFocus();
+   }
+});</pre>
+
+<p>The statement <span class="code">model.addRow( new String[] { null, null } );</span> adds a row
+at the end of the table.  The data that is to go into the cells in that row is passed
+to the <span class="code">addRow()</span> method as an array.  In this case, the <span class="code">null</span>
+values mean that both cells will initially be empty.  Before adding the row,
+I call <span class="code">stopEditing()</span>, as suggested in the exercise, and after
+adding the row, I select the first cell in the row for editing, again following the
+exercise.</p>
+
+<p>The only other thing to do in the panel class is to define the <span class="code">getPhoneBooK()</span> method.
+This method has to get the data out of the table model and add it to a <span class="classname">TreeMap</span>.
+One question was, what to do about empty cells in the table?  A row with one or two empty
+rows represents missing or incomplete data.  One possibility is just to ignore all such
+rows.  However, I decided that having a name in the phone book with no number attached to
+it would be OK.  On the other hand, it doesn't make any sense to have a number without a
+name, so my policy is to ignore any row in which the "name" cell is empty.  You can see
+how it's done in the solution shown below.</p>
+
+<p>One other issue that came up is what to do if an error occurs while trying to
+read or write the data file.  The command-line version of the program simply prints
+a message to standard output.  For a GUI program, however, the user probably won't
+even see standard output, so sending the output there does no good.  A much
+better way to report errors in a GUI program is to use the <span class="classname">JOptionPane</span>
+class, so I converted error reports from the original program to use
+<span class="classname">JOptionPane</span> instead of <span class="code">System.out</span>.</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+
+<pre class="exercisecode">
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+
+import java.io.*;
+
+import java.util.Map;
+import java.util.TreeMap;
+
+import javax.xml.parsers.*;
+import org.w3c.dom.*;
+
+/**
+ * This program lets the user keep a persistent "phone book" that
+ * contains names and phone numbers.  The data for the phone book
+ * is stored in a file in the user's home directory.  This is
+ * a GUI version of the program, with the phonebook displayed
+ * in a table that the user can edit.  The data files for this
+ * version of the program are in XML format. 
+ *
+ * WARNING:  This program will save a file named ".phone_book_xml_demo" 
+ * in the home directory of the user who runs it.  On some computers,
+ * this will be a "hidden" file.
+ */
+public class PhoneDirectoryGUI {
+   
+   /**
+    * The name of the file in which the phone book data is kept.  The
+    * file is stored in the user's home directory.  The "." at the
+    * beginning of the file name means that the file will be a
+    * "hidden" file on Unix-based computers, including Linux and
+    * Mac OS X.
+    */
+   private static String DATA_FILE_NAME = ".phone_book_xml_demo";
+   
+   /**
+    * A File object created from the absolute path name of the file.
+    */
+   private static File dataFile;
+   
+   /**
+    * Holds the phone book data as it was read from the data file 
+    * when the program started.  The data in this map is not modified
+    * after it has been read.
+    */
+   private static TreeMap&lt;String,String&gt; phoneBook;
+   
+   
+   public static void main(String[] args) {
+            
+      phoneBook = new TreeMap&lt;String,String&gt;();      
+      File userHomeDirectory = new File( System.getProperty("user.home") );
+      dataFile = new File( userHomeDirectory, DATA_FILE_NAME );
+      
+      /* If the data file already exists, then the data in the file is
+       * read and is used to initialize the phone directory.  The user
+       * is informed before the file is created and is given a chance to
+       * exit the program immediately.
+       */
+      
+      if ( ! dataFile.exists() ) {
+         int response = JOptionPane.showConfirmDialog(null, 
+               "No phone book data file found.  To create a new one,\n" 
+                    + "click OK.  To exit the program now, click CANCEL.\n\n"
+                  + "(The name of the file will be:\n      "
+                  + dataFile.getAbsolutePath() + ")", 
+               "Create phonebook?", JOptionPane.OK_CANCEL_OPTION);
+         if (response == JOptionPane.CANCEL_OPTION)
+            System.exit(1);
+      }
+      else {
+         System.out.println("Reading phone book data...");
+         try {
+            DocumentBuilder docReader = 
+               DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document xmldoc = docReader.parse(dataFile);
+            Element root = xmldoc.getDocumentElement();
+            if (! root.getTagName().equals("phone_directory"))
+               throw new Exception();
+            NodeList nodes = root.getChildNodes();
+            for (int i = 0; i &lt; nodes.getLength(); i++) {
+               if ( nodes.item(i) instanceof Element ) {
+                  Element entry = (Element)nodes.item(i);
+                  if (! entry.getTagName().equals("entry"))
+                     throw new Exception();
+                  String entryName = entry.getAttribute("name");
+                  String entryNumber = entry.getAttribute("number");
+                  if (entryName.length() == 0)
+                     throw new Exception();
+                  phoneBook.put(entryName,entryNumber);
+               }
+            }
+         }
+         catch (Exception e) {
+            JOptionPane.showMessageDialog(null, 
+                  "An error occurred while trying to read\n"
+                  + "the phone directory from the file:\n   "
+                  + dataFile.getAbsolutePath()
+                  +"\n\nThis program cannot continue.");
+            System.exit(1);
+         }
+      }
+      
+      /* The phone book has been read successfully (if it existed).  Open
+       * a window where the user can view and edit the phone directory.
+       */
+      
+      JFrame window = new JFrame("PhoneBook");
+      final PhoneDirectoryPanel panel = new PhoneDirectoryPanel(phoneBook);
+      window.setContentPane( panel );
+      window.pack();
+      Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+      window.setLocation( (screenSize.width - window.getWidth())/2, 80 );
+      window.setVisible(true);
+      window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+      window.addWindowListener( new WindowAdapter() {
+            // When the user clicks the close box of the window,
+            // the window will be disposed (that is, closed), and the
+            // windowClosed method in this WindowListener will be 
+            // called.  This method saves the phone book data and
+            // calls System.exit() to terminate the program.
+         public void windowClosed(WindowEvent evt) {
+            saveData(panel.getPhoneBook());
+            System.exit(0);
+         }
+      });
+      
+   } // end main()
+      
+   
+   /** 
+    * Before ending the program, write the current contents of the
+    * phone directory, but only if some changes have been made to
+    * the directory.  This is called by a window listener when the
+    * window is closed.  If an error occurs while the data is being
+    * saved, a pop-up box will inform the user (but this is unlikely).
+    * @param newPhoneBook the phone book data that has possibly been
+    *    edited by the user.  If this is the same as the data that
+    *    was read from the file originally, this method does not
+    *    re-save the unchanged data.  If the data has changed, the
+    *    new data is written to the file.
+    */
+   private static void saveData(TreeMap&lt;String,String&gt; newPhoneBook) {
+      if (phoneBook.equals(newPhoneBook) ) 
+         System.out.println("No changes to phone book.");
+      else{
+         System.out.println("Saving phone directory changes to file " + 
+               dataFile.getAbsolutePath() + " ...");
+         PrintWriter out;
+         try {
+            out = new PrintWriter( new FileWriter(dataFile) );
+         }
+         catch (IOException e) {
+            JOptionPane.showMessageDialog(null,"Whoops!  Some error occurred while\n"
+                  + "trying to save your phone book.  Sorry.");
+            return;
+         }
+         out.println("&lt;?xml version=\"1.0\"?&gt;");
+         out.println("&lt;phone_directory&gt;");
+         for ( Map.Entry&lt;String,String&gt; entry : newPhoneBook.entrySet() ) {
+            out.print("  &lt;entry name='");
+            out.print(entry.getKey());
+            out.print("' number='");
+            out.print(entry.getValue());
+            out.println("'/&gt;");
+         }
+         out.println("&lt;/phone_directory&gt;");
+         out.close();
+         if (out.checkError()) {
+            JOptionPane.showMessageDialog(null,"Whoops!  Some error occurred while\n"
+                  + "trying to save your phone book.  Sorry.");
+         }
+      }
+   }
+   
+   
+   /**
+    * This class defines the GUI for viewing and editing the phone
+    * book.  The main program adds an object of this type to a frame.
+    */
+   private static class PhoneDirectoryPanel extends JPanel {
+      
+      private JTable phoneTable;        // For showing/editing the phone book.
+      private DefaultTableModel model;  // The model for the table.  (This is
+                                        //   where the data is actually stored.)
+      
+      /**
+       * Constructor creates the table and shows it with an "Add row"
+       * and a "Delete Row" button beneath it.
+       * @param initialPhoneBook contains the phone book data that is initially
+       *    added to the table.  (This comes from the main program and
+       *    contains the data that was read from the file.)
+       */
+      public PhoneDirectoryPanel(TreeMap&lt;String,String&gt; initialPhoneBook) {
+         
+         /* First create the arrays that hold the data for the table
+          * and the names of its columns.  These arrays are used to
+          * create the table model.
+          */
+         
+         int entryCount = initialPhoneBook.size();
+         String[][] entries;
+         if (entryCount == 0)
+             entries = new String[1][2];
+         else {
+            entries = new String[entryCount][2];
+            int index = 0;
+            for (Map.Entry&lt;String, String&gt; entry : initialPhoneBook.entrySet()) {
+               entries[index][0] = entry.getKey();
+               entries[index][1] = entry.getValue();
+               index++;
+            }
+         }
+         String[] columnHeads = new String[] { "Name", "Number" };
+         
+         /* Create the table model from the data and column name arrays,
+          * and use it to create the JTable.  After this, the official
+          * phone book data is what's in the table, and the arrays and
+          * initialPhoneBook are no longer used.
+          */
+         
+         model = new DefaultTableModel(entries,columnHeads);
+         phoneTable = new JTable(model);
+         
+         /* Customize the appearance of the table.
+          */
+         
+         phoneTable.setRowHeight(27);
+         phoneTable.setShowGrid(true);
+         phoneTable.setGridColor(Color.BLACK);
+         phoneTable.getTableHeader().setReorderingAllowed(false);
+         
+         /* Create the two buttons, and set up listeners to respond
+          * when the user clicks them.
+          */
+         
+         JButton addRowButton = new JButton("Add Row");
+         addRowButton.addActionListener( new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                   // Add a row at the end of the table.  Also, select
+                   // that row and set the first cell in that row to
+                   // be the cell that is currently being edited.
+               stopEditing();
+               model.addRow( new String[] { null, null } );
+               int newRow = model.getRowCount() - 1;
+               phoneTable.setRowSelectionInterval(newRow, newRow);
+               phoneTable.editCellAt( newRow, 0 );
+               Component c = phoneTable.getEditorComponent();
+               if (c != null) // (Should not be null.)
+                  c.requestFocus();
+            }
+         });
+         
+         JButton deleteRowButton = new JButton("Delete Row");
+         deleteRowButton.addActionListener( new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                   // Delete the selected row, if there is one.  If more than
+                   // one cell is selected, the first selected row is deleted.
+               stopEditing();
+               int selectedRow = phoneTable.getSelectedRow();
+               if (selectedRow &gt;= 0)
+                  model.removeRow(selectedRow);
+            }
+         });
+         
+         /* Build the layout for the panel.
+          */
+         
+         setLayout(new BorderLayout(2,2));
+         setBackground(Color.GRAY);
+         setBorder(BorderFactory.createLineBorder(Color.GRAY,2));
+         add( new JScrollPane(phoneTable), BorderLayout.CENTER );
+         JPanel buttonBar = new JPanel();
+         buttonBar.add(addRowButton);
+         buttonBar.add(deleteRowButton);
+         add( buttonBar, BorderLayout.SOUTH ); 
+         
+      } // end constructor
+      
+      
+      /**
+       * This method is called before modifying the table or getting
+       * the data out of the table.  If a cell is currently being 
+       * edited, it turns off editing of that cell and changes the
+       * data model to match the current content of the editor.  (Note
+       * that the table model does not change while the cell is being 
+       * edited.)
+       */
+      private void stopEditing() {
+         if (phoneTable.getCellEditor() != null)
+            phoneTable.getCellEditor().stopCellEditing();
+      }
+
+      
+      /**
+       * This method is called when the program ends to get the phone
+       * book data, which might have been edited by the user.  The
+       * data is in the table model.  This method gets the data from
+       * the table model and puts it into a TreeMap, which is then
+       * returned as the value of the method.  Note that if a row in
+       * the table contains an empty name, it is ignored.  However,
+       * if there is an empty number for a non-empty name, the number
+       * is changed to "(unknown)" and the row is added to the TreeMap.
+       * Note that by using a TreeMap, we allow only one number for
+       * a given name.  If the user has used the same name in more than
+       * one row, the first row with that name will be lost;
+       * it would probably be better to warn the user about this or to
+       * take some other, more reasonable answer (like adding a number
+       * to the end of the duplicate name).
+       */
+      public TreeMap&lt;String, String&gt; getPhoneBook() {
+         stopEditing();
+         TreeMap&lt;String,String&gt; phoneBook = new TreeMap&lt;String,String&gt;();
+         for (int row = 0; row &lt; model.getRowCount(); row++) {
+            String name = (String)model.getValueAt(row, 0);
+            String number = (String)model.getValueAt(row, 1);
+            if (number == null || number.trim().length() == 0)
+               number = "(unknown)";
+            if (name != null &amp;&amp; name.trim().length() &gt; 0)
+               phoneBook.put(name,number);
+         }
+         return phoneBook;
+      }
+      
+   }
+   
+
+}</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

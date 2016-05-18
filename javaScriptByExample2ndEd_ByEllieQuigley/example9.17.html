@@ -1,0 +1,17 @@
+<html><head><title>Time and Date</title></head>
+<body bgcolor="aqua"><h2>Date and Time</h2>
+<big>
+<script type="text/javascript">
+	var now = new Date();    // Now is an instance of a Date object
+	document.write("<b>Local time:</b> " + now + "<br />");
+	var hours=now.getHours();
+	var minutes=now.getMinutes();
+	var seconds=now.getSeconds();
+	var year=now.getFullYear();
+	document.write("The full year is " + year +"<br />");
+	document.write("<b>The time is:</b> " +
+			hours + ":" + minutes + ":" + seconds);
+</script>
+</big>
+</body>
+</html>

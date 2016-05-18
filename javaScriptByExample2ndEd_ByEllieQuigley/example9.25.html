@@ -1,0 +1,21 @@
+<html><head><title>The Prototype Property</title>
+	<script type = "text/javascript">
+	// Customize String Functions
+		function ucLarge(){
+			var str=this.bold().fontcolor("white").
+			toUpperCase().fontsize("22");
+			return(str);
+		}
+		String.prototype.ucLarge=ucLarge;
+	</script>
+	</head>
+	<body bgcolor=black>
+     <div align="center">
+	 <script language="JavaScript">
+		var str="Watch Your Step!!";
+		document.write(str.ucLarge()+"<br />");
+	 </script>
+	 <img src="high_voltage.gif">
+     </div>
+     </body>
+ </html>

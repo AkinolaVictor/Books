@@ -1,0 +1,42 @@
+<html><head><title>Verifying a Password</title>
+<script type="text/javascript">
+	function valid(form){
+			if( form.pass.value.length == 0 ){
+			   alert("Please enter a password");
+			   return false;
+			}
+			if( form.pass.value.length < 6 ){
+			   alert("Password must be at least 6 characters");
+			   return false;
+			}
+			for (var i = 0; i < form.pass.value.length;i++){
+			     var ch= form.pass.value.charAt(i);
+			   if((ch < "A" || ch > "Z") && (ch< "a" || ch >"z")
+			        && (ch < "0" || ch > "9")){
+			      alert("Password contains illegal characters");
+			      return false;
+			   }
+			}
+			alert("OK Password");
+			return true;
+	}
+</script>
+</head>
+<body bgcolor="red">
+<font face=verdana>
+<b><div align="center">
+	<form name="passchk" onSubmit="return valid(this);">
+		Enter your password:
+	<br>
+	<input name="pass"
+        id="pass
+		type="password"
+		size=33 />
+	<p>
+	<input type=submit value="Submit Password">
+	<input type=reset />
+   </p>
+	</form>
+</div>  
+</body>
+</html>

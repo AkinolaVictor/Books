@@ -1,0 +1,32 @@
+
+<html><head><title>The with Keyword</title>
+<script type = "text/javascript">
+  function book(title, author, publisher){
+	this.title = title;   // Properties
+	this.author = author;
+	this.publisher = publisher;
+	this.show = show;  // Define a method 
+  }
+
+  function show(){
+	with(this){   // The with keyword with this
+	var info = "The title is " + title;
+	info += "\nThe author is " +  author;
+	info += "\nThe publisher is " + publisher;
+	alert(info);
+        }
+   }
+</script>
+</head>
+<body bgcolor="lightblue">
+<script type = "text/javascript">
+	var childbook = new book("A Child's Garden of Verses",
+		                         "Robert Lewis Stevenson",
+		                         "Little Brown");
+	var adultbook = new book("War and Peace", 
+		                         "Leo Tolstoy", 
+		                         "Penguin Books");
+	childbook.show();  // Call method for child's book		adultbook.show();  // Call method for adult's book
+</script>
+</body>
+</html> 	

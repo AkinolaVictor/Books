@@ -1,0 +1,32 @@
+	<html><head><title>Display Form Input</title>
+	<script script="text/javascript">
+  function showForm(myform) {
+    NewWin=window.open('','','width=300,height=200');
+    name_input="<b>Your name: " + myform.user_name.value + "</b><br />";
+    NewWin.document.write(name_input);
+    phone_input="<b>Your phone: " + myform.user_phone.value + "</b><br />";
+    NewWin.document.write(phone_input);
+  }
+  function close_window(){
+    NewWin.window.close();
+  }
+</script>
+</head><hr>
+<body><h3> Display form data in a little window</h2><p>
+   <form name="formtest" >
+	Please enter your name: <br>
+	<input type="text" size="50" name="user_name">
+	<p>
+	Please enter your phone: <br>
+	<input type="text" size="30" name="user_phone">
+	<p>
+	<input type="button" 
+	       value="show form data" 
+	       onClick="showForm(this.form)";>
+   </form>
+  <font size="+1">
+<a href="javascript:void(0)" onClick="close_window()">
+Click here to close little window</a>
+</font>
+</body>
+</html>

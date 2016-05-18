@@ -1,0 +1,697 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Solution to Exercise 6, Chapter 10</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Solution for Programming Exercise 10.6</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> a sample solution to
+           one of the exercises from <a href="../index.html">Introduction to Programming Using Java</a>.</p>
+<hr>
+<h3 class="exercise">Exercise 10.6:</h3>
+<p>The sample program
+<span class="sourceref"><a href="../source/SimpleInterpreter.java">SimpleInterpreter.java</a></span> from <a href="../c10/s4.html#generics.4.1">Subsection&nbsp;10.4.1</a>
+can carry out  commands of the form "let variable = expression" or "print expression".
+That program can handle expressions that contain variables,
+numbers, operators, and parentheses. Extend the program so that it can also
+handle the standard mathematical functions <span class="code">sin</span>, <span class="code">cos</span>,
+<span class="code">tan</span>, <span class="code">abs</span>, <span class="code">sqrt</span>, and <span class="code">log</span>. For example, the
+program should be able to evaluate an expression such as
+<span class="code">sin(3*x-7)+log(sqrt(y))</span>, assuming that the variables <span class="code">x</span> and
+<span class="code">y</span> have been given values.  Note that the name of a function
+must be followed by an expression that is enclosed in parentheses.</p>
+
+
+<p>In the original program, a symbol table holds a value for each variable that
+has been defined. In your program, you should add another type of symbol to the
+table to represent standard functions.   You can use the following nested
+enumerated type and class for this purpose:</p>
+
+
+<pre>private enum Functions { SIN, COS, TAN, ABS, SQRT, LOG }
+
+/**
+ * An object of this class represents one of the standard functions.
+ */
+private static class StandardFunction {
+
+   /**
+    * Tells which function this is.
+    */
+   Functions functionCode; 
+
+   /**
+    * Constructor creates an object to represent one of 
+    * the standard functions
+    * @param code which function is represented.
+    */
+   StandardFunction(Functions code) {
+      functionCode = code;
+   }
+
+   /**
+    * Finds the value of this function for the specified 
+    * parameter value, x.
+    */
+   double evaluate(double x) {
+      switch(functionCode) {
+      case SIN:
+         return Math.sin(x);
+      case COS:
+         return Math.cos(x);
+      case TAN:
+         return Math.tan(x);
+      case ABS:
+         return Math.abs(x);
+      case SQRT:
+         return Math.sqrt(x);
+      default:
+         return Math.log(x);
+      }
+   }
+
+} // end class StandardFunction</pre>
+   
+
+<p>Add a symbol to the symbol table to represent each function. The key is the
+name of the function and the value is an object of type
+<span class="classname">StandardFunction</span> that represents the function. For example:</p>
+
+
+<pre>symbolTable.put("sin", new StandardFunction(StandardFunction.SIN));</pre>
+
+
+<p>In SimpleInterpreter.java, the symbol table is a map of type
+<span class="classname">HashMap&lt;String,Double&gt;</span>.  It's not legal to
+use a <span class="classname">StandardFunction</span> as the value in such a map,
+so you will have to change the type of the map.  The map has to hold two
+different types of objects.  The easy way to make this possible is to create
+a map of type <span class="classname">HashMap&lt;String,Object&gt;</span>.
+(A better way is to create a general type to represent objects that
+can be values in the symbol table, and to define two subclasses of that
+class, one to represent variables and one to represent standard functions,
+but for this exercise, you should do it the easy way.)</p>
+
+
+<p>In your parser, when you encounter a word, you have to be able to tell
+whether it's a variable or a standard function. Look up the word in the symbol
+table. If the associated object is non-null and is of type <span class="classname">Double</span>, then
+the word is a variable. If it is of type <span class="classname">StandardFunction</span>, then the
+word is a function. Remember that you can test the type of an object using the
+<span class="code">instanceof</span> operator. For example: <span class="code">if (obj instanceof
+Double)</span>
+</p>
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>Discussion</b></big>
+</div>
+<hr>
+<p>The changes that must be made to <span class="sourceref"><a href="../source/SimpleInterpreter.java">SimpleInterpreter.java</a></span> 
+are remarkably small,
+aside from defining the <span class="classname">StandardFunction</span> class. In my solution, I
+included this class as a static nested class in my main program class. It would
+also make sense to define it as a separate class.</p>
+
+
+<p>I changed the type of the map to <span class="classname">HashMap&lt;String,Object&gt;</span>,
+as suggested in the exercise.
+I added a few lines of code at the beginning of the <span class="code">main()</span> routine to
+add the six standard functions to the symbol table. I could have done this with
+six lines of the same form as the one given in the exercise:</p>
+   
+
+<pre>symbolTable.put("sin", new StandardFunction(StandardFunction.SIN));
+symbolTable.put("cos", new StandardFunction(StandardFunction.COS));
+symbolTable.put("tan", new StandardFunction(StandardFunction.TAN));
+symbolTable.put("abs", new StandardFunction(StandardFunction.ABS));
+symbolTable.put("sqrt", new StandardFunction(StandardFunction.SQRT));
+symbolTable.put("log", new StandardFunction(StandardFunction.LOG));</pre>
+   
+
+<p>However, it's easier to do it with a for-each loop that iterates
+through all the possible values of the <span class="code">enum</span> <span class="classname">Functions</span>
+(see <a href="../c3/s4.html#control.4.4">Subsection&nbsp;3.4.4</a>):</p>
+
+
+<pre>for ( Functions func : Functions.values() )
+    symbolTable.put( func.toString().toLowerCase(), new StandardFunction(func) );</pre>
+   
+
+<p>The only other change is in the parsing routines. 
+The change is in the <span class="code">primaryValue()</span> method. When a word
+is encountered, the computer must check whether the word is a variable or a
+standard function. This is done, as suggested in the exercise, by looking up
+the word in the symbol table and checking the type of the associated value. If
+the word is a standard function, then we have to read and evaluate the argument
+of the function and then find the value of the function at that argument value:</p>
+
+
+<pre>else if ( Character.isLetter(ch) ) {
+      // The factor is a variable <span class="newcode">or a standard function</span>.  Read its name and
+      // look up its value in the symbol table.  If the name is not in the symbol table,
+      // an error occurs.  (Note that the values in the symbol table are objects of type 
+      // Double <span class="newcode">or StandardFunction</span>.)
+   String name = readWord();
+   <span class="newcode">Object obj = symbolTable.get(name);</span>
+   if (obj == null)
+      throw new ParseError("Unknown word \"" + name + "\"");
+   <span class="newcode">assert (obj instanceof Double || obj instanceof StandardFunction);</span>
+   <span class="newcode">if (obj instanceof Double)</span> {
+         // The name is a variable; return value of that variable.
+      Double val = (Double)obj;
+      return val.doubleValue();
+   }
+   <span class="newcode">else {
+         // The name is a standard function.  Read the argument
+         // of the function and return the value of the function
+         // at that argument.  The argument must be an expression
+         // in parentheses.
+      StandardFunction func = (StandardFunction)obj;
+      TextIO.skipBlanks();
+      if ( TextIO.peek() != '(' )
+         throw new ParseError("Parenthesis missing after standard function");
+      TextIO.getChar(); // discard the '('
+      double argument = expressionValue();  // read and evaluate expression
+      TextIO.skipBlanks();
+      if ( TextIO.peek() != ')' )
+         throw new ParseError("Missing right parenthesis.");
+      TextIO.getChar(); // discard the ')'
+      return func.evaluate(argument);
+   }</span>
+}</pre>
+
+
+<p>There is one additional change that I might have made. As the program
+stands, it allows the user to use a "let" command to assign a value to one of
+the standard function names. For example: "let sin = 42". This effectively
+changes the name so that it is a variable, and the standard function is no
+longer available for use in expressions. It would probably be better to give an error
+message when the user tries to assign a value to a standard function name. This
+could be done in the <span class="code">doLetCommand()</span> method.  After reading the
+variable name in the "let" command, we have to check test whether the name is already
+in the symbol table as the name of a standard function:</p>
+
+
+<pre>private static void doLetCommand() throws ParseError {
+   TextIO.skipBlanks();
+   if ( ! Character.isLetter(TextIO.peek()) )
+      throw new ParseError("Expected variable name after 'let'.");
+   String varName = readWord();  // The name of the variable.
+   <span class="newcode">Object symbol = symbolTable.get(name);            
+   if (symbol != null &amp;&amp; symbol instanceof StandardFunction)
+       throw new ParseError("Can't assign a value to a standard function name.");</span>
+   TextIO.skipBlanks();
+   if ( TextIO.peek() != '=' )
+      throw new ParseError("Expected '=' operator for 'let' command.");
+   TextIO.getChar();
+   double val = expressionValue();  // The value of the variable.
+   TextIO.skipBlanks();
+   if ( TextIO.peek() != '\n' )
+      throw new ParseError("Extra data after end of expression.");
+   symbolTable.put( varName, val );  // Add to symbol table.
+   TextIO.putln("ok");
+}</pre>
+   
+
+<hr class="break">
+   
+
+<p>In this program, I use an enum and a class to represent standard functions.
+Every object that belongs to the class will correspond to one of the values
+of the enum.  I could make the program prettier by using the fact that
+<b>enums are classes</b>.  The fact is that an enum can contain more than
+a list of enum constants.  It can also contain methods and variables and
+most other things that any other class can contain.  Instead of using
+a separate enum to list the possible standard functions, we could make
+<span class="classname">StandardFunction</span> itself into an enum:</p>
+   
+
+<pre>private enum StandardFunction {
+   
+   SIN, COS, TAN, ABS, SQRT, LOG;
+
+   /**
+    * Finds the value of this function for the specified 
+    * parameter value, x.
+    */
+   double evaluate(double x) {
+      switch(this) {
+      case SIN:
+         return Math.sin(x);
+      case COS:
+         return Math.cos(x);
+      case TAN:
+         return Math.tan(x);
+      case ABS:
+         return Math.abs(x);
+      case SQRT:
+         return Math.sqrt(x);
+      default:
+         return Math.log(x);
+      }
+   }
+
+} // end enum StandardFunction</pre>
+   
+
+<p>With this definition, the possible values of type <span class="classname">StandardFucntion</span>
+are the enum constants <span class="code">SIN</span>, <span class="code">COS</span>, etc.
+These values are objects and each object contains an <span class="code">evaluate(x)</span>
+method that can be used to find the value of the standard function for
+a given argument&nbsp;<span class="code">x</span>.  With this definition, the code for
+adding the standard functions to the symbol table becomes</p>
+   
+
+<pre>for ( StandardFunction func : StandardFunction.values() )
+    symbolTable.put( func.toString().toLowerCase(), func);</pre>
+
+
+<p>or:</p>
+   
+
+<pre>symbolTable.put("sin", StandardFunction.SIN);
+symbolTable.put("cos", StandardFunction.COS);
+symbolTable.put("tan", StandardFunction.TAN);
+symbolTable.put("abs", StandardFunction.ABS);
+symbolTable.put("sqrt", StandardFunction.SQRT);
+symbolTable.put("log", StandardFunction.LOG);</pre>
+   
+
+<p>No other changes are necessary in the program.</p>
+
+
+
+<hr>
+<div class="exercisesubtitle" align="center">
+<big><b>The Solution</b></big>
+</div>
+<hr>
+   
+
+<p>
+<b>Changes from the program <span class="sourceref"><a href="../source/SimpleInterpreter.java">SimpleInterpreter.java</a></span>
+are shown in red.</b>
+</p>
+   
+
+<pre class="exercisecode">/*
+    This program can evaluate expressions that can include
+    numbers, variables, parentheses, and the operators +,
+    -, *, /, and ^ (where ^ indicates raising to a power),
+    <span class="newcode">and standard functions sin, cos, tan, abs, sqrt, and log.</span>
+    A variable name must consist of letters and digits,
+    beginning with a letter.  Names are case-sensitive.
+    This program accepts commands of two types from the user.
+    For a command of the form  print &lt;expression&gt; , the expression
+    is evaluated and the value is output.  For a command of
+    the form  let &lt;variable&gt; = &lt;expression&gt; , the expression is
+    evaluated and the value is assigned to the variable.
+    If a variable is used in an expression before it has been
+    assigned a value, an error occurs.  A number must begin with 
+    a digit (i.e., not a decimal point).
+
+    Commands are formally defined by the BNF rules:
+
+            &lt;command&gt;  ::=  "print" &lt;expression&gt;
+                               |  "let" &lt;variable&gt; "=" &lt;expression&gt;
+
+            &lt;expression&gt;  ::=  [ "-" ] &lt;term&gt; [ [ "+" | "-" ] &lt;term&gt; ]...
+
+            &lt;term&gt;  ::=  &lt;factor&gt; [ [ "*" | "/" ] &lt;factor&gt; ]...
+
+            &lt;factor&gt;  ::=  &lt;primary&gt; [ "^" &lt;primary&gt; ]...
+
+            &lt;primary&gt;  ::=  &lt;number&gt; | &lt;variable&gt; | "(" &lt;expression&gt; ")"
+                                 <span class="newcode">| &lt;standard-function-name&gt; "(" &lt;expression&gt; ")"</span>
+
+    A line of input must contain exactly one such command.  If extra
+    data is found on a line after an expression has been read, it is
+    considered an error.  The variables "pi" and "e" are defined
+    when the program starts to represent the usual mathematical
+    constants.
+
+    This program demonstrates the use of a HashMap as a symbol
+    table.
+
+    SimpleInterpreter2.java is based on the program SimpleInterpreter.java,
+    which did not handle standard functions in expressions.
+    
+    This program depends on the non-standard class, TextIO.
+ */
+
+import java.util.HashMap;
+
+public class SimpleInterpreter2 {
+
+   /**
+    * Represents a syntax error found in the user's input.
+    */
+   private static class ParseError extends Exception {
+      ParseError(String message) {
+         super(message);
+      }
+   } // end nested class ParseError
+   
+   
+   <span class="newcode">/**
+    * An enumerated type whose values represent the possible
+    * standard functions.
+    */
+   private enum Functions { SIN, COS, TAN, ABS, SQRT, LOG }
+   
+   
+   /**
+    * An object of this class represents one of the standard functions.
+    * Objects of this type are stored in the symbol table, associated
+    * with the name of the standard functions.  Note that an object
+    * of this type also knows how to evaluate the corresponding function.
+    */
+   private static class StandardFunction {
+
+      /**
+       * Tells which function this is.
+       */
+      Functions functionCode; 
+
+      /**
+       * Constructor creates an object to represent one of 
+       * the standard functions
+       * @param code which function is represented.
+       */
+      StandardFunction(Functions code) {
+         functionCode = code;
+      }
+
+      /**
+       * Finds the value of this function for the specified 
+       * parameter value, x.
+       */
+      double evaluate(double x) {
+         switch(functionCode) {
+         case SIN:
+            return Math.sin(x);
+         case COS:
+            return Math.cos(x);
+         case TAN:
+            return Math.tan(x);
+         case ABS:
+            return Math.abs(x);
+         case SQRT:
+            return Math.sqrt(x);
+         default:
+            return Math.log(x);
+         }
+      }
+
+   } // end class StandardFunction</span>
+
+
+
+   /**
+    * The symbolTable contains information about the values of variables.  When a variable 
+    * is assigned a value, it is recorded in the symbol table. The key is the name of the 
+    * variable, and the  value is an object of type Double that contains the value of the 
+    * variable.  
+    *    <span class="newcode">The symbol table can also contain standard functions.  The key is the name of</span>
+    * <span class="newcode">of the function, and the value is the corresponding StandardFunction object.</span>
+    */
+   private static HashMap&lt;String,<span class="newcode">Object</span>&gt; symbolTable;
+
+
+   public static void main(String[] args) {
+      
+      // Create the map that represents symbol table.
+      
+      symbolTable = new HashMap&lt;String,<span class="newcode">Object</span>&gt;();
+
+      // To start, add variables named "pi" and "e" to the symbol
+      // table.  Their values are the usual mathematical constants.
+
+      symbolTable.put("pi", Math.PI);
+      symbolTable.put("e", Math.E);
+      
+      <span class="newcode">// Add the standard functions to the hash table.
+      
+      for ( Functions func : Functions.values() )
+         symbolTable.put( func.toString().toLowerCase(), new StandardFunction(func) );</span>
+
+      TextIO.putln("\n\nEnter commands; press return to end.");
+      TextIO.putln("Commands must have the form:\n");
+      TextIO.putln("      print &lt;expression&gt;");
+      TextIO.putln("  or");
+      TextIO.putln("      let &lt;variable&gt; = &lt;expression&gt;");
+
+      while (true) {
+         TextIO.put("\n?  ");
+         TextIO.skipBlanks();
+         if ( TextIO.peek() == '\n' ) {
+            break;  // A blank input line ends the while loop and the program.
+         }
+         try {
+            String command = TextIO.getWord();
+            if (command.equalsIgnoreCase("print"))
+               doPrintCommand();
+            else if (command.equalsIgnoreCase("let"))
+               doLetCommand();
+            else
+               throw new ParseError("Command must begin with 'print' or 'let'.");
+            TextIO.getln();
+         }
+         catch (ParseError e) {
+            TextIO.putln("\n*** Error in input:    " + e.getMessage());
+            TextIO.putln("*** Discarding input:  " + TextIO.getln());
+         }
+      }
+
+      TextIO.putln("\n\nDone.");
+
+   } // end main()
+
+
+   /**
+    * Process a command of the form  let &lt;variable&gt; = &lt;expression&gt;.
+    * When this method is called, the word "let" has already
+    * been read.  Read the variable name and the expression, and
+    * store the value of the variable in the symbol table.
+    */
+   private static void doLetCommand() throws ParseError {
+      TextIO.skipBlanks();
+      if ( ! Character.isLetter(TextIO.peek()) )
+         throw new ParseError("Expected variable name after 'let'.");
+      String varName = readWord();  // The name of the variable.
+      TextIO.skipBlanks();
+      if ( TextIO.peek() != '=' )
+         throw new ParseError("Expected '=' operator for 'let' command.");
+      TextIO.getChar();
+      double val = expressionValue();  // The value of the variable.
+      TextIO.skipBlanks();
+      if ( TextIO.peek() != '\n' )
+         throw new ParseError("Extra data after end of expression.");
+      symbolTable.put( varName, val );  // Add to symbol table.
+      TextIO.putln("ok");
+   }
+
+
+   /**
+    * Process a command of the form  print &lt;expression&gt;.
+    * When this method is called, the word "print" has already
+    * been read.  Evaluate the expression and print the value.
+    */
+   private static void doPrintCommand() throws ParseError {
+      double val = expressionValue();
+      TextIO.skipBlanks();
+      if ( TextIO.peek() != '\n' )
+         throw new ParseError("Extra data after end of expression.");
+      TextIO.putln("Value is " + val);
+   }
+
+
+   /**
+    * Read an expression from the current line of input and return its value.
+    */
+   private static double expressionValue() throws ParseError {
+      TextIO.skipBlanks();
+      boolean negative;  // True if there is a leading minus sign.
+      negative = false;
+      if (TextIO.peek() == '-') {
+         TextIO.getAnyChar();
+         negative = true;
+      }
+      double val;  // Value of the expression.
+      val = termValue();  // An expression must start with a term.
+      if (negative)
+         val = -val; // Apply the leading minus sign
+      TextIO.skipBlanks();
+      while ( TextIO.peek() == '+' || TextIO.peek() == '-' ) {
+            // Read the next term and add it to or subtract it from
+            // the value of previous terms in the expression.
+         char op = TextIO.getAnyChar();
+         double nextVal = termValue();
+         if (op == '+')
+            val += nextVal;
+         else
+            val -= nextVal;
+         TextIO.skipBlanks();
+      }
+      return val;
+   } // end expressionValue()
+
+
+   /**
+    * Read a term from the current line of input and return its value.
+    */
+   private static double termValue() throws ParseError {
+      TextIO.skipBlanks();
+      double val;  // The value of the term.
+      val = factorValue();  // A term must start with a factor.
+      TextIO.skipBlanks();
+      while ( TextIO.peek() == '*' || TextIO.peek() == '/' ) {
+            // Read the next factor, and multiply or divide
+            // the value-so-far by the value of this factor.
+         char op = TextIO.getAnyChar();
+         double nextVal = factorValue();
+         if (op == '*')
+            val *= nextVal;
+         else
+            val /= nextVal;
+         TextIO.skipBlanks();
+      }
+      return val;
+   } // end termValue()
+
+
+   /**
+    * Read a factor from the current line of input and return its value.
+    */
+   private static double factorValue() throws ParseError {
+      TextIO.skipBlanks();
+      double val;  // Value of the factor.
+      val = primaryValue();  // A factor must start with a primary.
+      TextIO.skipBlanks();
+      while ( TextIO.peek() == '^' ) {
+            // Read the next primary, and exponentiate
+            // the value-so-far by the value of this primary.
+         TextIO.getChar();
+         double nextVal = primaryValue();
+         val = Math.pow(val,nextVal);
+         if (Double.isNaN(val))
+            throw new ParseError("Illegal values for ^ operator.");
+         TextIO.skipBlanks();
+      }
+      return val;
+   } // end termValue()
+
+
+   /**
+    *  Read a primary from the current line of input and
+    *  return its value.  A primary must be a number,
+    *  a variable, or an expression enclosed in parentheses.
+    */
+   private static double primaryValue() throws ParseError {
+      TextIO.skipBlanks();
+      char ch = TextIO.peek();
+      if ( Character.isDigit(ch) ) {
+            // The factor is a number.  Read it and
+            // return its value.
+         return TextIO.getDouble();
+      }
+      else if ( Character.isLetter(ch) ) {
+            // The factor is a variable <span class="newcode">or a standard function</span>.  Read its name and
+            // look up its value in the symbol table.  If the name is not in the symbol table,
+            // an error occurs.  (Note that the values in the symbol table are objects of type 
+            // Double <span class="newcode">or StandardFunction</span>.)
+         String name = readWord();
+         <span class="newcode">Object obj = symbolTable.get(name);</span>
+         if (obj == null)
+            throw new ParseError("Unknown word \"" + name + "\"");
+         <span class="newcode">assert (obj instanceof Double || obj instanceof StandardFunction);
+         if (obj instanceof Double)</span> {
+               // The name is a variable; return value of that variable.
+            Double val = (Double)obj;
+            return val.doubleValue();
+         }
+         <span class="newcode">else {
+               // The name is a standard function.  Read the argument
+               // of the function and return the value of the function
+               // at that argument.  The argument must be an expression
+               // in parentheses.
+            StandardFunction func = (StandardFunction)obj;
+            TextIO.skipBlanks();
+            if ( TextIO.peek() != '(' )
+               throw new ParseError("Parenthesis missing after standard function");
+            TextIO.getChar(); // discard the '('
+            double argument = expressionValue();  // read and evaluate expression
+            TextIO.skipBlanks();
+            if ( TextIO.peek() != ')' )
+               throw new ParseError("Missing right parenthesis.");
+            TextIO.getChar(); // discard the ')'
+            return func.evaluate(argument);
+         }</span>
+      }
+      else if ( ch == '(' ) {
+            // The factor is an expression in parentheses.
+            // Return the value of the expression.
+         TextIO.getAnyChar();  // Read the "("
+         double val = expressionValue();
+         TextIO.skipBlanks();
+         if ( TextIO.peek() != ')' )
+            throw new ParseError("Missing right parenthesis.");
+         TextIO.getAnyChar();  // Read the ")"
+         return val;
+      }
+      else if ( ch == '\n' )
+         throw new ParseError("End-of-line encountered in the middle of an expression.");
+      else if ( ch == ')' )
+         throw new ParseError("Extra right parenthesis.");
+      else if ( ch == '+' || ch == '-' || ch == '*' || ch == '/')
+         throw new ParseError("Misplaced operator.");
+      else
+         throw new ParseError("Unexpected character \"" + ch + "\" encountered.");
+   }
+
+
+   /**
+    *  Reads a word from input.  A word is any sequence of
+    *  letters and digits, starting with a letter.  When 
+    *  this subroutine is called, it should already be
+    *  known that the next character in the input is
+    *  a letter.
+    */
+   private static String readWord() {
+      String word = "";  // The word.
+      char ch = TextIO.peek();
+      while (Character.isLetter(ch) || Character.isDigit(ch)) {
+         word += TextIO.getChar(); // Add the character to the word.
+         ch = TextIO.peek();
+      }
+      return word;
+   }
+
+} // end class SimpleInterpreter2
+
+</pre>
+
+</div>
+<hr>
+<div align="right">
+<small>
+        [ <a href="exercises.html">Exercises</a> |
+        <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>

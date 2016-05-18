@@ -1,0 +1,201 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Javanotes 6.0, Excercises for Chapter 13</title>
+<link type="text/css" rel="stylesheet" href="../javanotes.css">
+</head>
+<body>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+<hr>
+<div class="content">
+<h2>Programming Exercises for Chapter 13</h2>
+<hr class="break">
+<p>
+<span class="start"><big>T</big>his page contains</span> several exercises for Chapter 13
+        in <a href="../index.html">Introduction to Programming Using Java</a>.  For each exercise, a link to
+        a possible solution is provided.   Each solution includes a discussion of how a programmer might approach the
+        problem and interesting points raised by the problem or its solution, as well as complete source
+        code of the solution.</p>
+<hr>
+<h3 class="exercise">Exercise 13.1:</h3>
+<p>The sample program <span class="sourceref"><a href="../source/PaintWithOffScreenCanvas.java">PaintWithOffScreenCanvas.java</a></span>
+from <a href="../c13/s1.html">Section&nbsp;13.1</a> is a simple paint program.  Make two improvements
+to this program: First, add a "File" menu that lets the user open an image file
+and save the current image in either PNG or JPEG format.  Second, add a basic
+one-level "Undo" command that lets the user undo the most recent operation
+that was applied to the image.  (Do not try to make a multilevel Undo, which would
+allow the user to undo several operations.)</p>
+
+<p>When you read a file into the program, you should copy the image that you
+read into the program's off-screen canvas.  Since the canvas in the program
+has a fixed size, you should scale the image that you read so that it exactly
+fills the canvas.</p>
+
+<p align="right">
+<a href="ex1-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 13.2:</h3>
+<p>For this exercise, you should continue to work on the
+program from the <a href="../c13/ex1-ans.html">previous exercise</a>.
+Add a "StrokeWidth" menu that allows the user to draw lines of varying
+thicknesses.  Make it possible to use different colors for the interior
+of a filled shape and for the outline of that shape.  To do this, change
+the "Color" menu to "StrokeColor" and add a "FillColor" menu.  (My solution
+adds two new tools, "Stroked Filled Rectangle" and "Stroked Filled Oval",
+to represent filled shapes that are outlined with the current stroke.)
+Add support for filling shapes with transparent color.  A simple approach to this
+is to use a <span class="classname">JCheckboxMenuItem</span> to select either
+fully opaque or 50% opaque fill.  (Don't try to apply transparency to stokes -- it's
+very difficult to make transparency work correctly for the Curve tool, and in any
+case, shape outlines look better if they are opaque.)  Finally, make the menus more
+user friendly by adding some keyboard accelerators to some commands
+and by using <span class="classname">JRadioButtonMenuItems</span> where
+appropriate, such as in the color and tool menus.  This exercise
+takes quite a bit of work to get it all right, so you should tackle
+the problem in pieces.</p>
+
+
+<p>Here is an applet version of my solution to the program.  Since an applet
+does not have access to files on the computer where it is running, the
+"File" menu is non-functional in this applet.  Keyboard accelerators for
+menu commands are probably also non-functional in the applet.</p>
+
+<p align="center">
+<applet code="PaintWithOSCFinal$Applet" width="550" height="450" archive="PaintWithOSCFinal.jar" alt=""></applet></p>
+
+
+<p align="right">
+<a href="ex2-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 13.3:</h3>
+<p>The <span class="classname">StopWatchLabel</span>
+component from <a href="../c13/s4.html#GUI2.4.5">Subsection&nbsp;13.4.5</a> displays the text "Timing..."
+when the stop watch is running. It would be nice if it displayed the elapsed
+time since the stop watch was started. For that, you need to create a
+<span class="classname">Timer</span>. (See <a href="../c6/s5.html#GUI1.5.1">Subsection&nbsp;6.5.1</a>.)
+Add a <span class="classname">Timer</span> to the original source code, 
+<span class="sourceref"><a href="../source/StopWatchLabel.java">StopWatchLabel.java</a></span>, to drive the display of the elapsed time in
+seconds. Create the timer in the <span class="code">mousePressed()</span> routine when the stop
+watch is started. Stop the timer in the <span class="code">mousePressed()</span> routine when
+the stop watch is stopped. The elapsed time won't be very accurate anyway, so
+just show the integral number of seconds. You only need to set the text a few
+times per second. For my <span class="classname">Timer</span> method, I use a delay of 200
+milliseconds for the timer. Here is an applet that tests my solution to this
+exercise:</p>
+
+
+<p align="center">
+<applet code="TestStopWatch2.class" width="350" height="50" archive="TestStopWatch2.jar" alt=""></applet></p>
+
+
+<p align="right">
+<a href="ex3-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 13.4:</h3>
+<p>The custom component example <span class="sourceref"><a href="../source/MirrorText.java">MirrorText.java</a></span>,
+from <a href="../c13/s4.html#GUI2.4.5">Subsection&nbsp;13.4.5</a>, uses an off-screen canvas to show mirror-reversed text in
+a <span class="classname">JPanel</span>.  An alternative approach would be to draw the text
+after applying a transform to the graphics context that is used for drawing.
+(See <a href="../c13/s2.html#GUI2.2.5">Subsection&nbsp;13.2.5</a>.)  With this approach, the custom component can be defined
+as a subclass of <span class="classname">JLabel</span> in which the <span class="code">paintComponent()</span>
+method is overridden.  Write a version of the <span class="code">MirrorText</span> component that
+takes this approach.  The solution is very short, but tricky.  Note that the scale
+transform <span class="code">g2.scale(-1,1)</span> does a left-right reflection through the
+left edge of the component.</p>
+
+<p align="right">
+<a href="ex4-ans.html">See the Solution</a>
+</p>
+<hr>
+<h3 class="exercise">Exercise 13.5:</h3>
+<p>The sample program <span class="sourceref"><a href="../source/PhoneDirectoryFileDemo.java">PhoneDirectoryFileDemo.java</a></span>
+from <a href="../c11/s3.html#IO.3.2">Subsection&nbsp;11.3.2</a> keeps data for a "phone directory" in a file in the user's
+home directory.  <a href="../c11/ex5-ans.html">Exercise&nbsp;11.5</a> asked you to revise that program to
+use an XML format for the data.  Both programs have a simple command-line user
+interface.  For this exercise, you should provide a GUI interface for the
+phone directory data.  You can base your program either on the original sample
+program or on the modified version from the exercise.  Use a <span class="classname">JTable</span>
+to hold the data.  The user should be able to edit all the entries in the
+table.  Also, the user should be able to add and delete rows.  Include either
+buttons or menu commands that can be used to perform these actions.  The
+delete command should delete the selected row, if any.   New rows should be
+added at the end of the table.
+For this program, you can use a standard <span class="classname">DefaultTableModel</span>.</p>
+
+<p>Your program should load data from the file when it starts and save data to the
+file when it ends, just as the two previous programs do.  For a GUI program, you can't
+simply save the data at the end of the <span class="code">main()</span> routine, since <span class="code">main()</span>
+terminates as soon as the window shows up on the screen.  You want to save the
+data when the user closes the window and ends the program.  There are several
+approaches.  One is to use a <span class="classname">WindowListener</span> to detect
+the event that occurs when the window closes.  Another is to use a "Quit"
+command to end the program; when the user quits, you can save the data and
+close the window  (by calling its <span class="code">dispose()</span> method), and end the program.
+If you use the "Quit" command approach, you don't want the user to be
+able to end the program simply by closing the window.  To accomplish this,
+you should call</p>
+
+<pre>frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);</pre>
+
+<p>where <span class="code">frame</span> refers to the <span class="classname">JFrame</span> that
+you have created for the program's user interface.  When using a
+<span class="classname">WindowListener</span>, you want the close box on the window to
+close the window, not end the program.  For this, you need</p>
+
+<pre>frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);</pre>
+
+<p>When the listener is notified of a window closed event, it can
+save the data and end the program.</p>
+
+<p>Most of the <span class="classname">JTable</span> and <span class="classname">DefaultTableModel</span>
+methods that you need for this exercise are discussed in <a href="../c13/s4.html#GUI2.4.3">Subsection&nbsp;13.4.3</a>,
+but there are a few more that you need to know about.  To determine
+which row is selected in a <span class="classname">JTable</span>, call
+<span class="code">table.getSelectedRow()</span>.  This method
+returns the row number of the selected row, or returns <span class="code">-1</span> if no
+row is selected.  To specify which cell is currently being edited, you can
+use:</p>
+
+<pre>table.setRowSelectionInterval(rowNum, rowNum);  // Selects row number rowNum. 
+table.editCellAt( rowNum, colNum ); // Edit cell at position (rowNum,colNum).
+phoneTable.getEditorComponent().requestFocus();  // Put input cursor in cell.</pre>
+
+<p>One particularly troublesome point is that the data that is in the cell that
+is currently being edited is not in the table model.  The value in the edit cell
+is not put into the table model until after the editing is finished.  This means
+that even though the user sees the data in the cell, it's not really part of the
+table data yet.  If you lose that data, the user would be justified in complaining.
+To make sure that you get the right data when you save the
+data at the end of the program, you have to turn off editing before retrieving
+the data from the model.  This can be done with the following method:</p>
+
+<pre>private void stopEditing() {
+   if (table.getCellEditor() != null)
+      table.getCellEditor().stopCellEditing();
+}</pre>
+
+<p>This method must also be called before modifying the table by adding or
+deleting rows; if such modifications are made while editing is in progress,
+the effect can be very strange.</p>
+
+<p align="right">
+<a href="ex5-ans.html">See the Solution</a>
+</p>
+</div>
+<hr>
+<div align="right">
+<small>
+        [  <a href="index.html">Chapter Index</a> | 
+        <a href="../index.html">Main Index</a> ]
+    </small>
+</div>
+</body>
+</html>
